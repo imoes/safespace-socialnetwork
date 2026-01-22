@@ -1,56 +1,56 @@
-# SafeSpace - Social Network mit KI-gestützter Moderation
+# SafeSpace - Social Network with AI-Powered Moderation
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green.svg)](https://fastapi.tiangolo.com/)
 [![Angular](https://img.shields.io/badge/Angular-18-red.svg)](https://angular.io/)
 
-SafeSpace ist ein datenschutzfreundliches Social Network mit KI-gestützter Content-Moderation durch DeepSeek. Das Projekt kombiniert eine skalierbare Microservice-Architektur mit einem mehrstufigen Moderationssystem.
+SafeSpace is a privacy-focused social network with AI-powered content moderation using DeepSeek. The project combines a scalable microservice architecture with a multi-tiered moderation system.
 
-## Inhaltsverzeichnis
+## Table of Contents
 
 - [Features](#features)
-- [Architektur](#architektur)
+- [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Quick Start](#quick-start)
-- [Konfiguration](#konfiguration)
-- [API Dokumentation](#api-dokumentation)
+- [Configuration](#configuration)
+- [API Documentation](#api-documentation)
 - [Admin & Moderation](#admin--moderation)
-- [Sichtbarkeits-System](#sichtbarkeits-system)
+- [Visibility System](#visibility-system)
 - [SafeSpace Moderation Pipeline](#safespace-moderation-pipeline)
 - [Known Bugs & Limitations](#known-bugs--limitations)
-- [Entwicklung](#entwicklung)
-- [Lizenz](#lizenz)
+- [Development](#development)
+- [License](#license)
 
 ---
 
 ## Features
 
-### Kernfunktionen
-- **Benutzerregistrierung & JWT-Authentifizierung** - Sichere Anmeldung mit Token-basierter Auth
-- **Feed mit Auto-Refresh** - Posts von Freunden werden alle 30 Sekunden aktualisiert
-- **Posts erstellen, bearbeiten, löschen** - Vollständige CRUD-Operationen
-- **Kommentare & Likes** - Interaktion mit Posts
-- **Media-Upload** - Bilder und Videos mit automatischer Thumbnail-Generierung
-- **Freundschaftssystem** - Mit Beziehungstypen (Familie, Enge Freunde, Bekannte)
+### Core Features
+- **User Registration & JWT Authentication** - Secure login with token-based auth
+- **Feed with Auto-Refresh** - Posts from friends are updated every 30 seconds
+- **Create, Edit, Delete Posts** - Full CRUD operations
+- **Comments & Likes** - Interact with posts
+- **Media Upload** - Images and videos with automatic thumbnail generation
+- **Friendship System** - With relationship types (Family, Close Friends, Acquaintances)
 
-### Moderation & Sicherheit
-- **KI-gestützte Hassrede-Erkennung** - Automatische Analyse durch DeepSeek
-- **Live-Check beim Tippen** - Warnung vor dem Posten problematischer Inhalte
-- **Verbesserungsvorschläge** - KI schlägt alternative Formulierungen vor
-- **User-Meldungen** - Community kann unangemessene Posts melden
-- **Admin Dashboard** - Übersicht für Moderatoren mit Quick-Actions
-- **Mehrstufiges Rollen-System** - User, Moderator, Admin
+### Moderation & Safety
+- **AI-Powered Hate Speech Detection** - Automatic analysis via DeepSeek
+- **Live Check While Typing** - Warning before posting problematic content
+- **Revision Suggestions** - AI suggests alternative phrasings
+- **User Reports** - Community can report inappropriate posts
+- **Admin Dashboard** - Overview for moderators with quick actions
+- **Multi-Tier Role System** - User, Moderator, Admin
 
-### Sichtbarkeit & Privatsphäre
-- 🌍 **Öffentlich** - Jeder kann den Post sehen
-- 👋 **Bekannte** - Nur Bekannte und höher
-- 💚 **Enge Freunde** - Nur enge Freunde und Familie
-- 👨‍👩‍👧 **Familie** - Nur Familienmitglieder
-- 🔒 **Privat** - Nur der Autor selbst
+### Visibility & Privacy
+- 🌍 **Public** - Everyone can see the post
+- 👋 **Acquaintances** - Only acquaintances and above
+- 💚 **Close Friends** - Only close friends and family
+- 👨‍👩‍👧 **Family** - Only family members
+- 🔒 **Private** - Only the author
 
 ---
 
-## Architektur
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -78,58 +78,58 @@ SafeSpace ist ein datenschutzfreundliches Social Network mit KI-gestützter Cont
                                                     └──────────────────┘
 ```
 
-### Datenbank-Struktur
+### Database Structure
 
-| Speicher | Verwendung |
-|----------|------------|
-| **PostgreSQL** | Users, Friendships, Reports, Moderation-Log, Rollen |
-| **SQLite (pro User)** | Posts des jeweiligen Users (`/data/users/{uid}/posts.db`) |
-| **Redis** | Feed-Cache mit 30s TTL |
-| **MinIO** | Media-Dateien und SafeSpace-Reports (JSON) |
-| **Kafka** | Message Queue für asynchrone Moderation |
+| Storage | Usage |
+|---------|-------|
+| **PostgreSQL** | Users, Friendships, Reports, Moderation Log, Roles |
+| **SQLite (per User)** | Posts of the respective user (`/data/users/{uid}/posts.db`) |
+| **Redis** | Feed cache with 30s TTL |
+| **MinIO** | Media files and SafeSpace reports (JSON) |
+| **Kafka** | Message queue for asynchronous moderation |
 
 ---
 
 ## Tech Stack
 
-| Komponente | Technologie |
-|------------|-------------|
+| Component | Technology |
+|-----------|------------|
 | **Backend** | FastAPI, Python 3.11+, psycopg3, aiosqlite, aiokafka |
 | **Frontend** | Angular 18, Standalone Components, Signals, RxJS |
-| **Datenbanken** | PostgreSQL 16, SQLite, Redis 7 |
-| **Storage** | MinIO (S3-kompatibel) |
+| **Databases** | PostgreSQL 16, SQLite, Redis 7 |
+| **Storage** | MinIO (S3-compatible) |
 | **Queue** | Apache Kafka + Zookeeper |
-| **KI** | DeepSeek API |
+| **AI** | DeepSeek API |
 | **Container** | Docker, Docker Compose |
 
 ---
 
 ## Quick Start
 
-### Voraussetzungen
+### Prerequisites
 
 - Docker & Docker Compose
-- DeepSeek API Key (für KI-Moderation)
+- DeepSeek API Key (for AI moderation)
 
 ### Installation
 
 ```bash
-# 1. Repository klonen
+# 1. Clone repository
 git clone https://github.com/YOUR_USERNAME/safespace.git
 cd safespace
 
-# 2. Umgebungsvariablen konfigurieren
+# 2. Configure environment variables
 cp .env.example .env
-# Bearbeite .env und trage deinen DEEPSEEK_API_KEY ein
+# Edit .env and add your DEEPSEEK_API_KEY
 
-# 3. Services starten
+# 3. Start services
 docker-compose up -d
 
-# 4. Logs prüfen
+# 4. Check logs
 docker-compose logs -f backend
 ```
 
-### Zugriff
+### Access
 
 | Service | URL |
 |---------|-----|
@@ -140,27 +140,27 @@ docker-compose logs -f backend
 | Kafka UI | http://localhost:8080 |
 | MinIO Console | http://localhost:9001 |
 
-### Admin-User anlegen
+### Create Admin User
 
 ```bash
-# Admin erstellen
+# Create admin
 docker exec -it socialnet-backend python -m app.cli.manage_users \
-  create-admin admin admin@example.com sicheresPasswort123
+  create-admin admin admin@example.com securePassword123
 
-# Moderator erstellen
+# Create moderator
 docker exec -it socialnet-backend python -m app.cli.manage_users \
-  create-moderator mod1 mod1@example.com passwort123
+  create-moderator mod1 mod1@example.com password123
 
-# Existierenden User befördern
+# Promote existing user
 docker exec -it socialnet-backend python -m app.cli.manage_users \
   promote username moderator
 ```
 
 ---
 
-## Konfiguration
+## Configuration
 
-### Umgebungsvariablen (.env)
+### Environment Variables (.env)
 
 ```env
 # PostgreSQL
@@ -168,133 +168,133 @@ POSTGRES_PASSWORD=changeme
 POSTGRES_DB=socialnet
 POSTGRES_USER=socialnet
 
-# JWT Secret (generieren mit: openssl rand -hex 32)
+# JWT Secret (generate with: openssl rand -hex 32)
 SECRET_KEY=your-secret-key-here
 
-# DeepSeek API (ERFORDERLICH für KI-Moderation)
+# DeepSeek API (REQUIRED for AI moderation)
 DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 
 # MinIO
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
 
-# Optional: Worker-Anzahl für Production
+# Optional: Worker count for production
 WORKERS=4
 ```
 
-### Multi-Core Optimierung (Production)
+### Multi-Core Optimization (Production)
 
-Das Backend nutzt standardmäßig Uvicorn. Für Production mit Gunicorn:
+The backend uses Uvicorn by default. For production with Gunicorn:
 
 ```yaml
 # docker-compose.yml
 backend:
   command: gunicorn app.main:app -c gunicorn.conf.py
   environment:
-    - WORKERS=8  # Anzahl CPU-Kerne
+    - WORKERS=8  # Number of CPU cores
 ```
 
 ---
 
-## API Dokumentation
+## API Documentation
 
-### Authentifizierung
+### Authentication
 
-| Endpoint | Methode | Beschreibung |
-|----------|---------|--------------|
-| `/api/auth/register` | POST | Neuen User registrieren |
-| `/api/auth/login` | POST | Login, gibt JWT zurück |
-| `/api/auth/me` | GET | Aktuellen User abrufen |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/register` | POST | Register new user |
+| `/api/auth/login` | POST | Login, returns JWT |
+| `/api/auth/me` | GET | Get current user |
 
 ### Feed & Posts
 
-| Endpoint | Methode | Beschreibung |
-|----------|---------|--------------|
-| `/api/feed` | GET | Feed laden (gecached) |
-| `/api/posts` | POST | Neuen Post erstellen |
-| `/api/posts/{id}` | DELETE | Eigenen Post löschen |
-| `/api/posts/{id}/like` | POST | Post liken |
-| `/api/posts/{id}/comments` | POST | Kommentar hinzufügen |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/feed` | GET | Load feed (cached) |
+| `/api/posts` | POST | Create new post |
+| `/api/posts/{id}` | DELETE | Delete own post |
+| `/api/posts/{id}/like` | POST | Like a post |
+| `/api/posts/{id}/comments` | POST | Add comment |
 
 ### SafeSpace Moderation
 
-| Endpoint | Methode | Beschreibung |
-|----------|---------|--------------|
-| `/api/safespace/check` | POST | Content vor dem Posten prüfen |
-| `/api/safespace/suggest-revision` | POST | Verbesserungsvorschlag generieren |
-| `/api/safespace/stats/user/{uid}` | GET | User Moderations-Statistiken |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/safespace/check` | POST | Check content before posting |
+| `/api/safespace/suggest-revision` | POST | Generate revision suggestion |
+| `/api/safespace/stats/user/{uid}` | GET | User moderation statistics |
 
-### Admin (nur Moderator/Admin)
+### Admin (Moderator/Admin only)
 
-| Endpoint | Methode | Beschreibung |
-|----------|---------|--------------|
-| `/api/admin/dashboard` | GET | Dashboard-Statistiken |
-| `/api/admin/reports` | GET | Offene Reports auflisten |
-| `/api/admin/reports/{id}/assign` | POST | Report übernehmen |
-| `/api/admin/reports/{id}/resolve` | POST | Report abschließen |
-| `/api/admin/users/{uid}/suspend` | POST | User sperren |
-| `/api/admin/users/{uid}/role` | POST | Rolle ändern (nur Admin) |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/admin/dashboard` | GET | Dashboard statistics |
+| `/api/admin/reports` | GET | List open reports |
+| `/api/admin/reports/{id}/assign` | POST | Claim report |
+| `/api/admin/reports/{id}/resolve` | POST | Resolve report |
+| `/api/admin/users/{uid}/suspend` | POST | Suspend user |
+| `/api/admin/users/{uid}/role` | POST | Change role (Admin only) |
 
 ---
 
 ## Admin & Moderation
 
-### Rollen-System
+### Role System
 
-| Rolle | Rechte |
-|-------|--------|
-| **user** | Standard-Nutzer, kann posten und melden |
-| **moderator** | Reports bearbeiten, Posts löschen, User sperren |
-| **admin** | Alles + Rollen vergeben |
+| Role | Permissions |
+|------|-------------|
+| **user** | Standard user, can post and report |
+| **moderator** | Process reports, delete posts, suspend users |
+| **admin** | Everything + assign roles |
 
-### Moderator-Workflow
+### Moderator Workflow
 
-1. **Report eingeht** - User meldet Post über ⋮-Menü
-2. **Übernehmen** - Moderator weist sich Report zu
-3. **Review** - Post und KI-Analyse prüfen
-4. **Aktion** - OK / Löschen / User sperren / Abweisen
+1. **Report Received** - User reports post via ⋮ menu
+2. **Claim** - Moderator assigns report to themselves
+3. **Review** - Check post and AI analysis
+4. **Action** - Approve / Delete / Suspend User / Dismiss
 
-### Report-Kategorien
+### Report Categories
 
-- `hate_speech` - Hassrede
-- `harassment` - Belästigung
+- `hate_speech` - Hate speech
+- `harassment` - Harassment
 - `spam` - Spam
-- `inappropriate` - Unangemessener Inhalt
-- `other` - Sonstiges
+- `inappropriate` - Inappropriate content
+- `other` - Other
 
 ---
 
-## Sichtbarkeits-System
+## Visibility System
 
-Posts können mit verschiedenen Sichtbarkeitsstufen erstellt werden:
+Posts can be created with different visibility levels:
 
-| Level | Wer sieht's | Beziehungstypen |
-|-------|-------------|-----------------|
-| `public` | Alle | - |
-| `acquaintance` | Bekannte + höher | acquaintance, close_friend, family |
-| `close_friend` | Enge Freunde + höher | close_friend, family |
-| `family` | Nur Familie | family |
-| `private` | Nur Autor | - |
+| Level | Who Can See | Relationship Types |
+|-------|-------------|-------------------|
+| `public` | Everyone | - |
+| `acquaintance` | Acquaintances + above | acquaintance, close_friend, family |
+| `close_friend` | Close friends + above | close_friend, family |
+| `family` | Family only | family |
+| `private` | Author only | - |
 
-### Beziehungstypen für Freunde
+### Relationship Types for Friends
 
-Beim Hinzufügen von Freunden kann der Beziehungstyp gewählt werden:
-- **Familie** (`family`)
-- **Enge Freunde** (`close_friend`)
-- **Bekannte** (`acquaintance`)
+When adding friends, you can choose the relationship type:
+- **Family** (`family`)
+- **Close Friends** (`close_friend`)
+- **Acquaintances** (`acquaintance`)
 
 ---
 
 ## SafeSpace Moderation Pipeline
 
-### Ablauf
+### Flow
 
 ```
-User tippt Post
+User types post
        │
        ▼
 ┌──────────────────┐
-│ Live-Check       │ ← Debounced nach 1s Pause
+│ Live Check       │ ← Debounced after 1s pause
 │ (Frontend)       │
 └──────────────────┘
        │
@@ -306,12 +306,12 @@ User tippt Post
        │
        ▼
 ┌──────────────────┐     ┌──────────────────┐
-│ DeepSeek API     │────▶│ Warnung anzeigen │
-│ Analyse          │     │ + Vorschlag      │
+│ DeepSeek API     │────▶│ Show Warning     │
+│ Analysis         │     │ + Suggestion     │
 └──────────────────┘     └──────────────────┘
        │
        ▼
-User postet (oder korrigiert)
+User posts (or corrects)
        │
        ▼
 ┌──────────────────┐
@@ -332,77 +332,77 @@ User postet (oder korrigiert)
 └──────────────────┘
 ```
 
-### Hassrede-Kategorien
+### Hate Speech Categories
 
-| Kategorie | Beschreibung |
-|-----------|--------------|
-| 🔴 `racism` | Rassismus |
-| 🔴 `sexism` | Sexismus |
-| 🔴 `homophobia` | Homophobie |
-| 🔴 `religious_hate` | Religiöse Hetze |
-| 🔴 `xenophobia` | Fremdenfeindlichkeit |
-| 🔴 `threat` | Drohungen |
-| 🔴 `harassment` | Belästigung |
+| Category | Description |
+|----------|-------------|
+| 🔴 `racism` | Racism |
+| 🔴 `sexism` | Sexism |
+| 🔴 `homophobia` | Homophobia |
+| 🔴 `religious_hate` | Religious hatred |
+| 🔴 `xenophobia` | Xenophobia |
+| 🔴 `threat` | Threats |
+| 🔴 `harassment` | Harassment |
 
-### Automatische Aktionen
+### Automatic Actions
 
-| Score | Status | Aktion |
+| Score | Status | Action |
 |-------|--------|--------|
-| < 0.7 | ✅ approved | Post bleibt sichtbar |
-| 0.7 - 0.9 | ⚠️ flagged | Markiert für Review |
-| > 0.9 | 🚫 blocked | Automatisch blockiert |
+| < 0.7 | ✅ approved | Post remains visible |
+| 0.7 - 0.9 | ⚠️ flagged | Marked for review |
+| > 0.9 | 🚫 blocked | Automatically blocked |
 
 ---
 
 ## Known Bugs & Limitations
 
-### 🔴 Kritische Bugs
+### 🔴 Critical Bugs
 
-| Bug | Beschreibung | Workaround |
-|-----|--------------|------------|
-| **401 nach Registration** | Nach der Registration wird kein automatischer Login durchgeführt. User erhält 401 beim Feed-Zugriff. | Manuell unter `/login` einloggen ODER die aktualisierte `register.component.ts` mit Auto-Login verwenden. |
-| **Kafka Cluster ID Mismatch** | Nach Container-Neustarts können Kafka und Zookeeper unterschiedliche Cluster-IDs haben. | `docker volume rm socialnet_kafka_data && docker-compose up -d` |
+| Bug | Description | Workaround |
+|-----|-------------|------------|
+| **401 after Registration** | After registration, no automatic login is performed. User receives 401 when accessing feed. | Manually log in at `/login` OR use the updated `register.component.ts` with auto-login. |
+| **Kafka Cluster ID Mismatch** | After container restarts, Kafka and Zookeeper may have different cluster IDs. | `docker volume rm socialnet_kafka_data && docker-compose up -d` |
 
-### 🟡 Bekannte Einschränkungen
+### 🟡 Known Limitations
 
-| Einschränkung | Beschreibung | Status |
-|---------------|--------------|--------|
-| **WebSocket HMR Fehler** | Development-Server zeigt WebSocket-Fehler für Hot Module Replacement. | Kein funktionaler Bug, nur Dev-Mode betroffen. |
-| **Proxy-Konfiguration** | Frontend-Proxy muss auf `http://backend:8000` (nicht `localhost`) zeigen. | In `proxy.conf.json` prüfen. |
-| **SQLite Skalierung** | Bei sehr vielen Freunden (>1000) kann Feed-Aggregation langsam werden. | Redis-Caching ist aktiv, aber für große Netzwerke evtl. Pagination nötig. |
-| **DeepSeek Rate Limits** | API hat Rate Limits, bei hohem Traffic können Moderations-Checks verzögert werden. | Queue-basierte Verarbeitung puffert automatisch. |
+| Limitation | Description | Status |
+|------------|-------------|--------|
+| **WebSocket HMR Error** | Development server shows WebSocket errors for Hot Module Replacement. | Not a functional bug, only affects dev mode. |
+| **Proxy Configuration** | Frontend proxy must point to `http://backend:8000` (not `localhost`). | Check in `proxy.conf.json`. |
+| **SQLite Scaling** | With many friends (>1000), feed aggregation may become slow. | Redis caching is active, but pagination may be needed for large networks. |
+| **DeepSeek Rate Limits** | API has rate limits; moderation checks may be delayed under high traffic. | Queue-based processing buffers automatically. |
 
-### 🟢 Behobene Bugs (Historie)
+### 🟢 Fixed Bugs (History)
 
-| Bug | Lösung |
-|-----|--------|
-| bcrypt/passlib Crash | Backend Dockerfile verwendet jetzt `bcrypt==4.0.1` mit korrektem Build. |
-| Feed Cache nicht invalidiert | Nach Post-Erstellung wird jetzt `FeedService.invalidate_feed()` aufgerufen. |
-| CORS-Fehler | Backend hat vollständige CORS-Middleware mit korrekten Origins. |
+| Bug | Solution |
+|-----|----------|
+| bcrypt/passlib Crash | Backend Dockerfile now uses `bcrypt==4.0.1` with correct build. |
+| Feed Cache Not Invalidated | `FeedService.invalidate_feed()` is now called after post creation. |
+| CORS Errors | Backend has complete CORS middleware with correct origins. |
 
 ---
 
-## Entwicklung
+## Development
 
-### Projektstruktur
+### Project Structure
 
 ```
 safespace/
-├── docker-compose.yml          # Service-Orchestrierung
-├── .env.example                # Umgebungsvariablen-Template
+├── docker-compose.yml          # Service orchestration
+├── .env.example                # Environment variables template
 │
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── app/
 │       ├── main.py             # FastAPI App
-│       ├── api/                # API Router
+│       ├── api/                # API Routers
 │       │   ├── auth.py
 │       │   ├── feed.py
 │       │   ├── friends.py
 │       │   ├── media.py
 │       │   └── admin.py
-│       ├── db/                 # Datenbank-Handler
+│       ├── db/                 # Database handlers
 │       │   ├── postgres.py
 │       │   ├── sqlite.py
 │       │   └── moderation.py
@@ -411,7 +411,7 @@ safespace/
 │       ├── services/
 │       │   ├── feed_service.py
 │       │   └── auth_service.py
-│       ├── safespace/          # KI-Moderation
+│       ├── safespace/          # AI Moderation
 │       │   ├── config.py
 │       │   ├── models.py
 │       │   ├── kafka_service.py
@@ -442,64 +442,64 @@ safespace/
             └── auth.interceptor.ts
 ```
 
-### Lokale Entwicklung
+### Local Development
 
 ```bash
-# Backend separat starten (mit Hot-Reload)
+# Start backend separately (with hot-reload)
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-# Frontend separat starten
+# Start frontend separately
 cd frontend
 npm install
 ng serve --proxy-config proxy.conf.json
 ```
 
-### Tests ausführen
+### Run Tests
 
 ```bash
-# Backend Tests
+# Backend tests
 docker exec -it socialnet-backend pytest
 
-# Auth-Flow testen
+# Test auth flow
 ./test-auth-flow-detailed.sh
 ```
 
 ---
 
-## Lizenz
+## License
 
-Dieses Projekt ist lizenziert unter der **GNU Affero General Public License v3.0** (AGPL-3.0).
+This project is licensed under the **GNU Affero General Public License v3.0** (AGPL-3.0).
 
-Das bedeutet:
-- ✅ Du darfst den Code verwenden, modifizieren und verteilen
-- ✅ Du darfst den Code kommerziell nutzen
-- ⚠️ Modifikationen müssen unter AGPL veröffentlicht werden
-- ⚠️ Bei Bereitstellung als Webservice muss Quellcode verfügbar sein
+This means:
+- ✅ You may use, modify, and distribute the code
+- ✅ You may use the code commercially
+- ⚠️ Modifications must be published under AGPL
+- ⚠️ When providing as a web service, source code must be available
 
-Siehe [LICENSE](LICENSE) für den vollständigen Lizenztext.
+See [LICENSE](LICENSE) for the full license text.
 
 ---
 
 ## Contributing
 
-Pull Requests sind willkommen! Bitte:
+Pull requests are welcome! Please:
 
-1. Fork das Repository
-2. Erstelle einen Feature-Branch (`git checkout -b feature/AmazingFeature`)
-3. Committe deine Änderungen (`git commit -m 'Add AmazingFeature'`)
-4. Push zum Branch (`git push origin feature/AmazingFeature`)
-5. Öffne einen Pull Request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## Kontakt & Support
+## Contact & Support
 
-Bei Fragen oder Problemen:
-- GitHub Issues öffnen
-- Dokumentation in `/docs` prüfen
-- API Docs unter http://localhost:8000/docs
+For questions or issues:
+- Open GitHub Issues
+- Check documentation in `/docs`
+- API Docs at http://localhost:8000/docs
 
 ---
 
