@@ -6,9 +6,11 @@ Diese Anleitung erklärt, wie Sie das SafeSpace-Projekt **ohne Docker** auf Ihre
 
 **Symptom:** Nach dem Erstellen eines Admins schlägt der Login mit 401 Unauthorized fehl.
 
-**Ursache:** Die Standard-Proxy-Konfiguration (`frontend/proxy.conf.json`) zeigt auf `http://socialnet-backend:8000`, einen Docker-Hostnamen. Wenn das Backend lokal läuft, muss der Proxy auf `http://localhost:8000` zeigen.
+**Ursache:** Die Standard-Proxy-Konfiguration (`frontend/proxy.conf.json`) zeigt auf `http://backend:8000`, einen Docker-Service-Namen. Wenn das Backend lokal läuft, muss der Proxy auf `http://localhost:8000` zeigen.
 
-**Lösung:** Die Proxy-Konfiguration wurde bereits auf `localhost` geändert. Siehe unten für Details.
+**Lösung:** Für lokale Entwicklung muss die `proxy.conf.json` auf `localhost` geändert werden. Siehe unten für Details.
+
+> **Hinweis:** Wenn Sie mit Docker entwickeln, lesen Sie stattdessen [DOCKER-ENTWICKLUNG.md](DOCKER-ENTWICKLUNG.md).
 
 ---
 
@@ -158,11 +160,13 @@ cd frontend
 npm install
 ```
 
-### 2. Proxy-Konfiguration prüfen
+### 2. Proxy-Konfiguration ändern
 
-Die Datei `frontend/proxy.conf.json` sollte so aussehen:
+**Wichtig:** Die Standard-`proxy.conf.json` ist für Docker konfiguriert. Für lokale Entwicklung müssen Sie sie ändern:
 
-```json
+```bash
+# Erstellen Sie eine Kopie für lokale Entwicklung:
+cat > frontend/proxy.conf.local.json <<EOF
 {
   "/api": {
     "target": "http://localhost:8000",
@@ -171,13 +175,27 @@ Die Datei `frontend/proxy.conf.json` sollte so aussehen:
     "logLevel": "debug"
   }
 }
+EOF
 ```
 
-**Für Docker-Entwicklung** verwenden Sie `proxy.conf.docker.json`:
+**Oder ändern Sie direkt `frontend/proxy.conf.json`:**
+
 ```json
 {
   "/api": {
-    "target": "http://socialnet-backend:8000",
+    "target": "http://localhost:8000",  // ← Ändern Sie "backend" zu "localhost"
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
+```
+
+**Für Docker-Entwicklung** sollte es so aussehen (Standard):
+```json
+{
+  "/api": {
+    "target": "http://backend:8000",  // ← Docker-Service-Name
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
@@ -215,9 +233,9 @@ ng serve --proxy-config proxy.conf.json
 ### Lokale Entwicklung (Backend auf localhost:8000)
 
 ```bash
-# Frontend-Proxy auf localhost zeigen:
-cp frontend/proxy.conf.json.bak frontend/proxy.conf.json  # Falls Backup existiert
-# ODER manuell editieren: "target": "http://localhost:8000"
+# Frontend-Proxy auf localhost ändern:
+# Editiere frontend/proxy.conf.json und ändere:
+# "target": "http://backend:8000" → "http://localhost:8000"
 
 # Backend lokal starten:
 cd backend
@@ -232,13 +250,9 @@ npm start
 ### Docker-Entwicklung (alles in Containern)
 
 ```bash
-# Frontend-Proxy auf Docker-Hostname zeigen:
+# Frontend-Proxy auf Docker-Service-Namen zurücksetzen:
 # Editiere frontend/proxy.conf.json:
-# "target": "http://socialnet-backend:8000"
-
-# ODER verwende die Docker-Proxy-Konfiguration:
-# In docker-compose.yml für das Frontend:
-#   command: ng serve --host 0.0.0.0 --proxy-config proxy.conf.docker.json
+# "target": "http://localhost:8000" → "http://backend:8000"
 
 # Alle Services starten:
 docker-compose up -d
