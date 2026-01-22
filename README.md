@@ -29,9 +29,14 @@ SafeSpace is a privacy-focused social network with AI-powered content moderation
 - **User Registration & JWT Authentication** - Secure login with token-based auth
 - **Feed with Auto-Refresh** - Posts from friends are updated every 30 seconds
 - **Create, Edit, Delete Posts** - Full CRUD operations
-- **Comments & Likes** - Interact with posts
+- **Comments & Likes** - Interact with posts and like individual comments
 - **Media Upload** - Images and videos with automatic thumbnail generation
+- **Profile Pictures** - Upload and display custom profile pictures
+- **User Search** - Real-time search for users in navbar with instant results
+- **User Profiles** - View profiles with bio, name, role, and friend request option
 - **Friendship System** - With relationship types (Family, Close Friends, Acquaintances)
+- **Hashtag System** - Automatic extraction, trending hashtags, and search by hashtag
+- **OpenSearch Integration** - Full-text search for public posts with hashtag aggregations
 
 ### Moderation & Safety
 - **AI-Powered Hate Speech Detection** - Automatic analysis via DeepSeek
@@ -61,32 +66,33 @@ SafeSpace is a privacy-focused social network with AI-powered content moderation
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         FastAPI Backend                                  │
-├─────────────┬─────────────┬─────────────┬─────────────┬────────────────┤
-│  Auth API   │  Feed API   │ Friends API │  Media API  │ SafeSpace API  │
-└─────────────┴─────────────┴─────────────┴─────────────┴────────────────┘
-      │             │              │             │              │
-      ▼             ▼              ▼             ▼              ▼
-┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐
-│PostgreSQL│  │  Redis   │  │  SQLite  │  │  MinIO   │  │    Kafka     │
-│ (Users)  │  │ (Cache)  │  │ (Posts)  │  │ (Media)  │  │   (Queue)    │
-└──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────────┘
-                                                               │
-                                                               ▼
-                                                    ┌──────────────────┐
-                                                    │ SafeSpace Worker │
-                                                    │    (DeepSeek)    │
-                                                    └──────────────────┘
+├───────────┬───────────┬────────────┬───────────┬─────────────┬──────────┤
+│ Auth API  │ Feed API  │Friends API │ Media API │SafeSpace API│Users/Tags│
+└───────────┴───────────┴────────────┴───────────┴─────────────┴──────────┘
+      │          │            │            │            │            │
+      ▼          ▼            ▼            ▼            ▼            ▼
+┌──────────┐┌─────────┐┌──────────┐┌──────────┐┌──────────┐┌────────────┐
+│PostgreSQL││  Redis  ││  SQLite  ││  MinIO   ││  Kafka   ││ OpenSearch │
+│ (Users)  ││ (Cache) ││ (Posts)  ││ (Media)  ││ (Queue)  ││  (Search)  │
+└──────────┘└─────────┘└──────────┘└──────────┘└──────────┘└────────────┘
+                                                      │
+                                                      ▼
+                                           ┌──────────────────┐
+                                           │ SafeSpace Worker │
+                                           │    (DeepSeek)    │
+                                           └──────────────────┘
 ```
 
 ### Database Structure
 
 | Storage | Usage |
 |---------|-------|
-| **PostgreSQL** | Users, Friendships, Reports, Moderation Log, Roles |
-| **SQLite (per User)** | Posts of the respective user (`/data/users/{uid}/posts.db`) |
+| **PostgreSQL** | Users (with profile_picture, first_name, last_name), Friendships, Reports, Moderation Log, Roles |
+| **SQLite (per User)** | Posts of the respective user with comment likes (`/data/users/{uid}/posts.db`) |
 | **Redis** | Feed cache with 30s TTL |
-| **MinIO** | Media files and SafeSpace reports (JSON) |
+| **MinIO** | Media files (images/videos) and SafeSpace reports (JSON) |
 | **Kafka** | Message queue for asynchronous moderation |
+| **OpenSearch** | Full-text search index for public posts with hashtag extraction and aggregation |
 
 ---
 
@@ -94,9 +100,10 @@ SafeSpace is a privacy-focused social network with AI-powered content moderation
 
 | Component | Technology |
 |-----------|------------|
-| **Backend** | FastAPI, Python 3.11+, psycopg3, aiosqlite, aiokafka |
+| **Backend** | FastAPI, Python 3.11+, psycopg3, aiosqlite, aiokafka, opensearch-py |
 | **Frontend** | Angular 18, Standalone Components, Signals, RxJS |
 | **Databases** | PostgreSQL 16, SQLite, Redis 7 |
+| **Search** | OpenSearch 2.11 |
 | **Storage** | MinIO (S3-compatible) |
 | **Queue** | Apache Kafka + Zookeeper |
 | **AI** | DeepSeek API |
@@ -137,6 +144,7 @@ docker-compose logs -f backend
 | Backend API | http://localhost:8000 |
 | API Docs (Swagger) | http://localhost:8000/docs |
 | Admin Dashboard | http://localhost:4200/admin |
+| OpenSearch | http://localhost:9200 |
 | Kafka UI | http://localhost:8080 |
 | MinIO Console | http://localhost:9001 |
 
@@ -211,10 +219,29 @@ backend:
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/feed` | GET | Load feed (cached) |
-| `/api/posts` | POST | Create new post |
+| `/api/posts` | POST | Create new post (auto-indexes in OpenSearch if public) |
 | `/api/posts/{id}` | DELETE | Delete own post |
 | `/api/posts/{id}/like` | POST | Like a post |
 | `/api/posts/{id}/comments` | POST | Add comment |
+| `/api/posts/{id}/comments` | GET | Get comments for a post |
+| `/api/posts/{author_uid}/{post_id}/comments/{comment_id}/like` | POST | Like a comment |
+| `/api/posts/{author_uid}/{post_id}/comments/{comment_id}/unlike` | DELETE | Unlike a comment |
+
+### Users & Profiles
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/users/search?q={query}` | GET | Search for users by username (min 2 chars) |
+| `/api/users/{uid}` | GET | Get user profile (username, bio, role, name, profile picture) |
+| `/api/users/me` | PUT | Update own profile (email, bio, first_name, last_name, password) |
+| `/api/users/me/profile-picture` | POST | Upload profile picture (max 10MB, images only) |
+
+### Hashtags & Search
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/hashtags/trending` | GET | Get top 20 trending hashtags from public posts |
+| `/api/hashtags/search/{hashtag}` | GET | Search public posts by hashtag (top 50 results) |
 
 ### SafeSpace Moderation
 
@@ -282,6 +309,57 @@ When adding friends, you can choose the relationship type:
 - **Family** (`family`)
 - **Close Friends** (`close_friend`)
 - **Acquaintances** (`acquaintance`)
+
+---
+
+## OpenSearch Integration & Hashtags
+
+### How It Works
+
+**Automatic Indexing:**
+- When a user creates a **public** post, it's automatically indexed in OpenSearch
+- Hashtags are extracted using regex pattern `#(\w+)`
+- Post metadata includes: author username, first_name, last_name, content, hashtags, timestamp
+- Each indexed document gets a unique `opensearch_doc_id` stored in SQLite
+
+**Visibility Changes:**
+- Changing post from public → private: removes from OpenSearch index
+- Changing post from private → public: adds to OpenSearch index
+
+### Hashtag Features
+
+**Trending Hashtags:**
+- Aggregates top 20 most-used hashtags across all public posts
+- Real-time counts from OpenSearch aggregations
+- Accessed via `/api/hashtags/trending`
+
+**Search by Hashtag:**
+- Search public posts containing a specific hashtag
+- Returns top 50 most recent matches
+- Full post details with author information
+- Accessed via `/api/hashtags/search/{hashtag}`
+
+**User Search:**
+- Real-time user search in navbar (min 2 characters)
+- Search by username with ILIKE pattern matching
+- Click result to view profile page
+- Shows username, bio, and avatar
+
+### OpenSearch Configuration
+
+```yaml
+# docker-compose.yml
+opensearch:
+  image: opensearchproject/opensearch:2.11.1
+  environment:
+    - discovery.type=single-node
+    - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+    - plugins.security.disabled=true  # Development only!
+  ports:
+    - "9200:9200"
+```
+
+**Production Note:** For production, enable security plugin and configure proper authentication!
 
 ---
 
@@ -408,16 +486,20 @@ safespace/
 │       │   ├── feed.py
 │       │   ├── friends.py
 │       │   ├── media.py
-│       │   └── admin.py
+│       │   ├── admin.py
+│       │   ├── users.py        # User search, profiles, settings
+│       │   └── hashtags.py     # Hashtag trending & search
 │       ├── db/                 # Database handlers
 │       │   ├── postgres.py
-│       │   ├── sqlite.py
+│       │   ├── sqlite_posts.py # Posts + comment likes
 │       │   └── moderation.py
 │       ├── cache/
 │       │   └── redis_cache.py
 │       ├── services/
 │       │   ├── feed_service.py
-│       │   └── auth_service.py
+│       │   ├── auth_service.py
+│       │   ├── media_service.py
+│       │   └── opensearch_service.py  # OpenSearch integration
 │       ├── safespace/          # AI Moderation
 │       │   ├── config.py
 │       │   ├── models.py
@@ -436,12 +518,17 @@ safespace/
         ├── services/
         │   ├── auth.service.ts
         │   ├── feed.service.ts
+        │   ├── user.service.ts      # User search & profiles
+        │   ├── hashtag.service.ts   # Hashtag trending & search
         │   └── admin.service.ts
         ├── components/
         │   ├── feed/
         │   ├── login/
         │   ├── register/
         │   ├── create-post/
+        │   ├── post-card/           # Posts with comments & likes
+        │   ├── settings/            # Profile settings + picture upload
+        │   ├── user-profile/        # View user profiles
         │   └── admin/
         ├── guards/
         │   └── auth.guard.ts
