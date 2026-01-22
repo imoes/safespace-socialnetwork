@@ -88,20 +88,28 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     )
 
     try:
+        # Disable strict validation of subject type to handle both old (int) and new (str) tokens
         payload = jwt.decode(
             token,
             settings.secret_key,
-            algorithms=[settings.algorithm]
+            algorithms=[settings.algorithm],
+            options={"verify_sub": False}
         )
-        uid_str: str = payload.get("sub")
-        print(f"[AUTH] Decoded token, uid_str: {uid_str}")
- 
-        if uid_str is None:
-            print("[AUTH] ERROR: uid is None in token payload")
+        sub = payload.get("sub")
+        print(f"[AUTH] Decoded token, sub: {sub} (type: {type(sub).__name__})")
+
+        if sub is None:
+            print("[AUTH] ERROR: sub is None in token payload")
             raise credentials_exception
- 
-        # Convert string back to int
-        uid: int = int(uid_str)
+
+        # Handle both string and integer sub claims (for backwards compatibility)
+        if isinstance(sub, str):
+            uid: int = int(sub)
+        elif isinstance(sub, int):
+            uid: int = sub
+        else:
+            print(f"[AUTH] ERROR: Invalid sub type: {type(sub)}")
+            raise credentials_exception
 
         token_data = TokenData(uid=uid)
 
