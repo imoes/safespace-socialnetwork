@@ -217,15 +217,44 @@ async def get_comments(
     current_user: dict = Depends(get_current_user)
 ):
     """Lädt Kommentare eines Posts"""
-    
+
     comments = await PostService.get_comments(author_uid, post_id)
-    
+
     # Usernamen laden
     commenter_uids = list(set(c["user_uid"] for c in comments))
     username_map = await get_username_map(commenter_uids)
-    
-    # Usernamen hinzufügen
+
+    # Usernamen hinzufügen und prüfen ob User geliked hat
     for comment in comments:
         comment["author_username"] = username_map.get(comment["user_uid"], "Unknown")
-    
+        comment["is_liked_by_user"] = await PostService.is_comment_liked_by_user(
+            author_uid, comment["comment_id"], current_user["uid"]
+        )
+
     return {"comments": comments}
+
+
+@router.post("/{author_uid}/{post_id}/comment/{comment_id}/like")
+async def like_comment(
+    author_uid: int,
+    post_id: int,
+    comment_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Liked einen Kommentar"""
+
+    success = await PostService.like_comment(author_uid, comment_id, current_user["uid"])
+    return {"liked": success}
+
+
+@router.delete("/{author_uid}/{post_id}/comment/{comment_id}/like")
+async def unlike_comment(
+    author_uid: int,
+    post_id: int,
+    comment_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Entfernt Like von einem Kommentar"""
+
+    success = await PostService.unlike_comment(author_uid, comment_id, current_user["uid"])
+    return {"unliked": success}

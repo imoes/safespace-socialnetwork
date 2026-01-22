@@ -12,6 +12,7 @@ import { AdminDashboardComponent } from './components/admin/admin-dashboard.comp
 import { SettingsComponent } from './components/settings/settings.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { FriendsComponent } from './components/friends/friends.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'users', component: UserManagementComponent, canActivate: [authGuard] },
   { path: 'friends', component: FriendsComponent, canActivate: [authGuard] },
+  { path: 'profile/:uid', component: UserProfileComponent, canActivate: [authGuard] },
   { path: '', component: FeedComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];

@@ -292,3 +292,21 @@ class PostService:
         """Lädt Kommentare eines Posts"""
         posts_db = UserPostsDB(author_uid)
         return await posts_db.get_comments(post_id)
+
+    @classmethod
+    async def like_comment(cls, author_uid: int, comment_id: int, user_uid: int) -> bool:
+        """Liked einen Kommentar"""
+        posts_db = UserPostsDB(author_uid)
+        return await posts_db.like_comment(comment_id, user_uid)
+
+    @classmethod
+    async def unlike_comment(cls, author_uid: int, comment_id: int, user_uid: int) -> bool:
+        """Entfernt Like von einem Kommentar"""
+        posts_db = UserPostsDB(author_uid)
+        return await posts_db.unlike_comment(comment_id, user_uid)
+
+    @classmethod
+    async def is_comment_liked_by_user(cls, author_uid: int, comment_id: int, user_uid: int) -> bool:
+        """Prüft ob User den Kommentar geliked hat"""
+        posts_db = UserPostsDB(author_uid)
+        return await posts_db.is_comment_liked_by_user(comment_id, user_uid)

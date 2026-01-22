@@ -22,6 +22,36 @@ import { AuthService } from '../../services/auth.service';
           <div class="alert alert-error">{{ errorMessage() }}</div>
         }
 
+        <!-- Profilbild -->
+        <div class="profile-picture-section">
+          <div class="profile-picture-preview">
+            @if (authService.currentUser()?.profile_picture) {
+              <img [src]="authService.currentUser()?.profile_picture" alt="Profilbild" />
+            } @else {
+              <div class="profile-picture-placeholder">
+                {{ authService.currentUser()?.username?.charAt(0).toUpperCase() }}
+              </div>
+            }
+          </div>
+          <div class="profile-picture-actions">
+            <label class="btn btn-upload" for="profilePictureInput">
+              📷 Profilbild hochladen
+            </label>
+            <input
+              type="file"
+              id="profilePictureInput"
+              accept="image/*"
+              (change)="onProfilePictureSelected($event)"
+              style="display: none;"
+            />
+            @if (uploadingProfilePicture()) {
+              <div class="upload-progress">Wird hochgeladen...</div>
+            }
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
         <form (ngSubmit)="saveSettings()">
           <!-- Benutzername (nicht änderbar) -->
           <div class="form-group">
@@ -33,6 +63,32 @@ import { AuthService } from '../../services/auth.service';
               class="form-control"
             />
             <small class="form-text">Der Benutzername kann nicht geändert werden</small>
+          </div>
+
+          <!-- Vorname -->
+          <div class="form-group">
+            <label for="firstName">Vorname</label>
+            <input
+              id="firstName"
+              type="text"
+              [(ngModel)]="firstName"
+              name="firstName"
+              class="form-control"
+              placeholder="Dein Vorname"
+            />
+          </div>
+
+          <!-- Nachname -->
+          <div class="form-group">
+            <label for="lastName">Nachname</label>
+            <input
+              id="lastName"
+              type="text"
+              [(ngModel)]="lastName"
+              name="lastName"
+              class="form-control"
+              placeholder="Dein Nachname"
+            />
           </div>
 
           <!-- E-Mail -->
@@ -159,6 +215,63 @@ import { AuthService } from '../../services/auth.service';
       border: 1px solid #f5c6cb;
     }
 
+    .profile-picture-section {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .profile-picture-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .profile-picture-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-picture-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1877f2, #42b72a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .profile-picture-actions {
+      flex: 1;
+    }
+
+    .btn-upload {
+      display: inline-block;
+      padding: 10px 24px;
+      background: #1877f2;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-upload:hover {
+      background: #155db2;
+    }
+
+    .upload-progress {
+      margin-top: 8px;
+      color: #1877f2;
+      font-size: 14px;
+    }
+
     .form-group {
       margin-bottom: 20px;
     }
@@ -255,6 +368,8 @@ export class SettingsComponent implements OnInit {
 
   email = '';
   bio = '';
+  firstName = '';
+  lastName = '';
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -262,12 +377,15 @@ export class SettingsComponent implements OnInit {
   isSaving = signal(false);
   successMessage = signal('');
   errorMessage = signal('');
+  uploadingProfilePicture = signal(false);
 
   ngOnInit(): void {
     const user = this.authService.currentUser();
     if (user) {
       this.email = user.email;
       this.bio = user.bio || '';
+      this.firstName = user.first_name || '';
+      this.lastName = user.last_name || '';
     }
   }
 
@@ -300,7 +418,9 @@ export class SettingsComponent implements OnInit {
 
     const updateData: any = {
       email: this.email,
-      bio: this.bio
+      bio: this.bio,
+      first_name: this.firstName,
+      last_name: this.lastName
     };
 
     if (this.currentPassword && this.newPassword) {
@@ -334,5 +454,49 @@ export class SettingsComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  onProfilePictureSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      this.errorMessage.set('Das Bild ist zu groß. Maximal 10MB erlaubt.');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      this.errorMessage.set('Nur Bilddateien sind erlaubt.');
+      return;
+    }
+
+    this.uploadingProfilePicture.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post('/api/users/me/profile-picture', formData).subscribe({
+      next: (response: any) => {
+        this.uploadingProfilePicture.set(false);
+        this.successMessage.set('Profilbild erfolgreich hochgeladen!');
+
+        // Reload current user to update profile picture
+        this.authService.loadCurrentUser();
+
+        // Reset file input
+        input.value = '';
+      },
+      error: (error) => {
+        this.uploadingProfilePicture.set(false);
+        this.errorMessage.set(error.error?.detail || 'Fehler beim Hochladen des Profilbilds');
+        input.value = '';
+      }
+    });
   }
 }
