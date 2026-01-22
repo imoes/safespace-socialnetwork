@@ -8,6 +8,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  // Liste der öffentlichen Endpoints, die KEINEN Token benötigen
+  const publicEndpoints = ['/api/auth/login', '/api/auth/register'];
+
+  // Prüfen ob es ein öffentlicher Endpoint ist
+  const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
+
+  if (isPublicEndpoint) {
+    console.log('🔓 [Interceptor] Public endpoint detected, skipping token:', req.url);
+    return next(req);
+  }
+
   // Token aus Service holen
   const token = authService.getToken();
 
