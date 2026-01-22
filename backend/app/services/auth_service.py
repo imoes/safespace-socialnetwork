@@ -123,7 +123,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         raise credentials_exception
     
     # User als online markieren
-    await OnlineStatus.mark_online(user["uid"])
+    await OnlineStatus.set_online(user["uid"])
     
     return user
 
