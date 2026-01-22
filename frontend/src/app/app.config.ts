@@ -1,0 +1,27 @@
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, Routes } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+
+import { authInterceptor } from './interceptors/auth.interceptor';
+import { authGuard } from './guards/auth.guard';
+
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { FeedComponent } from './components/feed/feed.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
+
+export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard] },
+  { path: '', component: FeedComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: '' }
+];
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor]))
+  ]
+};

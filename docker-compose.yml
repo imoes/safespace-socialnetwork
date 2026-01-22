@@ -1,0 +1,188 @@
+services:
+  # PostgreSQL Datenbank
+  postgres:
+    image: postgres:16-alpine
+    container_name: socialnet-postgres
+    environment:
+      POSTGRES_DB: socialnet
+      POSTGRES_USER: socialnet
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U socialnet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: socialnet-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Zookeeper (für Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: socialnet-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - ${PWD}/data/zookeeper:/var/lib/zookeeper/data
+    ports:
+      - "2181:2181"
+
+  # Kafka Message Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: socialnet-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - ${PWD}/data/kafka:/var/lib/kafka/data
+    ports:
+      - "29092:29092"
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: socialnet-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"   # API
+      - "9001:9001"   # Console
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: socialnet-backend
+    environment:
+      # PostgreSQL
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: socialnet
+      POSTGRES_USER: socialnet
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Auth
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      USER_DATA_BASE: /data/users
+      # SafeSpace
+      SAFESPACE_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SAFESPACE_MINIO_ENDPOINT: minio:9000
+      SAFESPACE_MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      SAFESPACE_MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      SAFESPACE_DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      SAFESPACE_MODERATION_ENABLED: "true"
+    volumes:
+      - user_data:/data/users
+      - ./backend/app:/app/app:ro
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SafeSpace Moderation Worker
+  safespace-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: socialnet-safespace-worker
+    command: python -m app.safespace.worker
+    environment:
+      SAFESPACE_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SAFESPACE_MINIO_ENDPOINT: minio:9000
+      SAFESPACE_MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      SAFESPACE_MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      SAFESPACE_DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    depends_on:
+      kafka:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Angular Frontend (dev)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: socialnet-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+  # Kafka UI (optional, für Debugging)
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: socialnet-kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+
+volumes:
+  postgres_data:
+  redis_data:
+  kafka_data:
+  zookeeper_data:
+  minio_data:
+  user_data:

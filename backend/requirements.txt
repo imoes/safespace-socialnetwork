@@ -1,0 +1,33 @@
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Datenbanken
+psycopg[binary,pool]==3.1.17
+aiosqlite==0.19.0
+
+# Caching
+redis==5.0.1
+
+# Auth
+bcrypt==4.0.1
+passlib==1.7.4
+python-jose[cryptography]==3.3.0
+
+# Utilities
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+aiofiles==23.2.1
+Pillow==10.2.0
+
+# SafeSpace - Kafka
+aiokafka==0.10.0
+
+# SafeSpace - MinIO
+minio==7.2.3
+
+# SafeSpace - DeepSeek API
+httpx==0.26.0
+email-validator==2.1.0.post1
