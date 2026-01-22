@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from typing import Optional
 
-from app.models.schemas import PostCreate, PostResponse, FeedResponse
+from app.models.schemas import PostCreate, PostResponse, FeedResponse, PostVisibilityUpdate
 from app.services.auth_service import get_current_user
 from app.services.feed_service import FeedService, PostService
 from app.services.media_service import MediaService
@@ -110,16 +110,58 @@ async def delete_post(
     current_user: dict = Depends(get_current_user)
 ):
     """Löscht einen eigenen Post"""
-    
+
     success = await PostService.delete_post(current_user["uid"], post_id)
-    
+
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Post not found"
         )
-    
+
     return {"message": "Post deleted"}
+
+
+@router.patch("/{post_id}/visibility", response_model=PostResponse)
+async def update_post_visibility(
+    post_id: int,
+    visibility_update: PostVisibilityUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert die Sichtbarkeit eines eigenen Posts"""
+
+    updated_post = await PostService.update_visibility(
+        uid=current_user["uid"],
+        post_id=post_id,
+        visibility=visibility_update.visibility
+    )
+
+    if not updated_post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
+
+    # Post für Response anreichern
+    posts_db = UserPostsDB(current_user["uid"])
+    likes_count = await posts_db.get_likes_count(post_id)
+    comments_count = await posts_db.get_comments_count(post_id)
+
+    media_urls = []
+    if updated_post.get("media_paths"):
+        media_urls = [f"/api/media/{current_user['uid']}/{p}" for p in updated_post["media_paths"]]
+
+    return PostResponse(
+        post_id=updated_post["post_id"],
+        author_uid=current_user["uid"],
+        author_username=current_user["username"],
+        content=updated_post["content"],
+        media_urls=media_urls,
+        visibility=updated_post["visibility"],
+        created_at=updated_post["created_at"],
+        likes_count=likes_count,
+        comments_count=comments_count
+    )
 
 
 @router.post("/{author_uid}/{post_id}/like")

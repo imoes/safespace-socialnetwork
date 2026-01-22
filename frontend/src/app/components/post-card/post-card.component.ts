@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Post } from '../../services/feed.service';
+import { Post, FeedService } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 
 @Component({
@@ -21,6 +21,7 @@ import { ReportService } from '../../services/report.service';
           @if (showMenu) {
             <div class="menu-dropdown">
               @if (post.author_uid === currentUid) {
+                <button (click)="openVisibilityModal(); showMenu = false">👁️ Sichtbarkeit ändern</button>
                 <button (click)="onDelete(); showMenu = false">🗑️ Löschen</button>
               } @else {
                 <button (click)="showReportModal = true; showMenu = false">🚨 Melden</button>
@@ -66,6 +67,26 @@ import { ReportService } from '../../services/report.service';
           </div>
         </div>
       }
+
+      @if (showVisibilityModal) {
+        <div class="modal-overlay" (click)="showVisibilityModal = false">
+          <div class="visibility-modal" (click)="$event.stopPropagation()">
+            <h3>👁️ Sichtbarkeit ändern</h3>
+            <p class="current-visibility">Aktuelle Sichtbarkeit: <strong>{{ getVisibilityLabel() }}</strong></p>
+            <select [(ngModel)]="newVisibility">
+              <option value="public">🌍 Öffentlich</option>
+              <option value="friends">👥 Alle Freunde</option>
+              <option value="close_friends">💚 Enge Freunde</option>
+              <option value="family">👨‍👩‍👧‍👦 Familie</option>
+              <option value="private">🔒 Nur ich</option>
+            </select>
+            <div class="modal-actions">
+              <button class="btn-cancel" (click)="showVisibilityModal = false">Abbrechen</button>
+              <button class="btn-submit" (click)="updateVisibility()">Speichern</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -90,12 +111,13 @@ import { ReportService } from '../../services/report.service';
     .visibility { margin-left: auto; font-size: 11px; color: #999; }
     
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .report-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
-    .report-modal h3 { margin: 0 0 16px; }
-    .report-modal select, .report-modal textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-family: inherit; box-sizing: border-box; }
+    .report-modal, .visibility-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
+    .report-modal h3, .visibility-modal h3 { margin: 0 0 16px; }
+    .report-modal select, .report-modal textarea, .visibility-modal select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-family: inherit; box-sizing: border-box; }
+    .current-visibility { font-size: 14px; color: #65676b; margin-bottom: 12px; }
     .modal-actions { display: flex; gap: 12px; }
     .btn-cancel { flex: 1; padding: 12px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; }
-    .btn-submit { flex: 1; padding: 12px; border: none; background: #f44336; color: white; border-radius: 8px; cursor: pointer; }
+    .btn-submit { flex: 1; padding: 12px; border: none; background: #1877f2; color: white; border-radius: 8px; cursor: pointer; }
     .btn-submit:disabled { background: #ccc; }
   `]
 })
@@ -107,12 +129,15 @@ export class PostCardComponent {
   @Output() delete = new EventEmitter<Post>();
 
   private reportService = inject(ReportService);
+  private feedService = inject(FeedService);
 
   isLiked = false;
   showMenu = false;
   showReportModal = false;
+  showVisibilityModal = false;
   reportCategory = 'hate_speech';
   reportReason = '';
+  newVisibility = '';
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -141,16 +166,39 @@ export class PostCardComponent {
     });
   }
 
+  openVisibilityModal(): void {
+    this.newVisibility = this.post.visibility;
+    this.showVisibilityModal = true;
+  }
+
+  updateVisibility(): void {
+    if (this.newVisibility && this.newVisibility !== this.post.visibility) {
+      this.feedService.updatePostVisibility(this.post.post_id, this.newVisibility).subscribe({
+        next: () => {
+          this.showVisibilityModal = false;
+          alert('Sichtbarkeit erfolgreich geändert!');
+        },
+        error: () => {
+          alert('Fehler beim Ändern der Sichtbarkeit');
+        }
+      });
+    } else {
+      this.showVisibilityModal = false;
+    }
+  }
+
   isImage(url: string): boolean { return /\.(jpg|jpeg|png|gif|webp)$/i.test(url); }
   isVideo(url: string): boolean { return /\.(mp4|webm|mov)$/i.test(url); }
   
   getVisibilityLabel(): string {
-    const labels: Record<string, string> = { 
-      public: '🌍 Öffentlich', 
+    const labels: Record<string, string> = {
+      public: '🌍 Öffentlich',
       acquaintance: '👋 Bekannte',
+      friends: '👥 Alle Freunde',
+      close_friends: '💚 Enge Freunde',
       close_friend: '💚 Enge Freunde',
-      family: '👨‍👩‍👧 Familie',
-      private: '🔒 Privat' 
+      family: '👨‍👩‍👧‍👦 Familie',
+      private: '🔒 Privat'
     };
     return labels[this.post.visibility] || this.post.visibility;
   }

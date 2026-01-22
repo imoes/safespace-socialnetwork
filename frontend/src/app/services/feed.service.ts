@@ -154,8 +154,25 @@ export class FeedService implements OnDestroy {
   deletePost(postId: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${postId}`).pipe(
       tap(() => {
-        this.postsSignal.update(posts => 
+        this.postsSignal.update(posts =>
           posts.filter(p => p.post_id !== postId)
+        );
+      })
+    );
+  }
+
+  /**
+   * Aktualisiert die Sichtbarkeit eines Posts
+   */
+  updatePostVisibility(postId: number, visibility: string): Observable<Post> {
+    return this.http.patch<Post>(`${this.API_URL}/${postId}/visibility`, { visibility }).pipe(
+      tap(updatedPost => {
+        this.postsSignal.update(posts =>
+          posts.map(p =>
+            p.post_id === postId
+              ? { ...p, visibility: updatedPost.visibility }
+              : p
+          )
         );
       })
     );

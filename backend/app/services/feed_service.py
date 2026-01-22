@@ -245,11 +245,23 @@ class PostService:
         """Löscht einen Post"""
         posts_db = UserPostsDB(uid)
         success = await posts_db.delete_post(post_id)
-        
+
         if success:
             await FeedService.invalidate_feed(uid)
-        
+
         return success
+
+    @classmethod
+    async def update_visibility(cls, uid: int, post_id: int, visibility: str) -> dict | None:
+        """Aktualisiert die Sichtbarkeit eines Posts"""
+        posts_db = UserPostsDB(uid)
+        updated_post = await posts_db.update_visibility(post_id, visibility)
+
+        if updated_post:
+            # Feed-Cache invalidieren (wichtig, da sich Sichtbarkeit geändert hat)
+            await FeedService.invalidate_feed(uid)
+
+        return updated_post
     
     @classmethod
     async def like_post(cls, author_uid: int, post_id: int, liker_uid: int) -> bool:
