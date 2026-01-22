@@ -159,15 +159,15 @@ async def get_user_by_username(username: str) -> dict | None:
         return await result.fetchone()
 
 
-async def create_user(username: str, email: str, password_hash: str) -> dict:
+async def create_user(username: str, email: str, password_hash: str, first_name: str = None, last_name: str = None) -> dict:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            INSERT INTO users (username, email, password_hash, role) 
-            VALUES (%s, %s, %s, 'user') 
+            INSERT INTO users (username, email, password_hash, role, first_name, last_name)
+            VALUES (%s, %s, %s, 'user', %s, %s)
             RETURNING uid, username, email, role, created_at
             """,
-            (username, email, password_hash)
+            (username, email, password_hash, first_name, last_name)
         )
         await conn.commit()
         return await result.fetchone()

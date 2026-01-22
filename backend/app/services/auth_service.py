@@ -128,7 +128,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     return user
 
 
-async def register_user(username: str, email: str, password: str) -> dict:
+async def register_user(username: str, email: str, password: str, first_name: str = None, last_name: str = None) -> dict:
     """Registriert neuen User"""
     # Prüfen ob Username bereits existiert
     existing = await get_user_by_username(username)
@@ -137,10 +137,10 @@ async def register_user(username: str, email: str, password: str) -> dict:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username already taken"
         )
-    
+
     # Password hashen
     password_hash = get_password_hash(password)
-    
+
     # User erstellen
-    user = await create_user(username, email, password_hash)
+    user = await create_user(username, email, password_hash, first_name, last_name)
     return user

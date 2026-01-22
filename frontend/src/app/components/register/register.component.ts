@@ -17,6 +17,8 @@ import { AuthService } from '../../services/auth.service';
         @if (success) { <div class="success">{{ success }}</div> }
         <form (ngSubmit)="register()">
           <input type="text" [(ngModel)]="username" name="username" placeholder="Benutzername" required minlength="3" />
+          <input type="text" [(ngModel)]="firstName" name="firstName" placeholder="Vorname" />
+          <input type="text" [(ngModel)]="lastName" name="lastName" placeholder="Nachname" />
           <input type="email" [(ngModel)]="email" name="email" placeholder="E-Mail" required />
           <input type="password" [(ngModel)]="password" name="password" placeholder="Passwort" required minlength="6" />
           <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Passwort bestätigen" required />
@@ -47,6 +49,8 @@ export class RegisterComponent {
   private router = inject(Router);
 
   username = '';
+  firstName = '';
+  lastName = '';
   email = '';
   password = '';
   confirmPassword = '';
@@ -65,7 +69,7 @@ export class RegisterComponent {
     this.isLoading = true;
     this.error = '';
 
-    this.authService.register(this.username, this.email, this.password).subscribe({
+    this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName).subscribe({
       next: () => {
         console.log('✅ Registration erfolgreich, Token gespeichert!');
         this.success = 'Registrierung erfolgreich! Weiterleitung...';
