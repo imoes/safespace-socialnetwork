@@ -21,7 +21,9 @@ class RelationType(str, Enum):
 # === Sichtbarkeit ===
 class Visibility(str, Enum):
     PUBLIC = "public"              # Jeder
+    ACQUAINTANCE = "acquaintance"  # Bekannte und höher
     FRIENDS = "friends"            # Alle Freunde (family + close + friend)
+    CLOSE_FRIEND = "close_friend"  # Enge Freunde (alias für close_friends)
     CLOSE_FRIENDS = "close_friends"  # Familie + Enge Freunde
     FAMILY = "family"              # Nur Familie
     PRIVATE = "private"            # Nur ich

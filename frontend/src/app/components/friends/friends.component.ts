@@ -139,6 +139,7 @@ interface FriendRequest {
                       [value]="friend.relationship"
                       (change)="updateRelationship(friend, $event)"
                       class="relationship-select">
+                      <option value="acquaintance">Bekannte</option>
                       <option value="friend">Freund</option>
                       <option value="close_friend">Enger Freund</option>
                       <option value="family">Familie</option>
@@ -372,6 +373,11 @@ interface FriendRequest {
 
     .rel-friend {
       background: #3498db;
+      color: white;
+    }
+
+    .rel-acquaintance {
+      background: #95a5a6;
       color: white;
     }
 
@@ -637,7 +643,8 @@ export class FriendsComponent implements OnInit {
     const labels: Record<string, string> = {
       'family': 'Familie',
       'close_friend': 'Enger Freund',
-      'friend': 'Freund'
+      'friend': 'Freund',
+      'acquaintance': 'Bekannte'
     };
     return labels[relationship] || relationship;
   }
