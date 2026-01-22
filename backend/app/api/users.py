@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 
 from app.services.auth_service import get_current_user, verify_password, get_password_hash
-from app.db.postgres import pool
+from app.db.postgres import PostgresDB
 from app.db.moderation import is_admin
 from app.models.schemas import UserWithStats, UserRole
 
@@ -32,8 +32,7 @@ async def update_user_profile(
 ):
     """Aktualisiert das Profil des aktuellen Users"""
 
-    conn = await pool.connection()
-    try:
+    async with PostgresDB.connection() as conn:
         # Passwort ändern wenn angegeben
         if update_data.current_password and update_data.new_password:
             # Aktuelles Passwort überprüfen
@@ -46,25 +45,19 @@ async def update_user_profile(
             # Neues Passwort hashen und speichern
             new_hash = get_password_hash(update_data.new_password)
             await conn.execute(
-                "UPDATE users SET email = $1, bio = $2, password_hash = $3 WHERE uid = $4",
-                update_data.email,
-                update_data.bio,
-                new_hash,
-                current_user["uid"]
+                "UPDATE users SET email = %s, bio = %s, password_hash = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, new_hash, current_user["uid"])
             )
         else:
             # Nur E-Mail und Bio aktualisieren
             await conn.execute(
-                "UPDATE users SET email = $1, bio = $2 WHERE uid = $3",
-                update_data.email,
-                update_data.bio,
-                current_user["uid"]
+                "UPDATE users SET email = %s, bio = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, current_user["uid"])
             )
 
-        return {"message": "Profil erfolgreich aktualisiert"}
+        await conn.commit()
 
-    finally:
-        await conn.close()
+        return {"message": "Profil erfolgreich aktualisiert"}
 
 
 @router.get("/search")
@@ -80,20 +73,19 @@ async def search_users(
             detail="Suchbegriff muss mindestens 2 Zeichen lang sein"
         )
 
-    conn = await pool.connection()
-    try:
-        rows = await conn.fetch(
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
             """
             SELECT uid, username, bio, role
             FROM users
-            WHERE username ILIKE $1
-              AND uid != $2
+            WHERE username ILIKE %s
+              AND uid != %s
               AND is_banned = FALSE
             LIMIT 20
             """,
-            f"%{q}%",
-            current_user["uid"]
+            (f"%{q}%", current_user["uid"])
         )
+        rows = await result.fetchall()
 
         return [
             UserSearchResult(
@@ -104,9 +96,6 @@ async def search_users(
             )
             for row in rows
         ]
-
-    finally:
-        await conn.close()
 
 
 @router.get("/all", response_model=List[UserWithStats])
@@ -121,9 +110,8 @@ async def get_all_users(
             detail="Nur Admins können alle User sehen"
         )
 
-    conn = await pool.connection()
-    try:
-        rows = await conn.fetch(
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
             """
             SELECT
                 u.uid,
@@ -141,6 +129,7 @@ async def get_all_users(
             ORDER BY u.created_at DESC
             """
         )
+        rows = await result.fetchall()
 
         return [
             UserWithStats(
@@ -155,9 +144,6 @@ async def get_all_users(
             )
             for row in rows
         ]
-
-    finally:
-        await conn.close()
 
 
 @router.post("/{user_uid}/ban")
@@ -175,8 +161,7 @@ async def ban_user(
             detail="Nur Admins können User bannen"
         )
 
-    conn = await pool.connection()
-    try:
+    async with PostgresDB.connection() as conn:
         if days:
             # Temporärer Bann
             await conn.execute(
@@ -184,12 +169,10 @@ async def ban_user(
                 UPDATE users
                 SET is_banned = TRUE,
                     banned_until = NOW() + INTERVAL '%s days',
-                    ban_reason = $2
-                WHERE uid = $3
+                    ban_reason = %s
+                WHERE uid = %s
                 """,
-                days,
-                reason,
-                user_uid
+                (days, reason, user_uid)
             )
         else:
             # Permanenter Bann
@@ -198,17 +181,15 @@ async def ban_user(
                 UPDATE users
                 SET is_banned = TRUE,
                     banned_until = NULL,
-                    ban_reason = $1
-                WHERE uid = $2
+                    ban_reason = %s
+                WHERE uid = %s
                 """,
-                reason,
-                user_uid
+                (reason, user_uid)
             )
 
-        return {"message": "User erfolgreich gebannt"}
+        await conn.commit()
 
-    finally:
-        await conn.close()
+        return {"message": "User erfolgreich gebannt"}
 
 
 @router.post("/{user_uid}/unban")
@@ -224,20 +205,18 @@ async def unban_user(
             detail="Nur Admins können User entbannen"
         )
 
-    conn = await pool.connection()
-    try:
+    async with PostgresDB.connection() as conn:
         await conn.execute(
             """
             UPDATE users
             SET is_banned = FALSE,
                 banned_until = NULL,
                 ban_reason = NULL
-            WHERE uid = $1
+            WHERE uid = %s
             """,
-            user_uid
+            (user_uid,)
         )
 
-        return {"message": "Bann erfolgreich aufgehoben"}
+        await conn.commit()
 
-    finally:
-        await conn.close()
+        return {"message": "Bann erfolgreich aufgehoben"}
