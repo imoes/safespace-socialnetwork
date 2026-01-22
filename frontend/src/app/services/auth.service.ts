@@ -11,6 +11,9 @@ export interface User {
   bio?: string;
   avatar_url?: string;
   created_at: string;
+  profile_picture?: string;
+  first_name?: string;
+  last_name?: string;
 }
 
 export interface AuthResponse {
