@@ -75,6 +75,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         uid=current_user["uid"],
         username=current_user["username"],
         email=current_user["email"],
+        role=current_user.get("role", "user"),
         bio=current_user.get("bio"),
         created_at=current_user["created_at"]
     )

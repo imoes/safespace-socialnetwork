@@ -7,6 +7,7 @@ export interface User {
   uid: number;
   username: string;
   email: string;
+  role: 'user' | 'moderator' | 'admin';
   bio?: string;
   avatar_url?: string;
   created_at: string;
@@ -30,6 +31,11 @@ export class AuthService {
   readonly currentUser = computed(() => this.currentUserSignal());
   readonly isAuthenticated = computed(() => this.currentUserSignal() !== null);
   readonly isLoading = computed(() => this.isLoadingSignal());
+  readonly isAdmin = computed(() => this.currentUserSignal()?.role === 'admin');
+  readonly isModerator = computed(() => {
+    const role = this.currentUserSignal()?.role;
+    return role === 'admin' || role === 'moderator';
+  });
 
   constructor(
     private http: HttpClient,
@@ -108,12 +114,12 @@ export class AuthService {
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
-  private loadCurrentUser(): void {
+  loadCurrentUser(): void {
     console.log('📡 Lade User mit Token...');
-    
+
     // WICHTIG: Headers direkt hier setzen statt auf Interceptor zu vertrauen!
-    this.http.get<User>(`${this.API_URL}/me`, { 
-      headers: this.getAuthHeaders() 
+    this.http.get<User>(`${this.API_URL}/me`, {
+      headers: this.getAuthHeaders()
     }).pipe(
       tap(user => {
         console.log('✅ User geladen:', user.username);
