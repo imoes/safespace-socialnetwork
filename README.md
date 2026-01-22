@@ -360,6 +360,7 @@ User posts (or corrects)
 
 | Bug | Description | Workaround |
 |-----|-------------|------------|
+| **401 Login Error** | Login fails with 401 when proxy configuration doesn't match the deployment method. | **FIXED**: `proxy.conf.json` now points to `backend:8000` (Docker service name). For local dev, see [LOKALE-ENTWICKLUNG.md](LOKALE-ENTWICKLUNG.md). For Docker, see [DOCKER-ENTWICKLUNG.md](DOCKER-ENTWICKLUNG.md). |
 | **401 after Registration** | After registration, no automatic login is performed. User receives 401 when accessing feed. | Manually log in at `/login` OR use the updated `register.component.ts` with auto-login. |
 | **Kafka Cluster ID Mismatch** | After container restarts, Kafka and Zookeeper may have different cluster IDs. | `docker volume rm socialnet_kafka_data && docker-compose up -d` |
 
@@ -368,7 +369,7 @@ User posts (or corrects)
 | Limitation | Description | Status |
 |------------|-------------|--------|
 | **WebSocket HMR Error** | Development server shows WebSocket errors for Hot Module Replacement. | Not a functional bug, only affects dev mode. |
-| **Proxy Configuration** | Frontend proxy must point to `http://backend:8000` (not `localhost`). | Check in `proxy.conf.json`. |
+| **Proxy Configuration** | Frontend proxy must match deployment: `http://localhost:8000` (local) or `http://backend:8000` (Docker service name). | See [DOCKER-ENTWICKLUNG.md](DOCKER-ENTWICKLUNG.md) or [LOKALE-ENTWICKLUNG.md](LOKALE-ENTWICKLUNG.md) for details. |
 | **SQLite Scaling** | With many friends (>1000), feed aggregation may become slow. | Redis caching is active, but pagination may be needed for large networks. |
 | **DeepSeek Rate Limits** | API has rate limits; moderation checks may be delayed under high traffic. | Queue-based processing buffers automatically. |
 
@@ -383,6 +384,12 @@ User posts (or corrects)
 ---
 
 ## Development
+
+> **🐳 Docker-Entwicklung?**
+> Siehe [DOCKER-ENTWICKLUNG.md](DOCKER-ENTWICKLUNG.md) für detaillierte Anweisungen zur Entwicklung mit Docker Compose, inkl. Problemlösung für 401-Login-Fehler.
+>
+> **💻 Lokale Entwicklung ohne Docker?**
+> Siehe [LOKALE-ENTWICKLUNG.md](LOKALE-ENTWICKLUNG.md) für Anweisungen zum Starten des Backends und Frontends direkt auf Ihrem System.
 
 ### Project Structure
 
