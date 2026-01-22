@@ -29,7 +29,7 @@ import { AuthService } from '../../services/auth.service';
               <img [src]="authService.currentUser()?.profile_picture" alt="Profilbild" />
             } @else {
               <div class="profile-picture-placeholder">
-                {{ authService.currentUser()?.username?.charAt(0).toUpperCase() }}
+                {{ (authService.currentUser()?.username || 'U').charAt(0).toUpperCase() }}
               </div>
             }
           </div>
