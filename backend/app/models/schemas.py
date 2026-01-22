@@ -82,6 +82,10 @@ class PostCreate(BaseModel):
     visibility: Visibility = Visibility.FRIENDS
 
 
+class PostVisibilityUpdate(BaseModel):
+    visibility: Visibility
+
+
 class PostResponse(BaseModel):
     post_id: int
     author_uid: int

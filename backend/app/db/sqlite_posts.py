@@ -193,6 +193,33 @@ class UserPostsDB:
             )
             await db.commit()
             return cursor.rowcount > 0
+
+    async def update_visibility(self, post_id: int, visibility: str) -> dict | None:
+        """Aktualisiert die Sichtbarkeit eines Posts"""
+        await self._ensure_db()
+
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            cursor = await db.execute(
+                """
+                UPDATE posts
+                SET visibility = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE post_id = ? AND is_deleted = FALSE
+                """,
+                (visibility, post_id)
+            )
+            await db.commit()
+
+            if cursor.rowcount == 0:
+                return None
+
+            # Lade den aktualisierten Post
+            cursor = await db.execute(
+                "SELECT * FROM posts WHERE post_id = ?",
+                (post_id,)
+            )
+            row = await cursor.fetchone()
+            return self._row_to_dict(row) if row else None
     
     async def add_like(self, post_id: int, user_uid: int) -> bool:
         """Fügt einen Like hinzu"""
