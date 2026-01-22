@@ -91,11 +91,10 @@ async def upload_profile_picture(
         )
 
     # Upload file using media service
-    file_data = await file.read()
     media_service = MediaService()
 
     try:
-        upload_result = await media_service.upload_file(current_user["uid"], file_data, file.content_type)
+        upload_result = await media_service.upload_file(current_user["uid"], file)
 
         # Store profile picture path in database
         profile_picture_url = f"/api/media/{current_user['uid']}/{upload_result['path']}"

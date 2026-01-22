@@ -67,6 +67,9 @@ class UserProfile(UserPublic):
     email: EmailStr
     bio: str | None = None
     avatar_url: str | None = None
+    profile_picture: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class UserWithStats(UserPublic):

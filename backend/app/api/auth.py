@@ -79,7 +79,10 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         email=current_user["email"],
         role=current_user.get("role", "user"),
         bio=current_user.get("bio"),
-        created_at=current_user["created_at"]
+        created_at=current_user["created_at"],
+        profile_picture=current_user.get("profile_picture"),
+        first_name=current_user.get("first_name"),
+        last_name=current_user.get("last_name")
     )
 
 
