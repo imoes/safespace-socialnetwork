@@ -38,7 +38,7 @@ async def register(user_data: UserCreate):
     # JWT Token erstellen (wie beim Login)
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
-        data={"sub": user["uid"]},
+        data={"sub": str(user["uid"])},  # JWT standard requires sub to be a string
         expires_delta=access_token_expires
     )
 
@@ -62,10 +62,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
-        data={"sub": user["uid"]},
+        data={"sub": str(user["uid"])},  # JWT standard requires sub to be a string
         expires_delta=access_token_expires
     )
-    
     return Token(access_token=access_token)
 
 
