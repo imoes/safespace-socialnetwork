@@ -79,12 +79,14 @@ async def authenticate_user(username: str, password: str) -> dict | None:
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     """Holt aktuellen User aus JWT Token"""
+    print(f"[AUTH] get_current_user called with token: {token[:20] if token else 'None'}...")
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = jwt.decode(
             token,
@@ -92,13 +94,16 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
             algorithms=[settings.algorithm]
         )
         uid: int = payload.get("sub")
-        
+        print(f"[AUTH] Decoded token, uid: {uid}")
+
         if uid is None:
+            print("[AUTH] ERROR: uid is None in token payload")
             raise credentials_exception
-            
+
         token_data = TokenData(uid=uid)
-        
-    except JWTError:
+
+    except JWTError as e:
+        print(f"[AUTH] ERROR: JWT decode failed: {str(e)}")
         raise credentials_exception
     
     user = await get_user_by_uid(token_data.uid)
