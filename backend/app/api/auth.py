@@ -17,10 +17,10 @@ from app.db.postgres import get_user_by_username
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=UserProfile)
+@router.post("/register", response_model=Token)
 async def register(user_data: UserCreate):
-    """Registriert einen neuen User"""
-    
+    """Registriert einen neuen User und gibt einen JWT Token zurück"""
+
     # Prüfen ob Username bereits existiert
     existing = await get_user_by_username(user_data.username)
     if existing:
@@ -28,19 +28,21 @@ async def register(user_data: UserCreate):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username already registered"
         )
-    
+
     user = await register_user(
         username=user_data.username,
         email=user_data.email,
         password=user_data.password
     )
-    
-    return UserProfile(
-        uid=user["uid"],
-        username=user["username"],
-        email=user["email"],
-        created_at=user["created_at"]
+
+    # JWT Token erstellen (wie beim Login)
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+    access_token = create_access_token(
+        data={"sub": user["uid"]},
+        expires_delta=access_token_expires
     )
+
+    return Token(access_token=access_token)
 
 
 @router.post("/login", response_model=Token)
