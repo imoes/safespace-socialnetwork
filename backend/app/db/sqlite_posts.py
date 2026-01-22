@@ -33,9 +33,16 @@ class UserPostsDB:
                     deleted_by TEXT,  -- 'user' oder 'moderator'
                     moderation_status TEXT DEFAULT 'pending',  -- pending, approved, flagged, removed
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    opensearch_doc_id TEXT  -- OpenSearch document ID for public posts
                 )
             """)
+
+            # Migration: Add opensearch_doc_id column if it doesn't exist
+            try:
+                await db.execute("ALTER TABLE posts ADD COLUMN opensearch_doc_id TEXT")
+            except:
+                pass  # Column already exists
             
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS likes (
@@ -53,6 +60,15 @@ class UserPostsDB:
                     user_uid INTEGER,
                     content TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS comment_likes (
+                    comment_id INTEGER,
+                    user_uid INTEGER,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (comment_id, user_uid)
                 )
             """)
             
@@ -271,14 +287,17 @@ class UserPostsDB:
             return dict(row)
     
     async def get_comments(self, post_id: int, limit: int = 50) -> list[dict]:
-        """Lädt Kommentare für einen Post"""
+        """Lädt Kommentare für einen Post mit Likes-Count"""
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             cursor = await db.execute(
                 """
-                SELECT * FROM comments 
-                WHERE post_id = ? 
-                ORDER BY created_at ASC 
+                SELECT c.*, COUNT(cl.user_uid) as likes_count
+                FROM comments c
+                LEFT JOIN comment_likes cl ON c.comment_id = cl.comment_id
+                WHERE c.post_id = ?
+                GROUP BY c.comment_id
+                ORDER BY c.created_at ASC
                 LIMIT ?
                 """,
                 (post_id, limit)
@@ -295,6 +314,49 @@ class UserPostsDB:
             )
             row = await cursor.fetchone()
             return row[0] if row else 0
+
+    async def like_comment(self, comment_id: int, user_uid: int) -> bool:
+        """Liked einen Kommentar"""
+        async with aiosqlite.connect(self.db_path) as db:
+            try:
+                await db.execute(
+                    "INSERT INTO comment_likes (comment_id, user_uid) VALUES (?, ?)",
+                    (comment_id, user_uid)
+                )
+                await db.commit()
+                return True
+            except:
+                return False
+
+    async def unlike_comment(self, comment_id: int, user_uid: int) -> bool:
+        """Entfernt Like von einem Kommentar"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "DELETE FROM comment_likes WHERE comment_id = ? AND user_uid = ?",
+                (comment_id, user_uid)
+            )
+            await db.commit()
+            return True
+
+    async def get_comment_likes_count(self, comment_id: int) -> int:
+        """Zählt Likes für einen Kommentar"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?",
+                (comment_id,)
+            )
+            row = await cursor.fetchone()
+            return row[0] if row else 0
+
+    async def is_comment_liked_by_user(self, comment_id: int, user_uid: int) -> bool:
+        """Prüft ob User den Kommentar geliked hat"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT 1 FROM comment_likes WHERE comment_id = ? AND user_uid = ? LIMIT 1",
+                (comment_id, user_uid)
+            )
+            row = await cursor.fetchone()
+            return row is not None
     
     def _row_to_dict(self, row: aiosqlite.Row) -> dict:
         """Konvertiert SQLite Row zu Dict mit JSON-Parsing"""

@@ -27,6 +27,8 @@ export interface Comment {
   author_username: string;
   content: string;
   created_at: string;
+  likes_count: number;
+  is_liked_by_user: boolean;
 }
 
 @Injectable({
@@ -241,6 +243,20 @@ export class FeedService implements OnDestroy {
         );
       })
     );
+  }
+
+  /**
+   * Liked einen Kommentar
+   */
+  likeComment(authorUid: number, postId: number, commentId: number): Observable<any> {
+    return this.http.post(`${this.API_URL}/${authorUid}/${postId}/comment/${commentId}/like`, {});
+  }
+
+  /**
+   * Entfernt Like von Kommentar
+   */
+  unlikeComment(authorUid: number, postId: number, commentId: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}/${authorUid}/${postId}/comment/${commentId}/like`);
   }
 
   private fetchFeed(forceRefresh: boolean): Observable<FeedResponse> {

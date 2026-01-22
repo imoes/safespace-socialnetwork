@@ -52,8 +52,27 @@ class PostgresDB:
                     is_banned BOOLEAN DEFAULT FALSE,
                     banned_until TIMESTAMP,
                     ban_reason TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    profile_picture TEXT,
+                    first_name VARCHAR(100),
+                    last_name VARCHAR(100)
                 )
+            """)
+
+            # Migrations: Add columns if they don't exist
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS profile_picture TEXT
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS first_name VARCHAR(100)
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS last_name VARCHAR(100)
             """)
             
             # Friendships mit Beziehungstyp

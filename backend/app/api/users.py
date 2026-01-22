@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 
 from app.services.auth_service import get_current_user, verify_password, get_password_hash
+from app.services.media_service import MediaService
 from app.db.postgres import PostgresDB
 from app.db.moderation import is_admin
 from app.models.schemas import UserWithStats, UserRole
@@ -14,6 +15,8 @@ router = APIRouter(prefix="/users", tags=["Users"])
 class UserUpdateRequest(BaseModel):
     email: EmailStr
     bio: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     current_password: Optional[str] = None
     new_password: Optional[str] = None
 
@@ -23,6 +26,19 @@ class UserSearchResult(BaseModel):
     username: str
     bio: Optional[str] = None
     role: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+
+class UserProfile(BaseModel):
+    uid: int
+    username: str
+    bio: Optional[str] = None
+    role: str
+    created_at: str
+    profile_picture: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 
 @router.put("/me")
@@ -45,19 +61,71 @@ async def update_user_profile(
             # Neues Passwort hashen und speichern
             new_hash = get_password_hash(update_data.new_password)
             await conn.execute(
-                "UPDATE users SET email = %s, bio = %s, password_hash = %s WHERE uid = %s",
-                (update_data.email, update_data.bio, new_hash, current_user["uid"])
+                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, password_hash = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, new_hash, current_user["uid"])
             )
         else:
-            # Nur E-Mail und Bio aktualisieren
+            # Nur E-Mail, Bio und Namen aktualisieren
             await conn.execute(
-                "UPDATE users SET email = %s, bio = %s WHERE uid = %s",
-                (update_data.email, update_data.bio, current_user["uid"])
+                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, current_user["uid"])
             )
 
         await conn.commit()
 
         return {"message": "Profil erfolgreich aktualisiert"}
+
+
+@router.post("/me/profile-picture")
+async def upload_profile_picture(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt ein Profilbild hoch"""
+
+    # Validate file type (nur Bilder erlaubt)
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Nur Bilddateien sind erlaubt"
+        )
+
+    # Upload file using media service
+    file_data = await file.read()
+    media_service = MediaService()
+
+    try:
+        upload_result = await media_service.upload_file(current_user["uid"], file_data, file.content_type)
+
+        # Store profile picture path in database
+        profile_picture_url = f"/api/media/{current_user['uid']}/{upload_result['path']}"
+
+        async with PostgresDB.connection() as conn:
+            # Delete old profile picture if exists
+            if current_user.get("profile_picture"):
+                old_path = current_user["profile_picture"].replace(f"/api/media/{current_user['uid']}/", "")
+                try:
+                    await media_service.delete_file(current_user["uid"], old_path)
+                except:
+                    pass  # Ignore if old file doesn't exist
+
+            # Update profile picture in database
+            await conn.execute(
+                "UPDATE users SET profile_picture = %s WHERE uid = %s",
+                (profile_picture_url, current_user["uid"])
+            )
+            await conn.commit()
+
+        return {
+            "message": "Profilbild erfolgreich hochgeladen",
+            "profile_picture": profile_picture_url
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fehler beim Hochladen: {str(e)}"
+        )
 
 
 @router.get("/search")
@@ -76,7 +144,7 @@ async def search_users(
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            SELECT uid, username, bio, role
+            SELECT uid, username, bio, role, first_name, last_name
             FROM users
             WHERE username ILIKE %s
               AND uid != %s
@@ -92,10 +160,48 @@ async def search_users(
                 uid=row["uid"],
                 username=row["username"],
                 bio=row["bio"],
-                role=row["role"]
+                role=row["role"],
+                first_name=row.get("first_name"),
+                last_name=row.get("last_name")
             )
             for row in rows
         ]
+
+
+@router.get("/{user_uid}", response_model=UserProfile)
+async def get_user_profile(
+    user_uid: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt das Profil eines Benutzers"""
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT uid, username, bio, role, created_at, profile_picture, first_name, last_name
+            FROM users
+            WHERE uid = %s AND is_banned = FALSE
+            """,
+            (user_uid,)
+        )
+        row = await result.fetchone()
+
+        if not row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Benutzer nicht gefunden"
+            )
+
+        return UserProfile(
+            uid=row["uid"],
+            username=row["username"],
+            bio=row["bio"],
+            role=row["role"],
+            created_at=row["created_at"].isoformat() if row["created_at"] else "",
+            profile_picture=row["profile_picture"] if "profile_picture" in row.keys() else None,
+            first_name=row.get("first_name"),
+            last_name=row.get("last_name")
+        )
 
 
 @router.get("/all", response_model=List[UserWithStats])

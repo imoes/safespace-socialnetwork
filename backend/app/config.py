@@ -14,7 +14,14 @@ class Settings(BaseSettings):
     redis_host: str = "localhost"
     redis_port: int = 6379
     redis_db: int = 0
-    
+
+    # OpenSearch
+    opensearch_host: str = "localhost"
+    opensearch_port: int = 9200
+    opensearch_use_ssl: bool = False
+    opensearch_verify_certs: bool = False
+    opensearch_index_posts: str = "public_posts"
+
     # Pfade
     user_data_base: Path = Path("/data/users")
     

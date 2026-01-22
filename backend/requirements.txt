@@ -10,6 +10,9 @@ aiosqlite==0.19.0
 # Caching
 redis==5.0.1
 
+# Search
+opensearch-py==2.4.2
+
 # Auth
 bcrypt==4.0.1
 passlib==1.7.4

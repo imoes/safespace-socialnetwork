@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Post, FeedService } from '../../services/feed.service';
+import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 
 @Component({
@@ -44,9 +44,46 @@ import { ReportService } from '../../services/report.service';
 
       <div class="post-actions">
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
-        <button class="action-btn">💬 {{ post.comments_count }}</button>
+        <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         <span class="visibility">{{ getVisibilityLabel() }}</span>
       </div>
+
+      @if (showComments) {
+        <div class="comments-section">
+          <div class="comment-input">
+            <input type="text" [(ngModel)]="newComment" placeholder="Schreibe einen Kommentar..." (keyup.enter)="addComment()" />
+            <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">Senden</button>
+          </div>
+
+          @if (loadingComments) {
+            <div class="loading">Kommentare werden geladen...</div>
+          }
+
+          @if (comments.length > 0) {
+            <div class="comments-list">
+              @for (comment of comments; track comment.comment_id) {
+                <div class="comment">
+                  <div class="comment-header">
+                    <div class="comment-avatar">{{ comment.author_username.charAt(0).toUpperCase() }}</div>
+                    <div class="comment-info">
+                      <span class="comment-username">{{ comment.author_username }}</span>
+                      <span class="comment-timestamp">{{ comment.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                    </div>
+                  </div>
+                  <div class="comment-content">{{ comment.content }}</div>
+                  <div class="comment-actions">
+                    <button class="comment-like-btn" [class.liked]="comment.is_liked_by_user" (click)="toggleCommentLike(comment)">
+                      {{ comment.is_liked_by_user ? '❤️' : '🤍' }} {{ comment.likes_count }}
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else if (!loadingComments) {
+            <div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>
+          }
+        </div>
+      }
 
       @if (showReportModal) {
         <div class="modal-overlay" (click)="showReportModal = false">
@@ -119,6 +156,26 @@ import { ReportService } from '../../services/report.service';
     .btn-cancel { flex: 1; padding: 12px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; }
     .btn-submit { flex: 1; padding: 12px; border: none; background: #1877f2; color: white; border-radius: 8px; cursor: pointer; }
     .btn-submit:disabled { background: #ccc; }
+
+    .comments-section { border-top: 1px solid #e4e6e9; padding: 16px; background: #f0f2f5; }
+    .comment-input { display: flex; gap: 8px; margin-bottom: 16px; }
+    .comment-input input { flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 20px; font-family: inherit; }
+    .btn-submit-comment { padding: 10px 20px; border: none; background: #1877f2; color: white; border-radius: 20px; cursor: pointer; font-weight: 600; }
+    .btn-submit-comment:disabled { background: #ccc; cursor: not-allowed; }
+    .loading { text-align: center; color: #65676b; padding: 16px; }
+    .no-comments { text-align: center; color: #999; padding: 16px; font-size: 14px; }
+    .comments-list { display: flex; flex-direction: column; gap: 12px; }
+    .comment { background: white; padding: 12px; border-radius: 8px; }
+    .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #42b72a, #1877f2); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
+    .comment-info { display: flex; flex-direction: column; }
+    .comment-username { font-weight: 600; font-size: 14px; }
+    .comment-timestamp { font-size: 11px; color: #65676b; }
+    .comment-content { font-size: 14px; line-height: 1.4; white-space: pre-wrap; margin-bottom: 8px; }
+    .comment-actions { display: flex; gap: 8px; }
+    .comment-like-btn { background: none; border: none; padding: 4px 8px; cursor: pointer; color: #65676b; font-size: 13px; border-radius: 4px; }
+    .comment-like-btn:hover { background: #f0f2f5; }
+    .comment-like-btn.liked { color: #f44336; }
   `]
 })
 export class PostCardComponent {
@@ -138,6 +195,10 @@ export class PostCardComponent {
   reportCategory = 'hate_speech';
   reportReason = '';
   newVisibility = '';
+  showComments = false;
+  comments: Comment[] = [];
+  newComment = '';
+  loadingComments = false;
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -201,5 +262,64 @@ export class PostCardComponent {
       private: '🔒 Privat'
     };
     return labels[this.post.visibility] || this.post.visibility;
+  }
+
+  toggleComments(): void {
+    this.showComments = !this.showComments;
+    if (this.showComments && this.comments.length === 0) {
+      this.loadComments();
+    }
+  }
+
+  loadComments(): void {
+    this.loadingComments = true;
+    this.feedService.getComments(this.post.author_uid, this.post.post_id).subscribe({
+      next: (response) => {
+        this.comments = response.comments;
+        this.loadingComments = false;
+      },
+      error: () => {
+        alert('Fehler beim Laden der Kommentare');
+        this.loadingComments = false;
+      }
+    });
+  }
+
+  addComment(): void {
+    const content = this.newComment.trim();
+    if (!content) return;
+
+    this.feedService.addComment(this.post.author_uid, this.post.post_id, content).subscribe({
+      next: (comment) => {
+        this.comments.push(comment);
+        this.post.comments_count++;
+        this.newComment = '';
+      },
+      error: () => {
+        alert('Fehler beim Hinzufügen des Kommentars');
+      }
+    });
+  }
+
+  toggleCommentLike(comment: Comment): void {
+    const isLiked = comment.is_liked_by_user;
+
+    if (isLiked) {
+      this.feedService.unlikeComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
+        next: () => {
+          comment.is_liked_by_user = false;
+          comment.likes_count = Math.max(0, comment.likes_count - 1);
+        },
+        error: () => alert('Fehler beim Entfernen des Likes')
+      });
+    } else {
+      this.feedService.likeComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
+        next: () => {
+          comment.is_liked_by_user = true;
+          comment.likes_count++;
+        },
+        error: () => alert('Fehler beim Liken des Kommentars')
+      });
+    }
   }
 }
