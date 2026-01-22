@@ -93,12 +93,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
             settings.secret_key,
             algorithms=[settings.algorithm]
         )
-        uid: int = payload.get("sub")
-        print(f"[AUTH] Decoded token, uid: {uid}")
-
-        if uid is None:
+        uid_str: str = payload.get("sub")
+        print(f"[AUTH] Decoded token, uid_str: {uid_str}")
+ 
+        if uid_str is None:
             print("[AUTH] ERROR: uid is None in token payload")
             raise credentials_exception
+ 
+        # Convert string back to int
+        uid: int = int(uid_str)
 
         token_data = TokenData(uid=uid)
 
