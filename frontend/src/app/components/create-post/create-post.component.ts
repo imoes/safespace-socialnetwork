@@ -62,8 +62,8 @@ import { debounceTime, Subject } from 'rxjs';
         <label class="media-btn">🎥<input type="file" accept="video/*" (change)="onFileSelect($event)" hidden /></label>
         <select [(ngModel)]="visibility">
           <option value="public">🌍 Öffentlich</option>
-          <option value="acquaintance">👋 Bekannte</option>
-          <option value="close_friend">💚 Enge Freunde</option>
+          <option value="friends">👥 Alle Freunde</option>
+          <option value="close_friends">💚 Enge Freunde</option>
           <option value="family">👨‍👩‍👧‍👦 Familie</option>
           <option value="private">🔒 Nur ich</option>
         </select>
