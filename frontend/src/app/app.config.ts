@@ -9,11 +9,17 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { FeedComponent } from './components/feed/feed.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
+import { FriendsComponent } from './components/friends/friends.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
+  { path: 'users', component: UserManagementComponent, canActivate: [authGuard] },
+  { path: 'friends', component: FriendsComponent, canActivate: [authGuard] },
   { path: '', component: FeedComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];
