@@ -105,8 +105,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
 
         token_data = TokenData(uid=uid)
 
-    except JWTError as e:
-        print(f"[AUTH] ERROR: JWT decode failed: {str(e)}")
+    except (JWTError, ValueError) as e:
+        print(f"[AUTH] ERROR: JWT decode/parsing failed: {str(e)}")
         raise credentials_exception
     
     user = await get_user_by_uid(token_data.uid)
