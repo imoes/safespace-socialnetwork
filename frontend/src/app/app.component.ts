@@ -4,7 +4,7 @@ import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { UserService, UserSearchResult } from './services/user.service';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -184,7 +184,7 @@ export class AppComponent {
         if (query.length >= 2) {
           return this.userService.searchUsers(query);
         }
-        return [];
+        return of([]);
       })
     ).subscribe(results => {
       this.searchResults.set(results);
