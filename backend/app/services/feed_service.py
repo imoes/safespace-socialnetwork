@@ -1,11 +1,13 @@
 import asyncio
 from datetime import datetime
 from typing import Optional
+import uuid
 
 from app.db.postgres import get_friends, get_username_map
 from app.db.sqlite_posts import UserPostsDB
 from app.cache.redis_cache import FeedCache
 from app.config import settings
+from app.services.opensearch_service import get_opensearch_service
 
 
 # Visibility Hierarchie: family > close_friends > friends > acquaintance > public
@@ -210,21 +212,56 @@ class PostService:
         content: str,
         media_paths: list[str] = None,
         visibility: str = "friends",
-        username: str = None
+        username: str = None,
+        first_name: str = None,
+        last_name: str = None
     ) -> dict:
         """Erstellt einen Post und invalidiert relevante Caches"""
-        
+
         posts_db = UserPostsDB(uid)
         post = await posts_db.create_post(content, media_paths, visibility)
-        
+
+        # OpenSearch: Index public posts
+        opensearch_doc_id = None
+        if visibility == "public":
+            try:
+                opensearch = get_opensearch_service()
+                opensearch_doc_id = str(uuid.uuid4())
+
+                # Convert media_paths to full URLs
+                media_urls = []
+                if media_paths:
+                    for path in media_paths:
+                        media_urls.append(f"/api/media/{uid}/{path}")
+
+                await opensearch.index_post(
+                    doc_id=opensearch_doc_id,
+                    post_id=post["post_id"],
+                    author_uid=uid,
+                    author_username=username or f"user_{uid}",
+                    author_first_name=first_name,
+                    author_last_name=last_name,
+                    content=content,
+                    media_urls=media_urls,
+                    created_at=datetime.fromisoformat(post["created_at"]),
+                    likes_count=0,
+                    comments_count=0
+                )
+
+                # Store opensearch_doc_id in SQLite
+                await posts_db.update_opensearch_doc_id(post["post_id"], opensearch_doc_id)
+                post["opensearch_doc_id"] = opensearch_doc_id
+            except Exception as e:
+                print(f"⚠️ OpenSearch indexing error: {e}")
+
         # Feed-Cache invalidieren
         await FeedService.invalidate_feed(uid)
-        
+
         # SafeSpace: Post zur Moderation-Queue hinzufügen
         try:
             from app.safespace.kafka_service import PostModerationQueue
             from app.safespace.config import safespace_settings
-            
+
             if safespace_settings.moderation_enabled:
                 await PostModerationQueue.enqueue_post(
                     post_id=post["post_id"],
@@ -237,7 +274,7 @@ class PostService:
         except Exception as e:
             # Moderation-Fehler soll Post nicht blockieren
             print(f"⚠️ SafeSpace Queue Error: {e}")
-        
+
         return post
     
     @classmethod
@@ -252,12 +289,72 @@ class PostService:
         return success
 
     @classmethod
-    async def update_visibility(cls, uid: int, post_id: int, visibility: str) -> dict | None:
+    async def update_visibility(
+        cls,
+        uid: int,
+        post_id: int,
+        visibility: str,
+        username: str = None,
+        first_name: str = None,
+        last_name: str = None
+    ) -> dict | None:
         """Aktualisiert die Sichtbarkeit eines Posts"""
         posts_db = UserPostsDB(uid)
+
+        # Get old post to check previous visibility
+        old_post = await posts_db.get_post(post_id)
+        if not old_post:
+            return None
+
+        old_visibility = old_post.get("visibility")
+        old_opensearch_doc_id = old_post.get("opensearch_doc_id")
+
+        # Update visibility in SQLite
         updated_post = await posts_db.update_visibility(post_id, visibility)
 
         if updated_post:
+            # OpenSearch handling
+            try:
+                opensearch = get_opensearch_service()
+
+                # Case 1: Changing TO public - add to OpenSearch
+                if visibility == "public" and old_visibility != "public":
+                    opensearch_doc_id = str(uuid.uuid4())
+
+                    # Convert media_paths to full URLs
+                    media_urls = []
+                    if updated_post.get("media_paths"):
+                        for path in updated_post["media_paths"]:
+                            media_urls.append(f"/api/media/{uid}/{path}")
+
+                    await opensearch.index_post(
+                        doc_id=opensearch_doc_id,
+                        post_id=post_id,
+                        author_uid=uid,
+                        author_username=username or f"user_{uid}",
+                        author_first_name=first_name,
+                        author_last_name=last_name,
+                        content=updated_post["content"],
+                        media_urls=media_urls,
+                        created_at=datetime.fromisoformat(updated_post["created_at"]),
+                        likes_count=updated_post.get("likes_count", 0),
+                        comments_count=updated_post.get("comments_count", 0)
+                    )
+
+                    # Store opensearch_doc_id
+                    await posts_db.update_opensearch_doc_id(post_id, opensearch_doc_id)
+                    updated_post["opensearch_doc_id"] = opensearch_doc_id
+
+                # Case 2: Changing FROM public - remove from OpenSearch
+                elif old_visibility == "public" and visibility != "public":
+                    if old_opensearch_doc_id:
+                        await opensearch.delete_post(old_opensearch_doc_id)
+                        await posts_db.update_opensearch_doc_id(post_id, None)
+                        updated_post["opensearch_doc_id"] = None
+
+            except Exception as e:
+                print(f"⚠️ OpenSearch update error: {e}")
+
             # Feed-Cache invalidieren (wichtig, da sich Sichtbarkeit geändert hat)
             await FeedService.invalidate_feed(uid)
 

@@ -8,6 +8,7 @@ from app.api import auth, feed, friends, media
 from app.api.admin import router as admin_router
 from app.api.reports import router as reports_router
 from app.api.users import router as users_router
+from app.api.hashtags import router as hashtags_router
 from app.safespace.api import router as safespace_router
 
 
@@ -68,6 +69,7 @@ app.include_router(media.router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
+app.include_router(hashtags_router, prefix="/api")
 app.include_router(safespace_router, prefix="/api")
 
 

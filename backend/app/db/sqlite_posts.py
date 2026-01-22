@@ -236,7 +236,19 @@ class UserPostsDB:
             )
             row = await cursor.fetchone()
             return self._row_to_dict(row) if row else None
-    
+
+    async def update_opensearch_doc_id(self, post_id: int, opensearch_doc_id: Optional[str]) -> bool:
+        """Updates the OpenSearch document ID for a post"""
+        await self._ensure_db()
+
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "UPDATE posts SET opensearch_doc_id = ? WHERE post_id = ?",
+                (opensearch_doc_id, post_id)
+            )
+            await db.commit()
+            return cursor.rowcount > 0
+
     async def add_like(self, post_id: int, user_uid: int) -> bool:
         """Fügt einen Like hinzu"""
         async with aiosqlite.connect(self.db_path) as db:

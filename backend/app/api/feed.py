@@ -48,13 +48,16 @@ async def create_post(
     current_user: dict = Depends(get_current_user)
 ):
     """Erstellt einen neuen Post"""
-    
+
     post = await PostService.create_post(
         uid=current_user["uid"],
         content=post_data.content,
-        visibility=post_data.visibility
+        visibility=post_data.visibility,
+        username=current_user.get("username"),
+        first_name=current_user.get("first_name"),
+        last_name=current_user.get("last_name")
     )
-    
+
     return PostResponse(
         post_id=post["post_id"],
         author_uid=current_user["uid"],
@@ -88,7 +91,10 @@ async def create_post_with_media(
         uid=current_user["uid"],
         content=content,
         media_paths=media_paths,
-        visibility=visibility
+        visibility=visibility,
+        username=current_user.get("username"),
+        first_name=current_user.get("first_name"),
+        last_name=current_user.get("last_name")
     )
     
     return PostResponse(
@@ -133,7 +139,10 @@ async def update_post_visibility(
     updated_post = await PostService.update_visibility(
         uid=current_user["uid"],
         post_id=post_id,
-        visibility=visibility_update.visibility
+        visibility=visibility_update.visibility,
+        username=current_user.get("username"),
+        first_name=current_user.get("first_name"),
+        last_name=current_user.get("last_name")
     )
 
     if not updated_post:
