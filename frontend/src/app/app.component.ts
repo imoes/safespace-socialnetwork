@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { UserService, UserSearchResult } from './services/user.service';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -58,7 +59,12 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
           <a routerLink="/" class="nav-link">🏠 Feed</a>
           <a routerLink="/my-posts" class="nav-link">📝 Meine Posts</a>
           <a routerLink="/hashtags" class="nav-link">🏷️ Hashtags</a>
-          <a routerLink="/friends" class="nav-link">👫 Freunde</a>
+          <a routerLink="/friends" class="nav-link nav-link-with-badge">
+            👫 Freunde
+            @if (pendingRequestsCount() > 0) {
+              <span class="notification-badge">{{ pendingRequestsCount() }}</span>
+            }
+          </a>
           @if (authService.isModerator()) {
             <a routerLink="/admin" class="nav-link">🛡️ Moderation</a>
           }
@@ -110,6 +116,21 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
     .nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
     .nav-link { color: #666; text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: background 0.2s; }
     .nav-link:hover { background: #f0f2f5; }
+    .nav-link-with-badge { position: relative; }
+    .notification-badge {
+      position: absolute;
+      top: 2px;
+      right: 0px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-weight: bold;
+      min-width: 18px;
+      text-align: center;
+      line-height: 14px;
+    }
 
     .user-menu { position: relative; }
     .user-button {
@@ -175,15 +196,17 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
     }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   authService = inject(AuthService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   showDropdown = signal(false);
   showSearchResults = signal(false);
   searchResults = signal<UserSearchResult[]>([]);
   selectedIndex = signal(-1);
+  pendingRequestsCount = signal(0);
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
@@ -200,6 +223,29 @@ export class AppComponent {
       })
     ).subscribe(results => {
       this.searchResults.set(results);
+    });
+  }
+
+  ngOnInit(): void {
+    // Load friend requests count on start and refresh every 30 seconds
+    if (this.authService.isAuthenticated()) {
+      this.loadPendingRequestsCount();
+      interval(30000).subscribe(() => {
+        if (this.authService.isAuthenticated()) {
+          this.loadPendingRequestsCount();
+        }
+      });
+    }
+  }
+
+  private loadPendingRequestsCount(): void {
+    this.http.get<{ requests: any[] }>('/api/friends/requests').subscribe({
+      next: (response) => {
+        this.pendingRequestsCount.set(response.requests.length);
+      },
+      error: () => {
+        // Silently fail, not critical
+      }
     });
   }
 
