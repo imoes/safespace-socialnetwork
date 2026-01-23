@@ -479,15 +479,19 @@ export class PostCardComponent {
     const content = this.post.content || '';
     // Match hashtags: # followed by letters only (no numbers)
     const hashtagRegex = /#([a-zA-ZäöüÄÖÜß]+)/g;
-    return '<p>' + content.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
+    const result = '<p>' + content.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
+    console.log('Generated HTML for hashtags:', result);
+    return result;
   }
 
   handleContentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
+    console.log('Content clicked:', target, 'classList:', target.classList);
     if (target.classList.contains('hashtag')) {
       event.preventDefault();
       event.stopPropagation();
       const hashtag = target.getAttribute('data-hashtag');
+      console.log('Hashtag clicked:', hashtag);
       if (hashtag) {
         this.router.navigate(['/hashtag', hashtag]);
       }
