@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 interface UserSearchResult {
@@ -122,7 +123,7 @@ interface FriendRequest {
           } @else if (friends().length > 0) {
             <div class="friends-list">
               @for (friend of friends(); track friend.uid) {
-                <div class="friend-card">
+                <div class="friend-card" (click)="goToFriendProfile(friend.uid)">
                   <div class="friend-info">
                     <div class="friend-name">{{ friend.username }}</div>
                     <div class="friend-meta">
@@ -134,7 +135,7 @@ interface FriendRequest {
                       </span>
                     </div>
                   </div>
-                  <div class="friend-actions">
+                  <div class="friend-actions" (click)="$event.stopPropagation()">
                     <select
                       [value]="friend.relationship"
                       (change)="updateRelationship(friend, $event)"
@@ -320,6 +321,10 @@ interface FriendRequest {
       transition: background 0.2s;
     }
 
+    .friend-card {
+      cursor: pointer;
+    }
+
     .user-card:hover, .friend-card:hover, .request-card:hover {
       background: #f0f2f5;
     }
@@ -469,6 +474,7 @@ interface FriendRequest {
 export class FriendsComponent implements OnInit {
   authService = inject(AuthService);
   http = inject(HttpClient);
+  router = inject(Router);
 
   activeTab = signal<'search' | 'friends' | 'requests'>('search');
 
@@ -661,5 +667,9 @@ export class FriendsComponent implements OnInit {
   clearMessages(): void {
     this.successMessage.set('');
     this.errorMessage.set('');
+  }
+
+  goToFriendProfile(uid: number): void {
+    this.router.navigate(['/profile', uid]);
   }
 }
