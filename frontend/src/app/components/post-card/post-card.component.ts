@@ -51,7 +51,11 @@ import { ReportService } from '../../services/report.service';
       <div class="post-actions">
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
-        <span class="visibility">{{ getVisibilityLabel() }}</span>
+        @if (post.author_uid === currentUid) {
+          <span class="visibility clickable" (click)="openVisibilityModal()" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+        } @else {
+          <span class="visibility">{{ getVisibilityLabel() }}</span>
+        }
       </div>
 
       @if (showComments) {
@@ -182,7 +186,9 @@ import { ReportService } from '../../services/report.service';
     .action-btn:hover { background: #f0f2f5; border-radius: 4px; }
     .action-btn.liked { color: #f44336; }
     .visibility { margin-left: auto; font-size: 11px; color: #999; }
-    
+    .visibility.clickable { cursor: pointer; color: #1877f2; font-weight: 500; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+    .visibility.clickable:hover { background: #f0f2f5; }
+
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .report-modal, .visibility-modal, .edit-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
     .report-modal h3, .visibility-modal h3, .edit-modal h3 { margin: 0 0 16px; }
