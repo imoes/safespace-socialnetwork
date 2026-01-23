@@ -29,7 +29,7 @@ import { HttpClient } from '@angular/common/http';
             <div class="profile-info">
               <h1 class="profile-username">{{ getDisplayName() }}</h1>
               @if (profile.first_name || profile.last_name) {
-                <p class="profile-realname">&#64;{{ profile.username }}</p>
+                <p class="profile-realname">{{ getUsernameWithAt() }}</p>
               }
               @if (profile.bio) {
                 <p class="profile-bio">{{ profile.bio }}</p>
@@ -241,5 +241,9 @@ export class UserProfileComponent implements OnInit {
     }
 
     return this.profile.username;
+  }
+
+  getUsernameWithAt(): string {
+    return this.profile ? `@${this.profile.username}` : '';
   }
 }

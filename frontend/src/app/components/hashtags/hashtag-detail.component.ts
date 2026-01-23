@@ -243,9 +243,7 @@ export class HashtagDetailComponent implements OnInit {
       visibility: 'public',
       created_at: hashtagPost.created_at,
       likes_count: hashtagPost.likes_count,
-      comments_count: hashtagPost.comments_count,
-      is_own_post: false,
-      liked_by_user: false
+      comments_count: hashtagPost.comments_count
     };
   }
 
