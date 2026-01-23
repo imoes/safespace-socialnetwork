@@ -203,6 +203,83 @@ async def get_user_profile(
         )
 
 
+@router.get("/{user_uid}/posts")
+async def get_user_posts(
+    user_uid: int,
+    limit: int = 20,
+    offset: int = 0,
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt Posts eines Benutzers (unter Berücksichtigung von Sichtbarkeit und Freundschaft)"""
+    from app.db.sqlite_posts import UserPostsDB
+    from app.db.postgres import get_relation_type, get_user_profile_data_map
+
+    # Prüfen ob es eigene Posts sind
+    is_own_profile = current_user["uid"] == user_uid
+
+    # Wenn eigene Posts: alle sichtbar
+    # Wenn anderer User: nur Posts sehen die für mich sichtbar sind basierend auf Freundschaft
+    if is_own_profile:
+        allowed_visibility = None  # Alle Posts
+    else:
+        # Freundschaftsstatus prüfen
+        relation_type = await get_relation_type(current_user["uid"], user_uid)
+
+        if not relation_type:
+            # Keine Freundschaft: nur öffentliche Posts
+            allowed_visibility = ["public"]
+        elif relation_type == "family":
+            allowed_visibility = ["public", "acquaintance", "close_friend", "family"]
+        elif relation_type == "close_friend":
+            allowed_visibility = ["public", "acquaintance", "close_friend"]
+        elif relation_type == "acquaintance":
+            allowed_visibility = ["public", "acquaintance"]
+        else:
+            allowed_visibility = ["public"]
+
+    # Posts laden
+    posts_db = UserPostsDB(user_uid)
+    raw_posts = await posts_db.get_posts(
+        visibility=allowed_visibility,
+        limit=limit,
+        offset=offset
+    )
+
+    # User-Profildata laden
+    profile_data_map = await get_user_profile_data_map([user_uid])
+    profile_data = profile_data_map.get(user_uid, {"username": "Unknown", "profile_picture": None})
+
+    # Posts anreichern
+    enriched_posts = []
+    for post in raw_posts:
+        likes_count = await posts_db.get_likes_count(post["post_id"])
+        comments_count = await posts_db.get_comments_count(post["post_id"])
+
+        # Media URLs bauen
+        media_urls = []
+        if post.get("media_paths"):
+            media_urls = [f"/api/media/{user_uid}/{path}" for path in post["media_paths"]]
+
+        enriched_posts.append({
+            "post_id": post["post_id"],
+            "author_uid": user_uid,
+            "author_username": profile_data["username"],
+            "author_profile_picture": profile_data["profile_picture"],
+            "content": post["content"],
+            "media_urls": media_urls,
+            "visibility": post["visibility"],
+            "created_at": post["created_at"],
+            "likes_count": likes_count,
+            "comments_count": comments_count,
+            "is_own_post": is_own_profile
+        })
+
+    return {
+        "posts": enriched_posts,
+        "has_more": len(raw_posts) == limit
+    }
+
+
 @router.get("/all", response_model=List[UserWithStats])
 async def get_all_users(
     current_user: dict = Depends(get_current_user)
