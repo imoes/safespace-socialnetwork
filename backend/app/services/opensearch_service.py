@@ -222,13 +222,24 @@ class OpenSearchService:
 
     async def get_trending_hashtags(self, limit: int = 20) -> List[Dict[str, Any]]:
         """
-        Gets trending hashtags based on usage count.
+        Gets trending hashtags based on usage count in the last 24 hours.
         Returns list of hashtags with their counts.
         """
         await self.ensure_index()
 
+        # Calculate timestamp for 24 hours ago
+        from datetime import datetime, timedelta
+        twenty_four_hours_ago = datetime.utcnow() - timedelta(hours=24)
+
         query = {
             "size": 0,
+            "query": {
+                "range": {
+                    "created_at": {
+                        "gte": twenty_four_hours_ago.isoformat()
+                    }
+                }
+            },
             "aggs": {
                 "hashtags": {
                     "terms": {
