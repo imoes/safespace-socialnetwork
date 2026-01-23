@@ -438,6 +438,9 @@ export class SettingsComponent implements OnInit {
         this.newPassword = '';
         this.confirmPassword = '';
 
+        // User-Daten neu laden, um aktualisierte Werte anzuzeigen
+        this.authService.loadCurrentUser();
+
         // User neu laden
         this.authService.loadCurrentUser();
       },
