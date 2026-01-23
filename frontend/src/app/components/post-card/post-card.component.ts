@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { ReportService } from '../../services/report.service';
           <span class="timestamp">{{ post.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
         </div>
         <div class="post-menu">
-          <button class="menu-btn" (click)="showMenu = !showMenu">⋮</button>
+          <button class="menu-btn" (click)="toggleMenu($event)">⋮</button>
           @if (showMenu) {
             <div class="menu-dropdown">
               @if (post.author_uid === currentUid) {
@@ -53,8 +53,8 @@ import { ReportService } from '../../services/report.service';
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid === currentUid) {
-          <div class="visibility-wrapper">
-            <span class="visibility clickable" (click)="toggleVisibilityDropdown()" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+          <div class="visibility-wrapper" #visibilityWrapper>
+            <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
             @if (showVisibilityDropdown) {
               <div class="visibility-dropdown">
                 <button (click)="changeVisibility('public')">🌍 Öffentlich</button>
@@ -278,6 +278,11 @@ export class PostCardComponent {
     this.isLiked = !this.isLiked;
   }
 
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
   onDelete(): void {
     if (confirm('Post wirklich löschen?')) {
       this.delete.emit(this.post);
@@ -320,8 +325,21 @@ export class PostCardComponent {
     }
   }
 
-  toggleVisibilityDropdown(): void {
+  toggleVisibilityDropdown(event: Event): void {
+    event.stopPropagation();
     this.showVisibilityDropdown = !this.showVisibilityDropdown;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    // Close visibility dropdown when clicking outside
+    if (this.showVisibilityDropdown) {
+      this.showVisibilityDropdown = false;
+    }
+    // Close post menu when clicking outside
+    if (this.showMenu) {
+      this.showMenu = false;
+    }
   }
 
   changeVisibility(newVisibility: string): void {
