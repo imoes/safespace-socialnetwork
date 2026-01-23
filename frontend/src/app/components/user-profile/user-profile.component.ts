@@ -73,7 +73,7 @@ import { HttpClient } from '@angular/common/http';
             </div>
           } @else {
             @for (post of posts(); track post.post_id) {
-              <app-post-card [post]="post" (postDeleted)="onPostDeleted($event)"></app-post-card>
+              <app-post-card [post]="post" (delete)="onPostDeleted(post)"></app-post-card>
             }
           }
         </div>
@@ -189,8 +189,8 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
-  onPostDeleted(postId: number): void {
-    this.posts.set(this.posts().filter(p => p.post_id !== postId));
+  onPostDeleted(post: Post): void {
+    this.posts.set(this.posts().filter(p => p.post_id !== post.post_id));
   }
 
   sendFriendRequest(): void {
