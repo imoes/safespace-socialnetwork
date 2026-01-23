@@ -145,12 +145,15 @@ async def search_users(
             """
             SELECT uid, username, bio, role, first_name, last_name
             FROM users
-            WHERE username ILIKE %s
+            WHERE (username ILIKE %s
+              OR first_name ILIKE %s
+              OR last_name ILIKE %s
+              OR CONCAT(first_name, ' ', last_name) ILIKE %s)
               AND uid != %s
               AND is_banned = FALSE
             LIMIT 20
             """,
-            (f"%{q}%", current_user["uid"])
+            (f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", current_user["uid"])
         )
         rows = await result.fetchall()
 
