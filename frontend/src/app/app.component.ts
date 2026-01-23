@@ -217,6 +217,10 @@ export class AppComponent {
   onSearchInput(): void {
     this.searchSubject.next(this.searchQuery);
     this.selectedIndex.set(-1);
+    // Ergebnisse wieder anzeigen wenn User tippt
+    if (this.searchQuery.length >= 2) {
+      this.showSearchResults.set(true);
+    }
   }
 
   onSearchFocus(): void {
