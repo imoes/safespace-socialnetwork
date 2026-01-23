@@ -302,6 +302,8 @@ class UserPostsDB:
         """Lädt Kommentare für einen Post mit Likes-Count"""
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
+            await self._ensure_comment_likes_table(db)
+
             cursor = await db.execute(
                 """
                 SELECT c.*, COUNT(cl.user_uid) as likes_count
@@ -327,9 +329,22 @@ class UserPostsDB:
             row = await cursor.fetchone()
             return row[0] if row else 0
 
+    async def _ensure_comment_likes_table(self, db) -> None:
+        """Stellt sicher, dass die comment_likes Tabelle existiert (für alte Datenbanken)"""
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS comment_likes (
+                comment_id INTEGER,
+                user_uid INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (comment_id, user_uid)
+            )
+        """)
+        await db.commit()
+
     async def like_comment(self, comment_id: int, user_uid: int) -> bool:
         """Liked einen Kommentar"""
         async with aiosqlite.connect(self.db_path) as db:
+            await self._ensure_comment_likes_table(db)
             try:
                 await db.execute(
                     "INSERT INTO comment_likes (comment_id, user_uid) VALUES (?, ?)",
@@ -343,6 +358,7 @@ class UserPostsDB:
     async def unlike_comment(self, comment_id: int, user_uid: int) -> bool:
         """Entfernt Like von einem Kommentar"""
         async with aiosqlite.connect(self.db_path) as db:
+            await self._ensure_comment_likes_table(db)
             await db.execute(
                 "DELETE FROM comment_likes WHERE comment_id = ? AND user_uid = ?",
                 (comment_id, user_uid)
@@ -353,6 +369,7 @@ class UserPostsDB:
     async def get_comment_likes_count(self, comment_id: int) -> int:
         """Zählt Likes für einen Kommentar"""
         async with aiosqlite.connect(self.db_path) as db:
+            await self._ensure_comment_likes_table(db)
             cursor = await db.execute(
                 "SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?",
                 (comment_id,)
@@ -363,6 +380,7 @@ class UserPostsDB:
     async def is_comment_liked_by_user(self, comment_id: int, user_uid: int) -> bool:
         """Prüft ob User den Kommentar geliked hat"""
         async with aiosqlite.connect(self.db_path) as db:
+            await self._ensure_comment_likes_table(db)
             cursor = await db.execute(
                 "SELECT 1 FROM comment_likes WHERE comment_id = ? AND user_uid = ? LIMIT 1",
                 (comment_id, user_uid)
