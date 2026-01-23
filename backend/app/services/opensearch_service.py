@@ -146,10 +146,10 @@ class OpenSearchService:
         except Exception:
             return False
 
-    async def search_by_hashtag(self, hashtag: str, limit: int = 50) -> List[Dict[str, Any]]:
+    async def search_by_hashtag(self, hashtag: str, limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
         """
-        Searches for posts by hashtag.
-        Returns top 50 posts sorted by created_at (newest first).
+        Searches for posts by hashtag with pagination.
+        Returns posts sorted by created_at (newest first).
         """
         await self.ensure_index()
 
@@ -165,7 +165,8 @@ class OpenSearchService:
             "sort": [
                 {"created_at": {"order": "desc"}}
             ],
-            "size": limit
+            "size": limit,
+            "from": offset
         }
 
         response = self.client.search(
