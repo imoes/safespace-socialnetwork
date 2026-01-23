@@ -52,7 +52,18 @@ import { ReportService } from '../../services/report.service';
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid === currentUid) {
-          <span class="visibility clickable" (click)="openVisibilityModal()" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+          <div class="visibility-wrapper">
+            <span class="visibility clickable" (click)="toggleVisibilityDropdown()" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+            @if (showVisibilityDropdown) {
+              <div class="visibility-dropdown">
+                <button (click)="changeVisibility('public')">🌍 Öffentlich</button>
+                <button (click)="changeVisibility('friends')">👥 Alle Freunde</button>
+                <button (click)="changeVisibility('close_friends')">💚 Enge Freunde</button>
+                <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 Familie</button>
+                <button (click)="changeVisibility('private')">🔒 Nur ich</button>
+              </div>
+            }
+          </div>
         } @else {
           <span class="visibility">{{ getVisibilityLabel() }}</span>
         }
@@ -185,9 +196,15 @@ import { ReportService } from '../../services/report.service';
     .action-btn { background: none; border: none; padding: 8px 12px; cursor: pointer; color: #65676b; }
     .action-btn:hover { background: #f0f2f5; border-radius: 4px; }
     .action-btn.liked { color: #f44336; }
-    .visibility { margin-left: auto; font-size: 11px; color: #999; }
+    .visibility-wrapper { margin-left: auto; position: relative; }
+    .visibility { font-size: 11px; color: #999; }
     .visibility.clickable { cursor: pointer; color: #1877f2; font-weight: 500; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
     .visibility.clickable:hover { background: #f0f2f5; }
+    .visibility-dropdown { position: absolute; right: 0; bottom: 100%; margin-bottom: 4px; background: white; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); min-width: 180px; z-index: 10; }
+    .visibility-dropdown button { display: block; width: 100%; padding: 10px 16px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; }
+    .visibility-dropdown button:hover { background: #f0f2f5; }
+    .visibility-dropdown button:first-child { border-radius: 8px 8px 0 0; }
+    .visibility-dropdown button:last-child { border-radius: 0 0 8px 8px; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .report-modal, .visibility-modal, .edit-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
@@ -241,6 +258,7 @@ export class PostCardComponent {
   showMenu = false;
   showReportModal = false;
   showVisibilityModal = false;
+  showVisibilityDropdown = false;
   showEditPostModal = false;
   reportCategory = 'hate_speech';
   reportReason = '';
@@ -290,7 +308,6 @@ export class PostCardComponent {
       this.feedService.updatePostVisibility(this.post.post_id, this.newVisibility).subscribe({
         next: () => {
           this.showVisibilityModal = false;
-          alert('Sichtbarkeit erfolgreich geändert!');
         },
         error: () => {
           alert('Fehler beim Ändern der Sichtbarkeit');
@@ -298,6 +315,27 @@ export class PostCardComponent {
       });
     } else {
       this.showVisibilityModal = false;
+    }
+  }
+
+  toggleVisibilityDropdown(): void {
+    this.showVisibilityDropdown = !this.showVisibilityDropdown;
+  }
+
+  changeVisibility(newVisibility: string): void {
+    if (newVisibility !== this.post.visibility) {
+      this.feedService.updatePostVisibility(this.post.post_id, newVisibility).subscribe({
+        next: () => {
+          this.post.visibility = newVisibility;
+          this.showVisibilityDropdown = false;
+        },
+        error: () => {
+          alert('Fehler beim Ändern der Sichtbarkeit');
+          this.showVisibilityDropdown = false;
+        }
+      });
+    } else {
+      this.showVisibilityDropdown = false;
     }
   }
 
@@ -314,7 +352,6 @@ export class PostCardComponent {
       next: (updatedPost) => {
         this.post.content = updatedPost.content;
         this.showEditPostModal = false;
-        alert('Post erfolgreich bearbeitet!');
       },
       error: () => {
         alert('Fehler beim Bearbeiten des Posts');
