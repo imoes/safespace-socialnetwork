@@ -237,7 +237,7 @@ export class HashtagDetailComponent implements OnInit {
       post_id: hashtagPost.post_id,
       author_uid: hashtagPost.author_uid,
       author_username: hashtagPost.author_username,
-      author_profile_picture: null,
+      author_profile_picture: undefined,
       content: hashtagPost.content,
       media_urls: hashtagPost.media_urls,
       visibility: 'public',
