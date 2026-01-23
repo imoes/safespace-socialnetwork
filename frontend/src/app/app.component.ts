@@ -22,12 +22,19 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
             placeholder="🔍 Benutzer suchen..."
             [(ngModel)]="searchQuery"
             (input)="onSearchInput()"
-            (focus)="showSearchResults.set(true)"
+            (focus)="onSearchFocus()"
+            (keydown)="onSearchKeydown($event)"
           />
           @if (showSearchResults() && searchResults().length > 0) {
+            <div class="search-overlay" (click)="closeSearch()"></div>
             <div class="search-results">
-              @for (user of searchResults(); track user.uid) {
-                <div class="search-result-item" (click)="goToProfile(user.uid)">
+              @for (user of searchResults(); track user.uid; let i = $index) {
+                <div
+                  class="search-result-item"
+                  [class.selected]="selectedIndex() === i"
+                  (click)="goToProfile(user.uid)"
+                  (mouseenter)="selectedIndex.set(i)"
+                >
                   <div class="search-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
                   <div class="search-user-info">
                     <div class="search-username">{{ user.username }}</div>
@@ -40,6 +47,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
             </div>
           }
           @if (showSearchResults() && searchQuery.length >= 2 && searchResults().length === 0) {
+            <div class="search-overlay" (click)="closeSearch()"></div>
             <div class="search-results">
               <div class="no-results">Keine Benutzer gefunden</div>
             </div>
@@ -87,9 +95,10 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
     .search-container { position: relative; flex: 1; max-width: 500px; }
     .search-input { width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; outline: none; }
     .search-input:focus { border-color: #1877f2; }
+    .search-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; }
     .search-results { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 400px; overflow-y: auto; z-index: 1000; }
     .search-result-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; transition: background 0.2s; }
-    .search-result-item:hover { background: #f0f2f5; }
+    .search-result-item:hover, .search-result-item.selected { background: #f0f2f5; }
     .search-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
     .search-user-info { flex: 1; min-width: 0; }
     .search-username { font-weight: 600; font-size: 14px; }
@@ -172,6 +181,7 @@ export class AppComponent {
   showDropdown = signal(false);
   showSearchResults = signal(false);
   searchResults = signal<UserSearchResult[]>([]);
+  selectedIndex = signal(-1);
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
@@ -206,10 +216,48 @@ export class AppComponent {
 
   onSearchInput(): void {
     this.searchSubject.next(this.searchQuery);
+    this.selectedIndex.set(-1);
+  }
+
+  onSearchFocus(): void {
+    this.showSearchResults.set(true);
+    if (this.searchQuery.length >= 2) {
+      this.searchSubject.next(this.searchQuery);
+    }
+  }
+
+  onSearchKeydown(event: KeyboardEvent): void {
+    const results = this.searchResults();
+
+    if (event.key === 'Escape') {
+      this.closeSearch();
+      return;
+    }
+
+    if (results.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.selectedIndex.update(i => (i + 1) % results.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.selectedIndex.update(i => (i - 1 + results.length) % results.length);
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const index = this.selectedIndex();
+      if (index >= 0 && index < results.length) {
+        this.goToProfile(results[index].uid);
+      }
+    }
+  }
+
+  closeSearch(): void {
+    this.showSearchResults.set(false);
+    this.selectedIndex.set(-1);
   }
 
   goToProfile(uid: number): void {
-    this.showSearchResults.set(false);
+    this.closeSearch();
     this.searchQuery = '';
     this.searchResults.set([]);
     this.router.navigate(['/profile', uid]);
