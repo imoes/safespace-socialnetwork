@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -116,11 +116,11 @@ import { HttpClient } from '@angular/common/http';
     .nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
     .nav-link { color: #666; text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: background 0.2s; }
     .nav-link:hover { background: #f0f2f5; }
-    .nav-link-with-badge { position: relative; }
+    .nav-link-with-badge { position: relative; display: inline-block; }
     .notification-badge {
       position: absolute;
-      top: 2px;
-      right: 0px;
+      top: -5px;
+      right: -10px;
       background: #e74c3c;
       color: white;
       border-radius: 10px;
@@ -130,6 +130,7 @@ import { HttpClient } from '@angular/common/http';
       min-width: 18px;
       text-align: center;
       line-height: 14px;
+      z-index: 10;
     }
 
     .user-menu { position: relative; }
@@ -224,27 +225,33 @@ export class AppComponent implements OnInit {
     ).subscribe(results => {
       this.searchResults.set(results);
     });
+
+    // Watch for authentication changes and load pending requests
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        console.log('User authenticated, loading pending requests...');
+        this.loadPendingRequestsCount();
+      }
+    });
   }
 
   ngOnInit(): void {
-    // Load friend requests count on start and refresh every 30 seconds
-    if (this.authService.isAuthenticated()) {
-      this.loadPendingRequestsCount();
-      interval(30000).subscribe(() => {
-        if (this.authService.isAuthenticated()) {
-          this.loadPendingRequestsCount();
-        }
-      });
-    }
+    // Refresh pending requests count every 30 seconds
+    interval(30000).subscribe(() => {
+      if (this.authService.isAuthenticated()) {
+        this.loadPendingRequestsCount();
+      }
+    });
   }
 
   private loadPendingRequestsCount(): void {
     this.http.get<{ requests: any[] }>('/api/friends/requests').subscribe({
       next: (response) => {
+        console.log('Pending friend requests:', response.requests.length);
         this.pendingRequestsCount.set(response.requests.length);
       },
-      error: () => {
-        // Silently fail, not critical
+      error: (err) => {
+        console.error('Error loading pending requests:', err);
       }
     });
   }
