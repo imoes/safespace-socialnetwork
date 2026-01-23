@@ -6,6 +6,7 @@ export interface Post {
   post_id: number;
   author_uid: number;
   author_username: string;
+  author_profile_picture?: string;
   content: string;
   media_urls: string[];
   visibility: string;

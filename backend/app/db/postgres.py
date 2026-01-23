@@ -509,7 +509,7 @@ async def get_username_map(uids: list[int]) -> dict[int, str]:
     """Lädt Usernamen für eine Liste von UIDs"""
     if not uids:
         return {}
-    
+
     async with PostgresDB.connection() as conn:
         placeholders = ", ".join(["%s"] * len(uids))
         result = await conn.execute(
@@ -518,3 +518,24 @@ async def get_username_map(uids: list[int]) -> dict[int, str]:
         )
         rows = await result.fetchall()
         return {row["uid"]: row["username"] for row in rows}
+
+
+async def get_user_profile_data_map(uids: list[int]) -> dict[int, dict]:
+    """Lädt Username und Profilbild für eine Liste von UIDs"""
+    if not uids:
+        return {}
+
+    async with PostgresDB.connection() as conn:
+        placeholders = ", ".join(["%s"] * len(uids))
+        result = await conn.execute(
+            f"SELECT uid, username, profile_picture FROM users WHERE uid IN ({placeholders})",
+            tuple(uids)
+        )
+        rows = await result.fetchall()
+        return {
+            row["uid"]: {
+                "username": row["username"],
+                "profile_picture": row.get("profile_picture")
+            }
+            for row in rows
+        }

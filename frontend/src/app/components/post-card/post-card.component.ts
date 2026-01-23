@@ -11,7 +11,11 @@ import { ReportService } from '../../services/report.service';
   template: `
     <div class="post-card">
       <div class="post-header">
-        <div class="avatar">{{ post.author_username.charAt(0).toUpperCase() }}</div>
+        @if (post.author_profile_picture) {
+          <img [src]="post.author_profile_picture" class="avatar avatar-img" [alt]="post.author_username" />
+        } @else {
+          <div class="avatar">{{ post.author_username.charAt(0).toUpperCase() }}</div>
+        }
         <div class="author-info">
           <span class="username">{{ post.author_username }}</span>
           <span class="timestamp">{{ post.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
@@ -130,6 +134,7 @@ import { ReportService } from '../../services/report.service';
     .post-card { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; position: relative; }
     .post-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; }
     .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+    .avatar-img { object-fit: cover; }
     .author-info { flex: 1; display: flex; flex-direction: column; }
     .username { font-weight: 600; }
     .timestamp { font-size: 12px; color: #65676b; }

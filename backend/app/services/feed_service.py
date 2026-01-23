@@ -83,14 +83,15 @@ class FeedService:
         Lädt Posts von allen Freunden + eigene Posts parallel.
         Berücksichtigt Freundschafts-Tiers für Sichtbarkeit.
         """
-        from app.db.postgres import get_relation_type
-        
+        from app.db.postgres import get_relation_type, get_user_profile_data_map
+
         # Freundesliste holen
         friend_uids = await get_friends(uid)
         all_uids = [uid] + friend_uids
-        
-        # Usernamen für alle UIDs laden
-        username_map = await get_username_map(all_uids)
+
+        # Usernamen und Profilbilder für alle UIDs laden
+        profile_data_map = await get_user_profile_data_map(all_uids)
+        username_map = {uid: data["username"] for uid, data in profile_data_map.items()}
         
         # Friendship Tiers laden
         tier_map = {}
@@ -114,7 +115,7 @@ class FeedService:
                 allowed_tiers = None
             
             tasks.append(
-                cls._load_user_posts(user_uid, visibility, username_map)
+                cls._load_user_posts(user_uid, visibility, profile_data_map)
             )
         
         # Parallel ausführen
@@ -155,26 +156,29 @@ class FeedService:
         cls,
         user_uid: int,
         visibility: list[str] | None,
-        username_map: dict[int, str]
+        profile_data_map: dict[int, dict]
     ) -> list[dict]:
         """Lädt Posts eines Users und reichert sie mit Metadaten an"""
-        
+
         posts_db = UserPostsDB(user_uid)
         raw_posts = await posts_db.get_posts(
             visibility=visibility,
             limit=100  # Max Posts pro User im Feed
         )
-        
+
+        profile_data = profile_data_map.get(user_uid, {"username": "Unknown", "profile_picture": None})
+
         enriched = []
         for post in raw_posts:
             # Likes und Comments Count laden
             likes_count = await posts_db.get_likes_count(post["post_id"])
             comments_count = await posts_db.get_comments_count(post["post_id"])
-            
+
             enriched.append({
                 "post_id": post["post_id"],
                 "author_uid": user_uid,
-                "author_username": username_map.get(user_uid, "Unknown"),
+                "author_username": profile_data["username"],
+                "author_profile_picture": profile_data["profile_picture"],
                 "content": post["content"],
                 "media_urls": cls._build_media_urls(user_uid, post["media_paths"]),
                 "visibility": post["visibility"],
@@ -182,7 +186,7 @@ class FeedService:
                 "likes_count": likes_count,
                 "comments_count": comments_count
             })
-        
+
         return enriched
     
     @classmethod
