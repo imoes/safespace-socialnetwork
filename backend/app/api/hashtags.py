@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from app.services.auth_service import get_current_user
 from app.services.opensearch_service import get_opensearch_service
-from app.db.postgres import get_friends, get_relation_type
+from app.db.postgres import get_friends_with_info
 
 
 router = APIRouter(prefix="/hashtags", tags=["Hashtags"])
@@ -69,12 +69,11 @@ async def search_by_hashtag(
         current_user_uid = current_user["uid"]
 
         # Get friends and their relation types
-        friends_data = await get_friends(current_user_uid)
+        friends_data = await get_friends_with_info(current_user_uid)
         friend_relations: Dict[int, str] = {}
         for friend in friends_data:
             friend_uid = friend["uid"]
-            # Get relation type for this friend
-            relation = await get_relation_type(current_user_uid, friend_uid)
+            relation = friend["relation_type"]
             if relation:
                 friend_relations[friend_uid] = relation
 
