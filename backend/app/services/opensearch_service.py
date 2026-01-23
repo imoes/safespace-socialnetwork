@@ -37,6 +37,7 @@ class OpenSearchService:
                         "content": {"type": "text"},
                         "hashtags": {"type": "keyword"},  # For exact matching and aggregations
                         "media_urls": {"type": "keyword"},
+                        "visibility": {"type": "keyword"},  # For filtering by visibility
                         "created_at": {"type": "date"},
                         "likes_count": {"type": "integer"},
                         "comments_count": {"type": "integer"}
@@ -52,9 +53,9 @@ class OpenSearchService:
     def extract_hashtags(self, content: str) -> List[str]:
         """
         Extracts hashtags from post content.
-        Pattern: #word (alphanumeric and underscores)
+        Pattern: #letters (only letters, no numbers)
         """
-        hashtag_pattern = r'#(\w+)'
+        hashtag_pattern = r'#([a-zA-ZäöüÄÖÜß]+)'
         hashtags = re.findall(hashtag_pattern, content)
         # Convert to lowercase for consistency
         return [tag.lower() for tag in hashtags]
@@ -69,12 +70,13 @@ class OpenSearchService:
         author_last_name: Optional[str],
         content: str,
         media_urls: List[str],
+        visibility: str,
         created_at: datetime,
         likes_count: int = 0,
         comments_count: int = 0
     ) -> str:
         """
-        Indexes a public post in OpenSearch.
+        Indexes a post in OpenSearch with visibility filtering.
         Returns the document ID.
         """
         await self.ensure_index()
@@ -91,6 +93,7 @@ class OpenSearchService:
             "content": content,
             "hashtags": hashtags,
             "media_urls": media_urls,
+            "visibility": visibility,
             "created_at": created_at.isoformat(),
             "likes_count": likes_count,
             "comments_count": comments_count
@@ -146,9 +149,25 @@ class OpenSearchService:
         except Exception:
             return False
 
-    async def search_by_hashtag(self, hashtag: str, limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
+    async def search_by_hashtag(
+        self,
+        hashtag: str,
+        current_user_uid: int,
+        allowed_visibilities: Optional[List[str]] = None,
+        limit: int = 50,
+        offset: int = 0
+    ) -> List[Dict[str, Any]]:
         """
-        Searches for posts by hashtag with pagination.
+        Searches for posts by hashtag with pagination and visibility filtering.
+
+        Args:
+            hashtag: The hashtag to search for
+            current_user_uid: UID of the user performing the search
+            allowed_visibilities: List of visibility levels the user can see (e.g., ["public", "friends"])
+                                  None means all visibilities (for own posts)
+            limit: Number of results to return
+            offset: Offset for pagination
+
         Returns posts sorted by created_at (newest first).
         """
         await self.ensure_index()
@@ -156,10 +175,35 @@ class OpenSearchService:
         # Remove # prefix if present
         hashtag = hashtag.lstrip('#').lower()
 
+        # Build query with hashtag filter
+        must_clauses = [
+            {"term": {"hashtags": hashtag}}
+        ]
+
+        # Build visibility filter
+        should_clauses = [
+            # Always include own posts
+            {"term": {"author_uid": current_user_uid}}
+        ]
+
+        # Add allowed visibilities for other users' posts
+        if allowed_visibilities:
+            for visibility in allowed_visibilities:
+                should_clauses.append({
+                    "bool": {
+                        "must": [
+                            {"term": {"visibility": visibility}},
+                            {"bool": {"must_not": {"term": {"author_uid": current_user_uid}}}}
+                        ]
+                    }
+                })
+
         query = {
             "query": {
-                "term": {
-                    "hashtags": hashtag
+                "bool": {
+                    "must": must_clauses,
+                    "should": should_clauses,
+                    "minimum_should_match": 1
                 }
             },
             "sort": [
