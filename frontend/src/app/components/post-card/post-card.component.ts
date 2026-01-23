@@ -22,16 +22,6 @@ import { ReportService } from '../../services/report.service';
           <span class="username">{{ post.author_username }}</span>
           <span class="timestamp">{{ post.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
         </div>
-        @if (post.author_uid !== currentUid) {
-          <div class="post-menu">
-            <button class="menu-btn" (click)="toggleMenu($event)">⋮</button>
-            @if (showMenu) {
-              <div class="menu-dropdown">
-                <button (click)="showReportModal = true; showMenu = false">🚨 Melden</button>
-              </div>
-            }
-          </div>
-        }
       </div>
 
       <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
@@ -46,10 +36,15 @@ import { ReportService } from '../../services/report.service';
       }
 
       <div class="post-actions">
+        @if (post.author_uid !== currentUid) {
+          <button class="action-btn report-btn" (click)="showReportModal = true" title="Melden">🚨</button>
+        }
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
+            <button class="action-icon-btn" (click)="openEditPostModal()" title="Bearbeiten">✏️</button>
+            <button class="action-icon-btn" (click)="onDelete()" title="Löschen">🗑️</button>
             <div class="visibility-wrapper" #visibilityWrapper>
               <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
               @if (showVisibilityDropdown) {
@@ -62,8 +57,6 @@ import { ReportService } from '../../services/report.service';
                 </div>
               }
             </div>
-            <button class="action-icon-btn" (click)="openEditPostModal()" title="Bearbeiten">✏️</button>
-            <button class="action-icon-btn" (click)="onDelete()" title="Löschen">🗑️</button>
           </div>
         } @else {
           <span class="visibility">{{ getVisibilityLabel() }}</span>
@@ -183,11 +176,6 @@ import { ReportService } from '../../services/report.service';
     .author-info { flex: 1; display: flex; flex-direction: column; }
     .username { font-weight: 600; }
     .timestamp { font-size: 12px; color: #65676b; }
-    .post-menu { position: relative; }
-    .menu-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px 8px; color: #65676b; }
-    .menu-dropdown { position: absolute; right: 0; top: 100%; background: white; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); min-width: 150px; z-index: 10; }
-    .menu-dropdown button { display: block; width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; }
-    .menu-dropdown button:hover { background: #f0f2f5; }
     .post-content { padding: 0 16px 12px; }
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
     .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
@@ -197,6 +185,8 @@ import { ReportService } from '../../services/report.service';
     .action-btn { background: none; border: none; padding: 8px 12px; cursor: pointer; color: #65676b; }
     .action-btn:hover { background: #f0f2f5; border-radius: 4px; }
     .action-btn.liked { color: #f44336; }
+    .report-btn { color: #f44336; }
+    .report-btn:hover { background: #fee; }
     .post-controls { margin-left: auto; display: flex; align-items: center; gap: 4px; }
     .visibility-wrapper { position: relative; }
     .visibility { font-size: 11px; color: #999; }
@@ -260,7 +250,6 @@ export class PostCardComponent {
   private sanitizer = inject(DomSanitizer);
 
   isLiked = false;
-  showMenu = false;
   showReportModal = false;
   showVisibilityModal = false;
   showVisibilityDropdown = false;
@@ -279,11 +268,6 @@ export class PostCardComponent {
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
     this.isLiked = !this.isLiked;
-  }
-
-  toggleMenu(event: Event): void {
-    event.stopPropagation();
-    this.showMenu = !this.showMenu;
   }
 
   onDelete(): void {
@@ -338,10 +322,6 @@ export class PostCardComponent {
     // Close visibility dropdown when clicking outside
     if (this.showVisibilityDropdown) {
       this.showVisibilityDropdown = false;
-    }
-    // Close post menu when clicking outside
-    if (this.showMenu) {
-      this.showMenu = false;
     }
   }
 
