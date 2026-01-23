@@ -206,6 +206,61 @@ async def get_user_profile(
         )
 
 
+@router.get("/me/posts")
+async def get_my_posts(
+    limit: int = 50,
+    offset: int = 0,
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt alle Posts des aktuellen Benutzers"""
+    from app.db.sqlite_posts import UserPostsDB
+    from app.db.postgres import get_user_profile_data_map
+
+    user_uid = current_user["uid"]
+
+    # Posts laden (alle Sichtbarkeiten, da eigene Posts)
+    posts_db = UserPostsDB(user_uid)
+    raw_posts = await posts_db.get_posts(
+        visibility=None,  # Alle Posts
+        limit=limit,
+        offset=offset
+    )
+
+    # User-Profildata laden
+    profile_data_map = await get_user_profile_data_map([user_uid])
+    profile_data = profile_data_map.get(user_uid, {"username": current_user["username"], "profile_picture": current_user.get("profile_picture")})
+
+    # Posts anreichern
+    enriched_posts = []
+    for post in raw_posts:
+        likes_count = await posts_db.get_likes_count(post["post_id"])
+        comments_count = await posts_db.get_comments_count(post["post_id"])
+
+        # Media URLs bauen
+        media_urls = []
+        if post.get("media_paths"):
+            media_urls = [f"/api/media/{user_uid}/{path}" for path in post["media_paths"]]
+
+        enriched_posts.append({
+            "post_id": post["post_id"],
+            "author_uid": user_uid,
+            "author_username": profile_data["username"],
+            "author_profile_picture": profile_data["profile_picture"],
+            "content": post["content"],
+            "media_urls": media_urls,
+            "visibility": post["visibility"],
+            "created_at": post["created_at"],
+            "likes_count": likes_count,
+            "comments_count": comments_count,
+            "is_own_post": True
+        })
+
+    return {
+        "posts": enriched_posts,
+        "has_more": len(raw_posts) == limit
+    }
+
+
 @router.get("/{user_uid}/posts")
 async def get_user_posts(
     user_uid: int,
