@@ -15,6 +15,7 @@ import { FriendsComponent } from './components/friends/friends.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { HashtagsComponent } from './components/hashtags/hashtags.component';
 import { HashtagDetailComponent } from './components/hashtags/hashtag-detail.component';
+import { MyPostsComponent } from './components/my-posts/my-posts.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'users', component: UserManagementComponent, canActivate: [authGuard] },
   { path: 'friends', component: FriendsComponent, canActivate: [authGuard] },
+  { path: 'my-posts', component: MyPostsComponent, canActivate: [authGuard] },
   { path: 'profile/:uid', component: UserProfileComponent, canActivate: [authGuard] },
   { path: 'hashtags', component: HashtagsComponent, canActivate: [authGuard] },
   { path: 'hashtag/:hashtag', component: HashtagDetailComponent, canActivate: [authGuard] },

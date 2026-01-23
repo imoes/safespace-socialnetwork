@@ -56,6 +56,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
 
         <div class="nav-right">
           <a routerLink="/" class="nav-link">🏠 Feed</a>
+          <a routerLink="/my-posts" class="nav-link">📝 Meine Posts</a>
           <a routerLink="/hashtags" class="nav-link">🏷️ Hashtags</a>
           <a routerLink="/friends" class="nav-link">👫 Freunde</a>
           @if (authService.isModerator()) {
