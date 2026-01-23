@@ -16,6 +16,8 @@ export interface UserProfile {
   role: string;
   created_at: string;
   profile_picture?: string;
+  first_name?: string;
+  last_name?: string;
 }
 
 @Injectable({
