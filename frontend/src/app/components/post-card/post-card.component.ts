@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,20 +22,16 @@ import { ReportService } from '../../services/report.service';
           <span class="username">{{ post.author_username }}</span>
           <span class="timestamp">{{ post.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
         </div>
-        <div class="post-menu">
-          <button class="menu-btn" (click)="showMenu = !showMenu">⋮</button>
-          @if (showMenu) {
-            <div class="menu-dropdown">
-              @if (post.author_uid === currentUid) {
-                <button (click)="openEditPostModal(); showMenu = false">✏️ Bearbeiten</button>
-                <button (click)="openVisibilityModal(); showMenu = false">👁️ Sichtbarkeit ändern</button>
-                <button (click)="onDelete(); showMenu = false">🗑️ Löschen</button>
-              } @else {
+        @if (post.author_uid !== currentUid) {
+          <div class="post-menu">
+            <button class="menu-btn" (click)="toggleMenu($event)">⋮</button>
+            @if (showMenu) {
+              <div class="menu-dropdown">
                 <button (click)="showReportModal = true; showMenu = false">🚨 Melden</button>
-              }
-            </div>
-          }
-        </div>
+              </div>
+            }
+          </div>
+        }
       </div>
 
       <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
@@ -53,17 +49,21 @@ import { ReportService } from '../../services/report.service';
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid === currentUid) {
-          <div class="visibility-wrapper">
-            <span class="visibility clickable" (click)="toggleVisibilityDropdown()" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
-            @if (showVisibilityDropdown) {
-              <div class="visibility-dropdown">
-                <button (click)="changeVisibility('public')">🌍 Öffentlich</button>
-                <button (click)="changeVisibility('friends')">👥 Alle Freunde</button>
-                <button (click)="changeVisibility('close_friends')">💚 Enge Freunde</button>
-                <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 Familie</button>
-                <button (click)="changeVisibility('private')">🔒 Nur ich</button>
-              </div>
-            }
+          <div class="post-controls">
+            <div class="visibility-wrapper" #visibilityWrapper>
+              <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+              @if (showVisibilityDropdown) {
+                <div class="visibility-dropdown">
+                  <button (click)="changeVisibility('public')">🌍 Öffentlich</button>
+                  <button (click)="changeVisibility('friends')">👥 Alle Freunde</button>
+                  <button (click)="changeVisibility('close_friends')">💚 Enge Freunde</button>
+                  <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 Familie</button>
+                  <button (click)="changeVisibility('private')">🔒 Nur ich</button>
+                </div>
+              }
+            </div>
+            <button class="action-icon-btn" (click)="openEditPostModal()" title="Bearbeiten">✏️</button>
+            <button class="action-icon-btn" (click)="onDelete()" title="Löschen">🗑️</button>
           </div>
         } @else {
           <span class="visibility">{{ getVisibilityLabel() }}</span>
@@ -197,7 +197,8 @@ import { ReportService } from '../../services/report.service';
     .action-btn { background: none; border: none; padding: 8px 12px; cursor: pointer; color: #65676b; }
     .action-btn:hover { background: #f0f2f5; border-radius: 4px; }
     .action-btn.liked { color: #f44336; }
-    .visibility-wrapper { margin-left: auto; position: relative; }
+    .post-controls { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    .visibility-wrapper { position: relative; }
     .visibility { font-size: 11px; color: #999; }
     .visibility.clickable { cursor: pointer; color: #1877f2; font-weight: 500; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
     .visibility.clickable:hover { background: #f0f2f5; }
@@ -206,6 +207,8 @@ import { ReportService } from '../../services/report.service';
     .visibility-dropdown button:hover { background: #f0f2f5; }
     .visibility-dropdown button:first-child { border-radius: 8px 8px 0 0; }
     .visibility-dropdown button:last-child { border-radius: 0 0 8px 8px; }
+    .action-icon-btn { background: none; border: none; padding: 4px 8px; cursor: pointer; font-size: 16px; border-radius: 4px; transition: background 0.2s; }
+    .action-icon-btn:hover { background: #f0f2f5; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .report-modal, .visibility-modal, .edit-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
@@ -278,6 +281,11 @@ export class PostCardComponent {
     this.isLiked = !this.isLiked;
   }
 
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
   onDelete(): void {
     if (confirm('Post wirklich löschen?')) {
       this.delete.emit(this.post);
@@ -320,8 +328,21 @@ export class PostCardComponent {
     }
   }
 
-  toggleVisibilityDropdown(): void {
+  toggleVisibilityDropdown(event: Event): void {
+    event.stopPropagation();
     this.showVisibilityDropdown = !this.showVisibilityDropdown;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    // Close visibility dropdown when clicking outside
+    if (this.showVisibilityDropdown) {
+      this.showVisibilityDropdown = false;
+    }
+    // Close post menu when clicking outside
+    if (this.showMenu) {
+      this.showMenu = false;
+    }
   }
 
   changeVisibility(newVisibility: string): void {
