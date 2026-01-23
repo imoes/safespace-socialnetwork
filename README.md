@@ -122,7 +122,7 @@ SafeSpace is a privacy-focused social network with AI-powered content moderation
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/safespace.git
+git clone https://github.com/imoes/safespace.git
 cd safespace
 
 # 2. Configure environment variables

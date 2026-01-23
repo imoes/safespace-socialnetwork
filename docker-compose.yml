@@ -78,7 +78,8 @@ services:
     image: confluentinc/cp-kafka:7.5.0
     container_name: socialnet-kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
