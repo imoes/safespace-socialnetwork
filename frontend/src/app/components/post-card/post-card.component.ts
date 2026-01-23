@@ -26,6 +26,7 @@ import { ReportService } from '../../services/report.service';
           @if (showMenu) {
             <div class="menu-dropdown">
               @if (post.author_uid === currentUid) {
+                <button (click)="openEditPostModal(); showMenu = false">✏️ Bearbeiten</button>
                 <button (click)="openVisibilityModal(); showMenu = false">👁️ Sichtbarkeit ändern</button>
                 <button (click)="onDelete(); showMenu = false">🗑️ Löschen</button>
               } @else {
@@ -75,11 +76,25 @@ import { ReportService } from '../../services/report.service';
                       <span class="comment-timestamp">{{ comment.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
                     </div>
                   </div>
-                  <div class="comment-content">{{ comment.content }}</div>
+                  @if (editingCommentId === comment.comment_id) {
+                    <div class="comment-edit">
+                      <input type="text" [(ngModel)]="editCommentContent" (keyup.enter)="saveCommentEdit(comment)" (keyup.escape)="cancelCommentEdit()" />
+                      <div class="comment-edit-actions">
+                        <button class="btn-save-comment" (click)="saveCommentEdit(comment)">💾 Speichern</button>
+                        <button class="btn-cancel-comment" (click)="cancelCommentEdit()">❌ Abbrechen</button>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="comment-content">{{ comment.content }}</div>
+                  }
                   <div class="comment-actions">
                     <button class="comment-like-btn" [class.liked]="comment.is_liked_by_user" (click)="toggleCommentLike(comment)">
                       {{ comment.is_liked_by_user ? '❤️' : '🤍' }} {{ comment.likes_count }}
                     </button>
+                    @if (comment.user_uid === currentUid) {
+                      <button class="comment-action-btn" (click)="startEditComment(comment)">✏️ Bearbeiten</button>
+                      <button class="comment-action-btn" (click)="deleteCommentConfirm(comment)">🗑️ Löschen</button>
+                    }
                   </div>
                 </div>
               }
@@ -129,6 +144,19 @@ import { ReportService } from '../../services/report.service';
           </div>
         </div>
       }
+
+      @if (showEditPostModal) {
+        <div class="modal-overlay" (click)="showEditPostModal = false">
+          <div class="edit-modal" (click)="$event.stopPropagation()">
+            <h3>✏️ Post bearbeiten</h3>
+            <textarea [(ngModel)]="editPostContent" placeholder="Was möchtest du ändern?" rows="5"></textarea>
+            <div class="modal-actions">
+              <button class="btn-cancel" (click)="showEditPostModal = false">Abbrechen</button>
+              <button class="btn-submit" (click)="updatePostContent()" [disabled]="!editPostContent.trim()">Speichern</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -156,9 +184,9 @@ import { ReportService } from '../../services/report.service';
     .visibility { margin-left: auto; font-size: 11px; color: #999; }
     
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .report-modal, .visibility-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
-    .report-modal h3, .visibility-modal h3 { margin: 0 0 16px; }
-    .report-modal select, .report-modal textarea, .visibility-modal select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-family: inherit; box-sizing: border-box; }
+    .report-modal, .visibility-modal, .edit-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
+    .report-modal h3, .visibility-modal h3, .edit-modal h3 { margin: 0 0 16px; }
+    .report-modal select, .report-modal textarea, .visibility-modal select, .edit-modal textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-family: inherit; box-sizing: border-box; }
     .current-visibility { font-size: 14px; color: #65676b; margin-bottom: 12px; }
     .modal-actions { display: flex; gap: 12px; }
     .btn-cancel { flex: 1; padding: 12px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; }
@@ -180,10 +208,16 @@ import { ReportService } from '../../services/report.service';
     .comment-username { font-weight: 600; font-size: 14px; }
     .comment-timestamp { font-size: 11px; color: #65676b; }
     .comment-content { font-size: 14px; line-height: 1.4; white-space: pre-wrap; margin-bottom: 8px; }
-    .comment-actions { display: flex; gap: 8px; }
-    .comment-like-btn { background: none; border: none; padding: 4px 8px; cursor: pointer; color: #65676b; font-size: 13px; border-radius: 4px; }
-    .comment-like-btn:hover { background: #f0f2f5; }
+    .comment-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .comment-like-btn, .comment-action-btn { background: none; border: none; padding: 4px 8px; cursor: pointer; color: #65676b; font-size: 13px; border-radius: 4px; }
+    .comment-like-btn:hover, .comment-action-btn:hover { background: #f0f2f5; }
     .comment-like-btn.liked { color: #f44336; }
+    .comment-edit { margin-bottom: 8px; }
+    .comment-edit input { width: 100%; padding: 8px 12px; border: 1px solid #1877f2; border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box; }
+    .comment-edit-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .btn-save-comment, .btn-cancel-comment { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .btn-save-comment { background: #1877f2; color: white; }
+    .btn-cancel-comment { background: #e4e6e9; color: #050505; }
   `]
 })
 export class PostCardComponent {
@@ -201,13 +235,17 @@ export class PostCardComponent {
   showMenu = false;
   showReportModal = false;
   showVisibilityModal = false;
+  showEditPostModal = false;
   reportCategory = 'hate_speech';
   reportReason = '';
   newVisibility = '';
+  editPostContent = '';
   showComments = false;
   comments: Comment[] = [];
   newComment = '';
   loadingComments = false;
+  editingCommentId: number | null = null;
+  editCommentContent = '';
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -254,6 +292,67 @@ export class PostCardComponent {
       });
     } else {
       this.showVisibilityModal = false;
+    }
+  }
+
+  openEditPostModal(): void {
+    this.editPostContent = this.post.content;
+    this.showEditPostModal = true;
+  }
+
+  updatePostContent(): void {
+    const content = this.editPostContent.trim();
+    if (!content) return;
+
+    this.feedService.updatePostContent(this.post.post_id, content).subscribe({
+      next: (updatedPost) => {
+        this.post.content = updatedPost.content;
+        this.showEditPostModal = false;
+        alert('Post erfolgreich bearbeitet!');
+      },
+      error: () => {
+        alert('Fehler beim Bearbeiten des Posts');
+      }
+    });
+  }
+
+  startEditComment(comment: Comment): void {
+    this.editingCommentId = comment.comment_id;
+    this.editCommentContent = comment.content;
+  }
+
+  cancelCommentEdit(): void {
+    this.editingCommentId = null;
+    this.editCommentContent = '';
+  }
+
+  saveCommentEdit(comment: Comment): void {
+    const content = this.editCommentContent.trim();
+    if (!content) return;
+
+    this.feedService.updateComment(this.post.author_uid, this.post.post_id, comment.comment_id, content).subscribe({
+      next: (updatedComment) => {
+        comment.content = updatedComment.content;
+        this.editingCommentId = null;
+        this.editCommentContent = '';
+      },
+      error: () => {
+        alert('Fehler beim Bearbeiten des Kommentars');
+      }
+    });
+  }
+
+  deleteCommentConfirm(comment: Comment): void {
+    if (confirm('Kommentar wirklich löschen?')) {
+      this.feedService.deleteComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
+        next: () => {
+          this.comments = this.comments.filter(c => c.comment_id !== comment.comment_id);
+          this.post.comments_count = Math.max(0, this.post.comments_count - 1);
+        },
+        error: () => {
+          alert('Fehler beim Löschen des Kommentars');
+        }
+      });
     }
   }
 

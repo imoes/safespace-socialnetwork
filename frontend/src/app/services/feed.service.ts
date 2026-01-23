@@ -182,6 +182,23 @@ export class FeedService implements OnDestroy {
   }
 
   /**
+   * Aktualisiert den Content eines Posts
+   */
+  updatePostContent(postId: number, content: string): Observable<Post> {
+    return this.http.put<Post>(`${this.API_URL}/${postId}/content`, { content }).pipe(
+      tap(updatedPost => {
+        this.postsSignal.update(posts =>
+          posts.map(p =>
+            p.post_id === postId
+              ? { ...p, content: updatedPost.content }
+              : p
+          )
+        );
+      })
+    );
+  }
+
+  /**
    * Liked einen Post
    */
   likePost(authorUid: number, postId: number): Observable<any> {
@@ -258,6 +275,36 @@ export class FeedService implements OnDestroy {
    */
   unlikeComment(authorUid: number, postId: number, commentId: number): Observable<any> {
     return this.http.delete(`${this.API_URL}/${authorUid}/${postId}/comment/${commentId}/like`);
+  }
+
+  /**
+   * Aktualisiert einen Kommentar
+   */
+  updateComment(authorUid: number, postId: number, commentId: number, content: string): Observable<Comment> {
+    return this.http.put<Comment>(
+      `${this.API_URL}/${authorUid}/${postId}/comment/${commentId}`,
+      { content }
+    );
+  }
+
+  /**
+   * Löscht einen Kommentar
+   */
+  deleteComment(authorUid: number, postId: number, commentId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.API_URL}/${authorUid}/${postId}/comment/${commentId}`
+    ).pipe(
+      tap(() => {
+        // Comments count verringern
+        this.postsSignal.update(posts =>
+          posts.map(p =>
+            p.post_id === postId && p.author_uid === authorUid
+              ? { ...p, comments_count: Math.max(0, p.comments_count - 1) }
+              : p
+          )
+        );
+      })
+    );
   }
 
   private fetchFeed(forceRefresh: boolean): Observable<FeedResponse> {

@@ -237,6 +237,33 @@ class UserPostsDB:
             row = await cursor.fetchone()
             return self._row_to_dict(row) if row else None
 
+    async def update_post_content(self, post_id: int, content: str) -> dict | None:
+        """Aktualisiert den Content eines Posts"""
+        await self._ensure_db()
+
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            cursor = await db.execute(
+                """
+                UPDATE posts
+                SET content = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE post_id = ? AND is_deleted = FALSE
+                """,
+                (content, post_id)
+            )
+            await db.commit()
+
+            if cursor.rowcount == 0:
+                return None
+
+            # Lade den aktualisierten Post
+            cursor = await db.execute(
+                "SELECT * FROM posts WHERE post_id = ?",
+                (post_id,)
+            )
+            row = await cursor.fetchone()
+            return self._row_to_dict(row) if row else None
+
     async def update_opensearch_doc_id(self, post_id: int, opensearch_doc_id: Optional[str]) -> bool:
         """Updates the OpenSearch document ID for a post"""
         await self._ensure_db()
@@ -387,7 +414,50 @@ class UserPostsDB:
             )
             row = await cursor.fetchone()
             return row is not None
-    
+
+    async def update_comment(self, comment_id: int, content: str) -> dict | None:
+        """Aktualisiert den Content eines Kommentars"""
+        await self._ensure_db()
+
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            cursor = await db.execute(
+                """
+                UPDATE comments
+                SET content = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE comment_id = ?
+                """,
+                (content, comment_id)
+            )
+            await db.commit()
+
+            if cursor.rowcount == 0:
+                return None
+
+            # Lade den aktualisierten Kommentar
+            cursor = await db.execute(
+                """
+                SELECT comment_id, post_id, user_uid, content, created_at, updated_at
+                FROM comments
+                WHERE comment_id = ?
+                """,
+                (comment_id,)
+            )
+            row = await cursor.fetchone()
+            return dict(row) if row else None
+
+    async def delete_comment(self, comment_id: int) -> bool:
+        """Löscht einen Kommentar"""
+        await self._ensure_db()
+
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "DELETE FROM comments WHERE comment_id = ?",
+                (comment_id,)
+            )
+            await db.commit()
+            return cursor.rowcount > 0
+
     def _row_to_dict(self, row: aiosqlite.Row) -> dict:
         """Konvertiert SQLite Row zu Dict mit JSON-Parsing"""
         d = dict(row)

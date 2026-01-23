@@ -2,6 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from typing import Optional
 
 from app.models.schemas import PostCreate, PostResponse, FeedResponse, PostVisibilityUpdate
+from pydantic import BaseModel
+
+
+class PostContentUpdate(BaseModel):
+    content: str
+
+
+class CommentContentUpdate(BaseModel):
+    content: str
 from app.services.auth_service import get_current_user
 from app.services.feed_service import FeedService, PostService
 from app.services.media_service import MediaService
@@ -173,6 +182,52 @@ async def update_post_visibility(
     )
 
 
+@router.put("/{post_id}/content", response_model=PostResponse)
+async def update_post_content(
+    post_id: int,
+    content_update: PostContentUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert den Content eines eigenen Posts"""
+
+    updated_post = await PostService.update_post(
+        uid=current_user["uid"],
+        post_id=post_id,
+        content=content_update.content,
+        username=current_user.get("username"),
+        first_name=current_user.get("first_name"),
+        last_name=current_user.get("last_name")
+    )
+
+    if not updated_post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
+
+    # Post für Response anreichern
+    posts_db = UserPostsDB(current_user["uid"])
+    likes_count = await posts_db.get_likes_count(post_id)
+    comments_count = await posts_db.get_comments_count(post_id)
+
+    media_urls = []
+    if updated_post.get("media_paths"):
+        media_urls = [f"/api/media/{current_user['uid']}/{p}" for p in updated_post["media_paths"]]
+
+    return PostResponse(
+        post_id=updated_post["post_id"],
+        author_uid=current_user["uid"],
+        author_username=current_user["username"],
+        author_profile_picture=current_user.get("profile_picture"),
+        content=updated_post["content"],
+        media_urls=media_urls,
+        visibility=updated_post["visibility"],
+        created_at=updated_post["created_at"],
+        likes_count=likes_count,
+        comments_count=comments_count
+    )
+
+
 @router.post("/{author_uid}/{post_id}/like")
 async def like_post(
     author_uid: int,
@@ -267,3 +322,81 @@ async def unlike_comment(
 
     success = await PostService.unlike_comment(author_uid, comment_id, current_user["uid"])
     return {"unliked": success}
+
+
+@router.put("/{author_uid}/{post_id}/comment/{comment_id}")
+async def update_comment(
+    author_uid: int,
+    post_id: int,
+    comment_id: int,
+    content_update: CommentContentUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert den Content eines eigenen Kommentars"""
+
+    # Überprüfen ob der Kommentar dem aktuellen User gehört
+    posts_db = UserPostsDB(author_uid)
+    comments = await posts_db.get_comments(post_id)
+    comment = next((c for c in comments if c["comment_id"] == comment_id), None)
+
+    if not comment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comment not found"
+        )
+
+    if comment["user_uid"] != current_user["uid"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only edit your own comments"
+        )
+
+    updated_comment = await posts_db.update_comment(comment_id, content_update.content)
+
+    if not updated_comment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comment not found"
+        )
+
+    # Usernamen hinzufügen
+    updated_comment["author_username"] = current_user["username"]
+
+    return updated_comment
+
+
+@router.delete("/{author_uid}/{post_id}/comment/{comment_id}")
+async def delete_comment(
+    author_uid: int,
+    post_id: int,
+    comment_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Löscht einen eigenen Kommentar"""
+
+    # Überprüfen ob der Kommentar dem aktuellen User gehört
+    posts_db = UserPostsDB(author_uid)
+    comments = await posts_db.get_comments(post_id)
+    comment = next((c for c in comments if c["comment_id"] == comment_id), None)
+
+    if not comment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comment not found"
+        )
+
+    if comment["user_uid"] != current_user["uid"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only delete your own comments"
+        )
+
+    success = await posts_db.delete_comment(comment_id)
+
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comment not found"
+        )
+
+    return {"message": "Comment deleted"}

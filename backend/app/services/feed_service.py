@@ -283,11 +283,27 @@ class PostService:
     
     @classmethod
     async def delete_post(cls, uid: int, post_id: int) -> bool:
-        """Löscht einen Post"""
+        """Löscht einen Post und entfernt ihn aus OpenSearch"""
         posts_db = UserPostsDB(uid)
+
+        # Get post to find opensearch_doc_id
+        post = await posts_db.get_post(post_id)
+        if not post:
+            return False
+
+        # Delete from SQLite
         success = await posts_db.delete_post(post_id)
 
         if success:
+            # Delete from OpenSearch if it was indexed
+            opensearch_doc_id = post.get("opensearch_doc_id")
+            if opensearch_doc_id:
+                try:
+                    opensearch = get_opensearch_service()
+                    await opensearch.delete_post(opensearch_doc_id)
+                except Exception as e:
+                    print(f"⚠️ OpenSearch delete error: {e}")
+
             await FeedService.invalidate_feed(uid)
 
         return success
@@ -358,7 +374,64 @@ class PostService:
             await FeedService.invalidate_feed(uid)
 
         return updated_post
-    
+
+    @classmethod
+    async def update_post(
+        cls,
+        uid: int,
+        post_id: int,
+        content: str,
+        username: str = None,
+        first_name: str = None,
+        last_name: str = None
+    ) -> dict | None:
+        """Aktualisiert den Content eines Posts und re-indexiert in OpenSearch"""
+        posts_db = UserPostsDB(uid)
+
+        # Get old post
+        old_post = await posts_db.get_post(post_id)
+        if not old_post:
+            return None
+
+        # Update content in SQLite
+        updated_post = await posts_db.update_post_content(post_id, content)
+
+        if updated_post:
+            # Update in OpenSearch (preserving original timestamp)
+            opensearch_doc_id = old_post.get("opensearch_doc_id")
+            if opensearch_doc_id:
+                try:
+                    opensearch = get_opensearch_service()
+
+                    # Convert media_paths to full URLs
+                    media_urls = []
+                    if updated_post.get("media_paths"):
+                        for path in updated_post["media_paths"]:
+                            media_urls.append(f"/api/media/{uid}/{path}")
+
+                    # Re-index with same doc_id and ORIGINAL timestamp
+                    await opensearch.index_post(
+                        doc_id=opensearch_doc_id,
+                        post_id=post_id,
+                        author_uid=uid,
+                        author_username=username or f"user_{uid}",
+                        author_first_name=first_name,
+                        author_last_name=last_name,
+                        content=content,
+                        media_urls=media_urls,
+                        visibility=updated_post["visibility"],
+                        created_at=datetime.fromisoformat(old_post["created_at"]),  # Use ORIGINAL timestamp
+                        likes_count=updated_post.get("likes_count", 0),
+                        comments_count=updated_post.get("comments_count", 0)
+                    )
+                except Exception as e:
+                    print(f"⚠️ OpenSearch update error: {e}")
+
+            # Feed-Cache invalidieren
+            await FeedService.invalidate_feed(uid)
+
+        return updated_post
+
     @classmethod
     async def like_post(cls, author_uid: int, post_id: int, liker_uid: int) -> bool:
         """Liked einen Post"""
