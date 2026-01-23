@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
+from typing import List, Dict
 from pydantic import BaseModel
 
 from app.services.auth_service import get_current_user
 from app.services.opensearch_service import get_opensearch_service
+from app.db.postgres import get_friends, get_relation_type
 
 
 router = APIRouter(prefix="/hashtags", tags=["Hashtags"])
@@ -61,18 +62,78 @@ async def search_by_hashtag(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Search for public posts by hashtag with pagination.
-    Returns posts with the specified hashtag, sorted by created_at (newest first).
+    Search for posts by hashtag with pagination and visibility filtering.
+    Returns posts with the specified hashtag, filtered by friendship status.
     """
     try:
-        opensearch = get_opensearch_service()
-        # Fetch limit+1 to determine if there are more results
-        posts = await opensearch.search_by_hashtag(hashtag=hashtag, limit=limit+1, offset=offset)
-        has_more = len(posts) > limit
+        current_user_uid = current_user["uid"]
 
-        # Return only the requested limit
+        # Get friends and their relation types
+        friends_data = await get_friends(current_user_uid)
+        friend_relations: Dict[int, str] = {}
+        for friend in friends_data:
+            friend_uid = friend["uid"]
+            # Get relation type for this friend
+            relation = await get_relation_type(current_user_uid, friend_uid)
+            if relation:
+                friend_relations[friend_uid] = relation
+
+        opensearch = get_opensearch_service()
+
+        # Fetch more posts than needed for post-filtering
+        fetch_limit = (limit + 1) * 3  # Fetch 3x to account for filtering
+
+        # Get posts from OpenSearch with basic visibility filter
+        # Allow public + friends + close_friends + family (we'll filter more precisely below)
+        allowed_visibilities = ["public", "friends", "close_friends", "family"]
+
+        all_posts = await opensearch.search_by_hashtag(
+            hashtag=hashtag,
+            current_user_uid=current_user_uid,
+            allowed_visibilities=allowed_visibilities,
+            limit=fetch_limit,
+            offset=offset
+        )
+
+        # Post-filter based on actual friendships
+        filtered_posts = []
+        for post in all_posts:
+            author_uid = post.get("author_uid")
+            post_visibility = post.get("visibility")
+
+            # Own posts: always allowed
+            if author_uid == current_user_uid:
+                filtered_posts.append(post)
+                continue
+
+            # Public posts: always allowed
+            if post_visibility == "public":
+                filtered_posts.append(post)
+                continue
+
+            # Check if author is a friend
+            if author_uid in friend_relations:
+                relation = friend_relations[author_uid]
+
+                # Determine allowed visibilities based on relation type
+                if relation == "family":
+                    allowed = ["friends", "close_friends", "family"]
+                elif relation == "close_friend":
+                    allowed = ["friends", "close_friends"]
+                elif relation == "friend":
+                    allowed = ["friends"]
+                else:  # acquaintance
+                    allowed = ["friends"]
+
+                if post_visibility in allowed:
+                    filtered_posts.append(post)
+
+        # Apply pagination to filtered results
+        has_more = len(filtered_posts) > limit
+        paginated_posts = filtered_posts[:limit]
+
         return HashtagSearchResponse(
-            posts=[HashtagPost(**post) for post in posts[:limit]],
+            posts=[HashtagPost(**post) for post in paginated_posts],
             has_more=has_more
         )
     except Exception as e:

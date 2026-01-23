@@ -225,38 +225,38 @@ class PostService:
         posts_db = UserPostsDB(uid)
         post = await posts_db.create_post(content, media_paths, visibility)
 
-        # OpenSearch: Index public posts
+        # OpenSearch: Index ALL posts (not just public)
         opensearch_doc_id = None
-        if visibility == "public":
-            try:
-                opensearch = get_opensearch_service()
-                opensearch_doc_id = str(uuid.uuid4())
+        try:
+            opensearch = get_opensearch_service()
+            opensearch_doc_id = str(uuid.uuid4())
 
-                # Convert media_paths to full URLs
-                media_urls = []
-                if media_paths:
-                    for path in media_paths:
-                        media_urls.append(f"/api/media/{uid}/{path}")
+            # Convert media_paths to full URLs
+            media_urls = []
+            if media_paths:
+                for path in media_paths:
+                    media_urls.append(f"/api/media/{uid}/{path}")
 
-                await opensearch.index_post(
-                    doc_id=opensearch_doc_id,
-                    post_id=post["post_id"],
-                    author_uid=uid,
-                    author_username=username or f"user_{uid}",
-                    author_first_name=first_name,
-                    author_last_name=last_name,
-                    content=content,
-                    media_urls=media_urls,
-                    created_at=datetime.fromisoformat(post["created_at"]),
-                    likes_count=0,
-                    comments_count=0
-                )
+            await opensearch.index_post(
+                doc_id=opensearch_doc_id,
+                post_id=post["post_id"],
+                author_uid=uid,
+                author_username=username or f"user_{uid}",
+                author_first_name=first_name,
+                author_last_name=last_name,
+                content=content,
+                media_urls=media_urls,
+                visibility=visibility,
+                created_at=datetime.fromisoformat(post["created_at"]),
+                likes_count=0,
+                comments_count=0
+            )
 
-                # Store opensearch_doc_id in SQLite
-                await posts_db.update_opensearch_doc_id(post["post_id"], opensearch_doc_id)
-                post["opensearch_doc_id"] = opensearch_doc_id
-            except Exception as e:
-                print(f"⚠️ OpenSearch indexing error: {e}")
+            # Store opensearch_doc_id in SQLite
+            await posts_db.update_opensearch_doc_id(post["post_id"], opensearch_doc_id)
+            post["opensearch_doc_id"] = opensearch_doc_id
+        except Exception as e:
+            print(f"⚠️ OpenSearch indexing error: {e}")
 
         # Feed-Cache invalidieren
         await FeedService.invalidate_feed(uid)
@@ -317,44 +317,39 @@ class PostService:
         updated_post = await posts_db.update_visibility(post_id, visibility)
 
         if updated_post:
-            # OpenSearch handling
+            # OpenSearch handling: Update or create document with new visibility
             try:
                 opensearch = get_opensearch_service()
 
-                # Case 1: Changing TO public - add to OpenSearch
-                if visibility == "public" and old_visibility != "public":
-                    opensearch_doc_id = str(uuid.uuid4())
+                # Use existing doc_id or create new one
+                opensearch_doc_id = old_opensearch_doc_id or str(uuid.uuid4())
 
-                    # Convert media_paths to full URLs
-                    media_urls = []
-                    if updated_post.get("media_paths"):
-                        for path in updated_post["media_paths"]:
-                            media_urls.append(f"/api/media/{uid}/{path}")
+                # Convert media_paths to full URLs
+                media_urls = []
+                if updated_post.get("media_paths"):
+                    for path in updated_post["media_paths"]:
+                        media_urls.append(f"/api/media/{uid}/{path}")
 
-                    await opensearch.index_post(
-                        doc_id=opensearch_doc_id,
-                        post_id=post_id,
-                        author_uid=uid,
-                        author_username=username or f"user_{uid}",
-                        author_first_name=first_name,
-                        author_last_name=last_name,
-                        content=updated_post["content"],
-                        media_urls=media_urls,
-                        created_at=datetime.fromisoformat(updated_post["created_at"]),
-                        likes_count=updated_post.get("likes_count", 0),
-                        comments_count=updated_post.get("comments_count", 0)
-                    )
+                # Re-index post with updated visibility
+                await opensearch.index_post(
+                    doc_id=opensearch_doc_id,
+                    post_id=post_id,
+                    author_uid=uid,
+                    author_username=username or f"user_{uid}",
+                    author_first_name=first_name,
+                    author_last_name=last_name,
+                    content=updated_post["content"],
+                    media_urls=media_urls,
+                    visibility=visibility,
+                    created_at=datetime.fromisoformat(updated_post["created_at"]),
+                    likes_count=updated_post.get("likes_count", 0),
+                    comments_count=updated_post.get("comments_count", 0)
+                )
 
-                    # Store opensearch_doc_id
+                # Store opensearch_doc_id if not already stored
+                if not old_opensearch_doc_id:
                     await posts_db.update_opensearch_doc_id(post_id, opensearch_doc_id)
-                    updated_post["opensearch_doc_id"] = opensearch_doc_id
-
-                # Case 2: Changing FROM public - remove from OpenSearch
-                elif old_visibility == "public" and visibility != "public":
-                    if old_opensearch_doc_id:
-                        await opensearch.delete_post(old_opensearch_doc_id)
-                        await posts_db.update_opensearch_doc_id(post_id, None)
-                        updated_post["opensearch_doc_id"] = None
+                updated_post["opensearch_doc_id"] = opensearch_doc_id
 
             except Exception as e:
                 print(f"⚠️ OpenSearch update error: {e}")
