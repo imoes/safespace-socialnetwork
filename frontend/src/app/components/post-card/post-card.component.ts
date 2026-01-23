@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 
@@ -253,6 +254,7 @@ export class PostCardComponent {
   private reportService = inject(ReportService);
   private feedService = inject(FeedService);
   private router = inject(Router);
+  private sanitizer = inject(DomSanitizer);
 
   isLiked = false;
   showMenu = false;
@@ -474,24 +476,21 @@ export class PostCardComponent {
     }
   }
 
-  getContentWithHashtags(): string {
+  getContentWithHashtags(): SafeHtml {
     // Parse content and make hashtags clickable
     const content = this.post.content || '';
     // Match hashtags: # followed by letters only (no numbers)
     const hashtagRegex = /#([a-zA-ZäöüÄÖÜß]+)/g;
     const result = '<p>' + content.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
-    console.log('Generated HTML for hashtags:', result);
-    return result;
+    return this.sanitizer.bypassSecurityTrustHtml(result);
   }
 
   handleContentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    console.log('Content clicked:', target, 'classList:', target.classList);
     if (target.classList.contains('hashtag')) {
       event.preventDefault();
       event.stopPropagation();
       const hashtag = target.getAttribute('data-hashtag');
-      console.log('Hashtag clicked:', hashtag);
       if (hashtag) {
         this.router.navigate(['/hashtag', hashtag]);
       }
