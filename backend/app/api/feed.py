@@ -2,6 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from typing import Optional
 
 from app.models.schemas import PostCreate, PostResponse, FeedResponse, PostVisibilityUpdate
+from app.services.auth_service import get_current_user
+from app.services.feed_service import FeedService, PostService
+from app.services.media_service import MediaService
+from app.db.sqlite_posts import UserPostsDB
+from app.db.postgres import get_username_map
 from pydantic import BaseModel
 
 
@@ -11,11 +16,6 @@ class PostContentUpdate(BaseModel):
 
 class CommentContentUpdate(BaseModel):
     content: str
-from app.services.auth_service import get_current_user
-from app.services.feed_service import FeedService, PostService
-from app.services.media_service import MediaService
-from app.db.sqlite_posts import UserPostsDB
-from app.db.postgres import get_username_map
 
 
 router = APIRouter(prefix="/feed", tags=["Feed & Posts"])
