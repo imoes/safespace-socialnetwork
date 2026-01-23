@@ -27,7 +27,10 @@ import { HttpClient } from '@angular/common/http';
               }
             </div>
             <div class="profile-info">
-              <h1 class="profile-username">{{ profile.username }}</h1>
+              <h1 class="profile-username">{{ getDisplayName() }}</h1>
+              @if (profile.first_name || profile.last_name) {
+                <p class="profile-realname">@{{ profile.username }}</p>
+              }
               @if (profile.bio) {
                 <p class="profile-bio">{{ profile.bio }}</p>
               }
@@ -97,7 +100,8 @@ import { HttpClient } from '@angular/common/http';
     .avatar-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; }
 
     .profile-info { flex: 1; min-width: 0; }
-    .profile-username { margin: 0 0 8px; font-size: 28px; font-weight: 700; color: #050505; }
+    .profile-username { margin: 0 0 4px; font-size: 28px; font-weight: 700; color: #050505; }
+    .profile-realname { margin: 0 0 8px; font-size: 15px; color: #65676b; font-weight: 400; }
     .profile-bio { margin: 0 0 16px; color: #65676b; line-height: 1.5; }
     .profile-meta { display: flex; gap: 16px; align-items: center; }
 
@@ -220,5 +224,22 @@ export class UserProfileComponent implements OnInit {
       admin: 'Administrator'
     };
     return labels[role] || role;
+  }
+
+  getDisplayName(): string {
+    if (!this.profile) return '';
+
+    const firstName = this.profile.first_name?.trim();
+    const lastName = this.profile.last_name?.trim();
+
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    } else if (firstName) {
+      return firstName;
+    } else if (lastName) {
+      return lastName;
+    }
+
+    return this.profile.username;
   }
 }

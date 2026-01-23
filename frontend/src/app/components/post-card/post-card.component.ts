@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 
@@ -35,7 +36,7 @@ import { ReportService } from '../../services/report.service';
         </div>
       </div>
 
-      <div class="post-content"><p>{{ post.content }}</p></div>
+      <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
 
       @if (post.media_urls.length > 0) {
         <div class="post-media">
@@ -145,6 +146,8 @@ import { ReportService } from '../../services/report.service';
     .menu-dropdown button:hover { background: #f0f2f5; }
     .post-content { padding: 0 16px 12px; }
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
+    .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
+    .post-content ::ng-deep .hashtag:hover { text-decoration: underline; }
     .post-media img, .post-media video { width: 100%; max-height: 500px; object-fit: cover; }
     .post-actions { display: flex; align-items: center; padding: 8px 16px; border-top: 1px solid #e4e6e9; gap: 12px; }
     .action-btn { background: none; border: none; padding: 8px 12px; cursor: pointer; color: #65676b; }
@@ -192,6 +195,7 @@ export class PostCardComponent {
 
   private reportService = inject(ReportService);
   private feedService = inject(FeedService);
+  private router = inject(Router);
 
   isLiked = false;
   showMenu = false;
@@ -325,6 +329,26 @@ export class PostCardComponent {
         },
         error: () => alert('Fehler beim Liken des Kommentars')
       });
+    }
+  }
+
+  getContentWithHashtags(): string {
+    // Parse content and make hashtags clickable
+    const content = this.post.content || '';
+    // Match hashtags: # followed by letters only (no numbers)
+    const hashtagRegex = /#([a-zA-ZäöüÄÖÜß]+)/g;
+    return '<p>' + content.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
+  }
+
+  handleContentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('hashtag')) {
+      event.preventDefault();
+      event.stopPropagation();
+      const hashtag = target.getAttribute('data-hashtag');
+      if (hashtag) {
+        this.router.navigate(['/hashtag', hashtag]);
+      }
     }
   }
 }

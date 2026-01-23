@@ -48,20 +48,33 @@ async def get_trending_hashtags(
         )
 
 
-@router.get("/search/{hashtag}", response_model=List[HashtagPost])
+class HashtagSearchResponse(BaseModel):
+    posts: List[HashtagPost]
+    has_more: bool
+
+
+@router.get("/search/{hashtag}", response_model=HashtagSearchResponse)
 async def search_by_hashtag(
     hashtag: str,
     limit: int = 50,
+    offset: int = 0,
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Search for public posts by hashtag.
-    Returns top 50 posts with the specified hashtag, sorted by created_at (newest first).
+    Search for public posts by hashtag with pagination.
+    Returns posts with the specified hashtag, sorted by created_at (newest first).
     """
     try:
         opensearch = get_opensearch_service()
-        posts = await opensearch.search_by_hashtag(hashtag=hashtag, limit=limit)
-        return [HashtagPost(**post) for post in posts]
+        # Fetch limit+1 to determine if there are more results
+        posts = await opensearch.search_by_hashtag(hashtag=hashtag, limit=limit+1, offset=offset)
+        has_more = len(posts) > limit
+
+        # Return only the requested limit
+        return HashtagSearchResponse(
+            posts=[HashtagPost(**post) for post in posts[:limit]],
+            has_more=has_more
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
