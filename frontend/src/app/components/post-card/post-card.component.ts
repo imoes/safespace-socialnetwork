@@ -290,7 +290,6 @@ export class PostCardComponent {
       this.feedService.updatePostVisibility(this.post.post_id, this.newVisibility).subscribe({
         next: () => {
           this.showVisibilityModal = false;
-          alert('Sichtbarkeit erfolgreich geändert!');
         },
         error: () => {
           alert('Fehler beim Ändern der Sichtbarkeit');
@@ -314,7 +313,6 @@ export class PostCardComponent {
       next: (updatedPost) => {
         this.post.content = updatedPost.content;
         this.showEditPostModal = false;
-        alert('Post erfolgreich bearbeitet!');
       },
       error: () => {
         alert('Fehler beim Bearbeiten des Posts');
