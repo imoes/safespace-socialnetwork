@@ -41,6 +41,7 @@ async def check_content(
         author_uid=current_user["uid"],
         author_username=current_user["username"],
         content=content,
+        visibility="public",  # Temporär, für Content-Check nicht relevant
         created_at=datetime.utcnow()
     )
     
