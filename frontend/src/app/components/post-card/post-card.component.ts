@@ -36,11 +36,11 @@ import { ReportService } from '../../services/report.service';
       }
 
       <div class="post-actions">
+        <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
+        <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid !== currentUid) {
           <button class="action-btn report-btn" (click)="showReportModal = true" title="Melden">🚨</button>
         }
-        <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
-        <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
             <button class="action-icon-btn" (click)="openEditPostModal()" title="Bearbeiten">✏️</button>
