@@ -1,14 +1,17 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UserService, UserProfile } from '../../services/user.service';
 import { FriendsService } from '../../services/friends.service';
 import { AuthService } from '../../services/auth.service';
+import { PostCardComponent } from '../post-card/post-card.component';
+import { Post } from '../../services/feed.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PostCardComponent],
   template: `
     <div class="profile-container">
       @if (loading) {
@@ -44,9 +47,35 @@ import { AuthService } from '../../services/auth.service';
           }
         </div>
 
-        <div class="info-box">
-          <h3>ℹ️ Hinweis</h3>
-          <p>Posts von Benutzern können nur von Freunden gesehen werden. Füge {{ profile.username }} als Freund hinzu, um Posts zu sehen!</p>
+        <div class="posts-section">
+          <h2 class="posts-title">
+            @if (isOwnProfile) {
+              Deine Posts
+            } @else {
+              Posts von {{ profile.username }}
+            }
+          </h2>
+
+          @if (loadingPosts) {
+            <div class="loading-posts">Posts werden geladen...</div>
+          } @else if (posts().length === 0) {
+            <div class="no-posts">
+              @if (isOwnProfile) {
+                Du hast noch keine Posts erstellt.
+              } @else if (isFriend) {
+                Dieser Benutzer hat noch keine Posts erstellt.
+              } @else {
+                <div class="info-box">
+                  <h3>ℹ️ Hinweis</h3>
+                  <p>Posts von Benutzern können nur von Freunden gesehen werden. Füge {{ profile.username }} als Freund hinzu, um mehr Posts zu sehen!</p>
+                </div>
+              }
+            </div>
+          } @else {
+            @for (post of posts(); track post.post_id) {
+              <app-post-card [post]="post" (postDeleted)="onPostDeleted($event)"></app-post-card>
+            }
+          }
         </div>
       } @else if (error) {
         <div class="error-box">
@@ -90,6 +119,11 @@ import { AuthService } from '../../services/auth.service';
     .error-box { background: #ffe7e7; border: 1px solid #ffb3b3; border-radius: 12px; padding: 20px; }
     .error-box h3 { margin: 0 0 12px; color: #d32f2f; font-size: 18px; }
     .error-box p { margin: 0; color: #1c1e21; }
+
+    .posts-section { margin-top: 20px; }
+    .posts-title { font-size: 20px; font-weight: 700; color: #050505; margin-bottom: 16px; }
+    .loading-posts { text-align: center; padding: 40px; color: #65676b; }
+    .no-posts { text-align: center; padding: 40px; color: #65676b; }
   `]
 })
 export class UserProfileComponent implements OnInit {
@@ -97,12 +131,16 @@ export class UserProfileComponent implements OnInit {
   private userService = inject(UserService);
   private friendsService = inject(FriendsService);
   private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
   profile: UserProfile | null = null;
   loading = true;
   error: string | null = null;
   requestSent = false;
   isOwnProfile = false;
+  isFriend = false;
+  loadingPosts = true;
+  posts = signal<Post[]>([]);
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -115,21 +153,44 @@ export class UserProfileComponent implements OnInit {
 
   loadProfile(uid: number): void {
     this.loading = true;
+    this.loadingPosts = true;
     this.error = null;
 
     const currentUser = this.authService.currentUser();
     this.isOwnProfile = currentUser?.uid === uid;
 
+    // Profil laden
     this.userService.getUserProfile(uid).subscribe({
       next: (profile) => {
         this.profile = profile;
         this.loading = false;
+        // Posts laden
+        this.loadPosts(uid);
       },
       error: (err) => {
         this.error = 'Profil konnte nicht geladen werden.';
         this.loading = false;
+        this.loadingPosts = false;
       }
     });
+  }
+
+  loadPosts(uid: number): void {
+    this.http.get<{posts: Post[], has_more: boolean}>(`/api/users/${uid}/posts`).subscribe({
+      next: (response) => {
+        this.posts.set(response.posts);
+        this.isFriend = response.posts.length > 0 || this.isOwnProfile;
+        this.loadingPosts = false;
+      },
+      error: (err) => {
+        console.error('Fehler beim Laden der Posts:', err);
+        this.loadingPosts = false;
+      }
+    });
+  }
+
+  onPostDeleted(postId: number): void {
+    this.posts.set(this.posts().filter(p => p.post_id !== postId));
   }
 
   sendFriendRequest(): void {

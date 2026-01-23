@@ -95,6 +95,7 @@ class PostResponse(BaseModel):
     post_id: int
     author_uid: int
     author_username: str
+    author_profile_picture: str | None = None
     content: str
     media_urls: list[str] = []
     visibility: str
