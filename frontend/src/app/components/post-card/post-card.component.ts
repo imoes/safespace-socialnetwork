@@ -24,7 +24,17 @@ import { ReportService } from '../../services/report.service';
         </div>
       </div>
 
-      <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
+      @if (editingPost) {
+        <div class="post-edit">
+          <textarea [(ngModel)]="editPostContent" placeholder="Was möchtest du ändern?" rows="5"></textarea>
+          <div class="post-edit-actions">
+            <button class="btn-save-post" (click)="updatePostContent()">💾 Speichern</button>
+            <button class="btn-cancel-post" (click)="cancelEditPost()">❌ Abbrechen</button>
+          </div>
+        </div>
+      } @else {
+        <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
+      }
 
       @if (post.media_urls.length > 0) {
         <div class="post-media">
@@ -40,7 +50,7 @@ import { ReportService } from '../../services/report.service';
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
-            <button class="action-icon-btn" (click)="openEditPostModal()" title="Bearbeiten">✏️</button>
+            <button class="action-icon-btn" (click)="startEditPost()" title="Bearbeiten">✏️</button>
             <button class="action-icon-btn" (click)="onDelete()" title="Löschen">🗑️</button>
             <div class="visibility-wrapper" #visibilityWrapper>
               <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
@@ -154,18 +164,6 @@ import { ReportService } from '../../services/report.service';
         </div>
       }
 
-      @if (showEditPostModal) {
-        <div class="modal-overlay" (click)="showEditPostModal = false">
-          <div class="edit-modal" (click)="$event.stopPropagation()">
-            <h3>✏️ Post bearbeiten</h3>
-            <textarea [(ngModel)]="editPostContent" placeholder="Was möchtest du ändern?" rows="5"></textarea>
-            <div class="modal-actions">
-              <button class="btn-cancel" (click)="showEditPostModal = false">Abbrechen</button>
-              <button class="btn-submit" (click)="updatePostContent()" [disabled]="!editPostContent.trim()">Speichern</button>
-            </div>
-          </div>
-        </div>
-      }
     </div>
   `,
   styles: [`
@@ -180,6 +178,12 @@ import { ReportService } from '../../services/report.service';
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
     .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
     .post-content ::ng-deep .hashtag:hover { text-decoration: underline; }
+    .post-edit { padding: 0 16px 12px; }
+    .post-edit textarea { width: 100%; padding: 12px; border: 1px solid #1877f2; border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box; resize: vertical; }
+    .post-edit-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-save-post, .btn-cancel-post { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .btn-save-post { background: #1877f2; color: white; }
+    .btn-cancel-post { background: #e4e6e9; color: #050505; }
     .post-media img, .post-media video { width: 100%; max-height: 500px; object-fit: cover; }
     .post-actions { display: flex; align-items: center; padding: 8px 16px; border-top: 1px solid #e4e6e9; gap: 12px; }
     .action-btn { background: none; border: none; padding: 8px 12px; cursor: pointer; color: #65676b; }
@@ -253,7 +257,7 @@ export class PostCardComponent {
   showReportModal = false;
   showVisibilityModal = false;
   showVisibilityDropdown = false;
-  showEditPostModal = false;
+  editingPost = false;
   reportCategory = 'hate_speech';
   reportReason = '';
   newVisibility = '';
@@ -342,9 +346,14 @@ export class PostCardComponent {
     }
   }
 
-  openEditPostModal(): void {
+  startEditPost(): void {
     this.editPostContent = this.post.content;
-    this.showEditPostModal = true;
+    this.editingPost = true;
+  }
+
+  cancelEditPost(): void {
+    this.editingPost = false;
+    this.editPostContent = '';
   }
 
   updatePostContent(): void {
@@ -354,7 +363,8 @@ export class PostCardComponent {
     this.feedService.updatePostContent(this.post.post_id, content).subscribe({
       next: (updatedPost) => {
         this.post.content = updatedPost.content;
-        this.showEditPostModal = false;
+        this.editingPost = false;
+        this.editPostContent = '';
       },
       error: () => {
         alert('Fehler beim Bearbeiten des Posts');

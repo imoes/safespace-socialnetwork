@@ -8,7 +8,8 @@ from app.db.postgres import (
     send_friend_request,
     accept_friend_request,
     get_pending_requests,
-    get_user_by_uid
+    get_user_by_uid,
+    remove_friend
 )
 from app.db.moderation import (
     set_relationship_type,
@@ -126,13 +127,30 @@ async def accept_request(
 
 
 @router.delete("/{friend_uid}")
-async def remove_friend(
+async def unfriend(
     friend_uid: int,
     current_user: dict = Depends(get_current_user)
 ):
     """Entfernt einen Freund"""
-    # TODO: Implement unfriend logic
-    return {"message": "Not implemented yet"}
+    if friend_uid == current_user["uid"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot unfriend yourself"
+        )
+
+    success = await remove_friend(current_user["uid"], friend_uid)
+
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Friendship not found"
+        )
+
+    # Feed-Cache invalidieren weil sich Sichtbarkeiten ändern
+    await FeedCache.invalidate(current_user["uid"])
+    await FeedCache.invalidate(friend_uid)
+
+    return {"message": "Friendship removed"}
 
 
 @router.put("/{friend_uid}/relationship")
