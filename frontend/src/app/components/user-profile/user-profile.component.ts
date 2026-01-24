@@ -289,7 +289,7 @@ export class UserProfileComponent implements OnInit {
       visibility: 'public'
     }).subscribe({
       next: () => {
-        alert(`Persönlicher Post wurde auf dem Profil von ${this.profile?.username} hinterlassen!`);
+        // Kein Alert, direkt Posts aktualisieren
         this.personalPostContent = '';
         this.postingPersonalPost = false;
         // Posts neu laden
