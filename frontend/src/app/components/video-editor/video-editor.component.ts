@@ -115,11 +115,11 @@ export class VideoEditorComponent {
     try {
       this.ffmpeg = new FFmpeg();
 
-      this.ffmpeg.on('log', ({ message }) => {
+      this.ffmpeg.on('log', ({ message }: { message: string }) => {
         console.log('[FFmpeg]', message);
       });
 
-      this.ffmpeg.on('progress', ({ progress }) => {
+      this.ffmpeg.on('progress', ({ progress }: { progress: number }) => {
         this.processingProgress.set(Math.round(progress * 100));
       });
 
