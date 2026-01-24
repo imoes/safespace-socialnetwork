@@ -2,12 +2,12 @@
 
 from typing import Optional, List
 from datetime import datetime
-from app.db.postgres import get_db_connection
+from app.db.postgres import PostgresDB
 
 
 async def create_broadcast_tables():
     """Erstellt die Broadcast-Posts Tabelle"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS broadcast_posts (
                 post_id SERIAL PRIMARY KEY,
@@ -61,7 +61,7 @@ async def create_broadcast_tables():
 
 async def create_broadcast_post(author_uid: int, content: str, visibility: str = "public") -> dict:
     """Erstellt einen neuen Broadcast-Post"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         result = await conn.execute("""
             INSERT INTO broadcast_posts (author_uid, content, visibility)
             VALUES (%s, %s, %s)
@@ -86,7 +86,7 @@ async def create_broadcast_post(author_uid: int, content: str, visibility: str =
 
 async def get_broadcast_posts(limit: int = 25, offset: int = 0, current_user_uid: Optional[int] = None) -> List[dict]:
     """Holt alle Broadcast-Posts mit Like/Comment Counts"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         # Hole Posts mit Counts
         result = await conn.execute("""
             SELECT
@@ -140,7 +140,7 @@ async def get_broadcast_posts(limit: int = 25, offset: int = 0, current_user_uid
 
 async def toggle_broadcast_like(post_id: int, user_uid: int) -> bool:
     """Toggled Like für einen Broadcast-Post"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         # Prüfe ob Like existiert
         result = await conn.execute("""
             SELECT 1 FROM broadcast_post_likes
@@ -168,7 +168,7 @@ async def toggle_broadcast_like(post_id: int, user_uid: int) -> bool:
 
 async def add_broadcast_comment(post_id: int, user_uid: int, content: str) -> dict:
     """Fügt einen Kommentar zu einem Broadcast-Post hinzu"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         result = await conn.execute("""
             INSERT INTO broadcast_post_comments (post_id, user_uid, content)
             VALUES (%s, %s, %s)
@@ -198,7 +198,7 @@ async def add_broadcast_comment(post_id: int, user_uid: int, content: str) -> di
 
 async def get_broadcast_comments(post_id: int, current_user_uid: Optional[int] = None) -> List[dict]:
     """Holt alle Kommentare für einen Broadcast-Post"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         result = await conn.execute("""
             SELECT
                 c.comment_id,
@@ -241,7 +241,7 @@ async def get_broadcast_comments(post_id: int, current_user_uid: Optional[int] =
 
 async def delete_broadcast_post(post_id: int) -> bool:
     """Markiert einen Broadcast-Post als gelöscht"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         await conn.execute("""
             UPDATE broadcast_posts
             SET is_deleted = TRUE

@@ -1,12 +1,12 @@
 """Welcome Message Management für Admin"""
 
 from typing import Optional
-from app.db.postgres import get_db_connection
+from app.db.postgres import PostgresDB
 
 
 async def create_welcome_tables():
     """Erstellt die benötigten Tabellen für Welcome Messages"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         # Welcome Messages Tabelle
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS welcome_messages (
@@ -33,7 +33,7 @@ async def create_welcome_tables():
 
 async def get_active_welcome_message() -> Optional[dict]:
     """Holt die aktive Willkommensnachricht"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         result = await conn.execute("""
             SELECT id, title, content, created_at, updated_at
             FROM welcome_messages
@@ -55,7 +55,7 @@ async def get_active_welcome_message() -> Optional[dict]:
 
 async def set_welcome_message(title: str, content: str) -> dict:
     """Setzt/Aktualisiert die Willkommensnachricht (deaktiviert alte, erstellt neue)"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         # Deaktiviere alle alten Nachrichten
         await conn.execute("UPDATE welcome_messages SET is_active = FALSE")
 
@@ -79,7 +79,7 @@ async def set_welcome_message(title: str, content: str) -> dict:
 
 async def delete_welcome_message() -> bool:
     """Löscht/Deaktiviert die aktive Willkommensnachricht"""
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         await conn.execute("UPDATE welcome_messages SET is_active = FALSE")
         await conn.commit()
         return True
@@ -91,7 +91,7 @@ async def has_user_seen_welcome(uid: int) -> bool:
     if not message:
         return True  # Keine aktive Nachricht = als gesehen behandeln
 
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         result = await conn.execute("""
             SELECT 1 FROM user_welcome_seen
             WHERE uid = %s AND message_id = %s
@@ -106,7 +106,7 @@ async def mark_welcome_seen(uid: int) -> bool:
     if not message:
         return False
 
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         await conn.execute("""
             INSERT INTO user_welcome_seen (uid, message_id)
             VALUES (%s, %s)
@@ -124,7 +124,7 @@ async def get_welcome_stats() -> dict:
     if not message:
         return {"total_users": 0, "seen_count": 0, "unseen_count": 0}
 
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         # Anzahl aller User
         result = await conn.execute("SELECT COUNT(*) as total FROM users WHERE role != 'admin'")
         total = (await result.fetchone())["total"]
