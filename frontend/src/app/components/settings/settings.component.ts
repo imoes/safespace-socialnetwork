@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-settings',
@@ -115,6 +116,24 @@ import { AuthService } from '../../services/auth.service';
               class="form-control"
               placeholder="Erzähle etwas über dich..."
             ></textarea>
+          </div>
+
+          <!-- Sprache / Language -->
+          <div class="form-group">
+            <label for="language">🌐 Sprache / Language</label>
+            <select
+              id="language"
+              [(ngModel)]="selectedLanguage"
+              name="language"
+              class="form-control"
+              (change)="onLanguageChange()">
+              @for (lang of i18n.languages; track lang.code) {
+                <option [value]="lang.code">
+                  {{ lang.flag }} {{ lang.nativeName }}
+                </option>
+              }
+            </select>
+            <small class="form-text">Wähle deine bevorzugte Sprache / Choose your preferred language</small>
           </div>
 
           <!-- Passwort ändern -->
@@ -435,6 +454,7 @@ export class SettingsComponent implements OnInit {
   authService = inject(AuthService);
   http = inject(HttpClient);
   router = inject(Router);
+  i18n = inject(I18nService);
 
   email = '';
   bio = '';
@@ -443,6 +463,7 @@ export class SettingsComponent implements OnInit {
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
+  selectedLanguage = 'en';
 
   isSaving = signal(false);
   successMessage = signal('');
@@ -457,6 +478,14 @@ export class SettingsComponent implements OnInit {
       this.firstName = user.first_name || '';
       this.lastName = user.last_name || '';
     }
+
+    // Load current language
+    this.selectedLanguage = this.i18n.currentLanguage().code;
+  }
+
+  onLanguageChange(): void {
+    this.i18n.setLanguage(this.selectedLanguage);
+    this.successMessage.set('Language changed successfully! / Sprache erfolgreich geändert!');
   }
 
   saveSettings(): void {

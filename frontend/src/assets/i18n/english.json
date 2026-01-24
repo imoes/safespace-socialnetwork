@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "myPosts": "My Posts",
+    "public": "Public",
+    "hashtags": "Hashtags",
+    "friends": "Friends",
+    "moderation": "Moderation",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Logout",
+    "searchPlaceholder": "Search users..."
+  },
+  "feed": {
+    "title": "My Feed",
+    "subtitle": "See posts from your friends",
+    "createPost": "What's on your mind?",
+    "postButton": "Post",
+    "uploading": "Uploading...",
+    "visibility": {
+      "public": "Public",
+      "friends": "All Friends",
+      "closeFriends": "Close Friends",
+      "family": "Family",
+      "private": "Only Me"
+    },
+    "loadMore": "Load More",
+    "olderPosts": "Older Posts",
+    "newerPosts": "Newer Posts",
+    "noOlderPosts": "No older posts",
+    "noPosts": "No posts yet",
+    "loading": "Loading your feed..."
+  },
+  "post": {
+    "like": "Like",
+    "comment": "Comment",
+    "translate": "Translate",
+    "translating": "Translating...",
+    "original": "Original",
+    "translated": "Translated",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deleteConfirm": "Really delete this post?",
+    "report": "Report",
+    "changeVisibility": "Click to change"
+  },
+  "myPosts": {
+    "title": "My Posts",
+    "subtitle": "All your published posts and interactions",
+    "tabMyPosts": "My Posts",
+    "tabCommented": "Commented Posts",
+    "noPosts": "No posts yet",
+    "noPostsDesc": "You haven't published any posts yet."
+  },
+  "publicFeed": {
+    "title": "Public Posts",
+    "subtitle": "Discover public posts from the community",
+    "noPosts": "No public posts",
+    "noPostsDesc": "There are no public posts yet.",
+    "loadMore": "Load next 25 posts",
+    "postsCount": "{{current}} of {{total}} posts shown"
+  },
+  "friends": {
+    "title": "Friends",
+    "myFriends": "My Friends",
+    "requests": "Friend Requests",
+    "search": "Search",
+    "addFriend": "Add Friend",
+    "unfriend": "Unfriend",
+    "accept": "Accept",
+    "decline": "Decline",
+    "pending": "Pending",
+    "noFriends": "No friends yet",
+    "noRequests": "No pending requests"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account",
+    "profile": "Profile",
+    "username": "Username",
+    "email": "Email",
+    "bio": "Bio",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "language": "Language",
+    "password": "Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "profilePicture": "Profile Picture",
+    "uploadPicture": "Upload Picture",
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDesc": "If you delete your account, all your data will be permanently deleted:",
+    "deleteAccountList": [
+      "All your posts and comments",
+      "All uploaded media (images, videos)",
+      "All friendships and requests",
+      "Your user profile and all personal data"
+    ],
+    "deleteAccountWarning": "This action cannot be undone!",
+    "deleteAccountButton": "Permanently Delete Account"
+  },
+  "hashtags": {
+    "title": "Trending Hashtags",
+    "subtitle": "Discover popular topics",
+    "postsCount": "{{count}} posts",
+    "noHashtags": "No trending hashtags",
+    "viewPosts": "View Posts"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Login",
+    "noAccount": "Don't have an account?",
+    "register": "Register now"
+  },
+  "register": {
+    "title": "Register",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "registerButton": "Register",
+    "hasAccount": "Already have an account?",
+    "login": "Login here"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "close": "Close",
+    "search": "Search",
+    "noResults": "No results found",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  }
+}
