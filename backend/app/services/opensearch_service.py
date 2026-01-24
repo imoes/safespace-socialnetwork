@@ -330,6 +330,44 @@ class OpenSearchService:
 
         return [hit['_source'] for hit in response['hits']['hits']]
 
+    async def get_public_posts(
+        self,
+        limit: int = 25,
+        offset: int = 0
+    ) -> Dict[str, Any]:
+        """
+        Gets the latest public posts with pagination.
+        Returns posts sorted by created_at (newest first).
+        """
+        await self.ensure_index()
+
+        query = {
+            "query": {
+                "term": {
+                    "visibility": "public"
+                }
+            },
+            "sort": [
+                {"created_at": {"order": "desc"}}
+            ],
+            "size": limit,
+            "from": offset
+        }
+
+        response = self.client.search(
+            index=self.index_name,
+            body=query
+        )
+
+        total = response['hits']['total']['value']
+        posts = [hit['_source'] for hit in response['hits']['hits']]
+
+        return {
+            "posts": posts,
+            "total": total,
+            "has_more": offset + limit < total
+        }
+
 
 # Singleton instance
 _opensearch_service = None
