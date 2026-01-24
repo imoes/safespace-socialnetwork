@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { UserService, UserProfile } from '../../services/user.service';
 import { FriendsService } from '../../services/friends.service';
@@ -11,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, FormsModule, PostCardComponent],
   template: `
     <div class="profile-container">
       @if (loading) {
@@ -49,6 +50,26 @@ import { HttpClient } from '@angular/common/http';
             </div>
           }
         </div>
+
+        @if (!isOwnProfile) {
+          <div class="personal-post-card">
+            <h3 class="personal-post-title">✍️ Persönlichen Post hinterlassen</h3>
+            <textarea
+              [(ngModel)]="personalPostContent"
+              placeholder="Schreibe etwas auf das Profil von {{ profile.username }}..."
+              rows="3"
+              class="personal-post-textarea"
+            ></textarea>
+            <div class="personal-post-actions">
+              <button
+                class="btn-post"
+                (click)="createPersonalPost()"
+                [disabled]="!personalPostContent.trim() || postingPersonalPost">
+                {{ postingPersonalPost ? 'Wird gepostet...' : '📤 Post hinterlassen' }}
+              </button>
+            </div>
+          </div>
+        }
 
         <div class="posts-section">
           <h2 class="posts-title">
@@ -124,6 +145,15 @@ import { HttpClient } from '@angular/common/http';
     .error-box h3 { margin: 0 0 12px; color: #d32f2f; font-size: 18px; }
     .error-box p { margin: 0; color: #1c1e21; }
 
+    .personal-post-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 24px; margin-bottom: 20px; }
+    .personal-post-title { margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #050505; }
+    .personal-post-textarea { width: 100%; padding: 12px; border: 2px solid #e4e6e9; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box; transition: border-color 0.2s; }
+    .personal-post-textarea:focus { outline: none; border-color: #1877f2; }
+    .personal-post-actions { display: flex; justify-content: flex-end; margin-top: 12px; }
+    .btn-post { padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-post:hover:not(:disabled) { background: #166fe5; }
+    .btn-post:disabled { background: #ccc; cursor: not-allowed; }
+
     .posts-section { margin-top: 20px; }
     .posts-title { font-size: 20px; font-weight: 700; color: #050505; margin-bottom: 16px; }
     .loading-posts { text-align: center; padding: 40px; color: #65676b; }
@@ -145,6 +175,8 @@ export class UserProfileComponent implements OnInit {
   isFriend = false;
   loadingPosts = true;
   posts = signal<Post[]>([]);
+  personalPostContent = '';
+  postingPersonalPost = false;
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -245,5 +277,31 @@ export class UserProfileComponent implements OnInit {
 
   getUsernameWithAt(): string {
     return this.profile ? `@${this.profile.username}` : '';
+  }
+
+  createPersonalPost(): void {
+    if (!this.profile || !this.personalPostContent.trim()) return;
+
+    this.postingPersonalPost = true;
+
+    this.http.post(`/api/users/${this.profile.uid}/posts`, {
+      content: this.personalPostContent,
+      visibility: 'public'
+    }).subscribe({
+      next: () => {
+        alert(`Persönlicher Post wurde auf dem Profil von ${this.profile?.username} hinterlassen!`);
+        this.personalPostContent = '';
+        this.postingPersonalPost = false;
+        // Posts neu laden
+        if (this.profile) {
+          this.loadPosts(this.profile.uid);
+        }
+      },
+      error: (err) => {
+        console.error('Fehler beim Erstellen des persönlichen Posts:', err);
+        alert('Fehler beim Erstellen des Posts. Bitte versuche es erneut.');
+        this.postingPersonalPost = false;
+      }
+    });
   }
 }

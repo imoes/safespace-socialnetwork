@@ -36,9 +36,18 @@ import { HttpClient } from '@angular/common/http';
                   (click)="goToProfile(user.uid)"
                   (mouseenter)="selectedIndex.set(i)"
                 >
-                  <div class="search-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+                  @if (user.profile_picture) {
+                    <img [src]="user.profile_picture" class="search-avatar search-avatar-img" [alt]="user.username" />
+                  } @else {
+                    <div class="search-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+                  }
                   <div class="search-user-info">
-                    <div class="search-username">{{ user.username }}</div>
+                    <div class="search-username">
+                      {{ user.username }}
+                      @if (user.is_friend) {
+                        <span class="friend-badge">✓ Freund</span>
+                      }
+                    </div>
                     @if (user.bio) {
                       <div class="search-bio">{{ user.bio }}</div>
                     }
@@ -108,8 +117,10 @@ import { HttpClient } from '@angular/common/http';
     .search-result-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; transition: background 0.2s; }
     .search-result-item:hover, .search-result-item.selected { background: #f0f2f5; }
     .search-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+    .search-avatar-img { object-fit: cover; }
     .search-user-info { flex: 1; min-width: 0; }
-    .search-username { font-weight: 600; font-size: 14px; }
+    .search-username { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .friend-badge { background: #27ae60; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 500; }
     .search-bio { font-size: 12px; color: #65676b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .no-results { padding: 16px; text-align: center; color: #65676b; font-size: 14px; }
 

@@ -19,7 +19,11 @@ import { ReportService } from '../../services/report.service';
           <div class="avatar">{{ post.author_username.charAt(0).toUpperCase() }}</div>
         }
         <div class="author-info">
-          <span class="username">{{ post.author_username }}</span>
+          @if (post.recipient_username) {
+            <span class="username personal-post-header">{{ post.recipient_username }} <span class="arrow">›</span> {{ post.author_username }}</span>
+          } @else {
+            <span class="username">{{ post.author_username }}</span>
+          }
           <span class="timestamp">{{ post.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
         </div>
       </div>
@@ -173,6 +177,7 @@ import { ReportService } from '../../services/report.service';
     .avatar-img { object-fit: cover; }
     .author-info { flex: 1; display: flex; flex-direction: column; }
     .username { font-weight: 600; }
+    .personal-post-header .arrow { color: #1877f2; font-weight: bold; margin: 0 4px; }
     .timestamp { font-size: 12px; color: #65676b; }
     .post-content { padding: 0 16px 12px; }
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
