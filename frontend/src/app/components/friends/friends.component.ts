@@ -145,6 +145,13 @@ interface FriendRequest {
                       <option value="close_friend">Enger Freund</option>
                       <option value="family">Familie</option>
                     </select>
+                    <button
+                      class="btn btn-unfriend"
+                      (click)="unfriend(friend)"
+                      [disabled]="isProcessing.has(friend.uid)"
+                      title="Freundschaft beenden">
+                      🚫 Beenden
+                    </button>
                   </div>
                 </div>
               }
@@ -442,6 +449,17 @@ interface FriendRequest {
       background: #c0392b;
     }
 
+    .btn-unfriend {
+      background: #6c757d;
+      color: white;
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+
+    .btn-unfriend:hover:not(:disabled) {
+      background: #5a6268;
+    }
+
     .loading, .empty-state {
       text-align: center;
       padding: 40px;
@@ -631,6 +649,30 @@ export class FriendsComponent implements OnInit {
       error: (error) => {
         this.errorMessage.set(error.error?.detail || 'Fehler beim Aktualisieren');
         select.value = friend.relationship; // Zurücksetzen
+        setTimeout(() => this.errorMessage.set(''), 5000);
+      }
+    });
+  }
+
+  unfriend(friend: Friend): void {
+    if (!confirm(`Möchtest du die Freundschaft mit ${friend.username} wirklich beenden?`)) {
+      return;
+    }
+
+    this.isProcessing.add(friend.uid);
+    this.clearMessages();
+
+    this.http.delete(`/api/friends/${friend.uid}`).subscribe({
+      next: () => {
+        this.successMessage.set(`Freundschaft mit ${friend.username} wurde beendet`);
+        this.isProcessing.delete(friend.uid);
+        // Entfernen aus der Liste
+        this.friends.set(this.friends().filter(f => f.uid !== friend.uid));
+        setTimeout(() => this.successMessage.set(''), 3000);
+      },
+      error: (error) => {
+        this.errorMessage.set(error.error?.detail || 'Fehler beim Beenden der Freundschaft');
+        this.isProcessing.delete(friend.uid);
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
