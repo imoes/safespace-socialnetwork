@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from typing import Optional
 
 from app.models.schemas import PostCreate, PostResponse, FeedResponse, PostVisibilityUpdate
@@ -82,8 +82,8 @@ async def create_post(
 
 @router.post("/with-media", response_model=PostResponse)
 async def create_post_with_media(
-    content: str,
-    visibility: str = "friends",
+    content: str = Form(""),
+    visibility: str = Form("friends"),
     files: list[UploadFile] = File(...),
     current_user: dict = Depends(get_current_user)
 ):

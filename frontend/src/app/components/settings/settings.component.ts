@@ -168,6 +168,27 @@ import { AuthService } from '../../services/auth.service';
             </button>
           </div>
         </form>
+
+        <!-- Gefahrenzone: Konto löschen -->
+        <div class="danger-zone">
+          <div class="section-divider">
+            <h3>⚠️ Gefahrenzone</h3>
+          </div>
+          <div class="danger-box">
+            <h4>Konto löschen</h4>
+            <p>Wenn du dein Konto löschst, werden alle deine Daten permanent gelöscht:</p>
+            <ul>
+              <li>Alle deine Posts und Kommentare</li>
+              <li>Alle hochgeladenen Medien (Bilder, Videos)</li>
+              <li>Alle Freundschaften und Anfragen</li>
+              <li>Dein Benutzerprofil und alle persönlichen Daten</li>
+            </ul>
+            <p class="danger-warning"><strong>Diese Aktion kann nicht rückgängig gemacht werden!</strong></p>
+            <button type="button" class="btn btn-danger" (click)="deleteAccount()">
+              🗑️ Konto permanent löschen
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -359,6 +380,55 @@ import { AuthService } from '../../services/auth.service';
     .btn-secondary:hover {
       background: #e4e6e9;
     }
+
+    /* Gefahrenzone */
+    .danger-zone {
+      margin-top: 48px;
+    }
+
+    .danger-box {
+      background: #fff5f5;
+      border: 2px solid #feb2b2;
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .danger-box h4 {
+      margin: 0 0 12px 0;
+      color: #c53030;
+      font-size: 18px;
+    }
+
+    .danger-box p {
+      color: #742a2a;
+      margin-bottom: 12px;
+    }
+
+    .danger-box ul {
+      color: #742a2a;
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .danger-box li {
+      margin-bottom: 6px;
+    }
+
+    .danger-warning {
+      font-weight: 700;
+      color: #c53030;
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #c82333;
+    }
   `]
 })
 export class SettingsComponent implements OnInit {
@@ -457,6 +527,34 @@ export class SettingsComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  deleteAccount(): void {
+    const confirmText = 'Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!';
+    if (!confirm(confirmText)) {
+      return;
+    }
+
+    const doubleConfirm = 'Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?';
+    if (!confirm(doubleConfirm)) {
+      return;
+    }
+
+    this.isSaving.set(true);
+    this.errorMessage.set('');
+
+    this.http.delete('/api/users/me/account').subscribe({
+      next: () => {
+        alert('Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.');
+        // Logout und zur Login-Seite
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        this.isSaving.set(false);
+        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Kontos');
+      }
+    });
   }
 
   onProfilePictureSelected(event: Event): void {

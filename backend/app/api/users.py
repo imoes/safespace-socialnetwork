@@ -533,6 +533,73 @@ async def unban_user(
         return {"message": "Bann erfolgreich aufgehoben"}
 
 
+@router.delete("/me/account")
+async def delete_account(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Löscht das Benutzerkonto vollständig.
+    - Löscht alle Posts aus SQLite
+    - Löscht alle Medien
+    - Löscht Public Posts aus OpenSearch
+    - Löscht User aus PostgreSQL
+    """
+    import shutil
+    from pathlib import Path
+    from app.config import settings
+    from app.services.opensearch_service import OpenSearchService
+
+    user_uid = current_user["uid"]
+
+    # 1. Löschen aus OpenSearch (public posts)
+    try:
+        opensearch = OpenSearchService()
+        await opensearch.delete_all_user_posts(user_uid)
+    except Exception as e:
+        print(f"Fehler beim Löschen von OpenSearch: {e}")
+
+    # 2. Löschen der SQLite Datenbank und aller Medien
+    user_data_dir = settings.user_data_base / str(user_uid)
+    if user_data_dir.exists():
+        try:
+            shutil.rmtree(user_data_dir)
+        except Exception as e:
+            print(f"Fehler beim Löschen des User-Verzeichnisses: {e}")
+
+    # 3. Löschen aus PostgreSQL (Freundschaften, Anfragen, Reports, etc.)
+    async with PostgresDB.connection() as conn:
+        # Freundschaften löschen
+        await conn.execute(
+            "DELETE FROM friendships WHERE user_id = %s OR friend_id = %s",
+            (user_uid, user_uid)
+        )
+
+        # Reports löschen
+        await conn.execute(
+            "DELETE FROM user_reports WHERE reporter_uid = %s OR reported_uid = %s",
+            (user_uid, user_uid)
+        )
+
+        # Moderation Disputes löschen (falls Tabelle existiert)
+        try:
+            await conn.execute(
+                "DELETE FROM moderation_disputes WHERE user_uid = %s",
+                (user_uid,)
+            )
+        except:
+            pass
+
+        # User löschen
+        await conn.execute(
+            "DELETE FROM users WHERE uid = %s",
+            (user_uid,)
+        )
+
+        await conn.commit()
+
+    return {"message": "Account erfolgreich gelöscht"}
+
+
 @router.post("/{user_uid}/posts")
 async def create_personal_post(
     user_uid: int,
