@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "feed": "التغذية",
+    "myPosts": "منشوراتي",
+    "public": "عام",
+    "hashtags": "الهاشتاغات",
+    "friends": "الأصدقاء",
+    "moderation": "الإشراف",
+    "users": "المستخدمون",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "searchPlaceholder": "البحث عن المستخدمين..."
+  },
+  "feed": {
+    "title": "تغذيتي",
+    "subtitle": "شاهد منشورات أصدقائك",
+    "createPost": "ماذا يدور في ذهنك؟",
+    "postButton": "نشر",
+    "uploading": "جاري الرفع...",
+    "visibility": {
+      "public": "عام",
+      "friends": "جميع الأصدقاء",
+      "closeFriends": "الأصدقاء المقربون",
+      "family": "العائلة",
+      "private": "أنا فقط"
+    },
+    "loadMore": "تحميل المزيد",
+    "olderPosts": "المنشورات القديمة",
+    "newerPosts": "المنشورات الأحدث",
+    "noOlderPosts": "لا توجد منشورات أقدم",
+    "noPosts": "لا توجد منشورات بعد",
+    "loading": "جاري تحميل تغذيتك..."
+  },
+  "post": {
+    "like": "أعجبني",
+    "comment": "تعليق",
+    "translate": "ترجمة",
+    "translating": "جاري الترجمة...",
+    "original": "الأصلي",
+    "translated": "مترجم",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "deleteConfirm": "هل تريد حقاً حذف هذا المنشور؟",
+    "report": "إبلاغ",
+    "changeVisibility": "انقر للتغيير"
+  },
+  "myPosts": {
+    "title": "منشوراتي",
+    "subtitle": "جميع منشوراتك وتفاعلاتك",
+    "tabMyPosts": "منشوراتي",
+    "tabCommented": "المنشورات المعلقة",
+    "noPosts": "لا توجد منشورات بعد",
+    "noPostsDesc": "لم تنشر أي منشورات بعد."
+  },
+  "publicFeed": {
+    "title": "المنشورات العامة",
+    "subtitle": "اكتشف المنشورات العامة من المجتمع",
+    "noPosts": "لا توجد منشورات عامة",
+    "noPostsDesc": "لا توجد منشورات عامة بعد.",
+    "loadMore": "تحميل 25 منشور التالية",
+    "postsCount": "{{current}} من {{total}} منشور معروض"
+  },
+  "friends": {
+    "title": "الأصدقاء",
+    "myFriends": "أصدقائي",
+    "requests": "طلبات الصداقة",
+    "search": "بحث",
+    "addFriend": "إضافة صديق",
+    "unfriend": "إلغاء الصداقة",
+    "accept": "قبول",
+    "decline": "رفض",
+    "pending": "قيد الانتظار",
+    "noFriends": "لا يوجد أصدقاء بعد",
+    "noRequests": "لا توجد طلبات معلقة"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة حسابك",
+    "profile": "الملف الشخصي",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "bio": "السيرة الذاتية",
+    "firstName": "الاسم الأول",
+    "lastName": "الاسم الأخير",
+    "language": "اللغة",
+    "password": "كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "save": "حفظ التغييرات",
+    "saving": "جاري الحفظ...",
+    "profilePicture": "صورة الملف الشخصي",
+    "uploadPicture": "رفع صورة",
+    "dangerZone": "منطقة الخطر",
+    "deleteAccount": "حذف الحساب",
+    "deleteAccountDesc": "إذا قمت بحذف حسابك، سيتم حذف جميع بياناتك نهائياً:",
+    "deleteAccountList": [
+      "جميع منشوراتك وتعليقاتك",
+      "جميع الوسائط المرفوعة (الصور، الفيديوهات)",
+      "جميع الصداقات والطلبات",
+      "ملفك الشخصي وجميع البيانات الشخصية"
+    ],
+    "deleteAccountWarning": "لا يمكن التراجع عن هذا الإجراء!",
+    "deleteAccountButton": "حذف الحساب نهائياً"
+  },
+  "hashtags": {
+    "title": "الهاشتاغات الرائجة",
+    "subtitle": "اكتشف المواضيع الشائعة",
+    "postsCount": "{{count}} منشور",
+    "noHashtags": "لا توجد هاشتاغات رائجة",
+    "viewPosts": "عرض المنشورات"
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "username": "اسم المستخدم",
+    "password": "كلمة المرور",
+    "loginButton": "تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "register": "سجل الآن"
+  },
+  "register": {
+    "title": "التسجيل",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "registerButton": "التسجيل",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "login": "سجل الدخول هنا"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "نجح",
+    "close": "إغلاق",
+    "search": "بحث",
+    "noResults": "لم يتم العثور على نتائج",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء"
+  }
+}

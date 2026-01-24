@@ -61,7 +61,7 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       <!-- Load more -->
       @if (feedService.hasMore()) {
         <button class="load-more" (click)="loadMore()" [disabled]="feedService.isLoading()">
-          Mehr laden
+          📜 Frühere Posts laden
         </button>
       }
 

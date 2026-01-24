@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "myPosts": "Meine Posts",
+    "public": "Öffentlich",
+    "hashtags": "Hashtags",
+    "friends": "Freunde",
+    "moderation": "Moderation",
+    "users": "Benutzer",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "searchPlaceholder": "Benutzer suchen..."
+  },
+  "feed": {
+    "title": "Mein Feed",
+    "subtitle": "Sieh dir Posts von deinen Freunden an",
+    "createPost": "Was machst du gerade?",
+    "postButton": "Posten",
+    "uploading": "Wird hochgeladen...",
+    "visibility": {
+      "public": "Öffentlich",
+      "friends": "Alle Freunde",
+      "closeFriends": "Enge Freunde",
+      "family": "Familie",
+      "private": "Nur ich"
+    },
+    "loadMore": "Mehr laden",
+    "olderPosts": "Frühere Posts",
+    "newerPosts": "Neuere Posts",
+    "noOlderPosts": "Keine älteren Posts",
+    "noPosts": "Noch keine Posts",
+    "loading": "Lade deinen Feed..."
+  },
+  "post": {
+    "like": "Gefällt mir",
+    "comment": "Kommentieren",
+    "translate": "Übersetzen",
+    "translating": "Übersetzen...",
+    "original": "Original",
+    "translated": "Übersetzt",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "deleteConfirm": "Post wirklich löschen?",
+    "report": "Melden",
+    "changeVisibility": "Klicken zum Ändern"
+  },
+  "myPosts": {
+    "title": "Meine Posts",
+    "subtitle": "Alle deine veröffentlichten Beiträge und Interaktionen",
+    "tabMyPosts": "Meine Posts",
+    "tabCommented": "Kommentierte Posts",
+    "noPosts": "Noch keine Posts",
+    "noPostsDesc": "Du hast noch keine Beiträge veröffentlicht."
+  },
+  "publicFeed": {
+    "title": "Öffentliche Posts",
+    "subtitle": "Entdecke öffentliche Beiträge aus der Community",
+    "noPosts": "Keine öffentlichen Posts",
+    "noPostsDesc": "Es sind noch keine öffentlichen Posts vorhanden.",
+    "loadMore": "Weitere 25 Posts laden",
+    "postsCount": "{{current}} von {{total}} Posts angezeigt"
+  },
+  "friends": {
+    "title": "Freunde",
+    "myFriends": "Meine Freunde",
+    "requests": "Freundschaftsanfragen",
+    "search": "Suchen",
+    "addFriend": "Freund hinzufügen",
+    "unfriend": "Freundschaft beenden",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen",
+    "pending": "Ausstehend",
+    "noFriends": "Noch keine Freunde",
+    "noRequests": "Keine ausstehenden Anfragen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalte dein Konto",
+    "profile": "Profil",
+    "username": "Benutzername",
+    "email": "E-Mail",
+    "bio": "Biografie",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "language": "Sprache",
+    "password": "Passwort",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "save": "Änderungen speichern",
+    "saving": "Wird gespeichert...",
+    "profilePicture": "Profilbild",
+    "uploadPicture": "Bild hochladen",
+    "dangerZone": "Gefahrenzone",
+    "deleteAccount": "Konto löschen",
+    "deleteAccountDesc": "Wenn du dein Konto löschst, werden alle deine Daten permanent gelöscht:",
+    "deleteAccountList": [
+      "Alle deine Posts und Kommentare",
+      "Alle hochgeladenen Medien (Bilder, Videos)",
+      "Alle Freundschaften und Anfragen",
+      "Dein Benutzerprofil und alle persönlichen Daten"
+    ],
+    "deleteAccountWarning": "Diese Aktion kann nicht rückgängig gemacht werden!",
+    "deleteAccountButton": "Konto permanent löschen"
+  },
+  "hashtags": {
+    "title": "Trending Hashtags",
+    "subtitle": "Entdecke beliebte Themen",
+    "postsCount": "{{count}} Posts",
+    "noHashtags": "Keine Trending Hashtags",
+    "viewPosts": "Posts ansehen"
+  },
+  "login": {
+    "title": "Anmelden",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "loginButton": "Anmelden",
+    "noAccount": "Noch kein Konto?",
+    "register": "Jetzt registrieren"
+  },
+  "register": {
+    "title": "Registrieren",
+    "username": "Benutzername",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "registerButton": "Registrieren",
+    "hasAccount": "Bereits ein Konto?",
+    "login": "Hier anmelden"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "success": "Erfolgreich",
+    "close": "Schließen",
+    "search": "Suchen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen"
+  }
+}

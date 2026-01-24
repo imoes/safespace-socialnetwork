@@ -54,6 +54,7 @@ async def check_content(
         "categories": [c.value for c in result.categories],
         "explanation": result.explanation,
         "suggested_revision": result.suggested_revision,
+        "alternative_suggestions": result.alternative_suggestions or [],
         "revision_explanation": result.revision_explanation,
         "would_be_status": result.status.value
     }
@@ -68,10 +69,39 @@ async def suggest_revision(
     Generiert einen Verbesserungsvorschlag für problematischen Content.
     """
     suggestion = await DeepSeekModerator.suggest_improvement(content)
-    
+
     return {
         "original": content,
         "suggestion": suggestion
+    }
+
+
+@router.post("/dispute")
+async def dispute_moderation(
+    content: str,
+    reason: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Erstellt einen Widerspruch gegen die Moderation.
+    Der Post wird zur menschlichen Überprüfung markiert.
+    """
+    from app.db.postgres import PostgresDB
+
+    # Speichere den Widerspruch in der Datenbank
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            """
+            INSERT INTO moderation_disputes (user_uid, content, reason, created_at, status)
+            VALUES (%s, %s, %s, %s, 'pending')
+            """,
+            (current_user["uid"], content, reason, datetime.utcnow())
+        )
+        await conn.commit()
+
+    return {
+        "message": "Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet",
+        "status": "pending_review"
     }
 
 

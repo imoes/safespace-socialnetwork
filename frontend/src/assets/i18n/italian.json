@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "myPosts": "I miei Post",
+    "public": "Pubblico",
+    "hashtags": "Hashtags",
+    "friends": "Amici",
+    "moderation": "Moderazione",
+    "users": "Utenti",
+    "settings": "Impostazioni",
+    "logout": "Disconnetti",
+    "searchPlaceholder": "Cerca utenti..."
+  },
+  "feed": {
+    "title": "Il mio Feed",
+    "subtitle": "Vedi i post dei tuoi amici",
+    "createPost": "A cosa stai pensando?",
+    "postButton": "Pubblica",
+    "uploading": "Caricamento...",
+    "visibility": {
+      "public": "Pubblico",
+      "friends": "Tutti gli amici",
+      "closeFriends": "Amici stretti",
+      "family": "Famiglia",
+      "private": "Solo io"
+    },
+    "loadMore": "Carica di più",
+    "olderPosts": "Post precedenti",
+    "newerPosts": "Post più recenti",
+    "noOlderPosts": "Nessun post precedente",
+    "noPosts": "Ancora nessun post",
+    "loading": "Caricamento del tuo feed..."
+  },
+  "post": {
+    "like": "Mi piace",
+    "comment": "Commenta",
+    "translate": "Traduci",
+    "translating": "Traduzione...",
+    "original": "Originale",
+    "translated": "Tradotto",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "deleteConfirm": "Eliminare davvero questo post?",
+    "report": "Segnala",
+    "changeVisibility": "Clicca per cambiare"
+  },
+  "myPosts": {
+    "title": "I miei Post",
+    "subtitle": "Tutti i tuoi post pubblicati e le interazioni",
+    "tabMyPosts": "I miei Post",
+    "tabCommented": "Post commentati",
+    "noPosts": "Ancora nessun post",
+    "noPostsDesc": "Non hai ancora pubblicato alcun post."
+  },
+  "publicFeed": {
+    "title": "Post Pubblici",
+    "subtitle": "Scopri i post pubblici della community",
+    "noPosts": "Nessun post pubblico",
+    "noPostsDesc": "Non ci sono ancora post pubblici.",
+    "loadMore": "Carica prossimi 25 post",
+    "postsCount": "{{current}} di {{total}} post visualizzati"
+  },
+  "friends": {
+    "title": "Amici",
+    "myFriends": "I miei Amici",
+    "requests": "Richieste di amicizia",
+    "search": "Cerca",
+    "addFriend": "Aggiungi amico",
+    "unfriend": "Rimuovi amicizia",
+    "accept": "Accetta",
+    "decline": "Rifiuta",
+    "pending": "In attesa",
+    "noFriends": "Ancora nessun amico",
+    "noRequests": "Nessuna richiesta in attesa"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Gestisci il tuo account",
+    "profile": "Profilo",
+    "username": "Nome utente",
+    "email": "Email",
+    "bio": "Biografia",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "language": "Lingua",
+    "password": "Password",
+    "currentPassword": "Password attuale",
+    "newPassword": "Nuova password",
+    "save": "Salva modifiche",
+    "saving": "Salvataggio...",
+    "profilePicture": "Foto del profilo",
+    "uploadPicture": "Carica foto",
+    "dangerZone": "Zona pericolosa",
+    "deleteAccount": "Elimina account",
+    "deleteAccountDesc": "Se elimini il tuo account, tutti i tuoi dati verranno eliminati permanentemente:",
+    "deleteAccountList": [
+      "Tutti i tuoi post e commenti",
+      "Tutti i media caricati (immagini, video)",
+      "Tutte le amicizie e richieste",
+      "Il tuo profilo utente e tutti i dati personali"
+    ],
+    "deleteAccountWarning": "Questa azione non può essere annullata!",
+    "deleteAccountButton": "Elimina account permanentemente"
+  },
+  "hashtags": {
+    "title": "Hashtags di Tendenza",
+    "subtitle": "Scopri argomenti popolari",
+    "postsCount": "{{count}} post",
+    "noHashtags": "Nessun hashtag di tendenza",
+    "viewPosts": "Vedi post"
+  },
+  "login": {
+    "title": "Accedi",
+    "username": "Nome utente",
+    "password": "Password",
+    "loginButton": "Accedi",
+    "noAccount": "Non hai un account?",
+    "register": "Registrati ora"
+  },
+  "register": {
+    "title": "Registrati",
+    "username": "Nome utente",
+    "email": "Email",
+    "password": "Password",
+    "registerButton": "Registrati",
+    "hasAccount": "Hai già un account?",
+    "login": "Accedi qui"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Si è verificato un errore",
+    "success": "Successo",
+    "close": "Chiudi",
+    "search": "Cerca",
+    "noResults": "Nessun risultato trovato",
+    "confirm": "Conferma",
+    "cancel": "Annulla"
+  }
+}

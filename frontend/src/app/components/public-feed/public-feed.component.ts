@@ -1,47 +1,32 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 
 @Component({
-  selector: 'app-my-posts',
+  selector: 'app-public-feed',
   standalone: true,
   imports: [CommonModule, PostCardComponent],
   template: `
-    <div class="my-posts-container">
+    <div class="public-feed-container">
       <div class="page-header">
-        <h1>📝 Meine Posts</h1>
-        <p class="subtitle">Alle deine veröffentlichten Beiträge und Interaktionen</p>
-
-        <div class="tabs">
-          <button
-            class="tab"
-            [class.active]="activeTab === 'my-posts'"
-            (click)="switchTab('my-posts')">
-            📝 Meine Posts
-          </button>
-          <button
-            class="tab"
-            [class.active]="activeTab === 'commented'"
-            (click)="switchTab('commented')">
-            💬 Kommentierte Posts
-          </button>
-        </div>
+        <h1>🌍 Öffentliche Posts</h1>
+        <p class="subtitle">Entdecke öffentliche Beiträge aus der Community</p>
       </div>
 
       @if (loading && posts.length === 0) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade deine Posts...</p>
+          <p>Lade öffentliche Posts...</p>
         </div>
       }
 
       @if (!loading && posts.length === 0) {
         <div class="empty-state">
           <div class="empty-icon">📭</div>
-          <h2>Noch keine Posts</h2>
-          <p>Du hast noch keine Beiträge veröffentlicht.</p>
+          <h2>Keine öffentlichen Posts</h2>
+          <p>Es sind noch keine öffentlichen Posts vorhanden.</p>
         </div>
       }
 
@@ -59,7 +44,10 @@ import { PostCardComponent } from '../post-card/post-card.component';
 
       @if (hasMore && !loading) {
         <div class="load-more">
-          <button class="btn-load-more" (click)="loadMore()">📜 Frühere Posts laden</button>
+          <button class="btn-load-more" (click)="loadMore()">
+            Weitere 25 Posts laden
+          </button>
+          <p class="posts-count">{{ posts.length }} von {{ total }} Posts angezeigt</p>
         </div>
       }
 
@@ -71,7 +59,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
     </div>
   `,
   styles: [`
-    .my-posts-container {
+    .public-feed-container {
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
@@ -93,36 +81,9 @@ import { PostCardComponent } from '../post-card/post-card.component';
     }
 
     .subtitle {
-      margin: 0 0 20px 0;
+      margin: 0;
       color: #65676b;
       font-size: 14px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .tab {
-      padding: 10px 20px;
-      border: none;
-      background: #f0f2f5;
-      color: #65676b;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-
-    .tab:hover {
-      background: #e4e6e9;
-    }
-
-    .tab.active {
-      background: #1877f2;
-      color: white;
     }
 
     .loading {
@@ -193,10 +154,17 @@ import { PostCardComponent } from '../post-card/post-card.component';
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
+      margin-bottom: 8px;
     }
 
     .btn-load-more:hover {
       background: #166fe5;
+    }
+
+    .posts-count {
+      margin: 0;
+      color: #65676b;
+      font-size: 13px;
     }
 
     .loading-more {
@@ -211,24 +179,20 @@ import { PostCardComponent } from '../post-card/post-card.component';
     }
   `]
 })
-export class MyPostsComponent implements OnInit, OnDestroy {
+export class PublicFeedComponent implements OnInit {
   private http = inject(HttpClient);
 
   posts: Post[] = [];
   loading = false;
   hasMore = true;
+  total = 0;
   currentUid?: number;
-  activeTab: 'my-posts' | 'commented' = 'my-posts';
   private offset = 0;
   private readonly limit = 25;
 
   ngOnInit(): void {
     this.loadCurrentUser();
     this.loadPosts();
-  }
-
-  ngOnDestroy(): void {
-    // Cleanup if needed
   }
 
   private loadCurrentUser(): void {
@@ -243,31 +207,20 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     if (this.loading) return;
 
     this.loading = true;
-    const endpoint = this.activeTab === 'my-posts'
-      ? `/api/users/me/posts?limit=${this.limit}&offset=${this.offset}`
-      : `/api/users/me/commented-posts?limit=${this.limit}&offset=${this.offset}`;
-
-    this.http.get<{ posts: Post[], has_more: boolean }>(endpoint).subscribe({
+    this.http.get<{ posts: Post[], total: number, has_more: boolean }>(
+      `/api/public-feed?limit=${this.limit}&offset=${this.offset}`
+    ).subscribe({
       next: (response) => {
         this.posts = [...this.posts, ...response.posts];
+        this.total = response.total;
         this.hasMore = response.has_more;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Fehler beim Laden der Posts:', err);
+        console.error('Fehler beim Laden der öffentlichen Posts:', err);
         this.loading = false;
       }
     });
-  }
-
-  switchTab(tab: 'my-posts' | 'commented'): void {
-    if (this.activeTab === tab) return;
-
-    this.activeTab = tab;
-    this.posts = [];
-    this.offset = 0;
-    this.hasMore = true;
-    this.loadPosts();
   }
 
   loadMore(): void {

@@ -85,6 +85,7 @@ class DeepSeekModerator:
             categories=[HateSpeechCategory(c) for c in analysis["categories"]],
             explanation=analysis["explanation"],
             suggested_revision=analysis.get("suggested_revision"),
+            alternative_suggestions=analysis.get("alternative_suggestions"),
             revision_explanation=analysis.get("revision_explanation"),
             status=status,
             moderated_at=datetime.utcnow(),
@@ -97,33 +98,59 @@ class DeepSeekModerator:
     @classmethod
     async def _call_deepseek(cls, content: str) -> dict:
         """Ruft DeepSeek API auf"""
-        
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                f"{safespace_settings.deepseek_base_url}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {safespace_settings.deepseek_api_key}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": safespace_settings.deepseek_model,
-                    "messages": [
-                        {"role": "system", "content": MODERATION_SYSTEM_PROMPT},
-                        {"role": "user", "content": f"Analysiere diesen Beitrag:\n\n{content}"}
-                    ],
-                    "temperature": 0.1,  # Niedrig für konsistente Ergebnisse
-                    "max_tokens": 1000
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    f"{safespace_settings.deepseek_base_url}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {safespace_settings.deepseek_api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": safespace_settings.deepseek_model,
+                        "messages": [
+                            {"role": "system", "content": MODERATION_SYSTEM_PROMPT},
+                            {"role": "user", "content": f"Analysiere diesen Beitrag:\n\n{content}"}
+                        ],
+                        "temperature": 0.1,  # Niedrig für konsistente Ergebnisse
+                        "max_tokens": 1000
+                    }
+                )
+
+                response.raise_for_status()
+                data = response.json()
+
+                # Antwort parsen
+                assistant_message = data["choices"][0]["message"]["content"]
+
+                # JSON aus der Antwort extrahieren
+                return cls._parse_response(assistant_message)
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 402:
+                print("⚠️  DeepSeek API: 402 Payment Required - Fallback auf SimpleModerator")
+                # Fallback auf SimpleModerator
+                from app.safespace.simple_moderator import SimpleModerator
+                from app.safespace.models import PostMessage
+                temp_post = PostMessage(
+                    post_id=0,
+                    author_uid=0,
+                    author_username="",
+                    content=content,
+                    visibility="public",
+                    created_at=datetime.utcnow()
+                )
+                result = await SimpleModerator.moderate_post(temp_post)
+                return {
+                    "is_hate_speech": result.is_hate_speech,
+                    "confidence_score": result.confidence_score,
+                    "categories": [c.value for c in result.categories],
+                    "explanation": result.explanation,
+                    "suggested_revision": result.suggested_revision,
+                    "alternative_suggestions": result.alternative_suggestions,
+                    "revision_explanation": result.revision_explanation
                 }
-            )
-            
-            response.raise_for_status()
-            data = response.json()
-            
-            # Antwort parsen
-            assistant_message = data["choices"][0]["message"]["content"]
-            
-            # JSON aus der Antwort extrahieren
-            return cls._parse_response(assistant_message)
+            raise
     
     @classmethod
     def _parse_response(cls, response: str) -> dict:

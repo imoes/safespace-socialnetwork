@@ -8,9 +8,12 @@ export interface ContentCheckResult {
   categories: string[];
   explanation: string;
   suggested_revision: string | null;
+  alternative_suggestions: string[];
   revision_explanation: string | null;
   would_be_status: string;
 }
+
+export type ModerationCheckResult = ContentCheckResult;
 
 export interface ModerationReport {
   report_id: string;

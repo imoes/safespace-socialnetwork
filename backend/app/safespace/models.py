@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 
 class ModerationStatus(str, Enum):
@@ -55,6 +55,7 @@ class ModerationResult(BaseModel):
     
     # Verbesserungsvorschläge
     suggested_revision: Optional[str] = None
+    alternative_suggestions: Optional[List[str]] = None  # Zusätzliche Alternativen für Guardian
     revision_explanation: Optional[str] = None
     
     # Status

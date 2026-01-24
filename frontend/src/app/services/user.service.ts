@@ -7,6 +7,8 @@ export interface UserSearchResult {
   username: string;
   bio?: string;
   role: string;
+  profile_picture?: string;
+  is_friend: boolean;
 }
 
 export interface UserProfile {

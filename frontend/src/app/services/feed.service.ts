@@ -13,6 +13,8 @@ export interface Post {
   created_at: string;
   likes_count: number;
   comments_count: number;
+  recipient_uid?: number;
+  recipient_username?: string;
 }
 
 export interface FeedResponse {
@@ -108,7 +110,7 @@ export class FeedService implements OnDestroy {
 
     const params = new HttpParams()
       .set('offset', currentPosts.length.toString())
-      .set('limit', '50');
+      .set('limit', '25');
 
     this.http.get<FeedResponse>(this.API_URL, { params }).subscribe({
       next: (response) => {

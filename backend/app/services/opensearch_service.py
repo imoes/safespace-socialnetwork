@@ -123,6 +123,32 @@ class OpenSearchService:
         except Exception:
             return False
 
+    async def delete_all_user_posts(self, author_uid: int) -> int:
+        """
+        Löscht alle Posts eines Users aus OpenSearch.
+        Returns: Anzahl der gelöschten Dokumente.
+        """
+        try:
+            await self.ensure_index()
+
+            # Suche alle Posts des Users
+            response = self.client.delete_by_query(
+                index=self.index_name,
+                body={
+                    "query": {
+                        "term": {
+                            "author_uid": author_uid
+                        }
+                    }
+                },
+                refresh=True
+            )
+
+            return response.get("deleted", 0)
+        except Exception as e:
+            print(f"Fehler beim Löschen von User-Posts aus OpenSearch: {e}")
+            return 0
+
     async def update_post_counts(
         self,
         doc_id: str,
@@ -303,6 +329,44 @@ class OpenSearchService:
         )
 
         return [hit['_source'] for hit in response['hits']['hits']]
+
+    async def get_public_posts(
+        self,
+        limit: int = 25,
+        offset: int = 0
+    ) -> Dict[str, Any]:
+        """
+        Gets the latest public posts with pagination.
+        Returns posts sorted by created_at (newest first).
+        """
+        await self.ensure_index()
+
+        query = {
+            "query": {
+                "term": {
+                    "visibility": "public"
+                }
+            },
+            "sort": [
+                {"created_at": {"order": "desc"}}
+            ],
+            "size": limit,
+            "from": offset
+        }
+
+        response = self.client.search(
+            index=self.index_name,
+            body=query
+        )
+
+        total = response['hits']['total']['value']
+        posts = [hit['_source'] for hit in response['hits']['hits']]
+
+        return {
+            "posts": posts,
+            "total": total,
+            "has_more": offset + limit < total
+        }
 
 
 # Singleton instance

@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "myPosts": "Mes Posts",
+    "public": "Public",
+    "hashtags": "Hashtags",
+    "friends": "Amis",
+    "moderation": "Modération",
+    "users": "Utilisateurs",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "searchPlaceholder": "Rechercher des utilisateurs..."
+  },
+  "feed": {
+    "title": "Mon Feed",
+    "subtitle": "Voir les posts de vos amis",
+    "createPost": "Qu'avez-vous en tête?",
+    "postButton": "Publier",
+    "uploading": "Téléchargement...",
+    "visibility": {
+      "public": "Public",
+      "friends": "Tous les amis",
+      "closeFriends": "Amis proches",
+      "family": "Famille",
+      "private": "Moi seulement"
+    },
+    "loadMore": "Charger plus",
+    "olderPosts": "Posts précédents",
+    "newerPosts": "Posts plus récents",
+    "noOlderPosts": "Pas de posts précédents",
+    "noPosts": "Pas encore de posts",
+    "loading": "Chargement de votre feed..."
+  },
+  "post": {
+    "like": "J'aime",
+    "comment": "Commenter",
+    "translate": "Traduire",
+    "translating": "Traduction...",
+    "original": "Original",
+    "translated": "Traduit",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "deleteConfirm": "Vraiment supprimer ce post?",
+    "report": "Signaler",
+    "changeVisibility": "Cliquer pour changer"
+  },
+  "myPosts": {
+    "title": "Mes Posts",
+    "subtitle": "Tous vos posts publiés et interactions",
+    "tabMyPosts": "Mes Posts",
+    "tabCommented": "Posts commentés",
+    "noPosts": "Pas encore de posts",
+    "noPostsDesc": "Vous n'avez pas encore publié de posts."
+  },
+  "publicFeed": {
+    "title": "Posts Publics",
+    "subtitle": "Découvrez les posts publics de la communauté",
+    "noPosts": "Pas de posts publics",
+    "noPostsDesc": "Il n'y a pas encore de posts publics.",
+    "loadMore": "Charger les 25 prochains posts",
+    "postsCount": "{{current}} sur {{total}} posts affichés"
+  },
+  "friends": {
+    "title": "Amis",
+    "myFriends": "Mes Amis",
+    "requests": "Demandes d'amitié",
+    "search": "Rechercher",
+    "addFriend": "Ajouter un ami",
+    "unfriend": "Retirer l'amitié",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "pending": "En attente",
+    "noFriends": "Pas encore d'amis",
+    "noRequests": "Pas de demandes en attente"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérer votre compte",
+    "profile": "Profil",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "bio": "Biographie",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "language": "Langue",
+    "password": "Mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "save": "Enregistrer les modifications",
+    "saving": "Enregistrement...",
+    "profilePicture": "Photo de profil",
+    "uploadPicture": "Télécharger une photo",
+    "dangerZone": "Zone dangereuse",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountDesc": "Si vous supprimez votre compte, toutes vos données seront supprimées définitivement:",
+    "deleteAccountList": [
+      "Tous vos posts et commentaires",
+      "Tous les médias téléchargés (images, vidéos)",
+      "Toutes les amitiés et demandes",
+      "Votre profil utilisateur et toutes les données personnelles"
+    ],
+    "deleteAccountWarning": "Cette action ne peut pas être annulée!",
+    "deleteAccountButton": "Supprimer définitivement le compte"
+  },
+  "hashtags": {
+    "title": "Hashtags Tendances",
+    "subtitle": "Découvrez les sujets populaires",
+    "postsCount": "{{count}} posts",
+    "noHashtags": "Pas de hashtags tendances",
+    "viewPosts": "Voir les posts"
+  },
+  "login": {
+    "title": "Connexion",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "loginButton": "Se connecter",
+    "noAccount": "Pas de compte?",
+    "register": "S'inscrire maintenant"
+  },
+  "register": {
+    "title": "S'inscrire",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "password": "Mot de passe",
+    "registerButton": "S'inscrire",
+    "hasAccount": "Vous avez déjà un compte?",
+    "login": "Se connecter ici"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "success": "Succès",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat trouvé",
+    "confirm": "Confirmer",
+    "cancel": "Annuler"
+  }
+}

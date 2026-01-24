@@ -34,13 +34,26 @@ class UserPostsDB:
                     moderation_status TEXT DEFAULT 'pending',  -- pending, approved, flagged, removed
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    opensearch_doc_id TEXT  -- OpenSearch document ID for public posts
+                    opensearch_doc_id TEXT,  -- OpenSearch document ID for public posts
+                    recipient_uid INTEGER,  -- UID des Profilbesitzers, wenn persönlicher Post
+                    author_uid INTEGER  -- UID des Autors bei persönlichem Post
                 )
             """)
 
             # Migration: Add opensearch_doc_id column if it doesn't exist
             try:
                 await db.execute("ALTER TABLE posts ADD COLUMN opensearch_doc_id TEXT")
+            except:
+                pass  # Column already exists
+
+            # Migration: Add recipient_uid and author_uid for personal posts
+            try:
+                await db.execute("ALTER TABLE posts ADD COLUMN recipient_uid INTEGER")
+            except:
+                pass  # Column already exists
+
+            try:
+                await db.execute("ALTER TABLE posts ADD COLUMN author_uid INTEGER")
             except:
                 pass  # Column already exists
             
@@ -85,29 +98,32 @@ class UserPostsDB:
             await db.commit()
     
     async def create_post(
-        self, 
-        content: str, 
+        self,
+        content: str,
         media_paths: list[str] = None,
-        visibility: str = "friends"
+        visibility: str = "friends",
+        recipient_uid: int = None,
+        author_uid: int = None
     ) -> dict:
-        """Erstellt einen neuen Post"""
+        """Erstellt einen neuen Post.
+        Wenn recipient_uid gesetzt ist, ist es ein persönlicher Post auf dem Profil einer anderen Person."""
         await self._ensure_db()
-        
+
         media_json = json.dumps(media_paths) if media_paths else None
-        
+
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             cursor = await db.execute(
                 """
-                INSERT INTO posts (content, media_paths, visibility)
-                VALUES (?, ?, ?)
+                INSERT INTO posts (content, media_paths, visibility, recipient_uid, author_uid)
+                VALUES (?, ?, ?, ?, ?)
                 RETURNING *
                 """,
-                (content, media_json, visibility)
+                (content, media_json, visibility, recipient_uid, author_uid)
             )
             row = await cursor.fetchone()
             await db.commit()
-            
+
             return self._row_to_dict(row)
     
     async def get_posts(

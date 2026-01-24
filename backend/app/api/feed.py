@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from typing import Optional
 
 from app.models.schemas import PostCreate, PostResponse, FeedResponse, PostVisibilityUpdate
@@ -23,27 +23,30 @@ router = APIRouter(prefix="/feed", tags=["Feed & Posts"])
 
 @router.get("", response_model=FeedResponse)
 async def get_feed(
-    limit: int = 50,
+    limit: int = 25,
     offset: int = 0,
     refresh: bool = False,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Lädt den Feed des aktuellen Users.
-    
-    - **limit**: Anzahl Posts (default 50)
+
+    - **limit**: Anzahl Posts (default 25, max 50)
     - **offset**: Pagination offset
     - **refresh**: Force refresh, ignoriert Cache
-    
+
     Der Feed wird für 30 Sekunden gecached.
     """
+    # Limit auf 50 begrenzen
+    limit = min(limit, 50)
+
     result = await FeedService.get_feed(
         uid=current_user["uid"],
         limit=limit,
         offset=offset,
         force_refresh=refresh
     )
-    
+
     return FeedResponse(
         posts=[PostResponse(**p) for p in result["posts"]],
         has_more=result["has_more"],
@@ -82,8 +85,8 @@ async def create_post(
 
 @router.post("/with-media", response_model=PostResponse)
 async def create_post_with_media(
-    content: str,
-    visibility: str = "friends",
+    content: str = Form(""),
+    visibility: str = Form("friends"),
     files: list[UploadFile] = File(...),
     current_user: dict = Depends(get_current_user)
 ):

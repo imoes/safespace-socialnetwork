@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "myPosts": "Mis Posts",
+    "public": "Público",
+    "hashtags": "Hashtags",
+    "friends": "Amigos",
+    "moderation": "Moderación",
+    "users": "Usuarios",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión",
+    "searchPlaceholder": "Buscar usuarios..."
+  },
+  "feed": {
+    "title": "Mi Feed",
+    "subtitle": "Ver publicaciones de tus amigos",
+    "createPost": "¿Qué estás pensando?",
+    "postButton": "Publicar",
+    "uploading": "Subiendo...",
+    "visibility": {
+      "public": "Público",
+      "friends": "Todos los amigos",
+      "closeFriends": "Amigos cercanos",
+      "family": "Familia",
+      "private": "Solo yo"
+    },
+    "loadMore": "Cargar más",
+    "olderPosts": "Posts anteriores",
+    "newerPosts": "Posts más recientes",
+    "noOlderPosts": "No hay posts anteriores",
+    "noPosts": "Aún no hay posts",
+    "loading": "Cargando tu feed..."
+  },
+  "post": {
+    "like": "Me gusta",
+    "comment": "Comentar",
+    "translate": "Traducir",
+    "translating": "Traduciendo...",
+    "original": "Original",
+    "translated": "Traducido",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "deleteConfirm": "¿Realmente eliminar esta publicación?",
+    "report": "Reportar",
+    "changeVisibility": "Click para cambiar"
+  },
+  "myPosts": {
+    "title": "Mis Posts",
+    "subtitle": "Todas tus publicaciones e interacciones",
+    "tabMyPosts": "Mis Posts",
+    "tabCommented": "Posts comentados",
+    "noPosts": "Aún no hay posts",
+    "noPostsDesc": "Todavía no has publicado ningún post."
+  },
+  "publicFeed": {
+    "title": "Posts Públicos",
+    "subtitle": "Descubre publicaciones públicas de la comunidad",
+    "noPosts": "No hay posts públicos",
+    "noPostsDesc": "Aún no hay publicaciones públicas.",
+    "loadMore": "Cargar siguientes 25 posts",
+    "postsCount": "{{current}} de {{total}} posts mostrados"
+  },
+  "friends": {
+    "title": "Amigos",
+    "myFriends": "Mis Amigos",
+    "requests": "Solicitudes de amistad",
+    "search": "Buscar",
+    "addFriend": "Agregar amigo",
+    "unfriend": "Eliminar amistad",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "pending": "Pendiente",
+    "noFriends": "Aún no tienes amigos",
+    "noRequests": "No hay solicitudes pendientes"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Administra tu cuenta",
+    "profile": "Perfil",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "bio": "Biografía",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "language": "Idioma",
+    "password": "Contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "profilePicture": "Foto de perfil",
+    "uploadPicture": "Subir foto",
+    "dangerZone": "Zona de peligro",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountDesc": "Si eliminas tu cuenta, todos tus datos serán eliminados permanentemente:",
+    "deleteAccountList": [
+      "Todas tus publicaciones y comentarios",
+      "Todos los medios subidos (imágenes, videos)",
+      "Todas las amistades y solicitudes",
+      "Tu perfil de usuario y todos los datos personales"
+    ],
+    "deleteAccountWarning": "¡Esta acción no se puede deshacer!",
+    "deleteAccountButton": "Eliminar cuenta permanentemente"
+  },
+  "hashtags": {
+    "title": "Hashtags Tendencia",
+    "subtitle": "Descubre temas populares",
+    "postsCount": "{{count}} posts",
+    "noHashtags": "No hay hashtags en tendencia",
+    "viewPosts": "Ver posts"
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "loginButton": "Iniciar sesión",
+    "noAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate ahora"
+  },
+  "register": {
+    "title": "Registrarse",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "registerButton": "Registrarse",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "login": "Inicia sesión aquí"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "noResults": "No se encontraron resultados",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
+  }
+}
