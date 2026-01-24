@@ -577,14 +577,11 @@ export class PostCardComponent {
 
   onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
     if (isHovering) {
-      // Play video on hover
+      // Play video on hover - läuft dann bis zum Ende durch
       videoElement.play().catch(err => {
         console.log('Video autoplay failed:', err);
       });
-    } else {
-      // Pause and reset on mouse leave
-      videoElement.pause();
-      videoElement.currentTime = 0;
     }
+    // Beim Verlassen passiert nichts - Video läuft weiter
   }
 }
