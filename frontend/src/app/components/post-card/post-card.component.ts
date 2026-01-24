@@ -55,7 +55,17 @@ import { TranslationService, TranslationResult } from '../../services/translatio
         <div class="post-media">
           @for (url of post.media_urls; track url) {
             @if (isImage(url)) { <img [src]="url" alt="Media" /> }
-            @else if (isVideo(url)) { <video [src]="url" controls></video> }
+            @else if (isVideo(url)) {
+              <video
+                #videoElement
+                [src]="url"
+                controls
+                muted
+                playsinline
+                (mouseenter)="onVideoHover(videoElement, true)"
+                (mouseleave)="onVideoHover(videoElement, false)">
+              </video>
+            }
           }
         </div>
       }
@@ -563,5 +573,15 @@ export class PostCardComponent {
         this.router.navigate(['/hashtag', hashtag]);
       }
     }
+  }
+
+  onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
+    if (isHovering) {
+      // Play video on hover - läuft dann bis zum Ende durch
+      videoElement.play().catch(err => {
+        console.log('Video autoplay failed:', err);
+      });
+    }
+    // Beim Verlassen passiert nichts - Video läuft weiter
   }
 }

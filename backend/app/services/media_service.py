@@ -1,5 +1,7 @@
 import uuid
 import aiofiles
+import subprocess
+import json
 from pathlib import Path
 from PIL import Image
 import io
@@ -14,6 +16,7 @@ ALLOWED_VIDEO_TYPES = {"video/mp4", "video/webm", "video/quicktime"}
 ALLOWED_AUDIO_TYPES = {"audio/mpeg", "audio/wav", "audio/ogg"}
 
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MB
+MAX_VIDEO_DURATION = 300  # 5 Minuten in Sekunden
 THUMBNAIL_SIZE = (300, 300)
 
 
@@ -71,10 +74,21 @@ class MediaService:
         # Datei speichern
         filename = f"{media_id}{extension}"
         filepath = media_dir / filename
-        
+
         async with aiofiles.open(filepath, "wb") as f:
             await f.write(contents)
-        
+
+        # Video-Validierung: Maximale Dauer prüfen
+        if media_type == "video":
+            duration = await cls._get_video_duration(filepath)
+            if duration and duration > MAX_VIDEO_DURATION:
+                # Lösche Datei und werfe Fehler
+                filepath.unlink()
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Video zu lang. Maximale Dauer: {MAX_VIDEO_DURATION // 60} Minuten. Deine Dauer: {int(duration // 60)} Minuten."
+                )
+
         # Thumbnail für Bilder generieren
         thumbnail_path = None
         if media_type == "image":
@@ -91,6 +105,33 @@ class MediaService:
             "thumbnail_path": relative_thumb
         }
     
+    @classmethod
+    async def _get_video_duration(cls, filepath: Path) -> float | None:
+        """Ermittelt die Dauer eines Videos in Sekunden mit ffprobe"""
+        try:
+            result = subprocess.run(
+                [
+                    'ffprobe',
+                    '-v', 'error',
+                    '-show_entries', 'format=duration',
+                    '-of', 'json',
+                    str(filepath)
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                duration_str = data.get('format', {}).get('duration')
+                if duration_str:
+                    return float(duration_str)
+        except Exception as e:
+            print(f"Error getting video duration: {e}")
+
+        return None
+
     @classmethod
     async def _create_thumbnail(cls, uid: int, image_data: bytes, media_id: str) -> Path:
         """Erstellt Thumbnail für ein Bild"""

@@ -1,15 +1,16 @@
-import { Component, Output, EventEmitter, inject, signal } from '@angular/core';
+import { Component, Output, EventEmitter, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FeedService, Post } from '../../services/feed.service';
 import { AuthService } from '../../services/auth.service';
 import { SafeSpaceService, ModerationCheckResult } from '../../services/safespace.service';
+import { VideoEditorComponent } from '../video-editor/video-editor.component';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, VideoEditorComponent],
   template: `
     <div class="create-post">
       <div class="post-header">
@@ -27,7 +28,7 @@ import { HttpClient } from '@angular/common/http';
 
       <div class="post-footer">
         <label class="media-btn">📷<input type="file" accept="image/*" multiple (change)="onFileSelect($event)" hidden /></label>
-        <label class="media-btn">🎥<input type="file" accept="video/*" (change)="onFileSelect($event)" hidden /></label>
+        <label class="media-btn">🎥<input #videoInput type="file" accept="video/*" (change)="onVideoSelect($event)" hidden /></label>
         <select [(ngModel)]="visibility">
           <option value="public">🌍 Öffentlich</option>
           <option value="friends">👥 Alle Freunde</option>
@@ -105,6 +106,11 @@ import { HttpClient } from '@angular/common/http';
         </div>
       </div>
     }
+
+    <!-- Video Editor -->
+    <app-video-editor
+      (videoProcessed)="onVideoProcessed($event)"
+      (cancelled)="onVideoEditCancelled()" />
   `,
   styles: [`
     .create-post { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 16px; margin-bottom: 20px; }
@@ -159,6 +165,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class CreatePostComponent {
   @Output() postCreated = new EventEmitter<Post>();
+  @ViewChild(VideoEditorComponent) videoEditor!: VideoEditorComponent;
+
   feedService = inject(FeedService);
   authService = inject(AuthService);
   safeSpace = inject(SafeSpaceService);
@@ -186,6 +194,26 @@ export class CreatePostComponent {
 
   removeFile(file: File): void {
     this.selectedFiles.update(files => files.filter(f => f !== file));
+  }
+
+  onVideoSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const videoFile = input.files[0];
+      // Öffne Video-Editor
+      this.videoEditor.openEditor(videoFile);
+      // Reset input
+      input.value = '';
+    }
+  }
+
+  onVideoProcessed(processedVideo: File): void {
+    // Füge verarbeitetes Video zur selectedFiles hinzu
+    this.selectedFiles.update(files => [...files, processedVideo]);
+  }
+
+  onVideoEditCancelled(): void {
+    // Nichts tun, User hat abgebrochen
   }
 
   submitPost(): void {
