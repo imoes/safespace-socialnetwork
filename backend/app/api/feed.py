@@ -24,17 +24,15 @@ router = APIRouter(prefix="/feed", tags=["Feed & Posts"])
 @router.get("", response_model=FeedResponse)
 async def get_feed(
     limit: int = 25,
-    before_timestamp: Optional[str] = None,
-    after_timestamp: Optional[str] = None,
+    offset: int = 0,
     refresh: bool = False,
     current_user: dict = Depends(get_current_user)
 ):
     """
-    Lädt den Feed des aktuellen Users mit Zeitstempel-basierter Pagination.
+    Lädt den Feed des aktuellen Users.
 
     - **limit**: Anzahl Posts (default 25, max 50)
-    - **before_timestamp**: Zeige Posts vor diesem Zeitstempel (für "Ältere Posts")
-    - **after_timestamp**: Zeige Posts nach diesem Zeitstempel (für "Neuere Posts")
+    - **offset**: Pagination offset
     - **refresh**: Force refresh, ignoriert Cache
 
     Der Feed wird für 30 Sekunden gecached.
@@ -45,8 +43,7 @@ async def get_feed(
     result = await FeedService.get_feed(
         uid=current_user["uid"],
         limit=limit,
-        before_timestamp=before_timestamp,
-        after_timestamp=after_timestamp,
+        offset=offset,
         force_refresh=refresh
     )
 

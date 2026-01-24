@@ -233,7 +233,7 @@ async def get_user_profile(
 
 @router.get("/me/commented-posts")
 async def get_my_commented_posts(
-    limit: int = 50,
+    limit: int = 25,
     offset: int = 0,
     current_user: dict = Depends(get_current_user)
 ):
@@ -343,7 +343,7 @@ async def get_my_commented_posts(
 
 @router.get("/me/posts")
 async def get_my_posts(
-    limit: int = 50,
+    limit: int = 25,
     offset: int = 0,
     current_user: dict = Depends(get_current_user)
 ):

@@ -59,7 +59,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
 
       @if (hasMore && !loading) {
         <div class="load-more">
-          <button class="btn-load-more" (click)="loadMore()">Mehr laden</button>
+          <button class="btn-load-more" (click)="loadMore()">📜 Frühere Posts laden</button>
         </div>
       }
 
@@ -220,7 +220,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   currentUid?: number;
   activeTab: 'my-posts' | 'commented' = 'my-posts';
   private offset = 0;
-  private readonly limit = 50;
+  private readonly limit = 25;
 
   ngOnInit(): void {
     this.loadCurrentUser();
