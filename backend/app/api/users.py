@@ -231,6 +231,116 @@ async def get_user_profile(
         )
 
 
+@router.get("/me/commented-posts")
+async def get_my_commented_posts(
+    limit: int = 50,
+    offset: int = 0,
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt alle Posts, auf denen der User kommentiert hat"""
+    from app.db.sqlite_posts import UserPostsDB
+    from app.db.postgres import get_user_profile_data_map
+
+    user_uid = current_user["uid"]
+
+    # Get all friends to check their posts
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT DISTINCT
+                CASE
+                    WHEN f.user_id = %s THEN f.friend_id
+                    ELSE f.user_id
+                END as friend_uid
+            FROM friendships f
+            WHERE (f.user_id = %s OR f.friend_id = %s)
+              AND f.status = 'accepted'
+            """,
+            (user_uid, user_uid, user_uid)
+        )
+        friend_rows = await result.fetchall()
+        friend_uids = [row["friend_uid"] for row in friend_rows]
+
+    # Collect posts where user has commented
+    all_commented_posts = []
+    all_uids = {user_uid}
+
+    # Check each friend's posts
+    for friend_uid in friend_uids:
+        try:
+            posts_db = UserPostsDB(friend_uid)
+            friend_posts = await posts_db.get_posts(visibility=None, limit=100)
+
+            for post in friend_posts:
+                # Check if current user has commented on this post
+                comments = await posts_db.get_comments(post["post_id"])
+                has_commented = any(comment["user_uid"] == user_uid for comment in comments)
+
+                if has_commented:
+                    all_uids.add(friend_uid)
+                    if post.get("recipient_uid"):
+                        all_uids.add(post["recipient_uid"])
+                    if post.get("author_uid"):
+                        all_uids.add(post["author_uid"])
+
+                    likes_count = await posts_db.get_likes_count(post["post_id"])
+                    comments_count = await posts_db.get_comments_count(post["post_id"])
+
+                    media_urls = []
+                    if post.get("media_paths"):
+                        media_urls = [f"/api/media/{friend_uid}/{path}" for path in post["media_paths"]]
+
+                    all_commented_posts.append({
+                        "post_id": post["post_id"],
+                        "author_uid": post.get("author_uid") or friend_uid,
+                        "content": post["content"],
+                        "media_urls": media_urls,
+                        "visibility": post["visibility"],
+                        "created_at": post["created_at"],
+                        "likes_count": likes_count,
+                        "comments_count": comments_count,
+                        "recipient_uid": post.get("recipient_uid"),
+                        "_friend_uid": friend_uid  # Temporary field for enrichment
+                    })
+        except Exception as e:
+            print(f"Error checking posts for friend {friend_uid}: {e}")
+            continue
+
+    # Sort by created_at descending
+    all_commented_posts.sort(key=lambda x: x["created_at"], reverse=True)
+
+    # Apply pagination
+    paginated_posts = all_commented_posts[offset:offset+limit]
+
+    # Load user profile data
+    profile_data_map = await get_user_profile_data_map(list(all_uids))
+
+    # Enrich posts with usernames and profile pictures
+    enriched_posts = []
+    for post in paginated_posts:
+        author_uid = post["author_uid"]
+        friend_uid = post.pop("_friend_uid")  # Remove temporary field
+        author_data = profile_data_map.get(author_uid, {"username": "Unknown", "profile_picture": None})
+
+        recipient_username = None
+        if post.get("recipient_uid"):
+            recipient_data = profile_data_map.get(post["recipient_uid"], {"username": "Unknown"})
+            recipient_username = recipient_data["username"]
+
+        enriched_posts.append({
+            **post,
+            "author_username": author_data["username"],
+            "author_profile_picture": author_data["profile_picture"],
+            "recipient_username": recipient_username,
+            "is_own_post": author_uid == user_uid
+        })
+
+    return {
+        "posts": enriched_posts,
+        "has_more": len(all_commented_posts) > offset + limit
+    }
+
+
 @router.get("/me/posts")
 async def get_my_posts(
     limit: int = 50,

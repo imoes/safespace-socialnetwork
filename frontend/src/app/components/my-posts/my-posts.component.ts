@@ -12,7 +12,22 @@ import { PostCardComponent } from '../post-card/post-card.component';
     <div class="my-posts-container">
       <div class="page-header">
         <h1>📝 Meine Posts</h1>
-        <p class="subtitle">Alle deine veröffentlichten Beiträge</p>
+        <p class="subtitle">Alle deine veröffentlichten Beiträge und Interaktionen</p>
+
+        <div class="tabs">
+          <button
+            class="tab"
+            [class.active]="activeTab === 'my-posts'"
+            (click)="switchTab('my-posts')">
+            📝 Meine Posts
+          </button>
+          <button
+            class="tab"
+            [class.active]="activeTab === 'commented'"
+            (click)="switchTab('commented')">
+            💬 Kommentierte Posts
+          </button>
+        </div>
       </div>
 
       @if (loading && posts.length === 0) {
@@ -78,9 +93,36 @@ import { PostCardComponent } from '../post-card/post-card.component';
     }
 
     .subtitle {
-      margin: 0;
+      margin: 0 0 20px 0;
       color: #65676b;
       font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      border: none;
+      background: #f0f2f5;
+      color: #65676b;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: #e4e6e9;
+    }
+
+    .tab.active {
+      background: #1877f2;
+      color: white;
     }
 
     .loading {
@@ -176,6 +218,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   loading = false;
   hasMore = true;
   currentUid?: number;
+  activeTab: 'my-posts' | 'commented' = 'my-posts';
   private offset = 0;
   private readonly limit = 50;
 
@@ -200,7 +243,11 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     if (this.loading) return;
 
     this.loading = true;
-    this.http.get<{ posts: Post[], has_more: boolean }>(`/api/users/me/posts?limit=${this.limit}&offset=${this.offset}`).subscribe({
+    const endpoint = this.activeTab === 'my-posts'
+      ? `/api/users/me/posts?limit=${this.limit}&offset=${this.offset}`
+      : `/api/users/me/commented-posts?limit=${this.limit}&offset=${this.offset}`;
+
+    this.http.get<{ posts: Post[], has_more: boolean }>(endpoint).subscribe({
       next: (response) => {
         this.posts = [...this.posts, ...response.posts];
         this.hasMore = response.has_more;
@@ -211,6 +258,16 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
+  }
+
+  switchTab(tab: 'my-posts' | 'commented'): void {
+    if (this.activeTab === tab) return;
+
+    this.activeTab = tab;
+    this.posts = [];
+    this.offset = 0;
+    this.hasMore = true;
+    this.loadPosts();
   }
 
   loadMore(): void {
