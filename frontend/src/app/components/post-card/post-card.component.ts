@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
+import { TranslationService, TranslationResult } from '../../services/translation.service';
 
 @Component({
   selector: 'app-post-card',
@@ -37,7 +38,17 @@ import { ReportService } from '../../services/report.service';
           </div>
         </div>
       } @else {
-        <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
+        @if (showTranslation && translatedContent) {
+          <div class="post-content translation">
+            <div class="translation-label">
+              <span class="translation-badge">{{ translationService.getLanguageFlag(translatedContent.detected_language) }} → {{ translationService.getLanguageFlag(translatedContent.target_language) }}</span>
+              <span class="translation-info">Übersetzt</span>
+            </div>
+            <p>{{ translatedContent.translated_text }}</p>
+          </div>
+        } @else {
+          <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
+        }
       }
 
       @if (post.media_urls.length > 0) {
@@ -52,6 +63,9 @@ import { ReportService } from '../../services/report.service';
       <div class="post-actions">
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
+        <button class="action-btn" (click)="toggleTranslation()" [disabled]="translating">
+          {{ showTranslation ? '📝' : '🌐' }} {{ translating ? 'Übersetzen...' : (showTranslation ? 'Original' : 'Übersetzen') }}
+        </button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
             <button class="action-icon-btn" (click)="startEditPost()" title="Bearbeiten">✏️</button>
@@ -183,6 +197,10 @@ import { ReportService } from '../../services/report.service';
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
     .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
     .post-content ::ng-deep .hashtag:hover { text-decoration: underline; }
+    .post-content.translation { background: #f0f8ff; border-left: 3px solid #1877f2; padding: 12px 16px; margin: 0 16px 12px; border-radius: 6px; }
+    .translation-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: #65676b; }
+    .translation-badge { font-size: 14px; }
+    .translation-info { font-weight: 500; }
     .post-edit { padding: 0 16px 12px; }
     .post-edit textarea { width: 100%; padding: 12px; border: 1px solid #1877f2; border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box; resize: vertical; }
     .post-edit-actions { display: flex; gap: 8px; margin-top: 12px; }
@@ -257,6 +275,7 @@ export class PostCardComponent {
   private feedService = inject(FeedService);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  translationService = inject(TranslationService);
 
   isLiked = false;
   showReportModal = false;
@@ -273,6 +292,9 @@ export class PostCardComponent {
   loadingComments = false;
   editingCommentId: number | null = null;
   editCommentContent = '';
+  showTranslation = false;
+  translating = false;
+  translatedContent: TranslationResult | null = null;
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -438,6 +460,36 @@ export class PostCardComponent {
     if (this.showComments && this.comments.length === 0) {
       this.loadComments();
     }
+  }
+
+  toggleTranslation(): void {
+    if (this.showTranslation) {
+      // Zurück zum Original
+      this.showTranslation = false;
+    } else {
+      // Übersetzen (falls noch nicht übersetzt)
+      if (!this.translatedContent) {
+        this.translatePost();
+      } else {
+        this.showTranslation = true;
+      }
+    }
+  }
+
+  translatePost(): void {
+    this.translating = true;
+    // Übersetze ins Deutsche (kann später konfigurierbar gemacht werden)
+    this.translationService.translateText(this.post.content, 'de', 'auto').subscribe({
+      next: (result) => {
+        this.translatedContent = result;
+        this.showTranslation = true;
+        this.translating = false;
+      },
+      error: () => {
+        alert('Fehler beim Übersetzen des Posts');
+        this.translating = false;
+      }
+    });
   }
 
   loadComments(): void {
