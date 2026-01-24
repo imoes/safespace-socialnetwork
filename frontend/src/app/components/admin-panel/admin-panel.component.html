@@ -1,0 +1,161 @@
+<div class="admin-panel">
+  <div class="admin-header">
+    <h1>👑 Admin-Panel</h1>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button
+      class="tab"
+      [class.active]="activeTab() === 'welcome'"
+      (click)="setActiveTab('welcome')">
+      📢 Willkommensnachricht
+    </button>
+    <button
+      class="tab"
+      [class.active]="activeTab() === 'broadcast'"
+      (click)="setActiveTab('broadcast')">
+      📣 Broadcast-Posts
+    </button>
+  </div>
+
+  <!-- Messages -->
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  <!-- Welcome Message Tab -->
+  @if (activeTab() === 'welcome') {
+    <div class="tab-content">
+      <h2>Willkommensnachricht verwalten</h2>
+      <p class="description">
+        Die Willkommensnachricht wird jedem Benutzer beim ersten Login angezeigt.
+      </p>
+
+      @if (welcomeStats()) {
+        <div class="stats-card">
+          <h3>📊 Statistiken</h3>
+          <div class="stats-grid">
+            <div class="stat">
+              <span class="stat-label">Gesamt-Benutzer:</span>
+              <span class="stat-value">{{ welcomeStats()!.total_users }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Gesehen:</span>
+              <span class="stat-value">{{ welcomeStats()!.seen_count }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Noch nicht gesehen:</span>
+              <span class="stat-value">{{ welcomeStats()!.unseen_count }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="form-card">
+        <div class="form-group">
+          <label for="welcome-title">Titel</label>
+          <input
+            id="welcome-title"
+            type="text"
+            [(ngModel)]="welcomeForm.title"
+            placeholder="z.B. Willkommen bei SafeSpace!"
+            maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label for="welcome-content">Nachricht</label>
+          <textarea
+            id="welcome-content"
+            [(ngModel)]="welcomeForm.content"
+            placeholder="Deine Willkommensnachricht..."
+            rows="8"></textarea>
+        </div>
+
+        <div class="button-group">
+          <button
+            class="btn btn-primary"
+            (click)="saveWelcomeMessage()"
+            [disabled]="loading()">
+            {{ loading() ? '⏳ Speichern...' : '💾 Speichern' }}
+          </button>
+
+          @if (welcomeMessage()) {
+            <button
+              class="btn btn-danger"
+              (click)="deleteWelcomeMessage()"
+              [disabled]="loading()">
+              🗑️ Löschen
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Broadcast Posts Tab -->
+  @if (activeTab() === 'broadcast') {
+    <div class="tab-content">
+      <h2>Broadcast-Post erstellen</h2>
+      <p class="description">
+        Broadcast-Posts werden automatisch an alle Benutzer in ihrem Feed angezeigt und
+        in deren Sprache übersetzt.
+      </p>
+
+      <div class="form-card">
+        <div class="form-group">
+          <label for="broadcast-content">Post-Inhalt</label>
+          <textarea
+            id="broadcast-content"
+            [(ngModel)]="broadcastForm.content"
+            placeholder="Deine Nachricht an alle Benutzer..."
+            rows="5"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="broadcast-visibility">Sichtbarkeit</label>
+          <select id="broadcast-visibility" [(ngModel)]="broadcastForm.visibility">
+            <option value="public">Öffentlich</option>
+            <option value="friends">Nur Freunde</option>
+          </select>
+        </div>
+
+        <button
+          class="btn btn-primary"
+          (click)="createBroadcastPost()"
+          [disabled]="loading()">
+          {{ loading() ? '⏳ Erstellen...' : '📣 Broadcast senden' }}
+        </button>
+      </div>
+
+      <h3>Bestehende Broadcast-Posts</h3>
+      <div class="posts-list">
+        @if (broadcastPosts().length === 0) {
+          <p class="empty-state">Keine Broadcast-Posts vorhanden</p>
+        }
+
+        @for (post of broadcastPosts(); track post.post_id) {
+          <div class="broadcast-post-card">
+            <div class="post-header">
+              <span class="post-date">{{ post.created_at | date:'medium' }}</span>
+              <button
+                class="btn-delete"
+                (click)="deleteBroadcastPost(post.post_id)">
+                🗑️
+              </button>
+            </div>
+            <p class="post-content">{{ post.content }}</p>
+            <div class="post-stats">
+              <span>❤️ {{ post.likes_count }}</span>
+              <span>💬 {{ post.comments_count }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -12,6 +12,11 @@ from app.db.moderation import (
     log_moderator_action, get_moderator_actions, get_moderation_dashboard_stats
 )
 from app.db.sqlite_posts import UserPostsDB
+from app.db.welcome_message import (
+    get_active_welcome_message, set_welcome_message, delete_welcome_message,
+    get_welcome_stats
+)
+from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
 
@@ -38,6 +43,16 @@ class ModeratorActionRequest(BaseModel):
     post_author_uid: Optional[int] = None
     reason: Optional[str] = None
     notes: Optional[str] = None
+
+
+class WelcomeMessageRequest(BaseModel):
+    title: str
+    content: str
+
+
+class BroadcastPostRequest(BaseModel):
+    content: str
+    visibility: str = "public"
 
 
 async def require_moderator(current_user: dict = Depends(get_current_user)) -> dict:
@@ -137,3 +152,50 @@ async def moderate_post(request: ModeratorActionRequest, moderator: dict = Depen
 @router.get("/actions")
 async def list_actions(limit: int = 100, moderator: dict = Depends(require_moderator)):
     return {"actions": await get_moderator_actions(limit=limit)}
+
+
+# === Welcome Message Endpoints ===
+
+@router.get("/welcome-message")
+async def get_welcome_message_admin(admin: dict = Depends(require_admin)):
+    """Holt die aktive Willkommensnachricht (Admin)"""
+    message = await get_active_welcome_message()
+    stats = await get_welcome_stats()
+    return {"message": message, "stats": stats}
+
+
+@router.put("/welcome-message")
+async def update_welcome_message(request: WelcomeMessageRequest, admin: dict = Depends(require_admin)):
+    """Setzt/Aktualisiert die Willkommensnachricht"""
+    message = await set_welcome_message(request.title, request.content)
+    return {"message": message}
+
+
+@router.delete("/welcome-message")
+async def remove_welcome_message(admin: dict = Depends(require_admin)):
+    """Löscht die aktive Willkommensnachricht"""
+    await delete_welcome_message()
+    return {"message": "Welcome message deleted"}
+
+
+# === Broadcast Posts Endpoints ===
+
+@router.post("/broadcast-post")
+async def create_broadcast_post_endpoint(request: BroadcastPostRequest, admin: dict = Depends(require_admin)):
+    """Erstellt einen Broadcast-Post der an alle User geht"""
+    post = await create_broadcast_post(admin["uid"], request.content, request.visibility)
+    return {"post": post}
+
+
+@router.get("/broadcast-posts")
+async def list_broadcast_posts(limit: int = 50, offset: int = 0, admin: dict = Depends(require_admin)):
+    """Listet alle Broadcast-Posts (Admin)"""
+    posts = await get_broadcast_posts(limit, offset, admin["uid"])
+    return {"posts": posts}
+
+
+@router.delete("/broadcast-post/{post_id}")
+async def delete_broadcast_post_endpoint(post_id: int, admin: dict = Depends(require_admin)):
+    """Löscht einen Broadcast-Post"""
+    await delete_broadcast_post(post_id)
+    return {"message": "Broadcast post deleted"}

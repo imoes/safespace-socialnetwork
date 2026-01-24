@@ -8,6 +8,7 @@ from app.db.sqlite_posts import UserPostsDB
 from app.cache.redis_cache import FeedCache
 from app.config import settings
 from app.services.opensearch_service import get_opensearch_service
+from app.db.broadcast_posts import get_broadcast_posts
 
 
 # Visibility Hierarchie: family > close_friends > friends > acquaintance > public
@@ -128,10 +129,17 @@ class FeedService:
                 print(f"Error loading posts: {result}")
                 continue
             all_posts.extend(result)
-        
+
+        # Broadcast-Posts hinzufügen (Posts an alle User vom Admin)
+        try:
+            broadcast_posts = await get_broadcast_posts(limit=100, offset=0, current_user_uid=uid)
+            all_posts.extend(broadcast_posts)
+        except Exception as e:
+            print(f"Error loading broadcast posts: {e}")
+
         # Nach Datum sortieren (neueste zuerst)
         all_posts.sort(key=lambda p: p["created_at"], reverse=True)
-        
+
         return all_posts
     
     @classmethod
