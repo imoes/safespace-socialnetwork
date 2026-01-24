@@ -1,0 +1,177 @@
+@if (showEditor()) {
+  <div class="editor-overlay">
+    <div class="editor-modal">
+      <!-- Header -->
+      <div class="editor-header">
+        <h2>📹 Video Editor</h2>
+        <button class="close-btn" (click)="cancel()" [disabled]="isProcessing()">✕</button>
+      </div>
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Video Preview -->
+      <div class="video-preview">
+        @if (videoUrl()) {
+          <video
+            [src]="videoUrl()!"
+            controls
+            (timeupdate)="onVideoTimeUpdate($event)"
+            class="preview-video">
+          </video>
+        }
+      </div>
+
+      <!-- Video Info -->
+      @if (videoInfo()) {
+        <div class="video-info">
+          <div class="info-item">
+            <span class="label">Datei:</span>
+            <span class="value">{{ videoInfo()!.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Dauer:</span>
+            <span class="value">{{ formatTime(videoInfo()!.duration) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Größe:</span>
+            <span class="value">{{ formatSize(videoInfo()!.size) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Auflösung:</span>
+            <span class="value">{{ videoInfo()!.width }}x{{ videoInfo()!.height }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Trim Controls -->
+      <div class="trim-section">
+        <h3>✂️ Video zuschneiden</h3>
+
+        <div class="timeline">
+          <div class="timeline-bar">
+            <div
+              class="timeline-selection"
+              [style.left.%]="(trimStart() / duration()) * 100"
+              [style.width.%]="(trimmedDuration() / duration()) * 100">
+            </div>
+            <div
+              class="timeline-playhead"
+              [style.left.%]="(currentTime() / duration()) * 100">
+            </div>
+          </div>
+
+          <div class="timeline-labels">
+            <span>0:00</span>
+            <span>{{ formatTime(duration()) }}</span>
+          </div>
+        </div>
+
+        <div class="trim-controls">
+          <div class="trim-input-group">
+            <label>Start:</label>
+            <input
+              type="range"
+              [min]="0"
+              [max]="duration()"
+              [step]="0.1"
+              [(ngModel)]="trimStart"
+              (change)="seekTo(trimStart())"
+              [disabled]="isProcessing()">
+            <span class="time-display">{{ formatTime(trimStart()) }}</span>
+            <button class="btn-small" (click)="setTrimStart()" [disabled]="isProcessing()">
+              Hier starten
+            </button>
+          </div>
+
+          <div class="trim-input-group">
+            <label>Ende:</label>
+            <input
+              type="range"
+              [min]="0"
+              [max]="duration()"
+              [step]="0.1"
+              [(ngModel)]="trimEnd"
+              (change)="seekTo(trimEnd())"
+              [disabled]="isProcessing()">
+            <span class="time-display">{{ formatTime(trimEnd()) }}</span>
+            <button class="btn-small" (click)="setTrimEnd()" [disabled]="isProcessing()">
+              Hier enden
+            </button>
+          </div>
+        </div>
+
+        <div class="duration-display">
+          <strong>Geschnittene Dauer:</strong>
+          <span [class.error]="trimmedDuration() > 300">
+            {{ formatTime(trimmedDuration()) }}
+          </span>
+          @if (trimmedDuration() > 300) {
+            <span class="warning">⚠️ Maximal 5 Minuten erlaubt</span>
+          }
+        </div>
+      </div>
+
+      <!-- Codec Selection -->
+      <div class="codec-section">
+        <h3>🎬 Video-Codec</h3>
+        <div class="codec-options">
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="codec"
+              value="h264"
+              [(ngModel)]="selectedCodec"
+              [disabled]="isProcessing()">
+            <span>H.264 (empfohlen, bessere Kompatibilität)</span>
+          </label>
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="codec"
+              value="h265"
+              [(ngModel)]="selectedCodec"
+              [disabled]="isProcessing()">
+            <span>H.265 (kleinere Dateigröße, neuere Geräte)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Processing Progress -->
+      @if (isProcessing()) {
+        <div class="processing-section">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="processingProgress()"></div>
+          </div>
+          <p class="processing-text">
+            🎬 Video wird verarbeitet... {{ processingProgress() }}%
+          </p>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="editor-actions">
+        <button
+          class="btn btn-cancel"
+          (click)="cancel()"
+          [disabled]="isProcessing()">
+          Abbrechen
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="processVideo()"
+          [disabled]="!canProcess() || isProcessing()">
+          @if (isProcessing()) {
+            ⏳ Verarbeite...
+          } @else {
+            🚀 Video verarbeiten & hochladen
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
