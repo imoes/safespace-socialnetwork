@@ -11,6 +11,8 @@ from app.api.users import router as users_router
 from app.api.hashtags import router as hashtags_router
 from app.api.translation import router as translation_router
 from app.api.public_feed import router as public_feed_router
+from app.api.welcome import router as welcome_router
+from app.api.broadcast import router as broadcast_router
 from app.safespace.api import router as safespace_router
 
 
@@ -21,6 +23,22 @@ async def lifespan(app: FastAPI):
     await PostgresDB.init_pool()
     await RedisCache.init()
     print("✅ Database and Redis connections initialized")
+
+    # Welcome Message Tabellen erstellen
+    try:
+        from app.db.welcome_message import create_welcome_tables
+        await create_welcome_tables()
+        print("✅ Welcome message tables initialized")
+    except Exception as e:
+        print(f"⚠️ Failed to initialize welcome tables: {e}")
+
+    # Broadcast Posts Tabellen erstellen
+    try:
+        from app.db.broadcast_posts import create_broadcast_tables
+        await create_broadcast_tables()
+        print("✅ Broadcast posts tables initialized")
+    except Exception as e:
+        print(f"⚠️ Failed to initialize broadcast tables: {e}")
     
     # Kafka Producer initialisieren (optional, falls verfügbar)
     try:
@@ -74,6 +92,8 @@ app.include_router(users_router, prefix="/api")
 app.include_router(hashtags_router, prefix="/api")
 app.include_router(translation_router, prefix="/api")
 app.include_router(public_feed_router, prefix="/api")
+app.include_router(welcome_router, prefix="/api")
+app.include_router(broadcast_router, prefix="/api")
 app.include_router(safespace_router, prefix="/api")
 
 

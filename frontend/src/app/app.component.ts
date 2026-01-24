@@ -4,13 +4,14 @@ import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { UserService, UserSearchResult } from './services/user.service';
+import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
@@ -79,6 +80,7 @@ import { HttpClient } from '@angular/common/http';
             <a routerLink="/admin" class="nav-link">🛡️ Moderation</a>
           }
           @if (authService.isAdmin()) {
+            <a routerLink="/admin-panel" class="nav-link">👑 Admin</a>
             <a routerLink="/users" class="nav-link">👥 Benutzer</a>
           }
 
@@ -105,6 +107,7 @@ import { HttpClient } from '@angular/common/http';
       </nav>
     }
     <router-outlet />
+    <app-welcome-modal />
   `,
   styles: [`
     .navbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; gap: 24px; }
