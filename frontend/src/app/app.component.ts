@@ -82,10 +82,20 @@ import { HttpClient } from '@angular/common/http';
           }
           <app-notifications-dropdown />
           @if (authService.isModerator()) {
-            <a routerLink="/admin" class="nav-link">🛡️ Moderation</a>
+            <a routerLink="/admin" class="nav-link nav-link-with-badge">
+              🛡️ Moderation
+              @if (openReportsCount() > 0) {
+                <span class="notification-badge">{{ openReportsCount() }}</span>
+              }
+            </a>
           }
           @if (authService.isAdmin()) {
-            <a routerLink="/admin-panel" class="nav-link">👑 Admin</a>
+            <a routerLink="/admin-panel" class="nav-link nav-link-with-badge">
+              👑 Admin
+              @if (openReportsCount() > 0) {
+                <span class="notification-badge">{{ openReportsCount() }}</span>
+              }
+            </a>
             <a routerLink="/users" class="nav-link">👥 Benutzer</a>
           }
 
@@ -197,7 +207,7 @@ import { HttpClient } from '@angular/common/http';
       background: white;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      min-width: 200px;
+      min-width: 220px;
       padding: 8px 0;
       z-index: 1000;
     }
@@ -238,6 +248,7 @@ export class AppComponent implements OnInit {
   searchResults = signal<UserSearchResult[]>([]);
   selectedIndex = signal(-1);
   pendingRequestsCount = signal(0);
+  openReportsCount = signal(0);
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
@@ -261,6 +272,11 @@ export class AppComponent implements OnInit {
       if (this.authService.isAuthenticated()) {
         console.log('User authenticated, loading pending requests...');
         this.loadPendingRequestsCount();
+
+        // Reports für Admins und Moderatoren laden
+        if (this.authService.isAdmin() || this.authService.isModerator()) {
+          this.loadOpenReportsCount();
+        }
       }
     });
   }
@@ -270,6 +286,11 @@ export class AppComponent implements OnInit {
     interval(30000).subscribe(() => {
       if (this.authService.isAuthenticated()) {
         this.loadPendingRequestsCount();
+
+        // Reports für Admins und Moderatoren laden
+        if (this.authService.isAdmin() || this.authService.isModerator()) {
+          this.loadOpenReportsCount();
+        }
       }
     });
   }
@@ -282,6 +303,23 @@ export class AppComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading pending requests:', err);
+      }
+    });
+  }
+
+  private loadOpenReportsCount(): void {
+    this.http.get<{ reports: any[] }>('/api/admin/reports', {
+      params: { limit: '1000' }
+    }).subscribe({
+      next: (response) => {
+        console.log('Open reports:', response.reports.length);
+        this.openReportsCount.set(response.reports.length);
+      },
+      error: (err) => {
+        // Ignorieren wenn User keine Berechtigung hat
+        if (err.status !== 403) {
+          console.error('Error loading open reports:', err);
+        }
       }
     });
   }
