@@ -20,7 +20,7 @@ from app.db.welcome_message import (
     get_welcome_stats
 )
 from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
-from app.db.postgres import get_db_connection
+from app.db.postgres import PostgresDB
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
 
@@ -225,7 +225,7 @@ async def get_system_status(moderator: dict = Depends(require_moderator)):
     uptime_str = str(uptime_timedelta)
 
     # Datenbank-Statistiken
-    async with get_db_connection() as conn:
+    async with PostgresDB.connection() as conn:
         # Anzahl registrierter Benutzer
         total_users = await conn.fetchval("SELECT COUNT(*) FROM users")
 
