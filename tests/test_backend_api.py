@@ -687,6 +687,45 @@ class TestUserSearch:
         logger.info(f"✅ Dispute submitted successfully: {data['message']}")
         logger.info(f"   Status: {data['status']}")
 
+    def test_system_status(self, api_client: APIClient, user1_auth):
+        """Test System Status Endpoint (requires admin/moderator role)"""
+        logger.info("\n" + "-" * 80)
+        logger.info("TEST: System Status Endpoint")
+        logger.info("-" * 80)
+
+        # Note: This will fail if user1 is not admin/moderator
+        # For now we test that endpoint exists and returns proper error or data
+        response = api_client.get("/admin/system-status")
+
+        # Either 403 (not authorized) or 200 (success)
+        assert response.status_code in [200, 403], f"Expected 200 or 403, got {response.status_code}"
+
+        if response.status_code == 200:
+            data = response.json()
+            assert "timestamp" in data
+            assert "system" in data
+            assert "users" in data
+            assert "social" in data
+            assert "moderation" in data
+
+            # Check system metrics
+            assert "cpu_percent" in data["system"]
+            assert "memory" in data["system"]
+            assert "disk" in data["system"]
+
+            # Check user stats
+            assert "total" in data["users"]
+            assert "online_5min" in data["users"]
+            assert "active_15min" in data["users"]
+
+            logger.info(f"✅ System status retrieved successfully")
+            logger.info(f"   CPU: {data['system']['cpu_percent']}%")
+            logger.info(f"   RAM: {data['system']['memory']['percent']}%")
+            logger.info(f"   Total Users: {data['users']['total']}")
+            logger.info(f"   Online Users: {data['users']['online_5min']}")
+        else:
+            logger.info("⚠️  User is not admin/moderator, got 403 as expected")
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

@@ -96,11 +96,14 @@ async def create_report(post_id: int, post_author_uid: int, reporter_uid: int,
 
 
 async def get_pending_reports(limit: int = 50, offset: int = 0) -> list[dict]:
+    """Lädt Reports mit Post-Inhalt"""
+    from app.db.sqlite_posts import UserPostsDB
+
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """SELECT r.report_id, r.post_id, r.author_uid as post_author_uid, r.reporter_uid,
                       r.reason, r.description, r.status, r.created_at, r.reviewed_by,
-                      u_reporter.username as reporter_username, 
+                      u_reporter.username as reporter_username,
                       u_author.username as author_username
                FROM user_reports r
                LEFT JOIN users u_reporter ON r.reporter_uid = u_reporter.uid
@@ -109,7 +112,32 @@ async def get_pending_reports(limit: int = 50, offset: int = 0) -> list[dict]:
                ORDER BY r.created_at DESC LIMIT %s OFFSET %s""",
             (limit, offset)
         )
-        return await result.fetchall()
+        reports = await result.fetchall()
+
+    # Lade Post-Daten für jeden Report
+    enriched_reports = []
+    for report in reports:
+        report_dict = dict(report)
+
+        # Lade Post aus SQLite
+        try:
+            posts_db = UserPostsDB(report["post_author_uid"])
+            post = await posts_db.get_post(report["post_id"])
+            if post:
+                report_dict["post_content"] = post.get("content", "")
+                report_dict["post_created_at"] = post.get("created_at", "")
+                report_dict["post_visibility"] = post.get("visibility", "")
+                report_dict["post_likes_count"] = post.get("likes_count", 0)
+                report_dict["post_comments_count"] = post.get("comments_count", 0)
+            else:
+                report_dict["post_content"] = "[Post nicht gefunden]"
+        except Exception as e:
+            print(f"Error loading post for report {report['report_id']}: {e}")
+            report_dict["post_content"] = "[Fehler beim Laden des Posts]"
+
+        enriched_reports.append(report_dict)
+
+    return enriched_reports
 
 
 async def get_report(report_id: int) -> dict | None:

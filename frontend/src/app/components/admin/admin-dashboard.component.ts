@@ -67,6 +67,24 @@ import { AdminService, Report } from '../../services/admin.service';
                 }
               </div>
 
+              <!-- Post-Vorschau -->
+              @if (report.post_content) {
+                <div class="post-preview">
+                  <div class="post-header-mini">
+                    <strong>{{ report.author_username }}</strong>
+                    <span class="post-time">{{ report.post_created_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                  </div>
+                  <div class="post-content">
+                    {{ report.post_content }}
+                  </div>
+                  <div class="post-stats">
+                    <span>❤️ {{ report.post_likes_count || 0 }}</span>
+                    <span>💬 {{ report.post_comments_count || 0 }}</span>
+                    <span class="visibility-badge">{{ getVisibilityLabel(report.post_visibility) }}</span>
+                  </div>
+                </div>
+              }
+
               <div class="report-actions">
                 @if (report.status === 'pending') {
                   <button class="btn-primary" (click)="assignToMe(report)">
@@ -207,7 +225,13 @@ import { AdminService, Report } from '../../services/admin.service';
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 600px; position: relative; }
     .close-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 24px; cursor: pointer; }
-    .post-preview { background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0; }
+    .post-preview { background: #f9f9f9; padding: 16px; border-radius: 8px; margin: 12px 0; border-left: 3px solid #1877f2; }
+    .post-header-mini { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+    .post-header-mini strong { color: #1877f2; }
+    .post-time { color: #999; font-size: 13px; }
+    .post-content { white-space: pre-wrap; word-wrap: break-word; margin-bottom: 12px; line-height: 1.5; }
+    .post-stats { display: flex; gap: 16px; font-size: 14px; color: #666; }
+    .visibility-badge { margin-left: auto; padding: 2px 8px; background: #e0e0e0; border-radius: 12px; font-size: 12px; }
     .resolve-form label { display: block; margin-bottom: 8px; font-weight: bold; }
     .resolve-form textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; resize: vertical; }
     .modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
@@ -290,5 +314,17 @@ export class AdminDashboardComponent implements OnInit {
       dismiss_report: '❌ Abgewiesen'
     };
     return labels[action] || action;
+  }
+
+  getVisibilityLabel(visibility: string): string {
+    const labels: Record<string, string> = {
+      public: '🌍 Öffentlich',
+      friends: '👋 Freunde',
+      acquaintance: '👋 Bekannte',
+      close_friend: '💚 Enge Freunde',
+      family: '👨‍👩‍👧 Familie',
+      private: '🔒 Privat'
+    };
+    return labels[visibility] || visibility;
   }
 }
