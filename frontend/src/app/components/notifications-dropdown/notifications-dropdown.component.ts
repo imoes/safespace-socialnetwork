@@ -272,7 +272,11 @@ export class NotificationsDropdownComponent implements OnInit {
     // Benachrichtigung direkt löschen (vereinfachte Logik)
     // Der Service aktualisiert automatisch den unread count
     this.notificationsService.deleteNotification(notification.notification_id).subscribe({
-      next: () => console.log('Notification deleted successfully'),
+      next: () => {
+        console.log('Notification deleted successfully');
+        // Unread count vom Backend neu laden um sicherzustellen dass alles synchron ist
+        this.notificationsService.loadUnreadCount();
+      },
       error: (err) => console.error('Delete error:', err)
     });
 
