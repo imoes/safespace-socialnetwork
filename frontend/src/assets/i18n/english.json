@@ -117,7 +117,11 @@
     "password": "Password",
     "loginButton": "Login",
     "noAccount": "Don't have an account?",
-    "register": "Register now"
+    "register": "Register now",
+    "errors": {
+      "invalidCredentials": "Invalid credentials",
+      "loginFailed": "Login failed. Please try again."
+    }
   },
   "register": {
     "title": "Register",
@@ -126,7 +130,14 @@
     "password": "Password",
     "registerButton": "Register",
     "hasAccount": "Already have an account?",
-    "login": "Login here"
+    "login": "Login here",
+    "errors": {
+      "usernameAlreadyRegistered": "This username is already taken. Please choose another one.",
+      "emailAlreadyRegistered": "This email address is already registered. Please use a different one or log in.",
+      "passwordMismatch": "Passwords do not match",
+      "registrationFailed": "Registration failed. Please try again."
+    },
+    "success": "Registration successful! Redirecting..."
   },
   "admin": {
     "title": "Admin Panel",

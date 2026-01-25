@@ -117,7 +117,11 @@
     "password": "Mot de passe",
     "loginButton": "Se connecter",
     "noAccount": "Pas de compte?",
-    "register": "S'inscrire maintenant"
+    "register": "S'inscrire maintenant",
+    "errors": {
+      "invalidCredentials": "Identifiants invalides",
+      "loginFailed": "Échec de la connexion. Veuillez réessayer."
+    }
   },
   "register": {
     "title": "S'inscrire",
@@ -126,7 +130,14 @@
     "password": "Mot de passe",
     "registerButton": "S'inscrire",
     "hasAccount": "Vous avez déjà un compte?",
-    "login": "Se connecter ici"
+    "login": "Se connecter ici",
+    "errors": {
+      "usernameAlreadyRegistered": "Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.",
+      "emailAlreadyRegistered": "Cette adresse e-mail est déjà enregistrée. Veuillez en utiliser une autre ou vous connecter.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "registrationFailed": "Échec de l'inscription. Veuillez réessayer."
+    },
+    "success": "Inscription réussie! Redirection..."
   },
   "common": {
     "loading": "Chargement...",

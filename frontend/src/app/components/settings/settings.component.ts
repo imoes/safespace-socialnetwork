@@ -127,7 +127,7 @@ import { I18nService } from '../../services/i18n.service';
               name="language"
               class="form-control"
               (change)="onLanguageChange()">
-              @for (lang of i18n.languages; track lang.code) {
+              @for (lang of i18n.languages(); track lang.code) {
                 <option [value]="lang.code">
                   {{ lang.flag }} {{ lang.nativeName }}
                 </option>

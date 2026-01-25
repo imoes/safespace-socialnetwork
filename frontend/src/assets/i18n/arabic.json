@@ -117,7 +117,11 @@
     "password": "كلمة المرور",
     "loginButton": "تسجيل الدخول",
     "noAccount": "ليس لديك حساب؟",
-    "register": "سجل الآن"
+    "register": "سجل الآن",
+    "errors": {
+      "invalidCredentials": "بيانات اعتماد غير صحيحة",
+      "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى."
+    }
   },
   "register": {
     "title": "التسجيل",
@@ -126,7 +130,14 @@
     "password": "كلمة المرور",
     "registerButton": "التسجيل",
     "hasAccount": "لديك حساب بالفعل؟",
-    "login": "سجل الدخول هنا"
+    "login": "سجل الدخول هنا",
+    "errors": {
+      "usernameAlreadyRegistered": "اسم المستخدم هذا مستخدم بالفعل. الرجاء اختيار اسم آخر.",
+      "emailAlreadyRegistered": "عنوان البريد الإلكتروني هذا مسجل بالفعل. الرجاء استخدام عنوان آخر أو تسجيل الدخول.",
+      "passwordMismatch": "كلمات المرور غير متطابقة",
+      "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى."
+    },
+    "success": "التسجيل ناجح! إعادة التوجيه..."
   },
   "common": {
     "loading": "جاري التحميل...",
