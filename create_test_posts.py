@@ -5,16 +5,12 @@ Script to create test posts for multiple users
 import requests
 import random
 import time
+import argparse
 from datetime import datetime
+from typing import List, Dict
 
 API_BASE = "http://localhost:8000/api"
-USERS = [
-    {"username": "tomate81", "password": "9xmg82bw"},
-    {"username": "tomate", "password": "9xmg82bw"},
-    {"username": "Max", "password": "9xmg82bw"}
-]
-
-POSTS_PER_USER = 500
+DEFAULT_PASSWORD = "Test123"  # Default password für alle Test-User
 
 # Verschiedene Hashtags
 HASHTAGS = [
@@ -242,14 +238,82 @@ def create_post(token: str, content: str, visibility: str) -> bool:
     return response.status_code in [200, 201]
 
 
+def load_users_from_file(filepath: str, password: str) -> List[Dict[str, str]]:
+    """Load usernames from file and create user list with password"""
+    users = []
+
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                line = line.strip()
+                # Skip empty lines and comments
+                if line and not line.startswith('#'):
+                    users.append({
+                        "username": line,
+                        "password": password
+                    })
+
+        print(f"✅ Loaded {len(users)} users from {filepath}")
+        return users
+    except FileNotFoundError:
+        print(f"❌ File not found: {filepath}")
+        return []
+    except Exception as e:
+        print(f"❌ Error reading file: {e}")
+        return []
+
+
 def main():
     """Main function"""
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        description='Create test posts for SafeSpace users',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Beispiele:
+  %(prog)s -u test_users.txt -p 100
+  %(prog)s --users test_users.txt --posts 500 --password Test123
+        """
+    )
+
+    parser.add_argument(
+        '-u', '--users',
+        type=str,
+        required=True,
+        help='Pfad zur Benutzerliste-Datei (ein Username pro Zeile)'
+    )
+
+    parser.add_argument(
+        '-p', '--posts',
+        type=int,
+        required=True,
+        help='Anzahl der Posts pro Benutzer'
+    )
+
+    parser.add_argument(
+        '--password',
+        type=str,
+        default=DEFAULT_PASSWORD,
+        help=f'Passwort für alle Benutzer (default: {DEFAULT_PASSWORD})'
+    )
+
+    args = parser.parse_args()
 
     print("=" * 60)
     print("🚀 SafeSpace Test Post Generator")
     print("=" * 60)
-    print(f"\nCreating {POSTS_PER_USER} posts for each of {len(USERS)} users")
-    print(f"Total posts: {POSTS_PER_USER * len(USERS)}")
+
+    # Load users from file
+    users = load_users_from_file(args.users, args.password)
+
+    if not users:
+        print("❌ No users loaded, aborting!")
+        return
+
+    posts_per_user = args.posts
+
+    print(f"\nCreating {posts_per_user} posts for each of {len(users)} users")
+    print(f"Total posts: {posts_per_user * len(users)}")
     print("Posts werden zufällig durchmischt erstellt!")
     print()
 
@@ -257,7 +321,7 @@ def main():
 
     # Login alle User und speichere Tokens
     user_tokens = {}
-    for user in USERS:
+    for user in users:
         token = login(user["username"], user["password"])
         if token:
             user_tokens[user["username"]] = token
@@ -270,7 +334,7 @@ def main():
 
     print(f"\n📝 Creating posts in random order...")
 
-    total_posts = POSTS_PER_USER * len(user_tokens)
+    total_posts = posts_per_user * len(user_tokens)
     successful = 0
     failed = 0
 
