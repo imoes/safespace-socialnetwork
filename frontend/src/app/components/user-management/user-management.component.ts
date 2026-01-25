@@ -402,7 +402,7 @@ export class UserManagementComponent implements OnInit {
     this.loading.set(true);
     this.errorMessage.set('');
 
-    this.http.get<UserWithStats[]>('/api/users/all').subscribe({
+    this.http.get<UserWithStats[]>('/api/users/list').subscribe({
       next: (data) => {
         this.users.set(data);
         this.loading.set(false);
