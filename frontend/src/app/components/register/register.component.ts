@@ -81,7 +81,22 @@ export class RegisterComponent {
       },
       error: (err) => {
         console.error('❌ Registration fehlgeschlagen:', err);
-        this.error = err.error?.detail || 'Registrierung fehlgeschlagen';
+
+        // Benutzerfreundliche Fehlermeldungen
+        const detail = err.error?.detail || '';
+
+        if (detail === 'Username already registered') {
+          this.error = 'Dieser Benutzername ist bereits vergeben. Bitte wähle einen anderen.';
+        } else if (detail === 'Email already registered') {
+          this.error = 'Diese E-Mail-Adresse ist bereits registriert. Bitte verwende eine andere oder melde dich an.';
+        } else if (detail.includes('username')) {
+          this.error = 'Dieser Benutzername ist bereits vergeben.';
+        } else if (detail.includes('email')) {
+          this.error = 'Diese E-Mail-Adresse ist bereits registriert.';
+        } else {
+          this.error = detail || 'Registrierung fehlgeschlagen. Bitte versuche es erneut.';
+        }
+
         this.isLoading = false;
       }
     });
