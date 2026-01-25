@@ -268,6 +268,66 @@ class TestAuthentication:
         E2ELogger.screenshot(page, "login_complete")
         E2ELogger.success("Login flow completed successfully")
 
+    def test_registration_duplicate_username_error(self, page: Page, user1_page: Page):
+        """Test Fehlermeldung bei doppeltem Username"""
+        E2ELogger.test_start("Registration Duplicate Username Error")
+
+        E2ELogger.step("Navigate to registration page")
+        page.goto(f"{TestConfig.BASE_URL}/register")
+        page.wait_for_load_state("networkidle")
+
+        E2ELogger.step(f"Try to register with existing username: {TestConfig.USER1_USERNAME}")
+        page.fill("input[name='username']", TestConfig.USER1_USERNAME)
+        page.fill("input[name='email']", f"newemail_{int(time.time())}@example.com")
+        page.fill("input[name='password']", "TestPass123!")
+        page.fill("input[name='confirmPassword']", "TestPass123!")
+
+        E2ELogger.screenshot(page, "duplicate_username_before_submit")
+
+        E2ELogger.step("Submit registration")
+        page.click("button[type='submit']")
+
+        E2ELogger.step("Wait for error message")
+        error_message = page.locator(".error")
+        expect(error_message).to_be_visible(timeout=TestConfig.DEFAULT_TIMEOUT)
+        error_text = error_message.text_content()
+
+        E2ELogger.step(f"Verify error message: {error_text}")
+        assert "Benutzername ist bereits vergeben" in error_text
+
+        E2ELogger.screenshot(page, "duplicate_username_error_shown")
+        E2ELogger.success("Duplicate username error message displayed correctly")
+
+    def test_registration_duplicate_email_error(self, page: Page, user1_page: Page):
+        """Test Fehlermeldung bei doppelter E-Mail"""
+        E2ELogger.test_start("Registration Duplicate Email Error")
+
+        E2ELogger.step("Navigate to registration page")
+        page.goto(f"{TestConfig.BASE_URL}/register")
+        page.wait_for_load_state("networkidle")
+
+        E2ELogger.step(f"Try to register with existing email: {TestConfig.USER1_EMAIL}")
+        page.fill("input[name='username']", f"newuser_{int(time.time())}")
+        page.fill("input[name='email']", TestConfig.USER1_EMAIL)
+        page.fill("input[name='password']", "TestPass123!")
+        page.fill("input[name='confirmPassword']", "TestPass123!")
+
+        E2ELogger.screenshot(page, "duplicate_email_before_submit")
+
+        E2ELogger.step("Submit registration")
+        page.click("button[type='submit']")
+
+        E2ELogger.step("Wait for error message")
+        error_message = page.locator(".error")
+        expect(error_message).to_be_visible(timeout=TestConfig.DEFAULT_TIMEOUT)
+        error_text = error_message.text_content()
+
+        E2ELogger.step(f"Verify error message: {error_text}")
+        assert "E-Mail-Adresse ist bereits registriert" in error_text
+
+        E2ELogger.screenshot(page, "duplicate_email_error_shown")
+        E2ELogger.success("Duplicate email error message displayed correctly")
+
 
 class TestPostCreation:
     """E2E Tests für Post-Erstellung"""
