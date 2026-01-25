@@ -74,7 +74,12 @@ class PostgresDB:
                 ALTER TABLE users
                 ADD COLUMN IF NOT EXISTS last_name VARCHAR(100)
             """)
-            
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS last_login TIMESTAMP
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (
@@ -153,6 +158,10 @@ class PostgresDB:
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_moderation_disputes_status
                 ON moderation_disputes(status, created_at)
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_users_last_login
+                ON users(last_login)
             """)
 
             await conn.commit()

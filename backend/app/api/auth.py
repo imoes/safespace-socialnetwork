@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -11,7 +11,7 @@ from app.services.auth_service import (
     get_current_user
 )
 from app.config import settings
-from app.db.postgres import get_user_by_username, get_user_by_email
+from app.db.postgres import get_user_by_username, get_user_by_email, PostgresDB
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -45,6 +45,14 @@ async def register(user_data: UserCreate):
         last_name=user_data.last_name
     )
 
+    # Set initial last_login timestamp
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET last_login = %s WHERE uid = %s",
+            (datetime.utcnow(), user["uid"])
+        )
+        await conn.commit()
+
     # JWT Token erstellen (wie beim Login)
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
@@ -62,14 +70,22 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     Gibt JWT Token zurück.
     """
     user = await authenticate_user(form_data.username, form_data.password)
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
+    # Update last_login timestamp
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET last_login = %s WHERE uid = %s",
+            (datetime.utcnow(), user["uid"])
+        )
+        await conn.commit()
+
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
         data={"sub": str(user["uid"])},  # JWT standard requires sub to be a string
