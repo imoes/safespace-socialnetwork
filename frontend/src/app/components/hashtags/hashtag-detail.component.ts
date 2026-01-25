@@ -135,8 +135,8 @@ export class HashtagDetailComponent implements OnInit {
   loadingTop = signal(false);
   loadingBottom = signal(false);
   hasMore = signal(true);
-  
-  private readonly LIMIT = 50;
+
+  private readonly LIMIT = 15;
   private currentOffset = 0;
   private isLoadingMore = false;
 

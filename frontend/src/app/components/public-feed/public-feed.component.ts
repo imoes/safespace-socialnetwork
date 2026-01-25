@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../../services/feed.service';
@@ -42,18 +42,16 @@ import { PostCardComponent } from '../post-card/post-card.component';
         }
       </div>
 
-      @if (hasMore && !loading) {
-        <div class="load-more">
-          <button class="btn-load-more" (click)="loadMore()">
-            Weitere 25 Posts laden
-          </button>
-          <p class="posts-count">{{ posts.length }} von {{ total }} Posts angezeigt</p>
-        </div>
-      }
-
       @if (loading && posts.length > 0) {
         <div class="loading-more">
           <div class="spinner"></div>
+          <p>Lade weitere Posts...</p>
+        </div>
+      }
+
+      @if (!loading && !hasMore && posts.length > 0) {
+        <div class="end-message">
+          <p>🎉 Du hast alle Posts gesehen!</p>
         </div>
       }
     </div>
@@ -139,34 +137,6 @@ import { PostCardComponent } from '../post-card/post-card.component';
       gap: 0;
     }
 
-    .load-more {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .btn-load-more {
-      padding: 12px 32px;
-      background: #1877f2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-bottom: 8px;
-    }
-
-    .btn-load-more:hover {
-      background: #166fe5;
-    }
-
-    .posts-count {
-      margin: 0;
-      color: #65676b;
-      font-size: 13px;
-    }
-
     .loading-more {
       text-align: center;
       padding: 20px;
@@ -176,6 +146,24 @@ import { PostCardComponent } from '../post-card/post-card.component';
       width: 32px;
       height: 32px;
       border-width: 3px;
+      margin: 0 auto 8px;
+    }
+
+    .loading-more p {
+      color: #65676b;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .end-message {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .end-message p {
+      color: #65676b;
+      font-size: 15px;
+      margin: 0;
     }
   `]
 })
@@ -188,11 +176,23 @@ export class PublicFeedComponent implements OnInit {
   total = 0;
   currentUid?: number;
   private offset = 0;
-  private readonly limit = 25;
+  private readonly limit = 15;
 
   ngOnInit(): void {
     this.loadCurrentUser();
     this.loadPosts();
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    // Prüfe ob User fast am Ende der Seite ist
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    const threshold = 300; // 300px vor Ende
+
+    if (scrollPosition >= pageHeight - threshold && this.hasMore && !this.loading) {
+      this.loadMore();
+    }
   }
 
   private loadCurrentUser(): void {
