@@ -237,12 +237,13 @@ class TestAuthentication:
         logger.info("TEST: User Login")
         logger.info("-" * 80)
 
+        # Login requires form data, not JSON
         login_data = {
             "username": TestConfig.USER1["username"],
             "password": TestConfig.USER1["password"]
         }
 
-        response = api_client.post("/auth/login", json=login_data)
+        response = api_client.post("/auth/login", data=login_data)
         assert response.status_code == 200
 
         data = response.json()
@@ -257,12 +258,13 @@ class TestAuthentication:
         logger.info("TEST: Login with Wrong Password")
         logger.info("-" * 80)
 
+        # Login requires form data, not JSON
         login_data = {
             "username": TestConfig.USER1["username"],
             "password": "WrongPassword123!"
         }
 
-        response = api_client.post("/auth/login", json=login_data)
+        response = api_client.post("/auth/login", data=login_data)
         assert response.status_code == 401
 
         logger.info("✅ Wrong password correctly rejected")
@@ -334,12 +336,12 @@ class TestPosts:
         # Post erstellen
         post = self.test_create_post(api_client, user1_auth)
 
-        # Post aktualisieren
+        # Post aktualisieren - Endpoint is /feed/{post_id}/content
         update_data = {
             "content": "Aktualisierter Test-Post! ✏️"
         }
 
-        response = api_client.put(f"/feed/{post['post_id']}", json=update_data)
+        response = api_client.put(f"/feed/{post['post_id']}/content", json=update_data)
         assert response.status_code == 200
 
         data = response.json()
@@ -615,7 +617,8 @@ class TestUserSearch:
         user1_data, _ = user1_auth
         search_query = user1_data["username"][:5]  # First 5 chars
 
-        response = api_client.get(f"/users/search", params={"query": search_query})
+        # API expects parameter 'q' not 'query'
+        response = api_client.get(f"/users/search", params={"q": search_query})
         assert response.status_code == 200
 
         data = response.json()
