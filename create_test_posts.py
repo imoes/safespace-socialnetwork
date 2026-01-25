@@ -242,20 +242,44 @@ def create_post(token: str, content: str, visibility: str) -> bool:
     return response.status_code in [200, 201]
 
 
-def create_posts_for_user(username: str, password: str, count: int):
-    """Create posts for a single user"""
+def main():
+    """Main function"""
 
-    # Login
-    token = login(username, password)
-    if not token:
+    print("=" * 60)
+    print("🚀 SafeSpace Test Post Generator")
+    print("=" * 60)
+    print(f"\nCreating {POSTS_PER_USER} posts for each of {len(USERS)} users")
+    print(f"Total posts: {POSTS_PER_USER * len(USERS)}")
+    print("Posts werden zufällig durchmischt erstellt!")
+    print()
+
+    start_time = time.time()
+
+    # Login alle User und speichere Tokens
+    user_tokens = {}
+    for user in USERS:
+        token = login(user["username"], user["password"])
+        if token:
+            user_tokens[user["username"]] = token
+        else:
+            print(f"❌ Login failed for {user['username']}, skipping this user")
+
+    if not user_tokens:
+        print("❌ No users could login, aborting!")
         return
 
-    print(f"\n📝 Creating {count} posts for {username}...")
+    print(f"\n📝 Creating posts in random order...")
 
+    total_posts = POSTS_PER_USER * len(user_tokens)
     successful = 0
     failed = 0
 
-    for i in range(count):
+    # Erstelle Posts in zufälliger Reihenfolge
+    for i in range(total_posts):
+        # Zufälligen User auswählen
+        username = random.choice(list(user_tokens.keys()))
+        token = user_tokens[username]
+
         # Generate content
         content, hashtags = generate_post_content()
 
@@ -265,41 +289,21 @@ def create_posts_for_user(username: str, password: str, count: int):
         # Create post
         if create_post(token, content, visibility):
             successful += 1
-            if (i + 1) % 50 == 0:
-                print(f"  ✅ {i + 1}/{count} posts created...")
+            if (i + 1) % 100 == 0:
+                print(f"  ✅ {i + 1}/{total_posts} posts created...")
         else:
             failed += 1
-            print(f"  ❌ Failed to create post {i + 1}")
 
         # Small delay to avoid rate limiting
         time.sleep(0.1)
 
-    print(f"\n✅ Finished for {username}:")
-    print(f"   Successful: {successful}")
-    print(f"   Failed: {failed}")
-
-
-def main():
-    """Main function"""
-
-    print("=" * 60)
-    print("🚀 SafeSpace Test Post Generator")
-    print("=" * 60)
-    print(f"\nCreating {POSTS_PER_USER} posts for each of {len(USERS)} users")
-    print(f"Total posts: {POSTS_PER_USER * len(USERS)}")
-    print()
-
-    start_time = time.time()
-
-    for user in USERS:
-        create_posts_for_user(user["username"], user["password"], POSTS_PER_USER)
-        print()
-
     end_time = time.time()
     duration = end_time - start_time
 
-    print("=" * 60)
+    print("\n" + "=" * 60)
     print(f"✅ All done in {duration:.2f} seconds!")
+    print(f"   Successful: {successful}")
+    print(f"   Failed: {failed}")
     print("=" * 60)
 
 

@@ -52,6 +52,7 @@ async def get_trending_hashtags(
 class HashtagSearchResponse(BaseModel):
     posts: List[HashtagPost]
     has_more: bool
+    total: int  # Total count from OpenSearch (may be approximate due to filtering)
 
 
 @router.get("/search/{hashtag}", response_model=HashtagSearchResponse)
@@ -127,13 +128,35 @@ async def search_by_hashtag(
                 if post_visibility in allowed:
                     filtered_posts.append(post)
 
+        # Get total count from OpenSearch for this hashtag
+        # Note: This is the total in the index, not filtered by friendship
+        try:
+            count_query = {
+                "query": {
+                    "bool": {
+                        "must": [
+                            {"term": {"hashtags": hashtag.lower()}}
+                        ]
+                    }
+                }
+            }
+            count_result = await opensearch.client.count(
+                index=opensearch.index_name,
+                body=count_query
+            )
+            total_count = count_result["count"]
+        except Exception as e:
+            print(f"Error getting count: {e}")
+            total_count = len(filtered_posts)
+
         # Apply pagination to filtered results
         has_more = len(filtered_posts) > limit
         paginated_posts = filtered_posts[:limit]
 
         return HashtagSearchResponse(
             posts=[HashtagPost(**post) for post in paginated_posts],
-            has_more=has_more
+            has_more=has_more,
+            total=total_count
         )
     except Exception as e:
         raise HTTPException(

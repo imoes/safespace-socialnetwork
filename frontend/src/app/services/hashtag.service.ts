@@ -39,10 +39,10 @@ export class HashtagService {
   /**
    * Search for posts by hashtag with pagination
    */
-  searchByHashtag(hashtag: string, limit: number = 50, offset: number = 0): Observable<{posts: HashtagPost[], has_more: boolean}> {
+  searchByHashtag(hashtag: string, limit: number = 50, offset: number = 0): Observable<{posts: HashtagPost[], has_more: boolean, total: number}> {
     // Remove # if present
     const cleanHashtag = hashtag.startsWith('#') ? hashtag.substring(1) : hashtag;
-    return this.http.get<{posts: HashtagPost[], has_more: boolean}>(
+    return this.http.get<{posts: HashtagPost[], has_more: boolean, total: number}>(
       `${this.API_URL}/search/${encodeURIComponent(cleanHashtag)}?limit=${limit}&offset=${offset}`
     );
   }
