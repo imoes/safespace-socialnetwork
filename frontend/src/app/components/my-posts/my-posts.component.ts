@@ -52,6 +52,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
             <app-post-card
               [post]="post"
               [currentUid]="currentUid"
+              [expandComments]="highlightedPostId() === post.post_id"
               (like)="likePost(post)"
               (unlike)="unlikePost(post)"
               (delete)="deletePost(post)"

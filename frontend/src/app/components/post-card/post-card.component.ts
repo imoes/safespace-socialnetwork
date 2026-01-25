@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -373,9 +373,10 @@ import { TranslationService, TranslationResult } from '../../services/translatio
     .guardian-disclaimer strong { font-weight: 600; }
   `]
 })
-export class PostCardComponent {
+export class PostCardComponent implements OnChanges {
   @Input() post!: Post;
   @Input() currentUid?: number;
+  @Input() expandComments: boolean = false;
   @Output() like = new EventEmitter<Post>();
   @Output() unlike = new EventEmitter<Post>();
   @Output() delete = new EventEmitter<Post>();
@@ -411,6 +412,16 @@ export class PostCardComponent {
   customContent = '';
   originalCommentContent = '';
   isSubmittingComment = false;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Wenn expandComments auf true gesetzt wird, Kommentare automatisch laden
+    if (changes['expandComments'] && this.expandComments && !this.showComments) {
+      this.showComments = true;
+      if (this.comments.length === 0) {
+        this.loadComments();
+      }
+    }
+  }
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
