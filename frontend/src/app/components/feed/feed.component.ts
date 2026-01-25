@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -184,22 +184,39 @@ export class FeedComponent implements OnInit, OnDestroy {
   feedService = inject(FeedService);
   authService = inject(AuthService);
   router = inject(Router);
+  private hasRedirected = false;
+
+  constructor() {
+    // Reaktiv auf User-Rolle reagieren
+    effect(() => {
+      const user = this.authService.currentUser();
+
+      // Nur wenn User geladen ist
+      if (user && !this.hasRedirected) {
+        // Admins auf Admin-Panel weiterleiten
+        if (this.authService.isAdmin()) {
+          this.hasRedirected = true;
+          this.router.navigate(['/admin-panel']);
+          return;
+        }
+
+        // Moderatoren auf Moderation-Seite weiterleiten
+        if (this.authService.isModerator()) {
+          this.hasRedirected = true;
+          this.router.navigate(['/admin']);
+          return;
+        }
+
+        // Normale User: Feed laden
+        if (!this.hasRedirected) {
+          this.feedService.startAutoRefresh();
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
-    // Admins auf Admin-Panel weiterleiten
-    if (this.authService.isAdmin()) {
-      this.router.navigate(['/admin-panel']);
-      return;
-    }
-
-    // Moderatoren auf Moderation-Seite weiterleiten
-    if (this.authService.isModerator()) {
-      this.router.navigate(['/admin']);
-      return;
-    }
-
-    // Normale User: Feed laden
-    this.feedService.startAutoRefresh();
+    // Wird vom effect übernommen
   }
 
   ngOnDestroy(): void {
