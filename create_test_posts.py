@@ -234,7 +234,7 @@ def create_post(token: str, content: str, visibility: str) -> bool:
     }
 
     response = requests.post(
-        f"{API_BASE}/posts",
+        f"{API_BASE}/feed",
         headers=headers,
         json=data
     )
