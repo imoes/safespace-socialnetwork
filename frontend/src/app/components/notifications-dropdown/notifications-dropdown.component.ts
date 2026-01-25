@@ -267,9 +267,17 @@ export class NotificationsDropdownComponent implements OnInit {
   }
 
   handleNotificationClick(notification: Notification): void {
-    // Mark as read if not already
+    // Mark as read and delete notification
     if (!notification.is_read) {
-      this.notificationsService.markAsRead(notification.notification_id).subscribe();
+      this.notificationsService.markAsRead(notification.notification_id).subscribe({
+        next: () => {
+          // Nach dem Markieren als gelesen, Benachrichtigung löschen
+          this.notificationsService.deleteNotification(notification.notification_id).subscribe();
+        }
+      });
+    } else {
+      // Bereits gelesene Benachrichtigung direkt löschen
+      this.notificationsService.deleteNotification(notification.notification_id).subscribe();
     }
 
     // Close dropdown

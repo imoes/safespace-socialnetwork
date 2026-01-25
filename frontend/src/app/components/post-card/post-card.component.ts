@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -222,7 +222,7 @@ import { TranslationService, TranslationResult } from '../../services/translatio
                   <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Kommentar selbst um:</p>
 
                   @for (alt of getAlternatives(); track alt; let i = $index) {
-                    <button class="alternative-btn" (click)="useAlternative(alt)">
+                    <button class="alternative-btn" (click)="useAlternative(alt)" [disabled]="isSubmittingComment">
                       <span class="alt-number">{{ i + 1 }}.</span>
                       {{ alt }}
                     </button>
@@ -230,8 +230,8 @@ import { TranslationService, TranslationResult } from '../../services/translatio
 
                   <div class="custom-alternative">
                     <label>Oder schreibe eine eigene Formulierung:</label>
-                    <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..."></textarea>
-                    <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim()">
+                    <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..." [disabled]="isSubmittingComment"></textarea>
+                    <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim() || isSubmittingComment">
                       Eigene Formulierung verwenden
                     </button>
                   </div>
@@ -373,9 +373,10 @@ import { TranslationService, TranslationResult } from '../../services/translatio
     .guardian-disclaimer strong { font-weight: 600; }
   `]
 })
-export class PostCardComponent {
+export class PostCardComponent implements OnChanges {
   @Input() post!: Post;
   @Input() currentUid?: number;
+  @Input() expandComments: boolean = false;
   @Output() like = new EventEmitter<Post>();
   @Output() unlike = new EventEmitter<Post>();
   @Output() delete = new EventEmitter<Post>();
@@ -410,6 +411,17 @@ export class PostCardComponent {
   guardianResult: any = null;
   customContent = '';
   originalCommentContent = '';
+  isSubmittingComment = false;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Wenn expandComments auf true gesetzt wird, Kommentare automatisch laden
+    if (changes['expandComments'] && this.expandComments && !this.showComments) {
+      this.showComments = true;
+      if (this.comments.length === 0) {
+        this.loadComments();
+      }
+    }
+  }
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -713,6 +725,7 @@ export class PostCardComponent {
     this.showGuardianModal = false;
     this.guardianResult = null;
     this.customContent = '';
+    this.isSubmittingComment = false;
   }
 
   getAlternatives(): string[] {
@@ -740,16 +753,26 @@ export class PostCardComponent {
   }
 
   submitCommentDirectly(content: string): void {
+    // Verhindere Doppelklicks
+    if (this.isSubmittingComment) {
+      return;
+    }
+
+    this.isSubmittingComment = true;
+
     // Direkt senden ohne Guardian Modal zu triggern
     this.feedService.addComment(this.post.author_uid, this.post.post_id, content).subscribe({
       next: (comment) => {
         this.comments.push(comment);
         this.post.comments_count++;
         this.newComment = '';
+        this.isSubmittingComment = false;
         this.closeGuardianModal();
       },
       error: (error) => {
         console.error('Submit alternative error:', error);
+        this.isSubmittingComment = false;
+
         // Falls auch die Alternative abgelehnt wird (sehr selten)
         const errorDetail = error.error?.detail || error.error;
         if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
