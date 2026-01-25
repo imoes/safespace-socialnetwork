@@ -60,7 +60,7 @@ async def create_notification(
         await conn.commit()
 
         if row:
-            return {
+            notification = {
                 "notification_id": row["notification_id"],
                 "user_uid": row["user_uid"],
                 "actor_uid": row["actor_uid"],
@@ -71,6 +71,39 @@ async def create_notification(
                 "is_read": row["is_read"],
                 "created_at": row["created_at"].isoformat() if row["created_at"] else None
             }
+
+            # E-Mail-Benachrichtigung versenden (async, fire and forget)
+            try:
+                from app.services.email_service import EmailService
+                import asyncio
+
+                # User-Daten für E-Mail abrufen
+                user_result = await conn.execute("""
+                    SELECT u1.username as to_username, u1.email as to_email,
+                           u2.username as actor_username
+                    FROM users u1
+                    JOIN users u2 ON u2.uid = %s
+                    WHERE u1.uid = %s
+                """, (actor_uid, user_uid))
+                user_row = await user_result.fetchone()
+
+                if user_row and user_row["to_email"]:
+                    # Hintergrund-Task für E-Mail-Versand
+                    asyncio.create_task(
+                        EmailService.send_notification_email(
+                            to_email=user_row["to_email"],
+                            to_username=user_row["to_username"],
+                            actor_username=user_row["actor_username"],
+                            notification_type=notification_type,
+                            post_id=post_id,
+                            comment_id=comment_id
+                        )
+                    )
+            except Exception as e:
+                # E-Mail-Fehler sollen Notification nicht blockieren
+                print(f"⚠️ Failed to send notification email: {e}")
+
+            return notification
         return None
 
 

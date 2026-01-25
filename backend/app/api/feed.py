@@ -276,6 +276,43 @@ async def add_comment(
 ):
     """Fügt Kommentar zu einem Post hinzu"""
 
+    # Hatespeech-Prüfung für Kommentar
+    try:
+        from app.safespace.models import PostMessage
+        from app.safespace.deepseek_moderator import DeepSeekModerator
+        from datetime import datetime
+
+        # Temporäre PostMessage für Moderation
+        temp_message = PostMessage(
+            post_id=post_id,
+            author_uid=current_user["uid"],
+            author_username=current_user["username"],
+            content=content,
+            visibility="public",
+            created_at=datetime.utcnow()
+        )
+
+        # Moderieren
+        moderation_result = await DeepSeekModerator.moderate_post(temp_message)
+
+        # Wenn Hassrede erkannt wurde und der Confidence-Score hoch ist, ablehnen
+        if moderation_result.is_hate_speech and moderation_result.confidence_score >= 0.8:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "error": "comment_contains_hate_speech",
+                    "message": "Dein Kommentar wurde als Hassrede erkannt und kann nicht veröffentlicht werden.",
+                    "explanation": moderation_result.explanation,
+                    "suggested_revision": moderation_result.suggested_revision,
+                    "categories": [c.value for c in moderation_result.categories]
+                }
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Falls Moderation fehlschlägt, Kommentar trotzdem zulassen
+        print(f"⚠️ Comment moderation error: {e}")
+
     comment = await PostService.add_comment(
         author_uid=author_uid,
         post_id=post_id,
