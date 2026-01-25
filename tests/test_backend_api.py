@@ -662,6 +662,31 @@ class TestUserSearch:
 
         logger.info(f"✅ User search completed: {len(data)} users found for '{search_query}'")
 
+    def test_moderation_dispute(self, api_client: APIClient, user1_auth):
+        """Test Moderation Dispute Einreichung"""
+        logger.info("\n" + "-" * 80)
+        logger.info("TEST: Moderation Dispute Submission")
+        logger.info("-" * 80)
+
+        dispute_data = {
+            "content": "Dies ist ein Test-Post der angeblich Hassrede enthält",
+            "reason": "Ich glaube nicht, dass dies Hassrede ist. Bitte überprüfen."
+        }
+
+        logger.info(f"📝 Submitting dispute with content length: {len(dispute_data['content'])}")
+        logger.info(f"📝 Reason: {dispute_data['reason']}")
+
+        response = api_client.post("/safespace/dispute", json=dispute_data)
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+
+        data = response.json()
+        assert "message" in data
+        assert "status" in data
+        assert data["status"] == "pending_review"
+
+        logger.info(f"✅ Dispute submitted successfully: {data['message']}")
+        logger.info(f"   Status: {data['status']}")
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

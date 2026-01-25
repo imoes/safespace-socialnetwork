@@ -117,6 +117,21 @@ class PostgresDB:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+
+            # Moderation Disputes
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS moderation_disputes (
+                    dispute_id SERIAL PRIMARY KEY,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    content TEXT NOT NULL,
+                    reason TEXT NOT NULL,
+                    status VARCHAR(20) DEFAULT 'pending',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    reviewed_at TIMESTAMP,
+                    reviewed_by INTEGER REFERENCES users(uid),
+                    resolution TEXT
+                )
+            """)
             
             # Indexes
             await conn.execute("""
@@ -132,10 +147,14 @@ class PostgresDB:
                 ON user_reports(status, created_at)
             """)
             await conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_users_role 
+                CREATE INDEX IF NOT EXISTS idx_users_role
                 ON users(role)
             """)
-            
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_moderation_disputes_status
+                ON moderation_disputes(status, created_at)
+            """)
+
             await conn.commit()
 
 
