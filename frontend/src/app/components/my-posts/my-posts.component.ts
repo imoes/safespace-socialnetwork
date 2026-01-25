@@ -246,15 +246,22 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     this.loadCurrentUser();
     this.loadPosts();
 
-    // Check for highlight query parameter
+    // Check for highlight query parameter - subscribe to changes
     this.route.queryParams.subscribe(params => {
       const highlightId = params['highlight'];
+      console.log('Query params changed, highlight:', highlightId);
       if (highlightId) {
-        this.highlightedPostId.set(+highlightId);
+        const postId = +highlightId;
+        this.highlightedPostId.set(postId);
+        console.log('Set highlightedPostId to', postId);
         // Scroll to post after a short delay to ensure it's rendered
         setTimeout(() => {
-          this.scrollToPost(+highlightId);
+          console.log('Scrolling to post', postId);
+          this.scrollToPost(postId);
         }, 500);
+      } else {
+        // Clear highlight if no parameter
+        this.highlightedPostId.set(null);
       }
     });
   }
@@ -341,13 +348,19 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   }
 
   private scrollToPost(postId: number): void {
+    console.log('Attempting to scroll to post', postId);
     const element = document.getElementById(`post-${postId}`);
+    console.log('Found element:', element);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      console.log('Scrolled to element');
       // Clear highlight after animation
       setTimeout(() => {
+        console.log('Clearing highlight');
         this.highlightedPostId.set(null);
       }, 3000);
+    } else {
+      console.warn(`Post ${postId} not found in DOM`);
     }
   }
 }
