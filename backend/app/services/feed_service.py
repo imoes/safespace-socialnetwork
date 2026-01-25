@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 import uuid
 
-from app.db.postgres import get_friends, get_username_map
+from app.db.postgres import get_friends, get_username_map, increment_user_posts_count, decrement_user_posts_count
 from app.db.sqlite_posts import UserPostsDB
 from app.cache.redis_cache import FeedCache
 from app.config import settings
@@ -233,6 +233,9 @@ class PostService:
         posts_db = UserPostsDB(uid)
         post = await posts_db.create_post(content, media_paths, visibility)
 
+        # Post-Anzahl in PostgreSQL erhöhen
+        await increment_user_posts_count(uid)
+
         # OpenSearch: Index ALL posts (not just public)
         opensearch_doc_id = None
         try:
@@ -303,6 +306,9 @@ class PostService:
         success = await posts_db.delete_post(post_id)
 
         if success:
+            # Post-Anzahl in PostgreSQL verringern
+            await decrement_user_posts_count(uid)
+
             # Delete from OpenSearch if it was indexed
             opensearch_doc_id = post.get("opensearch_doc_id")
             if opensearch_doc_id:
