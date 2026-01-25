@@ -192,6 +192,70 @@ import { TranslationService, TranslationResult } from '../../services/translatio
         </div>
       }
 
+      <!-- Guardian Modal für Kommentare -->
+      @if (showGuardianModal) {
+        <div class="modal-overlay" (click)="closeGuardianModal()">
+          <div class="guardian-modal" (click)="$event.stopPropagation()">
+            <div class="guardian-header">
+              <span class="guardian-icon">🛡️</span>
+              <h2>Guardian - AI-gestützte Inhaltsmoderation</h2>
+            </div>
+
+            @if (guardianResult) {
+              <div class="guardian-content">
+                <div class="explanation-box">
+                  <h3>Warum wurde dieser Kommentar markiert?</h3>
+                  <p>{{ guardianResult.explanation }}</p>
+
+                  @if (guardianResult.categories && guardianResult.categories.length > 0) {
+                    <div class="categories">
+                      <strong>Kategorien:</strong>
+                      @for (cat of guardianResult.categories; track cat) {
+                        <span class="category-tag">{{ getCategoryLabel(cat) }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="alternatives-section">
+                  <h3>Alternative Formulierungen</h3>
+                  <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Kommentar selbst um:</p>
+
+                  @for (alt of getAlternatives(); track alt; let i = $index) {
+                    <button class="alternative-btn" (click)="useAlternative(alt)">
+                      <span class="alt-number">{{ i + 1 }}.</span>
+                      {{ alt }}
+                    </button>
+                  }
+
+                  <div class="custom-alternative">
+                    <label>Oder schreibe eine eigene Formulierung:</label>
+                    <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..."></textarea>
+                    <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim()">
+                      Eigene Formulierung verwenden
+                    </button>
+                  </div>
+                </div>
+
+                <div class="guardian-actions">
+                  <button class="dispute-btn" (click)="disputeModeration()">
+                    ⚖️ Widerspruch einlegen
+                  </button>
+                  <button class="cancel-btn" (click)="closeGuardianModal()">
+                    Abbrechen
+                  </button>
+                </div>
+
+                <div class="guardian-disclaimer">
+                  ⚠️ <strong>Hinweis:</strong> KI-Systeme können Fehler machen. Alle Vorschläge sind ohne Gewähr.
+                  Bei Unklarheiten kannst du Widerspruch einlegen.
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
     </div>
   `,
   styles: [`
@@ -272,6 +336,41 @@ import { TranslationService, TranslationResult } from '../../services/translatio
     .btn-save-comment, .btn-cancel-comment { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
     .btn-save-comment { background: #1877f2; color: white; }
     .btn-cancel-comment { background: #e4e6e9; color: #050505; }
+
+    /* Guardian Modal */
+    .guardian-modal { background: white; border-radius: 16px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
+    .guardian-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px 16px 0 0; display: flex; align-items: center; gap: 12px; }
+    .guardian-icon { font-size: 32px; }
+    .guardian-header h2 { margin: 0; font-size: 24px; font-weight: 700; }
+    .guardian-content { padding: 24px; }
+
+    .explanation-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+    .explanation-box h3 { margin: 0 0 12px; font-size: 18px; color: #856404; }
+    .explanation-box p { margin: 0 0 12px; color: #856404; line-height: 1.6; }
+    .categories { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .category-tag { background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+    .alternatives-section h3 { margin: 0 0 8px; font-size: 18px; }
+    .alternatives-hint { color: #666; font-size: 14px; margin-bottom: 16px; }
+    .alternative-btn { display: block; width: 100%; text-align: left; padding: 16px; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; font-size: 15px; }
+    .alternative-btn:hover { background: #e7f3ff; border-color: #1877f2; }
+    .alt-number { display: inline-block; background: #1877f2; color: white; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; margin-right: 8px; font-weight: bold; font-size: 13px; }
+
+    .custom-alternative { margin-top: 20px; padding-top: 20px; border-top: 2px dashed #dee2e6; }
+    .custom-alternative label { display: block; font-weight: 600; margin-bottom: 8px; }
+    .custom-alternative textarea { width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box; }
+    .custom-alternative textarea:focus { outline: none; border-color: #1877f2; }
+    .use-custom-btn { margin-top: 12px; background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .use-custom-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+    .guardian-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid #dee2e6; }
+    .dispute-btn { flex: 1; background: #ffc107; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .dispute-btn:hover { background: #ffb300; }
+    .cancel-btn { flex: 1; background: #6c757d; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .cancel-btn:hover { background: #5a6268; }
+
+    .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
+    .guardian-disclaimer strong { font-weight: 600; }
   `]
 })
 export class PostCardComponent {
@@ -305,6 +404,12 @@ export class PostCardComponent {
   showTranslation = false;
   translating = false;
   translatedContent: TranslationResult | null = null;
+
+  // Guardian Modal für Kommentare
+  showGuardianModal = false;
+  guardianResult: any = null;
+  customContent = '';
+  originalCommentContent = '';
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -529,25 +634,11 @@ export class PostCardComponent {
       error: (error) => {
         console.error('Comment error:', error);
 
-        // Hatespeech-Fehler mit detaillierter Meldung
+        // Hatespeech-Fehler mit Guardian Modal
         if (error.status === 400 && error.error?.error === 'comment_contains_hate_speech') {
-          const detail = error.error;
-          let message = `⚠️ ${detail.message}\n\n`;
-
-          if (detail.explanation) {
-            message += `🔍 Grund: ${detail.explanation}\n\n`;
-          }
-
-          if (detail.suggested_revision) {
-            message += `💡 Verbesserungsvorschlag:\n"${detail.suggested_revision}"\n\n`;
-            message += 'Möchten Sie den Verbesserungsvorschlag übernehmen?';
-
-            if (confirm(message)) {
-              this.newComment = detail.suggested_revision;
-            }
-          } else {
-            alert(message);
-          }
+          this.originalCommentContent = content;
+          this.guardianResult = error.error;
+          this.showGuardianModal = true;
         } else {
           // Generischer Fehler
           alert('Fehler beim Hinzufügen des Kommentars');
@@ -607,5 +698,60 @@ export class PostCardComponent {
       });
     }
     // Beim Verlassen passiert nichts - Video läuft weiter
+  }
+
+  // Guardian Modal Methods
+  closeGuardianModal(): void {
+    this.showGuardianModal = false;
+    this.guardianResult = null;
+    this.customContent = '';
+  }
+
+  getAlternatives(): string[] {
+    if (!this.guardianResult) return [];
+    const alternatives = [];
+    if (this.guardianResult.suggested_revision) {
+      alternatives.push(this.guardianResult.suggested_revision);
+    }
+    if (this.guardianResult.alternative_suggestions && Array.isArray(this.guardianResult.alternative_suggestions)) {
+      alternatives.push(...this.guardianResult.alternative_suggestions);
+    }
+    return alternatives;
+  }
+
+  useAlternative(alt: string): void {
+    this.newComment = alt;
+    this.closeGuardianModal();
+  }
+
+  useCustomContent(): void {
+    if (this.customContent.trim()) {
+      this.newComment = this.customContent;
+      this.closeGuardianModal();
+    }
+  }
+
+  disputeModeration(): void {
+    const reason = prompt('Bitte begründe deinen Widerspruch:');
+    if (!reason) return;
+
+    alert('Dein Widerspruch wurde an die Moderatoren weitergeleitet. Du erhältst eine Rückmeldung innerhalb von 48 Stunden.');
+    this.closeGuardianModal();
+  }
+
+  getCategoryLabel(category: string): string {
+    const labels: Record<string, string> = {
+      'racism': 'Rassismus',
+      'sexism': 'Sexismus',
+      'homophobia': 'Homophobie',
+      'religious_hate': 'Religiöse Hetze',
+      'disability_hate': 'Ableismus',
+      'xenophobia': 'Fremdenfeindlichkeit',
+      'general_hate': 'Hassrede',
+      'threat': 'Drohung',
+      'harassment': 'Belästigung',
+      'none': 'Keine'
+    };
+    return labels[category] || category;
   }
 }
