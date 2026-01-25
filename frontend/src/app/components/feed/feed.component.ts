@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -42,8 +42,8 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       <!-- Posts -->
       <div class="posts">
         @for (post of feedService.posts(); track post.post_id) {
-          <app-post-card 
-            [post]="post" 
+          <app-post-card
+            [post]="post"
             [currentUid]="authService.currentUser()?.uid"
             (like)="onLike($event)"
             (unlike)="onUnlike($event)"
@@ -59,11 +59,12 @@ import { CreatePostComponent } from '../create-post/create-post.component';
         }
       </div>
 
-      <!-- Load more -->
-      @if (feedService.hasMore()) {
-        <button class="load-more" (click)="loadMore()" [disabled]="feedService.isLoading()">
-          📜 Frühere Posts laden
-        </button>
+      <!-- Loading more indicator -->
+      @if (feedService.isLoading() && feedService.posts().length > 0) {
+        <div class="loading-more">
+          <div class="spinner-small"></div>
+          <p>Lade weitere Posts...</p>
+        </div>
       }
 
       <!-- Refresh button -->
@@ -142,22 +143,22 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       color: #666;
     }
 
-    .load-more {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: #1877f2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
+    .loading-more {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #666;
+      gap: 10px;
     }
 
-    .load-more:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    .spinner-small {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1877f2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
     .refresh-btn {
@@ -221,6 +222,18 @@ export class FeedComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.feedService.stopAutoRefresh();
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    // Prüfe ob User fast am Ende der Seite ist
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    const threshold = 300; // 300px vor Ende
+
+    if (scrollPosition >= pageHeight - threshold) {
+      this.loadMore();
+    }
   }
 
   refresh(): void {

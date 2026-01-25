@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
@@ -61,15 +61,10 @@ import { PostCardComponent } from '../post-card/post-card.component';
         }
       </div>
 
-      @if (hasMore && !loading) {
-        <div class="load-more">
-          <button class="btn-load-more" (click)="loadMore()">📜 Frühere Posts laden</button>
-        </div>
-      }
-
       @if (loading && posts.length > 0) {
         <div class="loading-more">
           <div class="spinner"></div>
+          <p>Lade weitere Posts...</p>
         </div>
       }
     </div>
@@ -182,27 +177,6 @@ import { PostCardComponent } from '../post-card/post-card.component';
       gap: 0;
     }
 
-    .load-more {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .btn-load-more {
-      padding: 12px 32px;
-      background: #1877f2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-load-more:hover {
-      background: #166fe5;
-    }
-
     .loading-more {
       text-align: center;
       padding: 20px;
@@ -212,6 +186,13 @@ import { PostCardComponent } from '../post-card/post-card.component';
       width: 32px;
       height: 32px;
       border-width: 3px;
+      margin: 0 auto 8px;
+    }
+
+    .loading-more p {
+      color: #65676b;
+      font-size: 14px;
+      margin: 0;
     }
 
     .highlighted-post {
@@ -239,7 +220,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   currentUid?: number;
   activeTab: 'my-posts' | 'commented' = 'my-posts';
   private offset = 0;
-  private readonly limit = 25;
+  private readonly limit = 15;
   highlightedPostId = signal<number | null>(null);
 
   ngOnInit(): void {
@@ -279,6 +260,18 @@ export class MyPostsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // Cleanup if needed
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    // Prüfe ob User fast am Ende der Seite ist
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    const threshold = 300; // 300px vor Ende
+
+    if (scrollPosition >= pageHeight - threshold && this.hasMore && !this.loading) {
+      this.loadMore();
+    }
   }
 
   private loadCurrentUser(): void {
