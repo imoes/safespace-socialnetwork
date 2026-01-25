@@ -227,48 +227,69 @@ async def get_system_status(moderator: dict = Depends(require_moderator)):
     # Datenbank-Statistiken
     async with PostgresDB.connection() as conn:
         # Anzahl registrierter Benutzer
-        total_users = await conn.fetchval("SELECT COUNT(*) FROM users")
+        result = await conn.execute("SELECT COUNT(*) as count FROM users")
+        row = await result.fetchone()
+        total_users = row["count"] if row else 0
 
         # Anzahl aktiver Benutzer (letzte 15 Minuten)
         fifteen_minutes_ago = datetime.utcnow() - timedelta(minutes=15)
-        active_users = await conn.fetchval(
-            "SELECT COUNT(*) FROM users WHERE last_login > $1",
-            fifteen_minutes_ago
+        result = await conn.execute(
+            "SELECT COUNT(*) as count FROM users WHERE last_login > %s",
+            (fifteen_minutes_ago,)
         )
+        row = await result.fetchone()
+        active_users = row["count"] if row else 0
 
         # Anzahl online Benutzer (letzte 5 Minuten)
         five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
-        online_users = await conn.fetchval(
-            "SELECT COUNT(*) FROM users WHERE last_login > $1",
-            five_minutes_ago
+        result = await conn.execute(
+            "SELECT COUNT(*) as count FROM users WHERE last_login > %s",
+            (five_minutes_ago,)
         )
+        row = await result.fetchone()
+        online_users = row["count"] if row else 0
 
         # Benutzer pro Rolle
-        role_stats = await conn.fetch(
+        result = await conn.execute(
             "SELECT role, COUNT(*) as count FROM users GROUP BY role"
         )
+        role_stats = await result.fetchall()
 
         # Freundschaften
-        total_friendships = await conn.fetchval("SELECT COUNT(*) FROM friendships WHERE status = 'accepted'")
-        pending_requests = await conn.fetchval("SELECT COUNT(*) FROM friendships WHERE status = 'pending'")
+        result = await conn.execute("SELECT COUNT(*) as count FROM friendships WHERE status = 'accepted'")
+        row = await result.fetchone()
+        total_friendships = row["count"] if row else 0
 
-        # Reports
-        open_reports = await conn.fetchval("SELECT COUNT(*) FROM reports WHERE status = 'open'")
-        total_reports = await conn.fetchval("SELECT COUNT(*) FROM reports")
+        result = await conn.execute("SELECT COUNT(*) as count FROM friendships WHERE status = 'pending'")
+        row = await result.fetchone()
+        pending_requests = row["count"] if row else 0
+
+        # Reports - use user_reports table
+        result = await conn.execute("SELECT COUNT(*) as count FROM user_reports WHERE status = 'pending'")
+        row = await result.fetchone()
+        open_reports = row["count"] if row else 0
+
+        result = await conn.execute("SELECT COUNT(*) as count FROM user_reports")
+        row = await result.fetchone()
+        total_reports = row["count"] if row else 0
 
         # Neue Benutzer heute
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        new_users_today = await conn.fetchval(
-            "SELECT COUNT(*) FROM users WHERE created_at >= $1",
-            today_start
+        result = await conn.execute(
+            "SELECT COUNT(*) as count FROM users WHERE created_at >= %s",
+            (today_start,)
         )
+        row = await result.fetchone()
+        new_users_today = row["count"] if row else 0
 
         # Neue Benutzer letzte 7 Tage
         week_ago = datetime.utcnow() - timedelta(days=7)
-        new_users_week = await conn.fetchval(
-            "SELECT COUNT(*) FROM users WHERE created_at >= $1",
-            week_ago
+        result = await conn.execute(
+            "SELECT COUNT(*) as count FROM users WHERE created_at >= %s",
+            (week_ago,)
         )
+        row = await result.fetchone()
+        new_users_week = row["count"] if row else 0
 
     # Posts zählen (aus allen User-SQLite-DBs)
     # Vereinfachte Version - nur schätzen basierend auf Dateien

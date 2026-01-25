@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import datetime
 from typing import Optional
+from pydantic import BaseModel
 
 from app.services.auth_service import get_current_user
 from app.safespace.models import ModerationResult, ModerationStatus, UserModerationStats
@@ -10,6 +11,11 @@ from app.safespace.config import safespace_settings
 
 
 router = APIRouter(prefix="/safespace", tags=["SafeSpace Moderation"])
+
+
+class DisputeRequest(BaseModel):
+    content: str
+    reason: str
 
 
 @router.get("/status")
@@ -78,8 +84,7 @@ async def suggest_revision(
 
 @router.post("/dispute")
 async def dispute_moderation(
-    content: str,
-    reason: str,
+    request: DisputeRequest,
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -95,7 +100,7 @@ async def dispute_moderation(
             INSERT INTO moderation_disputes (user_uid, content, reason, created_at, status)
             VALUES (%s, %s, %s, %s, 'pending')
             """,
-            (current_user["uid"], content, reason, datetime.utcnow())
+            (current_user["uid"], request.content, request.reason, datetime.utcnow())
         )
         await conn.commit()
 
