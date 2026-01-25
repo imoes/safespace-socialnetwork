@@ -26,11 +26,11 @@ SafeSpace is a privacy-focused social network with AI-powered content moderation
 ## Features
 
 ### Core Features
-- **User Registration & JWT Authentication** - Secure login with token-based auth
+- **User Registration & JWT Authentication** - Secure login with token-based auth and multilingual error messages
 - **Feed with Auto-Refresh** - Posts from friends are updated every 30 seconds (25 posts per page)
 - **Create, Edit, Delete Posts** - Full CRUD operations with visibility control
 - **Personal Posts** - Write posts on other users' profiles (visible on their timeline)
-- **Comments & Likes** - Interact with posts and like individual comments
+- **Comments & Likes** - Interact with posts and like individual comments with Guardian AI moderation
 - **Media Upload** - Images and videos with multipart/form-data support
 - **Profile Pictures** - Upload and display custom profile pictures (max 10MB)
 - **Enhanced User Search** - Real-time search with profile pictures and friends-first sorting
@@ -41,24 +41,27 @@ SafeSpace is a privacy-focused social network with AI-powered content moderation
 - **Public Posts Feed** - Discover community posts with 25 posts per page pagination
 - **My Posts with Tabs** - View your own posts and posts you've commented on
 - **Post Translation** - Translate posts to German using Google Translate API (18 languages supported)
-- **Multi-Language UI** - 6 languages (English, German, Spanish, Italian, French, Arabic with RTL)
+- **Dynamic Multi-Language UI** - 6 languages (English, German, Spanish, Italian, French, Arabic with RTL) with filesystem-based language loading
 - **Account Deletion** - Permanently delete account with all data (posts, media, friendships)
 - **OpenSearch Integration** - Full-text search for public posts with hashtag aggregations
+- **System Status Dashboard** - Real-time monitoring of server health, CPU/RAM/Disk usage, user statistics (Admin/Moderator)
 
 ### Moderation & Safety
-- **Guardian AI Moderation System** - Educational approach with modal after clicking "Post"
+- **Guardian AI Moderation System** - Educational approach with modal for posts AND comments
   - Explanation of why content was flagged
-  - 2 clickable alternative formulations
+  - 2 clickable alternative formulations with auto-submit
   - Custom text field for user's own revision
   - Dispute button to appeal to human moderator
   - AI disclaimer warning about potential errors
+  - Double-click prevention for alternative submissions
 - **SimpleModerator Fallback** - Keyword-based moderation when DeepSeek API unavailable (402 error)
 - **Alternative Suggestions** - AI provides multiple ways to rephrase problematic content
 - **Check on Submit** - Moderation check only when clicking "Post" button (reduces API traffic)
 - **User Reports** - Community can report inappropriate posts with categories
 - **Moderation Disputes** - Users can dispute AI decisions for human review
-- **Admin Dashboard** - Overview for moderators with quick actions
+- **Admin Dashboard** - Overview for moderators with quick actions and system status monitoring
 - **Multi-Tier Role System** - User, Moderator, Admin
+- **System Status Page** - Real-time server monitoring with auto-refresh (10s interval)
 
 ### Visibility & Privacy
 - 🌍 **Public** - Everyone can see the post
@@ -293,11 +296,15 @@ backend:
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/admin/dashboard` | GET | Dashboard statistics |
+| `/api/admin/system-status` | GET | System performance, user stats, and health monitoring |
 | `/api/admin/reports` | GET | List open reports |
 | `/api/admin/reports/{id}/assign` | POST | Claim report |
 | `/api/admin/reports/{id}/resolve` | POST | Resolve report |
 | `/api/admin/users/{uid}/suspend` | POST | Suspend user |
 | `/api/admin/users/{uid}/role` | POST | Change role (Admin only) |
+| `/api/admin/welcome-message` | GET/PUT/DELETE | Manage welcome message (Admin only) |
+| `/api/admin/broadcast-post` | POST | Create broadcast post (Admin only) |
+| `/api/admin/broadcast-posts` | GET | List broadcast posts (Admin only) |
 
 ---
 
@@ -368,17 +375,29 @@ SafeSpace supports **6 languages** with automatic browser detection and user pre
 
 - **Browser Language Detection** - Automatically detects and sets user's browser language on first visit
 - **User Preference** - Change language in Settings and save to localStorage
+- **Dynamic Language Loading** - Languages are loaded from filesystem via `languages.json` manifest
 - **Translation Files** - All translations in `/assets/i18n/{language}.json` for easy extension
 - **Template Interpolation** - Support for parameters like `{{count}}` in translations
 - **RTL Support** - Automatic HTML `dir="rtl"` for right-to-left languages (Arabic)
 - **Dynamic HTML Attributes** - Sets `lang` attribute dynamically
+- **Error Messages** - User-friendly multilingual error messages for registration and login
 
 ### Adding New Languages
 
 1. Create new translation file: `/frontend/src/assets/i18n/newlanguage.json`
 2. Copy structure from `english.json`
-3. Translate all keys
-4. Add language to `I18nService.languages` array with code, name, flag
+3. Translate all keys (including `register.errors` and `login.errors`)
+4. Add language entry to `/frontend/src/assets/i18n/languages.json` manifest:
+   ```json
+   {
+     "code": "pt",
+     "name": "Portuguese",
+     "nativeName": "Português",
+     "flag": "🇵🇹",
+     "file": "portuguese"
+   }
+   ```
+5. Language will automatically appear in Settings language selector
 
 ### Translation Service Usage
 
@@ -705,11 +724,54 @@ ng serve --proxy-config proxy.conf.json
 
 ### Run Tests
 
-```bash
-# Backend tests
-docker exec -it socialnet-backend pytest
+SafeSpace includes comprehensive test suites for both backend and frontend:
 
-# Test auth flow
+#### Backend API Tests
+
+```bash
+# Run all backend tests (20+ tests covering authentication, posts, comments, notifications, etc.)
+cd /home/user/safespace-socialnetwork
+python -m pytest tests/test_backend_api.py -v
+
+# View test logs
+cat logs/backend_api_test_*.log
+```
+
+**Tests include:**
+- Authentication (Register, Login, Token validation)
+- Posts (Create, Read, Update, Delete, Like, Visibility)
+- Comments (Create, Update, Delete, Like/Unlike)
+- Notifications (Create, Mark read, Delete, Unread count)
+- User Search (Query, Results format)
+- Error handling (Duplicate username, Duplicate email)
+
+#### End-to-End (E2E) Tests with Playwright
+
+```bash
+# Install Playwright
+pip install playwright
+playwright install
+
+# Run E2E tests (12+ tests covering user flows)
+python -m pytest tests/test_e2e_playwright.py -v
+
+# View test logs and screenshots
+cat logs/e2e_test_*.log
+ls screenshots/
+```
+
+**Tests include:**
+- User registration and login flows
+- Duplicate username/email error messages
+- Post creation and deletion
+- Comment posting
+- User search
+- Notifications navigation
+
+#### Legacy Test Scripts
+
+```bash
+# Test auth flow (legacy)
 ./test-auth-flow-detailed.sh
 ```
 

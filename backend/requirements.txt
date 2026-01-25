@@ -24,6 +24,7 @@ pydantic-settings==2.1.0
 python-dotenv==1.0.0
 aiofiles==23.2.1
 Pillow==10.2.0
+psutil==5.9.8
 
 # SafeSpace - Kafka
 aiokafka==0.10.0

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -32,6 +32,50 @@ interface BroadcastPost {
   is_broadcast: boolean;
 }
 
+interface SystemStatus {
+  timestamp: string;
+  system: {
+    uptime: string;
+    uptime_seconds: number;
+    cpu_percent: number;
+    memory: {
+      total: number;
+      used: number;
+      available: number;
+      percent: number;
+      total_gb: number;
+      used_gb: number;
+      available_gb: number;
+    };
+    disk: {
+      total: number;
+      used: number;
+      free: number;
+      percent: number;
+      total_gb: number;
+      used_gb: number;
+      free_gb: number;
+    };
+  };
+  users: {
+    total: number;
+    active_15min: number;
+    online_5min: number;
+    new_today: number;
+    new_week: number;
+    roles: { [role: string]: number };
+  };
+  social: {
+    friendships: number;
+    pending_friend_requests: number;
+    posts_estimate: number;
+  };
+  moderation: {
+    open_reports: number;
+    total_reports: number;
+  };
+}
+
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
@@ -39,12 +83,12 @@ interface BroadcastPost {
   templateUrl: './admin-panel.component.html',
   styleUrls: ['./admin-panel.component.css']
 })
-export class AdminPanelComponent implements OnInit {
+export class AdminPanelComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
 
   // Tabs
-  activeTab = signal<'welcome' | 'broadcast'>('welcome');
+  activeTab = signal<'welcome' | 'broadcast' | 'status'>('welcome');
 
   // Welcome Message
   welcomeMessage = signal<WelcomeMessage | null>(null);
@@ -60,6 +104,10 @@ export class AdminPanelComponent implements OnInit {
     content: '',
     visibility: 'public'
   };
+
+  // System Status
+  systemStatus = signal<SystemStatus | null>(null);
+  autoRefreshInterval: any = null;
 
   // UI States
   loading = signal(false);
@@ -200,9 +248,64 @@ export class AdminPanelComponent implements OnInit {
     }
   }
 
-  setActiveTab(tab: 'welcome' | 'broadcast'): void {
+  async loadSystemStatus(): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: SystemStatus = await this.http.get<SystemStatus>('/api/admin/system-status', { headers }).toPromise() as SystemStatus;
+      this.systemStatus.set(response);
+    } catch (err) {
+      console.error('Error loading system status:', err);
+      this.error.set('Fehler beim Laden des System-Status');
+    }
+  }
+
+  startAutoRefresh(): void {
+    // Lade Status alle 10 Sekunden
+    this.autoRefreshInterval = setInterval(() => {
+      if (this.activeTab() === 'status') {
+        this.loadSystemStatus();
+      }
+    }, 10000);
+  }
+
+  stopAutoRefresh(): void {
+    if (this.autoRefreshInterval) {
+      clearInterval(this.autoRefreshInterval);
+      this.autoRefreshInterval = null;
+    }
+  }
+
+  setActiveTab(tab: 'welcome' | 'broadcast' | 'status'): void {
     this.activeTab.set(tab);
     this.error.set(null);
     this.success.set(null);
+
+    // Lade System-Status wenn Tab aktiviert wird
+    if (tab === 'status') {
+      this.loadSystemStatus();
+      this.startAutoRefresh();
+    } else {
+      this.stopAutoRefresh();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoRefresh();
+  }
+
+  // Helper-Methoden für Template
+  objectKeys(obj: any): string[] {
+    return Object.keys(obj || {});
+  }
+
+  getRoleLabel(role: string): string {
+    const labels: { [key: string]: string } = {
+      'user': 'Benutzer',
+      'moderator': 'Moderatoren',
+      'admin': 'Admins'
+    };
+    return labels[role] || role;
   }
 }
