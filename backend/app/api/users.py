@@ -519,6 +519,12 @@ async def get_user_posts(
     }
 
 
+@router.get("/test")
+async def test_endpoint():
+    """Test endpoint without dependencies"""
+    return {"message": "Test successful", "users": [{"uid": 1, "username": "test"}]}
+
+
 @router.get("/all")
 async def get_all_users(
     current_user: dict = Depends(get_current_user)
