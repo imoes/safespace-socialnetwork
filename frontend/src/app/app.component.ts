@@ -99,6 +99,16 @@ import { HttpClient } from '@angular/common/http';
                   ⚙️ Einstellungen
                 </a>
                 <div class="dropdown-divider"></div>
+                <a routerLink="/info" class="dropdown-item" (click)="closeDropdown()">
+                  ℹ️ Info
+                </a>
+                <a routerLink="/privacy-policy" class="dropdown-item" (click)="closeDropdown()">
+                  📜 Datenschutzerklärung
+                </a>
+                <a routerLink="/impressum" class="dropdown-item" (click)="closeDropdown()">
+                  ⚖️ Impressum
+                </a>
+                <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">
                   🚪 Abmelden
                 </button>
