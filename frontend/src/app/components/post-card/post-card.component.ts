@@ -415,10 +415,23 @@ export class PostCardComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     // Wenn expandComments auf true gesetzt wird, Kommentare automatisch laden
-    if (changes['expandComments'] && this.expandComments && !this.showComments) {
-      this.showComments = true;
-      if (this.comments.length === 0) {
-        this.loadComments();
+    if (changes['expandComments']) {
+      const change = changes['expandComments'];
+      console.log('expandComments changed from', change.previousValue, 'to', change.currentValue, 'for post', this.post.post_id);
+
+      if (this.expandComments) {
+        console.log('Auto-expanding comments for post', this.post.post_id);
+        if (!this.showComments) {
+          this.showComments = true;
+          if (this.comments.length === 0) {
+            console.log('Loading comments...');
+            this.loadComments();
+          } else {
+            console.log('Comments already loaded');
+          }
+        } else {
+          console.log('Comments already visible');
+        }
       }
     }
   }

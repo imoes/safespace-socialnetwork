@@ -267,25 +267,20 @@ export class NotificationsDropdownComponent implements OnInit {
   }
 
   handleNotificationClick(notification: Notification): void {
-    // Mark as read and delete notification
-    if (!notification.is_read) {
-      this.notificationsService.markAsRead(notification.notification_id).subscribe({
-        next: () => {
-          // Nach dem Markieren als gelesen, Benachrichtigung löschen
-          this.notificationsService.deleteNotification(notification.notification_id).subscribe();
-        }
-      });
-    } else {
-      // Bereits gelesene Benachrichtigung direkt löschen
-      this.notificationsService.deleteNotification(notification.notification_id).subscribe();
-    }
+    console.log('Notification clicked:', notification);
+
+    // Benachrichtigung direkt löschen (vereinfachte Logik)
+    // Der Service aktualisiert automatisch den unread count
+    this.notificationsService.deleteNotification(notification.notification_id).subscribe({
+      next: () => console.log('Notification deleted successfully'),
+      error: (err) => console.error('Delete error:', err)
+    });
 
     // Close dropdown
     this.closeDropdown();
 
     // Navigate based on notification type
     if (notification.post_id && notification.post_author_uid) {
-      // Navigate to "Meine Posts" if it's the user's own post, otherwise to the author's profile
       this.router.navigate(['/my-posts'], {
         queryParams: { highlight: notification.post_id }
       });
