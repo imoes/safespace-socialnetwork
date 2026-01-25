@@ -525,11 +525,16 @@ async def get_all_users(
 ):
     """Listet alle User mit Statistiken (nur für Admins)"""
 
+    print("=== GET /users/all called ===")
+    print(f"Current user: {current_user['uid']}, {current_user['username']}")
+
     if not await is_admin(current_user["uid"]):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Nur Admins können alle User sehen"
         )
+
+    print("User is admin, proceeding...")
 
     async with PostgresDB.connection() as conn:
         # Post-Anzahl wird in PostgreSQL gespeichert und bei jedem Post-Create/Delete aktualisiert
