@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FeedService, Post } from '../../services/feed.service';
 import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../post-card/post-card.component';
@@ -182,8 +183,22 @@ import { CreatePostComponent } from '../create-post/create-post.component';
 export class FeedComponent implements OnInit, OnDestroy {
   feedService = inject(FeedService);
   authService = inject(AuthService);
+  router = inject(Router);
 
   ngOnInit(): void {
+    // Admins auf Admin-Panel weiterleiten
+    if (this.authService.isAdmin()) {
+      this.router.navigate(['/admin-panel']);
+      return;
+    }
+
+    // Moderatoren auf Moderation-Seite weiterleiten
+    if (this.authService.isModerator()) {
+      this.router.navigate(['/admin']);
+      return;
+    }
+
+    // Normale User: Feed laden
     this.feedService.startAutoRefresh();
   }
 
