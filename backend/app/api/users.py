@@ -653,6 +653,94 @@ async def unban_user(
         return {"message": "Bann erfolgreich aufgehoben"}
 
 
+@router.delete("/{user_uid}")
+async def delete_user_by_admin(
+    user_uid: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Löscht einen User vollständig (nur für Admins).
+    - Löscht alle Posts aus SQLite
+    - Löscht alle Medien
+    - Löscht Public Posts aus OpenSearch
+    - Löscht User aus PostgreSQL
+    """
+    if not await is_admin(current_user["uid"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nur Admins können User löschen"
+        )
+
+    # Prüfen dass Admin sich nicht selbst löscht
+    if user_uid == current_user["uid"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Sie können sich nicht selbst löschen"
+        )
+
+    import shutil
+    from pathlib import Path
+    from app.config import settings
+    from app.services.opensearch_service import OpenSearchService
+
+    # 1. Löschen aus OpenSearch (public posts)
+    try:
+        opensearch = OpenSearchService()
+        await opensearch.delete_all_user_posts(user_uid)
+    except Exception as e:
+        print(f"Fehler beim Löschen von OpenSearch: {e}")
+
+    # 2. Löschen der SQLite Datenbank und aller Medien
+    user_data_dir = settings.user_data_base / str(user_uid)
+    if user_data_dir.exists():
+        try:
+            shutil.rmtree(user_data_dir)
+        except Exception as e:
+            print(f"Fehler beim Löschen des User-Verzeichnisses: {e}")
+
+    # 3. Löschen aus PostgreSQL (Freundschaften, Anfragen, Reports, etc.)
+    async with PostgresDB.connection() as conn:
+        # Freundschaften löschen
+        await conn.execute(
+            "DELETE FROM friendships WHERE user_id = %s OR friend_id = %s",
+            (user_uid, user_uid)
+        )
+
+        # Reports löschen
+        await conn.execute(
+            "DELETE FROM user_reports WHERE reporter_uid = %s OR author_uid = %s",
+            (user_uid, user_uid)
+        )
+
+        # Moderation Disputes löschen
+        try:
+            await conn.execute(
+                "DELETE FROM moderation_disputes WHERE user_uid = %s",
+                (user_uid,)
+            )
+        except:
+            pass
+
+        # Notifications löschen
+        try:
+            await conn.execute(
+                "DELETE FROM notifications WHERE user_uid = %s",
+                (user_uid,)
+            )
+        except:
+            pass
+
+        # User löschen
+        await conn.execute(
+            "DELETE FROM users WHERE uid = %s",
+            (user_uid,)
+        )
+
+        await conn.commit()
+
+    return {"message": f"User {user_uid} wurde vollständig gelöscht"}
+
+
 @router.delete("/me/account")
 async def delete_account(
     current_user: dict = Depends(get_current_user)

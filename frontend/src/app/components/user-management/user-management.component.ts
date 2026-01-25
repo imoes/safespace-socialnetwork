@@ -139,6 +139,14 @@ interface UserWithStats {
                         ⬇ Moderator
                       </button>
                     }
+
+                    <button
+                      class="btn btn-sm btn-delete"
+                      (click)="deleteUser(user)"
+                      [disabled]="user.role === 'admin' && !canBanAdmin(user)"
+                      title="User und alle Daten permanent löschen">
+                      🗑️ Löschen
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -376,6 +384,15 @@ interface UserWithStats {
     .btn-success:hover:not(:disabled) {
       background: #229954;
     }
+
+    .btn-delete {
+      background: #8b0000;
+      color: white;
+    }
+
+    .btn-delete:hover:not(:disabled) {
+      background: #660000;
+    }
   `]
 })
 export class UserManagementComponent implements OnInit {
@@ -552,6 +569,33 @@ export class UserManagementComponent implements OnInit {
       },
       error: (error) => {
         this.errorMessage.set(error.error?.detail || 'Fehler beim Zurückstufen');
+        setTimeout(() => this.errorMessage.set(''), 5000);
+      }
+    });
+  }
+
+  deleteUser(user: UserWithStats): void {
+    const confirmMessage = `⚠️ WARNUNG: Diese Aktion kann nicht rückgängig gemacht werden!\n\n` +
+      `Sie sind dabei, ${user.username} und ALLE zugehörigen Daten permanent zu löschen:\n` +
+      `- Alle Posts und Medien\n` +
+      `- Alle Freundschaften\n` +
+      `- Alle Reports und Meldungen\n` +
+      `- Das gesamte Benutzerkonto\n\n` +
+      `Möchten Sie ${user.username} wirklich PERMANENT löschen?`;
+
+    if (!confirm(confirmMessage)) return;
+
+    // Zweite Bestätigung für extra Sicherheit
+    if (!confirm(`Letzte Bestätigung: ${user.username} wirklich löschen?`)) return;
+
+    this.http.delete(`/api/users/${user.uid}`).subscribe({
+      next: () => {
+        this.successMessage.set(`${user.username} wurde permanent gelöscht`);
+        this.loadUsers();
+        setTimeout(() => this.successMessage.set(''), 3000);
+      },
+      error: (error) => {
+        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Benutzers');
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
