@@ -33,6 +33,12 @@ export interface Report {
   status: string;
   created_at: string;
   assigned_moderator_uid: number | null;
+  // Post content fields (added for inline preview in moderation board)
+  post_content?: string;
+  post_created_at?: string;
+  post_visibility?: string;
+  post_likes_count?: number;
+  post_comments_count?: number;
 }
 
 export interface ModeratorAction {
