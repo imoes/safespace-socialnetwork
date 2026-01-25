@@ -728,15 +728,40 @@ export class PostCardComponent {
   }
 
   useAlternative(alt: string): void {
-    this.newComment = alt;
-    this.closeGuardianModal();
+    // Alternative direkt senden ohne erneuten Check
+    this.submitCommentDirectly(alt);
   }
 
   useCustomContent(): void {
     if (this.customContent.trim()) {
-      this.newComment = this.customContent;
-      this.closeGuardianModal();
+      // Eigene Formulierung direkt senden
+      this.submitCommentDirectly(this.customContent);
     }
+  }
+
+  submitCommentDirectly(content: string): void {
+    // Direkt senden ohne Guardian Modal zu triggern
+    this.feedService.addComment(this.post.author_uid, this.post.post_id, content).subscribe({
+      next: (comment) => {
+        this.comments.push(comment);
+        this.post.comments_count++;
+        this.newComment = '';
+        this.closeGuardianModal();
+      },
+      error: (error) => {
+        console.error('Submit alternative error:', error);
+        // Falls auch die Alternative abgelehnt wird (sehr selten)
+        const errorDetail = error.error?.detail || error.error;
+        if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
+          // Zeige Guardian erneut
+          this.guardianResult = errorDetail;
+          this.customContent = '';
+        } else {
+          alert('Fehler beim Senden des Kommentars');
+          this.closeGuardianModal();
+        }
+      }
+    });
   }
 
   disputeModeration(): void {
