@@ -3,6 +3,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional
+import psutil
+import time
+from datetime import datetime, timedelta
 
 from app.services.auth_service import get_current_user
 from app.db.moderation import (
@@ -17,8 +20,12 @@ from app.db.welcome_message import (
     get_welcome_stats
 )
 from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
+from app.db.postgres import get_db_connection
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
+
+# Track server start time
+SERVER_START_TIME = time.time()
 
 
 class ResolveReportRequest(BaseModel):
@@ -199,3 +206,122 @@ async def delete_broadcast_post_endpoint(post_id: int, admin: dict = Depends(req
     """Löscht einen Broadcast-Post"""
     await delete_broadcast_post(post_id)
     return {"message": "Broadcast post deleted"}
+
+
+# === System Status Endpoint ===
+
+@router.get("/system-status")
+async def get_system_status(moderator: dict = Depends(require_moderator)):
+    """Gibt System-Performance und Benutzerstatistiken zurück"""
+
+    # System Performance Metriken
+    cpu_percent = psutil.cpu_percent(interval=1)
+    memory = psutil.virtual_memory()
+    disk = psutil.disk_usage('/')
+
+    # Uptime berechnen
+    uptime_seconds = time.time() - SERVER_START_TIME
+    uptime_timedelta = timedelta(seconds=int(uptime_seconds))
+    uptime_str = str(uptime_timedelta)
+
+    # Datenbank-Statistiken
+    async with get_db_connection() as conn:
+        # Anzahl registrierter Benutzer
+        total_users = await conn.fetchval("SELECT COUNT(*) FROM users")
+
+        # Anzahl aktiver Benutzer (letzte 15 Minuten)
+        fifteen_minutes_ago = datetime.utcnow() - timedelta(minutes=15)
+        active_users = await conn.fetchval(
+            "SELECT COUNT(*) FROM users WHERE last_login > $1",
+            fifteen_minutes_ago
+        )
+
+        # Anzahl online Benutzer (letzte 5 Minuten)
+        five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
+        online_users = await conn.fetchval(
+            "SELECT COUNT(*) FROM users WHERE last_login > $1",
+            five_minutes_ago
+        )
+
+        # Benutzer pro Rolle
+        role_stats = await conn.fetch(
+            "SELECT role, COUNT(*) as count FROM users GROUP BY role"
+        )
+
+        # Freundschaften
+        total_friendships = await conn.fetchval("SELECT COUNT(*) FROM friendships WHERE status = 'accepted'")
+        pending_requests = await conn.fetchval("SELECT COUNT(*) FROM friendships WHERE status = 'pending'")
+
+        # Reports
+        open_reports = await conn.fetchval("SELECT COUNT(*) FROM reports WHERE status = 'open'")
+        total_reports = await conn.fetchval("SELECT COUNT(*) FROM reports")
+
+        # Neue Benutzer heute
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        new_users_today = await conn.fetchval(
+            "SELECT COUNT(*) FROM users WHERE created_at >= $1",
+            today_start
+        )
+
+        # Neue Benutzer letzte 7 Tage
+        week_ago = datetime.utcnow() - timedelta(days=7)
+        new_users_week = await conn.fetchval(
+            "SELECT COUNT(*) FROM users WHERE created_at >= $1",
+            week_ago
+        )
+
+    # Posts zählen (aus allen User-SQLite-DBs)
+    # Vereinfachte Version - nur schätzen basierend auf Dateien
+    import os
+    from pathlib import Path
+    data_dir = Path("/data/users")
+    total_posts_estimate = 0
+    if data_dir.exists():
+        # Zähle .db Dateien als Proxy
+        db_files = list(data_dir.rglob("posts.db"))
+        # Schätze durchschnittlich 10 Posts pro Benutzer-DB
+        total_posts_estimate = len(db_files) * 10
+
+    return {
+        "timestamp": datetime.utcnow().isoformat(),
+        "system": {
+            "uptime": uptime_str,
+            "uptime_seconds": int(uptime_seconds),
+            "cpu_percent": round(cpu_percent, 2),
+            "memory": {
+                "total": memory.total,
+                "used": memory.used,
+                "available": memory.available,
+                "percent": round(memory.percent, 2),
+                "total_gb": round(memory.total / (1024**3), 2),
+                "used_gb": round(memory.used / (1024**3), 2),
+                "available_gb": round(memory.available / (1024**3), 2)
+            },
+            "disk": {
+                "total": disk.total,
+                "used": disk.used,
+                "free": disk.free,
+                "percent": round(disk.percent, 2),
+                "total_gb": round(disk.total / (1024**3), 2),
+                "used_gb": round(disk.used / (1024**3), 2),
+                "free_gb": round(disk.free / (1024**3), 2)
+            }
+        },
+        "users": {
+            "total": total_users,
+            "active_15min": active_users,
+            "online_5min": online_users,
+            "new_today": new_users_today,
+            "new_week": new_users_week,
+            "roles": {row["role"]: row["count"] for row in role_stats}
+        },
+        "social": {
+            "friendships": total_friendships,
+            "pending_friend_requests": pending_requests,
+            "posts_estimate": total_posts_estimate
+        },
+        "moderation": {
+            "open_reports": open_reports,
+            "total_reports": total_reports
+        }
+    }

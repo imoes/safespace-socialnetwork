@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-register',
@@ -47,6 +48,7 @@ import { AuthService } from '../../services/auth.service';
 export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  public i18n = inject(I18nService);
 
   username = '';
   firstName = '';
@@ -60,9 +62,9 @@ export class RegisterComponent {
 
   register(): void {
     console.log('🔵 Registration gestartet');
-    
+
     if (this.password !== this.confirmPassword) {
-      this.error = 'Passwörter stimmen nicht überein';
+      this.error = this.i18n.t('register.errors.passwordMismatch');
       return;
     }
 
@@ -72,8 +74,8 @@ export class RegisterComponent {
     this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName).subscribe({
       next: () => {
         console.log('✅ Registration erfolgreich, Token gespeichert!');
-        this.success = 'Registrierung erfolgreich! Weiterleitung...';
-        
+        this.success = this.i18n.t('register.success');
+
         setTimeout(() => {
           console.log('🔄 Navigiere zu Feed...');
           this.router.navigate(['/']);
@@ -81,7 +83,22 @@ export class RegisterComponent {
       },
       error: (err) => {
         console.error('❌ Registration fehlgeschlagen:', err);
-        this.error = err.error?.detail || 'Registrierung fehlgeschlagen';
+
+        // Benutzerfreundliche Fehlermeldungen mit i18n
+        const detail = err.error?.detail || '';
+
+        if (detail === 'Username already registered') {
+          this.error = this.i18n.t('register.errors.usernameAlreadyRegistered');
+        } else if (detail === 'Email already registered') {
+          this.error = this.i18n.t('register.errors.emailAlreadyRegistered');
+        } else if (detail.includes('username')) {
+          this.error = this.i18n.t('register.errors.usernameAlreadyRegistered');
+        } else if (detail.includes('email')) {
+          this.error = this.i18n.t('register.errors.emailAlreadyRegistered');
+        } else {
+          this.error = detail || this.i18n.t('register.errors.registrationFailed');
+        }
+
         this.isLoading = false;
       }
     });

@@ -10,34 +10,58 @@ export interface Language {
   file: string;
 }
 
-const AVAILABLE_LANGUAGES: Language[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧', file: 'english' },
-  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', file: 'german' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', file: 'spanish' },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹', file: 'italian' },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', file: 'french' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', file: 'arabic' }
-];
-
 @Injectable({
   providedIn: 'root'
 })
 export class I18nService {
   private translations = signal<any>({});
   private currentLangCode = signal<string>('en');
+  private availableLanguagesSignal = signal<Language[]>([]);
 
   public readonly currentLanguage = computed(() => {
     const code = this.currentLangCode();
-    return AVAILABLE_LANGUAGES.find(l => l.code === code) || AVAILABLE_LANGUAGES[0];
+    const langs = this.availableLanguagesSignal();
+    return langs.find(l => l.code === code) || langs[0];
   });
 
-  public readonly languages = AVAILABLE_LANGUAGES;
+  public readonly languages = computed(() => this.availableLanguagesSignal());
 
   constructor(private http: HttpClient) {
-    this.initLanguage();
+    this.loadAvailableLanguages();
+  }
+
+  /**
+   * Lädt verfügbare Sprachen aus dem Dateisystem
+   */
+  private async loadAvailableLanguages(): Promise<void> {
+    try {
+      const languages = await firstValueFrom(
+        this.http.get<Language[]>('/assets/i18n/languages.json')
+      );
+
+      this.availableLanguagesSignal.set(languages);
+      console.log('✅ Loaded available languages:', languages.length);
+
+      // Nach dem Laden der Sprachen initialisieren wir die Benutzersprache
+      await this.initLanguage();
+    } catch (error) {
+      console.error('Failed to load available languages:', error);
+      // Fallback auf Englisch wenn Manifest nicht geladen werden kann
+      this.availableLanguagesSignal.set([
+        { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧', file: 'english' }
+      ]);
+      await this.initLanguage();
+    }
   }
 
   private async initLanguage(): Promise<void> {
+    const availableLanguages = this.availableLanguagesSignal();
+
+    // Warte bis Sprachen geladen sind
+    if (availableLanguages.length === 0) {
+      return;
+    }
+
     // Check if user has a preferred language in localStorage
     const savedLang = localStorage.getItem('preferredLanguage');
 
@@ -49,7 +73,7 @@ export class I18nService {
     } else {
       // Detect browser language
       const browserLang = navigator.language.split('-')[0]; // e.g., "en-US" -> "en"
-      const supportedLang = AVAILABLE_LANGUAGES.find(l => l.code === browserLang);
+      const supportedLang = availableLanguages.find(l => l.code === browserLang);
       if (supportedLang) {
         langCode = browserLang;
       }
@@ -59,7 +83,8 @@ export class I18nService {
   }
 
   public async setLanguage(code: string): Promise<void> {
-    const language = AVAILABLE_LANGUAGES.find(l => l.code === code);
+    const availableLanguages = this.availableLanguagesSignal();
+    const language = availableLanguages.find(l => l.code === code);
     if (!language) {
       console.error(`Language ${code} not found`);
       return;

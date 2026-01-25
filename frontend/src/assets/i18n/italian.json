@@ -117,7 +117,11 @@
     "password": "Password",
     "loginButton": "Accedi",
     "noAccount": "Non hai un account?",
-    "register": "Registrati ora"
+    "register": "Registrati ora",
+    "errors": {
+      "invalidCredentials": "Credenziali non valide",
+      "loginFailed": "Accesso non riuscito. Riprova."
+    }
   },
   "register": {
     "title": "Registrati",
@@ -126,7 +130,14 @@
     "password": "Password",
     "registerButton": "Registrati",
     "hasAccount": "Hai già un account?",
-    "login": "Accedi qui"
+    "login": "Accedi qui",
+    "errors": {
+      "usernameAlreadyRegistered": "Questo nome utente è già in uso. Scegline un altro.",
+      "emailAlreadyRegistered": "Questa email è già registrata. Usane un'altra o accedi.",
+      "passwordMismatch": "Le password non corrispondono",
+      "registrationFailed": "Registrazione non riuscita. Riprova."
+    },
+    "success": "Registrazione riuscita! Reindirizzamento..."
   },
   "common": {
     "loading": "Caricamento...",

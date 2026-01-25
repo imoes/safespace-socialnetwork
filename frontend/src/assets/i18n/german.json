@@ -117,7 +117,11 @@
     "password": "Passwort",
     "loginButton": "Anmelden",
     "noAccount": "Noch kein Konto?",
-    "register": "Jetzt registrieren"
+    "register": "Jetzt registrieren",
+    "errors": {
+      "invalidCredentials": "Ungültige Anmeldedaten",
+      "loginFailed": "Anmeldung fehlgeschlagen. Bitte versuche es erneut."
+    }
   },
   "register": {
     "title": "Registrieren",
@@ -126,7 +130,14 @@
     "password": "Passwort",
     "registerButton": "Registrieren",
     "hasAccount": "Bereits ein Konto?",
-    "login": "Hier anmelden"
+    "login": "Hier anmelden",
+    "errors": {
+      "usernameAlreadyRegistered": "Dieser Benutzername ist bereits vergeben. Bitte wähle einen anderen.",
+      "emailAlreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert. Bitte verwende eine andere oder melde dich an.",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuche es erneut."
+    },
+    "success": "Registrierung erfolgreich! Weiterleitung..."
   },
   "admin": {
     "title": "Admin-Panel",

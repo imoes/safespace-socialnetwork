@@ -117,7 +117,11 @@
     "password": "Contraseña",
     "loginButton": "Iniciar sesión",
     "noAccount": "¿No tienes una cuenta?",
-    "register": "Regístrate ahora"
+    "register": "Regístrate ahora",
+    "errors": {
+      "invalidCredentials": "Credenciales inválidas",
+      "loginFailed": "Inicio de sesión fallido. Por favor, inténtalo de nuevo."
+    }
   },
   "register": {
     "title": "Registrarse",
@@ -126,7 +130,14 @@
     "password": "Contraseña",
     "registerButton": "Registrarse",
     "hasAccount": "¿Ya tienes una cuenta?",
-    "login": "Inicia sesión aquí"
+    "login": "Inicia sesión aquí",
+    "errors": {
+      "usernameAlreadyRegistered": "Este nombre de usuario ya está en uso. Por favor elige otro.",
+      "emailAlreadyRegistered": "Este correo electrónico ya está registrado. Por favor usa otro o inicia sesión.",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo."
+    },
+    "success": "¡Registro exitoso! Redirigiendo..."
   },
   "common": {
     "loading": "Cargando...",

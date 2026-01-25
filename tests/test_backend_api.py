@@ -238,7 +238,32 @@ class TestAuthentication:
         response = api_client.post("/auth/register", json=user_data)
         assert response.status_code == 400
 
-        logger.info("✅ Duplicate username correctly rejected")
+        data = response.json()
+        assert "detail" in data
+        assert data["detail"] == "Username already registered"
+
+        logger.info("✅ Duplicate username correctly rejected with message")
+
+    def test_register_duplicate_email(self, api_client: APIClient, user1_auth):
+        """Test Registrierung mit existierender E-Mail"""
+        logger.info("\n" + "-" * 80)
+        logger.info("TEST: Duplicate Email Registration")
+        logger.info("-" * 80)
+
+        user_data = {
+            "username": f"differentuser_{int(time.time())}",
+            "email": TestConfig.USER1["email"],
+            "password": "TestPass123!"
+        }
+
+        response = api_client.post("/auth/register", json=user_data)
+        assert response.status_code == 400
+
+        data = response.json()
+        assert "detail" in data
+        assert data["detail"] == "Email already registered"
+
+        logger.info("✅ Duplicate email correctly rejected with message")
 
     def test_login_success(self, api_client: APIClient, user1_auth):
         """Test erfolgreicher Login"""

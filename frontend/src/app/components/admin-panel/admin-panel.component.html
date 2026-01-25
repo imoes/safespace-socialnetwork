@@ -17,6 +17,12 @@
       (click)="setActiveTab('broadcast')">
       📣 Broadcast-Posts
     </button>
+    <button
+      class="tab"
+      [class.active]="activeTab() === 'status'"
+      (click)="setActiveTab('status')">
+      📊 System-Status
+    </button>
   </div>
 
   <!-- Messages -->
@@ -156,6 +162,159 @@
           </div>
         }
       </div>
+    </div>
+  }
+
+  <!-- System Status Tab -->
+  @if (activeTab() === 'status') {
+    <div class="tab-content">
+      <div class="status-header">
+        <h2>📊 System-Status</h2>
+        <button class="btn-refresh" (click)="loadSystemStatus()">🔄 Aktualisieren</button>
+      </div>
+
+      @if (systemStatus()) {
+        <div class="status-container">
+          <!-- Server Uptime -->
+          <div class="status-section">
+            <h3>⏱️ Server</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <span class="stat-label">Uptime:</span>
+                <span class="stat-value">{{ systemStatus()!.system.uptime }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Letzte Aktualisierung:</span>
+                <span class="stat-value">{{ systemStatus()!.timestamp | date:'medium' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Performance -->
+          <div class="status-section">
+            <h3>💻 Performance</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <span class="stat-label">CPU Auslastung:</span>
+                <span class="stat-value" [class.warning]="systemStatus()!.system.cpu_percent > 80">
+                  {{ systemStatus()!.system.cpu_percent }}%
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">RAM Auslastung:</span>
+                <span class="stat-value" [class.warning]="systemStatus()!.system.memory.percent > 85">
+                  {{ systemStatus()!.system.memory.percent }}%
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">RAM Genutzt:</span>
+                <span class="stat-value">
+                  {{ systemStatus()!.system.memory.used_gb }} GB / {{ systemStatus()!.system.memory.total_gb }} GB
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Disk Auslastung:</span>
+                <span class="stat-value" [class.warning]="systemStatus()!.system.disk.percent > 85">
+                  {{ systemStatus()!.system.disk.percent }}%
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Disk Genutzt:</span>
+                <span class="stat-value">
+                  {{ systemStatus()!.system.disk.used_gb }} GB / {{ systemStatus()!.system.disk.total_gb }} GB
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Disk Frei:</span>
+                <span class="stat-value">
+                  {{ systemStatus()!.system.disk.free_gb }} GB
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Statistics -->
+          <div class="status-section">
+            <h3>👥 Benutzer</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <span class="stat-label">Registrierte Benutzer:</span>
+                <span class="stat-value highlight">{{ systemStatus()!.users.total }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Online (letzte 5 Min):</span>
+                <span class="stat-value online">{{ systemStatus()!.users.online_5min }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Aktiv (letzte 15 Min):</span>
+                <span class="stat-value">{{ systemStatus()!.users.active_15min }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Neue Benutzer heute:</span>
+                <span class="stat-value">{{ systemStatus()!.users.new_today }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Neue Benutzer (7 Tage):</span>
+                <span class="stat-value">{{ systemStatus()!.users.new_week }}</span>
+              </div>
+            </div>
+
+            @if (systemStatus()!.users.roles) {
+              <div class="roles-grid">
+                <h4>Rollen</h4>
+                <div class="stats-grid">
+                  @for (role of objectKeys(systemStatus()!.users.roles); track role) {
+                    <div class="stat">
+                      <span class="stat-label">{{ getRoleLabel(role) }}:</span>
+                      <span class="stat-value">{{ systemStatus()!.users.roles[role] }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Social Statistics -->
+          <div class="status-section">
+            <h3>🤝 Soziale Aktivität</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <span class="stat-label">Freundschaften:</span>
+                <span class="stat-value">{{ systemStatus()!.social.friendships }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Offene Freundschaftsanfragen:</span>
+                <span class="stat-value">{{ systemStatus()!.social.pending_friend_requests }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Posts (geschätzt):</span>
+                <span class="stat-value">{{ systemStatus()!.social.posts_estimate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Moderation Statistics -->
+          <div class="status-section">
+            <h3>🛡️ Moderation</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <span class="stat-label">Offene Reports:</span>
+                <span class="stat-value" [class.warning]="systemStatus()!.moderation.open_reports > 10">
+                  {{ systemStatus()!.moderation.open_reports }}
+                </span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Gesamt Reports:</span>
+                <span class="stat-value">{{ systemStatus()!.moderation.total_reports }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="loading-state">
+          <p>⏳ Lade System-Status...</p>
+        </div>
+      }
     </div>
   }
 </div>
