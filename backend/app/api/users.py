@@ -532,6 +532,7 @@ async def get_all_users(
         )
 
     async with PostgresDB.connection() as conn:
+        # Post-Anzahl wird in PostgreSQL gespeichert und bei jedem Post-Create/Delete aktualisiert
         result = await conn.execute(
             """
             SELECT
@@ -541,12 +542,11 @@ async def get_all_users(
                 u.created_at,
                 u.is_banned,
                 u.banned_until,
-                COUNT(DISTINCT p.post_id) as post_count,
+                COALESCE(u.posts_count, 0) as post_count,
                 COUNT(DISTINCT r.report_id) as report_count
             FROM users u
-            LEFT JOIN posts p ON p.author_uid = u.uid
             LEFT JOIN user_reports r ON r.reporter_uid = u.uid
-            GROUP BY u.uid
+            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
             ORDER BY u.created_at DESC
             """
         )
@@ -718,7 +718,7 @@ async def create_personal_post(
 ):
     """Erstellt einen persönlichen Post auf dem Profil eines anderen Users"""
     from app.db.sqlite_posts import UserPostsDB
-    from app.db.postgres import get_user_by_uid
+    from app.db.postgres import get_user_by_uid, increment_user_posts_count
 
     # Prüfen ob Ziel-User existiert
     target_user = await get_user_by_uid(user_uid)
@@ -753,6 +753,9 @@ async def create_personal_post(
         recipient_uid=user_uid,  # Der Empfänger
         author_uid=current_user["uid"]  # Der Autor
     )
+
+    # Post-Anzahl des Autors in PostgreSQL erhöhen
+    await increment_user_posts_count(current_user["uid"])
 
     return {
         "message": "Persönlicher Post erstellt",

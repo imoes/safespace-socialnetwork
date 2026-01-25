@@ -80,6 +80,11 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS last_login TIMESTAMP
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS posts_count INTEGER DEFAULT 0
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (
@@ -588,3 +593,23 @@ async def get_user_profile_data_map(uids: list[int]) -> dict[int, dict]:
             }
             for row in rows
         }
+
+
+async def increment_user_posts_count(user_uid: int) -> None:
+    """Erhöht die Post-Anzahl eines Users um 1"""
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET posts_count = COALESCE(posts_count, 0) + 1 WHERE uid = %s",
+            (user_uid,)
+        )
+        await conn.commit()
+
+
+async def decrement_user_posts_count(user_uid: int) -> None:
+    """Verringert die Post-Anzahl eines Users um 1"""
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET posts_count = GREATEST(COALESCE(posts_count, 0) - 1, 0) WHERE uid = %s",
+            (user_uid,)
+        )
+        await conn.commit()

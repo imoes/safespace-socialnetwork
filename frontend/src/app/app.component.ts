@@ -67,16 +67,19 @@ import { HttpClient } from '@angular/common/http';
         </div>
 
         <div class="nav-right">
-          <a routerLink="/" class="nav-link">🏠 Feed</a>
-          <a routerLink="/my-posts" class="nav-link">📝 Meine Posts</a>
-          <a routerLink="/public-feed" class="nav-link">🌍 Öffentlich</a>
-          <a routerLink="/hashtags" class="nav-link">🏷️ Hashtags</a>
-          <a routerLink="/friends" class="nav-link nav-link-with-badge">
-            👫 Freunde
-            @if (pendingRequestsCount() > 0) {
-              <span class="notification-badge">{{ pendingRequestsCount() }}</span>
-            }
-          </a>
+          <!-- Social Features nur für normale User -->
+          @if (!authService.isModerator() && !authService.isAdmin()) {
+            <a routerLink="/" class="nav-link">🏠 Feed</a>
+            <a routerLink="/my-posts" class="nav-link">📝 Meine Posts</a>
+            <a routerLink="/public-feed" class="nav-link">🌍 Öffentlich</a>
+            <a routerLink="/hashtags" class="nav-link">🏷️ Hashtags</a>
+            <a routerLink="/friends" class="nav-link nav-link-with-badge">
+              👫 Freunde
+              @if (pendingRequestsCount() > 0) {
+                <span class="notification-badge">{{ pendingRequestsCount() }}</span>
+              }
+            </a>
+          }
           <app-notifications-dropdown />
           @if (authService.isModerator()) {
             <a routerLink="/admin" class="nav-link">🛡️ Moderation</a>
