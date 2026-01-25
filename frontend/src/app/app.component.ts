@@ -207,7 +207,7 @@ import { HttpClient } from '@angular/common/http';
       background: white;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      min-width: 220px;
+      min-width: 240px;
       padding: 8px 0;
       z-index: 1000;
     }
