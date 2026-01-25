@@ -633,14 +633,22 @@ export class PostCardComponent {
       },
       error: (error) => {
         console.error('Comment error:', error);
+        console.log('Error status:', error.status);
+        console.log('Error body:', error.error);
+        console.log('Error detail:', error.error?.detail);
 
         // Hatespeech-Fehler mit Guardian Modal
-        if (error.status === 400 && error.error?.error === 'comment_contains_hate_speech') {
+        // Backend sendet: { detail: { error: "comment_contains_hate_speech", ... } }
+        const errorDetail = error.error?.detail || error.error;
+
+        if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
+          console.log('✅ Showing Guardian Modal');
           this.originalCommentContent = content;
-          this.guardianResult = error.error;
+          this.guardianResult = errorDetail;
           this.showGuardianModal = true;
         } else {
           // Generischer Fehler
+          console.error('❌ Generic error, not hate speech');
           alert('Fehler beim Hinzufügen des Kommentars');
         }
       }
