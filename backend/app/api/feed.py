@@ -238,8 +238,20 @@ async def like_post(
     current_user: dict = Depends(get_current_user)
 ):
     """Liked einen Post"""
-    
+
     success = await PostService.like_post(author_uid, post_id, current_user["uid"])
+
+    # Erstelle Benachrichtigung für Post-Author
+    if success:
+        from app.db.notifications import create_notification
+        await create_notification(
+            user_uid=author_uid,
+            actor_uid=current_user["uid"],
+            notification_type="post_liked",
+            post_id=post_id,
+            post_author_uid=author_uid
+        )
+
     return {"liked": success}
 
 
@@ -263,14 +275,26 @@ async def add_comment(
     current_user: dict = Depends(get_current_user)
 ):
     """Fügt Kommentar zu einem Post hinzu"""
-    
+
     comment = await PostService.add_comment(
         author_uid=author_uid,
         post_id=post_id,
         commenter_uid=current_user["uid"],
         content=content
     )
-    
+
+    # Erstelle Benachrichtigung für Post-Author
+    if comment:
+        from app.db.notifications import create_notification
+        await create_notification(
+            user_uid=author_uid,
+            actor_uid=current_user["uid"],
+            notification_type="post_commented",
+            post_id=post_id,
+            post_author_uid=author_uid,
+            comment_id=comment.get("comment_id")
+        )
+
     return {
         **comment,
         "author_username": current_user["username"]

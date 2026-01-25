@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 
@@ -47,13 +48,15 @@ import { PostCardComponent } from '../post-card/post-card.component';
 
       <div class="posts-list">
         @for (post of posts; track post.post_id) {
-          <app-post-card
-            [post]="post"
-            [currentUid]="currentUid"
-            (like)="likePost(post)"
-            (unlike)="unlikePost(post)"
-            (delete)="deletePost(post)"
-          ></app-post-card>
+          <div [class.highlighted-post]="highlightedPostId() === post.post_id" [id]="'post-' + post.post_id">
+            <app-post-card
+              [post]="post"
+              [currentUid]="currentUid"
+              (like)="likePost(post)"
+              (unlike)="unlikePost(post)"
+              (delete)="deletePost(post)"
+            ></app-post-card>
+          </div>
         }
       </div>
 
@@ -209,10 +212,25 @@ import { PostCardComponent } from '../post-card/post-card.component';
       height: 32px;
       border-width: 3px;
     }
+
+    .highlighted-post {
+      animation: highlight-pulse 2s ease-in-out;
+      border-radius: 12px;
+    }
+
+    @keyframes highlight-pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(24, 119, 242, 0);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(24, 119, 242, 0.3);
+      }
+    }
   `]
 })
 export class MyPostsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
 
   posts: Post[] = [];
   loading = false;
@@ -221,10 +239,23 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   activeTab: 'my-posts' | 'commented' = 'my-posts';
   private offset = 0;
   private readonly limit = 25;
+  highlightedPostId = signal<number | null>(null);
 
   ngOnInit(): void {
     this.loadCurrentUser();
     this.loadPosts();
+
+    // Check for highlight query parameter
+    this.route.queryParams.subscribe(params => {
+      const highlightId = params['highlight'];
+      if (highlightId) {
+        this.highlightedPostId.set(+highlightId);
+        // Scroll to post after a short delay to ensure it's rendered
+        setTimeout(() => {
+          this.scrollToPost(+highlightId);
+        }, 500);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -306,5 +337,16 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         alert('Fehler beim Löschen');
       }
     });
+  }
+
+  private scrollToPost(postId: number): void {
+    const element = document.getElementById(`post-${postId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Clear highlight after animation
+      setTimeout(() => {
+        this.highlightedPostId.set(null);
+      }, 3000);
+    }
   }
 }
