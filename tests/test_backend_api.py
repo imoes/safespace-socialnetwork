@@ -138,20 +138,19 @@ def user1_auth(api_client: APIClient) -> Tuple[Dict, str]:
     response = api_client.post("/auth/register", json=TestConfig.USER1)
     assert response.status_code == 200, f"Registration failed: {response.text}"
 
-    user_data = response.json()
-    logger.info(f"✅ User 1 registered: {user_data['username']} (UID: {user_data['uid']})")
+    token_data = response.json()
+    assert "access_token" in token_data, f"No access token in response: {token_data}"
 
-    # Login
-    login_data = {
-        "username": TestConfig.USER1["username"],
-        "password": TestConfig.USER1["password"]
-    }
-    response = api_client.post("/auth/login", json=login_data)
-    assert response.status_code == 200, f"Login failed: {response.text}"
-
-    token = response.json()["access_token"]
+    token = token_data["access_token"]
     api_client.token = token
-    logger.info(f"✅ User 1 logged in, token obtained")
+    logger.info(f"✅ User 1 registered, token obtained")
+
+    # Get user data via /me endpoint
+    response = api_client.get("/auth/me")
+    assert response.status_code == 200, f"Failed to get user data: {response.text}"
+
+    user_data = response.json()
+    logger.info(f"✅ User 1 data retrieved: {user_data['username']} (UID: {user_data['uid']})")
 
     return user_data, token
 
@@ -170,19 +169,19 @@ def user2_auth(api_client: APIClient, user1_auth) -> Tuple[Dict, str]:
     response = api_client.post("/auth/register", json=TestConfig.USER2)
     assert response.status_code == 200, f"Registration failed: {response.text}"
 
+    token_data = response.json()
+    assert "access_token" in token_data, f"No access token in response: {token_data}"
+
+    token = token_data["access_token"]
+    api_client.token = token
+    logger.info(f"✅ User 2 registered, token obtained")
+
+    # Get user data via /me endpoint
+    response = api_client.get("/auth/me")
+    assert response.status_code == 200, f"Failed to get user data: {response.text}"
+
     user_data = response.json()
-    logger.info(f"✅ User 2 registered: {user_data['username']} (UID: {user_data['uid']})")
-
-    # Login
-    login_data = {
-        "username": TestConfig.USER2["username"],
-        "password": TestConfig.USER2["password"]
-    }
-    response = api_client.post("/auth/login", json=login_data)
-    assert response.status_code == 200, f"Login failed: {response.text}"
-
-    token = response.json()["access_token"]
-    logger.info(f"✅ User 2 logged in, token obtained")
+    logger.info(f"✅ User 2 data retrieved: {user_data['username']} (UID: {user_data['uid']})")
 
     # Restore user1 token
     api_client.token = user1_token
@@ -209,11 +208,11 @@ class TestAuthentication:
         assert response.status_code == 200
 
         data = response.json()
-        assert "uid" in data
-        assert data["username"] == user_data["username"]
-        assert data["email"] == user_data["email"]
+        assert "access_token" in data
+        assert "token_type" in data
+        assert data["token_type"] == "bearer"
 
-        logger.info("✅ Registration successful")
+        logger.info("✅ Registration successful, token received")
 
     def test_register_duplicate_username(self, api_client: APIClient, user1_auth):
         """Test Registrierung mit existierendem Username"""
