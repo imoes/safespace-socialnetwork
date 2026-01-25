@@ -519,7 +519,7 @@ async def get_user_posts(
     }
 
 
-@router.get("/all", response_model=List[UserWithStats])
+@router.get("/all")
 async def get_all_users(
     current_user: dict = Depends(get_current_user)
 ):
@@ -556,18 +556,27 @@ async def get_all_users(
         users_list = []
         for row in rows:
             try:
-                user_stats = UserWithStats(
-                    uid=row["uid"],
-                    username=row["username"],
-                    role=row["role"],
-                    created_at=row["created_at"],
-                    post_count=row["post_count"] or 0,
-                    flagged_count=row["flagged_count"] or 0,
-                    report_count=row["report_count"] or 0,
-                    is_banned=row["is_banned"],
-                    banned_until=row["banned_until"]
-                )
-                users_list.append(user_stats)
+                # Convert datetime to string if needed
+                created_at = row["created_at"]
+                if hasattr(created_at, 'isoformat'):
+                    created_at = created_at.isoformat()
+
+                banned_until = row["banned_until"]
+                if banned_until and hasattr(banned_until, 'isoformat'):
+                    banned_until = banned_until.isoformat()
+
+                user_dict = {
+                    "uid": row["uid"],
+                    "username": row["username"],
+                    "role": row["role"],
+                    "created_at": created_at,
+                    "post_count": row["post_count"] or 0,
+                    "flagged_count": row["flagged_count"] or 0,
+                    "report_count": row["report_count"] or 0,
+                    "is_banned": row["is_banned"],
+                    "banned_until": banned_until
+                }
+                users_list.append(user_dict)
             except Exception as e:
                 print(f"Error creating UserWithStats for uid {row['uid']}: {e}")
                 print(f"Row data: {dict(row)}")
