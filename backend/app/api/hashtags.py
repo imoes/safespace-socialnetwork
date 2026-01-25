@@ -49,6 +49,30 @@ async def get_trending_hashtags(
         )
 
 
+@router.get("/autocomplete", response_model=List[HashtagStat])
+async def autocomplete_hashtags(
+    q: str,
+    limit: int = 10,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Autocomplete hashtags based on prefix search.
+    Returns hashtags that start with the query string.
+    """
+    if len(q) < 2:
+        return []
+
+    try:
+        opensearch = get_opensearch_service()
+        hashtags = await opensearch.autocomplete_hashtags(prefix=q.lower(), limit=limit)
+        return [HashtagStat(**ht) for ht in hashtags]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error autocompleting hashtags: {str(e)}"
+        )
+
+
 class HashtagSearchResponse(BaseModel):
     posts: List[HashtagPost]
     has_more: bool
