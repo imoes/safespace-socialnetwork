@@ -269,36 +269,20 @@ export class NotificationsDropdownComponent implements OnInit {
   handleNotificationClick(notification: Notification): void {
     console.log('Notification clicked:', notification);
 
-    // Close dropdown first
+    // Benachrichtigung direkt löschen (vereinfachte Logik)
+    // Der Service aktualisiert automatisch den unread count
+    this.notificationsService.deleteNotification(notification.notification_id).subscribe({
+      next: () => console.log('Notification deleted successfully'),
+      error: (err) => console.error('Delete error:', err)
+    });
+
+    // Close dropdown
     this.closeDropdown();
 
     // Navigate based on notification type
     if (notification.post_id && notification.post_author_uid) {
-      // Navigate first
       this.router.navigate(['/my-posts'], {
         queryParams: { highlight: notification.post_id }
-      }).then(() => {
-        // After navigation, mark as read and delete
-        if (!notification.is_read) {
-          this.notificationsService.markAsRead(notification.notification_id).subscribe({
-            next: () => {
-              console.log('Marked as read, now deleting...');
-              // Nach dem Markieren als gelesen, Benachrichtigung löschen
-              this.notificationsService.deleteNotification(notification.notification_id).subscribe({
-                next: () => console.log('Notification deleted'),
-                error: (err) => console.error('Delete error:', err)
-              });
-            },
-            error: (err) => console.error('Mark as read error:', err)
-          });
-        } else {
-          // Bereits gelesene Benachrichtigung direkt löschen
-          console.log('Already read, deleting...');
-          this.notificationsService.deleteNotification(notification.notification_id).subscribe({
-            next: () => console.log('Notification deleted'),
-            error: (err) => console.error('Delete error:', err)
-          });
-        }
       });
     }
   }
