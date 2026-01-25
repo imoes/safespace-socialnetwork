@@ -196,20 +196,20 @@ export class FeedComponent implements OnInit, OnDestroy {
         // Admins auf Admin-Panel weiterleiten
         if (this.authService.isAdmin()) {
           this.hasRedirected = true;
-          this.router.navigate(['/admin-panel']);
+          setTimeout(() => this.router.navigate(['/admin-panel']), 0);
           return;
         }
 
         // Moderatoren auf Moderation-Seite weiterleiten
         if (this.authService.isModerator()) {
           this.hasRedirected = true;
-          this.router.navigate(['/admin']);
+          setTimeout(() => this.router.navigate(['/admin']), 0);
           return;
         }
 
         // Normale User: Feed laden
         if (!this.hasRedirected) {
-          this.feedService.startAutoRefresh();
+          setTimeout(() => this.feedService.startAutoRefresh(), 0);
         }
       }
     });
