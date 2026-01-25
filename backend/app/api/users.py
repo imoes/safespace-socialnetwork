@@ -543,9 +543,10 @@ async def get_all_users(
                 u.is_banned,
                 u.banned_until,
                 COALESCE(u.posts_count, 0) as post_count,
-                COUNT(DISTINCT r.report_id) as report_count
+                COUNT(DISTINCT CASE WHEN r.author_uid = u.uid THEN r.report_id END) as flagged_count,
+                COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END) as report_count
             FROM users u
-            LEFT JOIN user_reports r ON r.reporter_uid = u.uid
+            LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
             GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
             ORDER BY u.created_at DESC
             """
@@ -559,6 +560,7 @@ async def get_all_users(
                 role=row["role"],
                 created_at=row["created_at"],
                 post_count=row["post_count"] or 0,
+                flagged_count=row["flagged_count"] or 0,
                 report_count=row["report_count"] or 0,
                 is_banned=row["is_banned"],
                 banned_until=row["banned_until"]
