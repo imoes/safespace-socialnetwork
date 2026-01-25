@@ -222,7 +222,7 @@ import { TranslationService, TranslationResult } from '../../services/translatio
                   <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Kommentar selbst um:</p>
 
                   @for (alt of getAlternatives(); track alt; let i = $index) {
-                    <button class="alternative-btn" (click)="useAlternative(alt)">
+                    <button class="alternative-btn" (click)="useAlternative(alt)" [disabled]="isSubmittingComment">
                       <span class="alt-number">{{ i + 1 }}.</span>
                       {{ alt }}
                     </button>
@@ -230,8 +230,8 @@ import { TranslationService, TranslationResult } from '../../services/translatio
 
                   <div class="custom-alternative">
                     <label>Oder schreibe eine eigene Formulierung:</label>
-                    <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..."></textarea>
-                    <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim()">
+                    <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..." [disabled]="isSubmittingComment"></textarea>
+                    <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim() || isSubmittingComment">
                       Eigene Formulierung verwenden
                     </button>
                   </div>
@@ -410,6 +410,7 @@ export class PostCardComponent {
   guardianResult: any = null;
   customContent = '';
   originalCommentContent = '';
+  isSubmittingComment = false;
 
   toggleLike(): void {
     this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
@@ -713,6 +714,7 @@ export class PostCardComponent {
     this.showGuardianModal = false;
     this.guardianResult = null;
     this.customContent = '';
+    this.isSubmittingComment = false;
   }
 
   getAlternatives(): string[] {
@@ -740,16 +742,26 @@ export class PostCardComponent {
   }
 
   submitCommentDirectly(content: string): void {
+    // Verhindere Doppelklicks
+    if (this.isSubmittingComment) {
+      return;
+    }
+
+    this.isSubmittingComment = true;
+
     // Direkt senden ohne Guardian Modal zu triggern
     this.feedService.addComment(this.post.author_uid, this.post.post_id, content).subscribe({
       next: (comment) => {
         this.comments.push(comment);
         this.post.comments_count++;
         this.newComment = '';
+        this.isSubmittingComment = false;
         this.closeGuardianModal();
       },
       error: (error) => {
         console.error('Submit alternative error:', error);
+        this.isSubmittingComment = false;
+
         // Falls auch die Alternative abgelehnt wird (sehr selten)
         const errorDetail = error.error?.detail || error.error;
         if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
