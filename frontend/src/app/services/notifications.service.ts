@@ -40,9 +40,9 @@ export class NotificationsService {
   loadNotifications(unreadOnly: boolean = false): void {
     this.isLoadingSignal.set(true);
 
-    const params = unreadOnly ? { unread_only: 'true' } : {};
+    const options = unreadOnly ? { params: { unread_only: 'true' } } : {};
 
-    this.http.get<{ notifications: Notification[] }>(this.API_URL, { params }).subscribe({
+    this.http.get<{ notifications: Notification[] }>(this.API_URL, options).subscribe({
       next: (response) => {
         this.notificationsSignal.set(response.notifications);
         this.isLoadingSignal.set(false);

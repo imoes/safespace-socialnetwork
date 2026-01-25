@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
         <section>
           <h2>Kontakt</h2>
           <p>
-            <strong>E-Mail:</strong> [ihre-email@example.com]<br>
+            <strong>E-Mail:</strong> [ihre-email&#64;example.com]<br>
             <strong>Telefon:</strong> [+49 123 456789]<br>
             <strong>Website:</strong> <a href="https://github.com/imoes/safespace-socialnetwork" target="_blank" rel="noopener">github.com/imoes/safespace-socialnetwork</a>
           </p>
