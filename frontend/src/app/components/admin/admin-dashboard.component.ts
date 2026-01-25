@@ -80,7 +80,7 @@ import { AdminService, Report } from '../../services/admin.service';
                   <div class="post-stats">
                     <span>❤️ {{ report.post_likes_count || 0 }}</span>
                     <span>💬 {{ report.post_comments_count || 0 }}</span>
-                    <span class="visibility-badge">{{ getVisibilityLabel(report.post_visibility) }}</span>
+                    <span class="visibility-badge">{{ getVisibilityLabel(report.post_visibility || 'public') }}</span>
                   </div>
                 </div>
               }
