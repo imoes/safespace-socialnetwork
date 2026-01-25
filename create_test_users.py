@@ -5,7 +5,7 @@ Script to create test users with random names and relationships
 import requests
 import random
 import time
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 API_BASE = "http://localhost:8000/api"
 PASSWORD = "Test123"
@@ -133,7 +133,7 @@ def get_user_uid(token: str) -> int:
         return None
 
 
-def send_friend_request(from_token: str, to_uid: int, relation_type: str) -> bool:
+def send_friend_request(from_token: str, to_uid: int, relation_type: str) -> Tuple[bool, str]:
     """Send friend request"""
     try:
         response = requests.post(
@@ -141,22 +141,28 @@ def send_friend_request(from_token: str, to_uid: int, relation_type: str) -> boo
             headers={"Authorization": f"Bearer {from_token}"},
             json={"target_uid": to_uid, "relation_type": relation_type}
         )
-        return response.status_code in [200, 201]
-    except:
-        return False
+        if response.status_code in [200, 201]:
+            return True, ""
+        else:
+            return False, f"Status {response.status_code}: {response.text[:100]}"
+    except Exception as e:
+        return False, str(e)
 
 
-def accept_friend_request(token: str, from_uid: int) -> bool:
+def accept_friend_request(token: str, from_uid: int) -> Tuple[bool, str]:
     """Accept friend request"""
     try:
+        # Accept endpoint uses path parameter, not JSON body
         response = requests.post(
-            f"{API_BASE}/friends/accept",
-            headers={"Authorization": f"Bearer {token}"},
-            json={"requester_uid": from_uid}
+            f"{API_BASE}/friends/accept/{from_uid}",
+            headers={"Authorization": f"Bearer {token}"}
         )
-        return response.status_code in [200, 201]
-    except:
-        return False
+        if response.status_code in [200, 201]:
+            return True, ""
+        else:
+            return False, f"Status {response.status_code}: {response.text[:100]}"
+    except Exception as e:
+        return False, str(e)
 
 
 def create_users(count: int) -> List[Dict]:
@@ -203,6 +209,7 @@ def create_friendships(users: List[Dict], friendships_per_user: int = 10):
     print(f"\n🤝 Creating friendships ({friendships_per_user} per user on average)...")
 
     total_friendships = 0
+    error_samples = []
 
     for i, user in enumerate(users):
         # Zufällige Anzahl an Freundschaften (5-20)
@@ -217,15 +224,21 @@ def create_friendships(users: List[Dict], friendships_per_user: int = 10):
             relation_type = random.choice(RELATION_TYPES)
 
             # Sende Freundschaftsanfrage
-            if send_friend_request(user["token"], friend["uid"], relation_type):
+            success, error = send_friend_request(user["token"], friend["uid"], relation_type)
+            if success:
                 # Akzeptiere Freundschaftsanfrage
-                if accept_friend_request(friend["token"], user["uid"]):
+                success2, error2 = accept_friend_request(friend["token"], user["uid"])
+                if success2:
                     stats["friendships_created"] += 1
                     total_friendships += 1
                 else:
                     stats["friendships_failed"] += 1
+                    if len(error_samples) < 3:
+                        error_samples.append(f"Accept failed: {error2}")
             else:
                 stats["friendships_failed"] += 1
+                if len(error_samples) < 3:
+                    error_samples.append(f"Request failed: {error}")
 
             # Small delay
             time.sleep(0.02)
@@ -234,6 +247,11 @@ def create_friendships(users: List[Dict], friendships_per_user: int = 10):
             print(f"  ✅ {i + 1}/{len(users)} users processed, {total_friendships} friendships created")
 
     print(f"✅ Friendships complete: {stats['friendships_created']} created, {stats['friendships_failed']} failed")
+
+    if error_samples:
+        print(f"\n⚠️  Sample errors:")
+        for err in error_samples:
+            print(f"   {err}")
 
 
 def main():
