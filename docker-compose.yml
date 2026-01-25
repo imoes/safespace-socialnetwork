@@ -148,6 +148,15 @@ services:
       SAFESPACE_MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
       SAFESPACE_DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       SAFESPACE_MODERATION_ENABLED: "true"
+      # Email/SMTP
+      EMAIL_ENABLED: ${EMAIL_ENABLED:-false}
+      SMTP_HOST: ${SMTP_HOST:-localhost}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-noreply@socialnet.local}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-SocialNet}
+      SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
     volumes:
       - user_data:/data/users
       - ./backend/app:/app/app:ro

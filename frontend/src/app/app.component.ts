@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { UserService, UserSearchResult } from './services/user.service';
 import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
+import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
@@ -76,6 +77,7 @@ import { HttpClient } from '@angular/common/http';
               <span class="notification-badge">{{ pendingRequestsCount() }}</span>
             }
           </a>
+          <app-notifications-dropdown />
           @if (authService.isModerator()) {
             <a routerLink="/admin" class="nav-link">🛡️ Moderation</a>
           }
@@ -95,6 +97,16 @@ import { HttpClient } from '@angular/common/http';
               <div class="dropdown-menu">
                 <a routerLink="/settings" class="dropdown-item" (click)="closeDropdown()">
                   ⚙️ Einstellungen
+                </a>
+                <div class="dropdown-divider"></div>
+                <a routerLink="/info" class="dropdown-item" (click)="closeDropdown()">
+                  ℹ️ Info
+                </a>
+                <a routerLink="/privacy-policy" class="dropdown-item" (click)="closeDropdown()">
+                  📜 Datenschutzerklärung
+                </a>
+                <a routerLink="/impressum" class="dropdown-item" (click)="closeDropdown()">
+                  ⚖️ Impressum
                 </a>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">

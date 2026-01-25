@@ -13,6 +13,7 @@ from app.api.translation import router as translation_router
 from app.api.public_feed import router as public_feed_router
 from app.api.welcome import router as welcome_router
 from app.api.broadcast import router as broadcast_router
+from app.api.notifications import router as notifications_router
 from app.safespace.api import router as safespace_router
 
 
@@ -39,6 +40,14 @@ async def lifespan(app: FastAPI):
         print("✅ Broadcast posts tables initialized")
     except Exception as e:
         print(f"⚠️ Failed to initialize broadcast tables: {e}")
+
+    # Notifications Tabelle erstellen
+    try:
+        from app.db.notifications import create_notifications_table
+        await create_notifications_table()
+        print("✅ Notifications table initialized")
+    except Exception as e:
+        print(f"⚠️ Failed to initialize notifications table: {e}")
     
     # Kafka Producer initialisieren (optional, falls verfügbar)
     try:
@@ -94,6 +103,7 @@ app.include_router(translation_router, prefix="/api")
 app.include_router(public_feed_router, prefix="/api")
 app.include_router(welcome_router, prefix="/api")
 app.include_router(broadcast_router, prefix="/api")
+app.include_router(notifications_router, prefix="/api")
 app.include_router(safespace_router, prefix="/api")
 
 

@@ -160,6 +160,26 @@ async def get_user_by_username(username: str) -> dict | None:
         return await result.fetchone()
 
 
+async def get_user_by_email(email: str) -> dict | None:
+    """Holt User anhand E-Mail-Adresse"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT * FROM users WHERE email = %s",
+            (email,)
+        )
+        return await result.fetchone()
+
+
+async def get_user_by_username_or_email(identifier: str) -> dict | None:
+    """Holt User anhand Username ODER E-Mail"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT * FROM users WHERE username = %s OR email = %s",
+            (identifier, identifier)
+        )
+        return await result.fetchone()
+
+
 async def create_user(username: str, email: str, password_hash: str, first_name: str = None, last_name: str = None) -> dict:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(

@@ -33,7 +33,17 @@ class Settings(BaseSettings):
     # Feed
     feed_cache_ttl: int = 30  # Sekunden
     feed_default_limit: int = 50
-    
+
+    # Email/SMTP
+    smtp_host: str = "localhost"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "noreply@socialnet.local"
+    smtp_from_name: str = "SocialNet"
+    smtp_use_tls: bool = True
+    email_enabled: bool = False  # Default disabled, enable via env
+
     @property
     def postgres_dsn(self) -> str:
         return f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"

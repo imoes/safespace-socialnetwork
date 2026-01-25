@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.config import settings
-from app.db.postgres import get_user_by_username, get_user_by_uid, create_user
+from app.db.postgres import get_user_by_username, get_user_by_email, get_user_by_username_or_email, get_user_by_uid, create_user
 from app.models.schemas import TokenData
 from app.cache.redis_cache import OnlineStatus
 
@@ -64,16 +64,26 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     return encoded_jwt
 
 
-async def authenticate_user(username: str, password: str) -> dict | None:
-    """Authentifiziert User mit Username und Passwort"""
-    user = await get_user_by_username(username)
-    
+async def authenticate_user(identifier: str, password: str) -> dict | None:
+    """
+    Authentifiziert User mit Username/E-Mail und Passwort.
+
+    Args:
+        identifier: Username oder E-Mail-Adresse
+        password: Passwort
+
+    Returns:
+        User dict oder None bei Fehler
+    """
+    # Versuche Login mit Username oder E-Mail
+    user = await get_user_by_username_or_email(identifier)
+
     if not user:
         return None
-    
+
     if not verify_password(password, user["password_hash"]):
         return None
-    
+
     return user
 
 
