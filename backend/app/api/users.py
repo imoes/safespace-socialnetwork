@@ -195,6 +195,64 @@ async def search_users(
         ]
 
 
+@router.get("/list")
+async def get_users_list(
+    current_user: dict = Depends(get_current_user)
+):
+    """Listet alle User mit Statistiken (nur für Admins)"""
+
+    if not await is_admin(current_user["uid"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nur Admins können alle User sehen"
+        )
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT
+                u.uid,
+                u.username,
+                COALESCE(u.role, 'user') as role,
+                COALESCE(u.created_at, CURRENT_TIMESTAMP) as created_at,
+                COALESCE(u.is_banned, false) as is_banned,
+                u.banned_until,
+                COALESCE(u.posts_count, 0) as post_count,
+                COALESCE(COUNT(DISTINCT CASE WHEN r.author_uid = u.uid THEN r.report_id END), 0) as flagged_count,
+                COALESCE(COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END), 0) as report_count
+            FROM users u
+            LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
+            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
+            ORDER BY u.created_at DESC
+            """
+        )
+        rows = await result.fetchall()
+
+        users_list = []
+        for row in rows:
+            created_at = row["created_at"]
+            if hasattr(created_at, 'isoformat'):
+                created_at = created_at.isoformat()
+
+            banned_until = row["banned_until"]
+            if banned_until and hasattr(banned_until, 'isoformat'):
+                banned_until = banned_until.isoformat()
+
+            users_list.append({
+                "uid": row["uid"],
+                "username": row["username"],
+                "role": row["role"],
+                "created_at": created_at,
+                "post_count": row["post_count"] or 0,
+                "flagged_count": row["flagged_count"] or 0,
+                "report_count": row["report_count"] or 0,
+                "is_banned": row["is_banned"],
+                "banned_until": banned_until
+            })
+
+        return users_list
+
+
 @router.get("/{user_uid}", response_model=UserProfile)
 async def get_user_profile(
     user_uid: int,
@@ -517,144 +575,6 @@ async def get_user_posts(
         "posts": enriched_posts,
         "has_more": len(raw_posts) == limit
     }
-
-
-@router.get("/test")
-async def test_endpoint():
-    """Test endpoint without dependencies"""
-    return {"message": "Test successful", "users": [{"uid": 1, "username": "test"}]}
-
-
-@router.get("/list")
-async def get_users_list(
-    current_user: dict = Depends(get_current_user)
-):
-    """NEW: Listet alle User mit Statistiken (nur für Admins)"""
-
-    print("=== GET /users/list called ===")
-
-    if not await is_admin(current_user["uid"]):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Nur Admins können alle User sehen"
-        )
-
-    async with PostgresDB.connection() as conn:
-        result = await conn.execute(
-            """
-            SELECT
-                u.uid,
-                u.username,
-                COALESCE(u.role, 'user') as role,
-                COALESCE(u.created_at, CURRENT_TIMESTAMP) as created_at,
-                COALESCE(u.is_banned, false) as is_banned,
-                u.banned_until,
-                COALESCE(u.posts_count, 0) as post_count,
-                COALESCE(COUNT(DISTINCT CASE WHEN r.author_uid = u.uid THEN r.report_id END), 0) as flagged_count,
-                COALESCE(COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END), 0) as report_count
-            FROM users u
-            LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
-            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
-            ORDER BY u.created_at DESC
-            """
-        )
-        rows = await result.fetchall()
-
-        users_list = []
-        for row in rows:
-            created_at = row["created_at"]
-            if hasattr(created_at, 'isoformat'):
-                created_at = created_at.isoformat()
-
-            banned_until = row["banned_until"]
-            if banned_until and hasattr(banned_until, 'isoformat'):
-                banned_until = banned_until.isoformat()
-
-            users_list.append({
-                "uid": row["uid"],
-                "username": row["username"],
-                "role": row["role"],
-                "created_at": created_at,
-                "post_count": row["post_count"] or 0,
-                "flagged_count": row["flagged_count"] or 0,
-                "report_count": row["report_count"] or 0,
-                "is_banned": row["is_banned"],
-                "banned_until": banned_until
-            })
-
-        print(f"Returning {len(users_list)} users")
-        return users_list
-
-
-@router.get("/all")
-async def get_all_users(
-    current_user: dict = Depends(get_current_user)
-):
-    """Listet alle User mit Statistiken (nur für Admins)"""
-
-    print("=== GET /users/all called ===")
-    print(f"Current user: {current_user['uid']}, {current_user['username']}")
-
-    if not await is_admin(current_user["uid"]):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Nur Admins können alle User sehen"
-        )
-
-    print("User is admin, proceeding...")
-
-    async with PostgresDB.connection() as conn:
-        # Post-Anzahl wird in PostgreSQL gespeichert und bei jedem Post-Create/Delete aktualisiert
-        result = await conn.execute(
-            """
-            SELECT
-                u.uid,
-                u.username,
-                COALESCE(u.role, 'user') as role,
-                COALESCE(u.created_at, CURRENT_TIMESTAMP) as created_at,
-                COALESCE(u.is_banned, false) as is_banned,
-                u.banned_until,
-                COALESCE(u.posts_count, 0) as post_count,
-                COALESCE(COUNT(DISTINCT CASE WHEN r.author_uid = u.uid THEN r.report_id END), 0) as flagged_count,
-                COALESCE(COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END), 0) as report_count
-            FROM users u
-            LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
-            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
-            ORDER BY u.created_at DESC
-            """
-        )
-        rows = await result.fetchall()
-
-        users_list = []
-        for row in rows:
-            try:
-                # Convert datetime to string if needed
-                created_at = row["created_at"]
-                if hasattr(created_at, 'isoformat'):
-                    created_at = created_at.isoformat()
-
-                banned_until = row["banned_until"]
-                if banned_until and hasattr(banned_until, 'isoformat'):
-                    banned_until = banned_until.isoformat()
-
-                user_dict = {
-                    "uid": row["uid"],
-                    "username": row["username"],
-                    "role": row["role"],
-                    "created_at": created_at,
-                    "post_count": row["post_count"] or 0,
-                    "flagged_count": row["flagged_count"] or 0,
-                    "report_count": row["report_count"] or 0,
-                    "is_banned": row["is_banned"],
-                    "banned_until": banned_until
-                }
-                users_list.append(user_dict)
-            except Exception as e:
-                print(f"Error creating UserWithStats for uid {row['uid']}: {e}")
-                print(f"Row data: {dict(row)}")
-                raise
-
-        return users_list
 
 
 @router.post("/{user_uid}/ban")
