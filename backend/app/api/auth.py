@@ -11,7 +11,7 @@ from app.services.auth_service import (
     get_current_user
 )
 from app.config import settings
-from app.db.postgres import get_user_by_username
+from app.db.postgres import get_user_by_username, get_user_by_email
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -27,6 +27,14 @@ async def register(user_data: UserCreate):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username already registered"
+        )
+
+    # Prüfen ob E-Mail bereits existiert
+    existing_email = await get_user_by_email(user_data.email)
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
         )
 
     user = await register_user(
