@@ -538,13 +538,13 @@ async def get_all_users(
             SELECT
                 u.uid,
                 u.username,
-                u.role,
-                u.created_at,
-                u.is_banned,
+                COALESCE(u.role, 'user') as role,
+                COALESCE(u.created_at, CURRENT_TIMESTAMP) as created_at,
+                COALESCE(u.is_banned, false) as is_banned,
                 u.banned_until,
                 COALESCE(u.posts_count, 0) as post_count,
-                COUNT(DISTINCT CASE WHEN r.author_uid = u.uid THEN r.report_id END) as flagged_count,
-                COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END) as report_count
+                COALESCE(COUNT(DISTINCT CASE WHEN r.author_uid = u.uid THEN r.report_id END), 0) as flagged_count,
+                COALESCE(COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END), 0) as report_count
             FROM users u
             LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
             GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
@@ -553,20 +553,27 @@ async def get_all_users(
         )
         rows = await result.fetchall()
 
-        return [
-            UserWithStats(
-                uid=row["uid"],
-                username=row["username"],
-                role=row["role"],
-                created_at=row["created_at"],
-                post_count=row["post_count"] or 0,
-                flagged_count=row["flagged_count"] or 0,
-                report_count=row["report_count"] or 0,
-                is_banned=row["is_banned"],
-                banned_until=row["banned_until"]
-            )
-            for row in rows
-        ]
+        users_list = []
+        for row in rows:
+            try:
+                user_stats = UserWithStats(
+                    uid=row["uid"],
+                    username=row["username"],
+                    role=row["role"],
+                    created_at=row["created_at"],
+                    post_count=row["post_count"] or 0,
+                    flagged_count=row["flagged_count"] or 0,
+                    report_count=row["report_count"] or 0,
+                    is_banned=row["is_banned"],
+                    banned_until=row["banned_until"]
+                )
+                users_list.append(user_stats)
+            except Exception as e:
+                print(f"Error creating UserWithStats for uid {row['uid']}: {e}")
+                print(f"Row data: {dict(row)}")
+                raise
+
+        return users_list
 
 
 @router.post("/{user_uid}/ban")
