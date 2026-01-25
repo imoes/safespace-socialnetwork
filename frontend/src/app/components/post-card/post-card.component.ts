@@ -526,8 +526,32 @@ export class PostCardComponent {
         this.post.comments_count++;
         this.newComment = '';
       },
-      error: () => {
-        alert('Fehler beim Hinzufügen des Kommentars');
+      error: (error) => {
+        console.error('Comment error:', error);
+
+        // Hatespeech-Fehler mit detaillierter Meldung
+        if (error.status === 400 && error.error?.error === 'comment_contains_hate_speech') {
+          const detail = error.error;
+          let message = `⚠️ ${detail.message}\n\n`;
+
+          if (detail.explanation) {
+            message += `🔍 Grund: ${detail.explanation}\n\n`;
+          }
+
+          if (detail.suggested_revision) {
+            message += `💡 Verbesserungsvorschlag:\n"${detail.suggested_revision}"\n\n`;
+            message += 'Möchten Sie den Verbesserungsvorschlag übernehmen?';
+
+            if (confirm(message)) {
+              this.newComment = detail.suggested_revision;
+            }
+          } else {
+            alert(message);
+          }
+        } else {
+          // Generischer Fehler
+          alert('Fehler beim Hinzufügen des Kommentars');
+        }
       }
     });
   }
