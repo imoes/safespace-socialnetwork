@@ -532,6 +532,8 @@ async def get_all_users(
         )
 
     async with PostgresDB.connection() as conn:
+        # Posts sind in SQLite gespeichert, nicht in PostgreSQL
+        # Wir können nur report_count aus PostgreSQL abfragen
         result = await conn.execute(
             """
             SELECT
@@ -541,12 +543,10 @@ async def get_all_users(
                 u.created_at,
                 u.is_banned,
                 u.banned_until,
-                COUNT(DISTINCT p.post_id) as post_count,
                 COUNT(DISTINCT r.report_id) as report_count
             FROM users u
-            LEFT JOIN posts p ON p.author_uid = u.uid
             LEFT JOIN user_reports r ON r.reporter_uid = u.uid
-            GROUP BY u.uid
+            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until
             ORDER BY u.created_at DESC
             """
         )
@@ -558,7 +558,7 @@ async def get_all_users(
                 username=row["username"],
                 role=row["role"],
                 created_at=row["created_at"],
-                post_count=row["post_count"] or 0,
+                post_count=0,  # Posts sind in SQLite, zu teuer hier abzufragen
                 report_count=row["report_count"] or 0,
                 is_banned=row["is_banned"],
                 banned_until=row["banned_until"]
