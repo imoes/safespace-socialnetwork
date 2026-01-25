@@ -21,16 +21,25 @@ log_dir = Path(__file__).parent / "logs"
 log_dir.mkdir(exist_ok=True)
 log_file = log_dir / f"backend_tests_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file),
-        logging.StreamHandler()
-    ]
-)
-
+# Create logger with file and console handlers
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# File handler
+file_handler = logging.FileHandler(log_file, mode='w', encoding='utf-8')
+file_handler.setLevel(logging.INFO)
+file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(file_formatter)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(console_formatter)
+
+# Add handlers
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
 
 
 class TestConfig:
@@ -621,10 +630,12 @@ class TestUserSearch:
         response = api_client.get(f"/users/search", params={"q": search_query})
         assert response.status_code == 200
 
+        # API returns a list directly, not {"users": [...]}
         data = response.json()
-        assert "users" in data
+        assert isinstance(data, list)
+        assert len(data) > 0
 
-        logger.info(f"✅ User search completed: {len(data['users'])} users found for '{search_query}'")
+        logger.info(f"✅ User search completed: {len(data)} users found for '{search_query}'")
 
 
 if __name__ == "__main__":
