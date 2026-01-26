@@ -110,14 +110,19 @@ export class I18nService {
   }
 
   public async setLanguage(code: string): Promise<void> {
-    console.log(`🌐 [I18n] setLanguage called with code: ${code}`);
+    console.log(`🌐 [I18n] setLanguage called with code: '${code}'`);
     const availableLanguages = this.availableLanguagesSignal();
-    console.log(`🌐 [I18n] Available languages:`, availableLanguages.map(l => l.code));
+    console.log(`🌐 [I18n] Available languages:`, availableLanguages.map(l => l.code).join(', '));
+
+    if (availableLanguages.length === 0) {
+      console.error(`❌ [I18n] No languages available! Service might not be initialized.`);
+      throw new Error('I18n service not initialized');
+    }
 
     const language = availableLanguages.find(l => l.code === code);
     if (!language) {
-      console.error(`❌ [I18n] Language ${code} not found in available languages`);
-      return;
+      console.error(`❌ [I18n] Language '${code}' not found in available languages: [${availableLanguages.map(l => l.code).join(', ')}]`);
+      throw new Error(`Language ${code} not available`);
     }
 
     try {

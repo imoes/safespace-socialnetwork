@@ -504,6 +504,7 @@ export class SettingsComponent implements OnInit {
   onLanguageChange(): void {
     // Just update the selection, don't apply yet
     // Language will be applied when user clicks "Save Settings"
+    console.log(`🌐 [Settings] Language dropdown changed to: '${this.selectedLanguage}' (original: '${this.originalLanguage}')`);
   }
 
   saveSettings(): void {
@@ -551,12 +552,20 @@ export class SettingsComponent implements OnInit {
         console.log(`⚙️ [Settings] Selected language: ${this.selectedLanguage}, Original: ${this.originalLanguage}`);
 
         // Check if language changed
+        console.log(`🌐 [Settings] Checking language change: selected='${this.selectedLanguage}', original='${this.originalLanguage}'`);
         if (this.selectedLanguage !== this.originalLanguage) {
-          console.log(`🌐 [Settings] Language changed, applying new language and reloading...`);
-          // Apply language change and reload page
+          console.log(`🌐 [Settings] Language changed from '${this.originalLanguage}' to '${this.selectedLanguage}', applying...`);
+          // Apply language change - setLanguage saves to localStorage
           this.i18n.setLanguage(this.selectedLanguage).then(() => {
-            console.log(`🌐 [Settings] Language set, reloading page...`);
-            window.location.reload();
+            console.log(`🌐 [Settings] Language set to '${this.selectedLanguage}', localStorage value: '${localStorage.getItem('preferredLanguage')}', reloading page...`);
+            // Small delay to ensure localStorage is written
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          }).catch((error) => {
+            console.error(`❌ [Settings] Failed to set language:`, error);
+            this.errorMessage.set('Failed to change language');
+            this.isSaving.set(false);
           });
         } else {
           console.log(`⚙️ [Settings] Language unchanged, showing success message`);
