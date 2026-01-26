@@ -17,6 +17,8 @@ export class I18nService {
   private translations = signal<any>({});
   private currentLangCode = signal<string>('en');
   private availableLanguagesSignal = signal<Language[]>([]);
+  private initialized = false;
+  private initPromise: Promise<void> | null = null;
 
   public readonly currentLanguage = computed(() => {
     const code = this.currentLangCode();
@@ -26,8 +28,25 @@ export class I18nService {
 
   public readonly languages = computed(() => this.availableLanguagesSignal());
 
+  public readonly isLoaded = computed(() => Object.keys(this.translations()).length > 0);
+
   constructor(private http: HttpClient) {
-    this.loadAvailableLanguages();
+    // Don't auto-init in constructor - use initialize() for APP_INITIALIZER
+  }
+
+  /**
+   * Initialize the i18n service - called by APP_INITIALIZER
+   * Ensures translations are loaded before app starts
+   */
+  public initialize(): Promise<void> {
+    if (this.initialized) {
+      return Promise.resolve();
+    }
+    if (this.initPromise) {
+      return this.initPromise;
+    }
+    this.initPromise = this.loadAvailableLanguages();
+    return this.initPromise;
   }
 
   /**
@@ -86,6 +105,8 @@ export class I18nService {
     }
 
     await this.setLanguage(langCode);
+    this.initialized = true;
+    console.log('✅ [I18n] Service initialized');
   }
 
   public async setLanguage(code: string): Promise<void> {
@@ -124,6 +145,11 @@ export class I18nService {
   public t(key: string, params?: Record<string, any>): string {
     const keys = key.split('.');
     let value: any = this.translations();
+
+    // If translations aren't loaded yet, return key silently
+    if (!this.initialized || Object.keys(value).length === 0) {
+      return key;
+    }
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
