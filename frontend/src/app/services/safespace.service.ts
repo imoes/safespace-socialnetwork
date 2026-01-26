@@ -53,12 +53,23 @@ export class SafeSpaceService {
   /**
    * Prüft Content auf Hassrede BEVOR er gepostet wird.
    * Kann während des Tippens aufgerufen werden (mit Debounce).
+   *
+   * @param content Der zu prüfende Inhalt
+   * @param language Sprache für die Moderation (de, en, es, fr, it, ar)
    */
-  checkContent(content: string): Observable<ContentCheckResult> {
+  checkContent(content: string, language?: string): Observable<ContentCheckResult> {
     this.isChecking.set(true);
 
+    // Sprache aus localStorage oder Browser-Sprache ermitteln
+    if (!language) {
+      language = localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'de';
+    }
+
     return this.http.post<ContentCheckResult>(`${this.API_URL}/check`, null, {
-      params: { content }
+      params: {
+        content,
+        language
+      }
     }).pipe(
       tap(result => {
         this.lastCheckResult.set(result);
@@ -69,12 +80,25 @@ export class SafeSpaceService {
 
   /**
    * Fordert einen Verbesserungsvorschlag für problematischen Content an.
+   *
+   * @param content Der zu verbessernde Inhalt
+   * @param language Sprache für den Vorschlag (de, en, es, fr, it, ar)
    */
-  suggestRevision(content: string): Observable<{ original: string; suggestion: string }> {
+  suggestRevision(content: string, language?: string): Observable<{ original: string; suggestion: string }> {
+    // Sprache aus localStorage oder Browser-Sprache ermitteln
+    if (!language) {
+      language = localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'de';
+    }
+
     return this.http.post<{ original: string; suggestion: string }>(
       `${this.API_URL}/suggest-revision`,
       null,
-      { params: { content } }
+      {
+        params: {
+          content,
+          language
+        }
+      }
     );
   }
 
