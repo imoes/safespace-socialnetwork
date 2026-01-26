@@ -135,8 +135,8 @@ export class HashtagDetailComponent implements OnInit {
   loadingTop = signal(false);
   loadingBottom = signal(false);
   hasMore = signal(true);
-  
-  private readonly LIMIT = 50;
+
+  private readonly LIMIT = 15;
   private currentOffset = 0;
   private isLoadingMore = false;
 
@@ -152,12 +152,12 @@ export class HashtagDetailComponent implements OnInit {
   loadPosts(): void {
     this.loadingInitial.set(true);
     this.currentOffset = 0;
-    
+
     this.hashtagService.searchByHashtag(this.hashtag, this.LIMIT, 0).subscribe({
       next: (response) => {
         this.posts.set(response.posts);
         this.hasMore.set(response.has_more);
-        this.totalPosts.set(response.posts.length);
+        this.totalPosts.set(response.total);
         this.loadingInitial.set(false);
       },
       error: (err) => {

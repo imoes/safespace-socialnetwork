@@ -110,7 +110,7 @@ export class FeedService implements OnDestroy {
 
     const params = new HttpParams()
       .set('offset', currentPosts.length.toString())
-      .set('limit', '25');
+      .set('limit', '15');
 
     this.http.get<FeedResponse>(this.API_URL, { params }).subscribe({
       next: (response) => {
@@ -312,7 +312,7 @@ export class FeedService implements OnDestroy {
   private fetchFeed(forceRefresh: boolean): Observable<FeedResponse> {
     const params = new HttpParams()
       .set('refresh', forceRefresh.toString())
-      .set('limit', '50');
+      .set('limit', '15');
 
     return this.http.get<FeedResponse>(this.API_URL, { params });
   }
