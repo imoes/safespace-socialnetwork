@@ -2,10 +2,8 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
   const router = inject(Router);
 
   // Liste der öffentlichen Endpoints, die KEINEN Token benötigen
@@ -19,12 +17,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // Token aus Service holen
-  const token = authService.getToken();
+  // Token direkt aus localStorage holen (NICHT über AuthService wegen circular dependency)
+  const token = localStorage.getItem('access_token');
 
   console.log('🔍 [Interceptor] Called for:', req.url);
-  console.log('🔑 [Interceptor] Token from service:', token ? token.substring(0, 30) + '...' : 'NONE');
-  console.log('🔑 [Interceptor] Token from localStorage:', localStorage.getItem('access_token') ? 'EXISTS' : 'NONE');
+  console.log('🔑 [Interceptor] Token from localStorage:', token ? token.substring(0, 30) + '...' : 'NONE');
 
   // Request clonen und Authorization Header hinzufügen
   if (token) {
@@ -41,11 +38,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       console.error('❌ [Interceptor] HTTP Error:', error.status, req.url);
-      
+
       // Bei 401 ausloggen und zu Login navigieren
       if (error.status === 401) {
         console.log('🚪 [Interceptor] 401 detected, logging out...');
-        authService.logout();
+        // Token direkt aus localStorage entfernen (NICHT über AuthService wegen circular dependency)
+        localStorage.removeItem('access_token');
         router.navigate(['/login']);
       }
       return throwError(() => error);
