@@ -1,19 +1,20 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="settings-container">
       <div class="settings-card">
-        <h2>⚙️ Benutzereinstellungen</h2>
+        <h2>⚙️ {{ 'settings.title' | translate }}</h2>
 
         @if (successMessage()) {
           <div class="alert alert-success">{{ successMessage() }}</div>
@@ -36,7 +37,7 @@ import { I18nService } from '../../services/i18n.service';
           </div>
           <div class="profile-picture-actions">
             <label class="btn btn-upload" for="profilePictureInput">
-              📷 Profilbild hochladen
+              📷 {{ 'settings.uploadPicture' | translate }}
             </label>
             <input
               type="file"
@@ -46,7 +47,7 @@ import { I18nService } from '../../services/i18n.service';
               style="display: none;"
             />
             @if (uploadingProfilePicture()) {
-              <div class="upload-progress">Wird hochgeladen...</div>
+              <div class="upload-progress">{{ 'settings.uploading' | translate }}</div>
             }
           </div>
         </div>
@@ -56,45 +57,45 @@ import { I18nService } from '../../services/i18n.service';
         <form (ngSubmit)="saveSettings()">
           <!-- Benutzername (nicht änderbar) -->
           <div class="form-group">
-            <label>Benutzername</label>
+            <label>{{ 'settings.username' | translate }}</label>
             <input
               type="text"
               [value]="authService.currentUser()?.username"
               disabled
               class="form-control"
             />
-            <small class="form-text">Der Benutzername kann nicht geändert werden</small>
+            <small class="form-text">{{ 'settings.usernameCannotChange' | translate }}</small>
           </div>
 
           <!-- Vorname -->
           <div class="form-group">
-            <label for="firstName">Vorname</label>
+            <label for="firstName">{{ 'settings.firstName' | translate }}</label>
             <input
               id="firstName"
               type="text"
               [(ngModel)]="firstName"
               name="firstName"
               class="form-control"
-              placeholder="Dein Vorname"
+              [placeholder]="'settings.firstNamePlaceholder' | translate"
             />
           </div>
 
           <!-- Nachname -->
           <div class="form-group">
-            <label for="lastName">Nachname</label>
+            <label for="lastName">{{ 'settings.lastName' | translate }}</label>
             <input
               id="lastName"
               type="text"
               [(ngModel)]="lastName"
               name="lastName"
               class="form-control"
-              placeholder="Dein Nachname"
+              [placeholder]="'settings.lastNamePlaceholder' | translate"
             />
           </div>
 
           <!-- E-Mail -->
           <div class="form-group">
-            <label for="email">E-Mail-Adresse</label>
+            <label for="email">{{ 'settings.email' | translate }}</label>
             <input
               id="email"
               type="email"
@@ -107,20 +108,20 @@ import { I18nService } from '../../services/i18n.service';
 
           <!-- Bio -->
           <div class="form-group">
-            <label for="bio">Über mich</label>
+            <label for="bio">{{ 'settings.bio' | translate }}</label>
             <textarea
               id="bio"
               [(ngModel)]="bio"
               name="bio"
               rows="4"
               class="form-control"
-              placeholder="Erzähle etwas über dich..."
+              [placeholder]="'settings.bioPlaceholder' | translate"
             ></textarea>
           </div>
 
           <!-- Sprache / Language -->
           <div class="form-group">
-            <label for="language">🌐 Sprache / Language</label>
+            <label for="language">🌐 {{ 'settings.language' | translate }}</label>
             <select
               id="language"
               [(ngModel)]="selectedLanguage"
@@ -133,28 +134,28 @@ import { I18nService } from '../../services/i18n.service';
                 </option>
               }
             </select>
-            <small class="form-text">Wähle deine bevorzugte Sprache / Choose your preferred language</small>
+            <small class="form-text">{{ 'settings.languageHelp' | translate }}</small>
           </div>
 
           <!-- Passwort ändern -->
           <div class="section-divider">
-            <h3>Passwort ändern</h3>
+            <h3>{{ 'settings.passwordSection' | translate }}</h3>
           </div>
 
           <div class="form-group">
-            <label for="currentPassword">Aktuelles Passwort</label>
+            <label for="currentPassword">{{ 'settings.currentPassword' | translate }}</label>
             <input
               id="currentPassword"
               type="password"
               [(ngModel)]="currentPassword"
               name="currentPassword"
               class="form-control"
-              placeholder="Nur ausfüllen wenn Passwort geändert werden soll"
+              [placeholder]="'settings.currentPasswordPlaceholder' | translate"
             />
           </div>
 
           <div class="form-group">
-            <label for="newPassword">Neues Passwort</label>
+            <label for="newPassword">{{ 'settings.newPassword' | translate }}</label>
             <input
               id="newPassword"
               type="password"
@@ -166,7 +167,7 @@ import { I18nService } from '../../services/i18n.service';
           </div>
 
           <div class="form-group">
-            <label for="confirmPassword">Passwort bestätigen</label>
+            <label for="confirmPassword">{{ 'settings.confirmPassword' | translate }}</label>
             <input
               id="confirmPassword"
               type="password"
@@ -180,10 +181,10 @@ import { I18nService } from '../../services/i18n.service';
           <!-- Buttons -->
           <div class="button-group">
             <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
-              {{ isSaving() ? 'Speichern...' : 'Änderungen speichern' }}
+              {{ (isSaving() ? 'settings.saving' : 'settings.save') | translate }}
             </button>
             <button type="button" class="btn btn-secondary" (click)="goBack()">
-              Abbrechen
+              {{ 'settings.cancel' | translate }}
             </button>
           </div>
         </form>
@@ -191,20 +192,19 @@ import { I18nService } from '../../services/i18n.service';
         <!-- Gefahrenzone: Konto löschen -->
         <div class="danger-zone">
           <div class="section-divider">
-            <h3>⚠️ Gefahrenzone</h3>
+            <h3>⚠️ {{ 'settings.dangerZone' | translate }}</h3>
           </div>
           <div class="danger-box">
-            <h4>Konto löschen</h4>
-            <p>Wenn du dein Konto löschst, werden alle deine Daten permanent gelöscht:</p>
+            <h4>{{ 'settings.deleteAccount' | translate }}</h4>
+            <p>{{ 'settings.deleteAccountDesc' | translate }}</p>
             <ul>
-              <li>Alle deine Posts und Kommentare</li>
-              <li>Alle hochgeladenen Medien (Bilder, Videos)</li>
-              <li>Alle Freundschaften und Anfragen</li>
-              <li>Dein Benutzerprofil und alle persönlichen Daten</li>
+              @for (item of i18n.tArray('settings.deleteAccountList'); track $index) {
+                <li>{{ item }}</li>
+              }
             </ul>
-            <p class="danger-warning"><strong>Diese Aktion kann nicht rückgängig gemacht werden!</strong></p>
+            <p class="danger-warning"><strong>{{ 'settings.deleteAccountWarning' | translate }}</strong></p>
             <button type="button" class="btn btn-danger" (click)="deleteAccount()">
-              🗑️ Konto permanent löschen
+              🗑️ {{ 'settings.deleteAccountButton' | translate }}
             </button>
           </div>
         </div>
@@ -464,28 +464,47 @@ export class SettingsComponent implements OnInit {
   newPassword = '';
   confirmPassword = '';
   selectedLanguage = 'en';
+  originalLanguage = 'en';
 
   isSaving = signal(false);
   successMessage = signal('');
   errorMessage = signal('');
   uploadingProfilePicture = signal(false);
 
-  ngOnInit(): void {
-    const user = this.authService.currentUser();
-    if (user) {
-      this.email = user.email;
-      this.bio = user.bio || '';
-      this.firstName = user.first_name || '';
-      this.lastName = user.last_name || '';
-    }
+  constructor() {
+    // Watch for user changes and update form when user loads
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user) {
+        this.email = user.email;
+        this.bio = user.bio || '';
+        this.firstName = user.first_name || '';
+        this.lastName = user.last_name || '';
+      }
+    });
+  }
 
-    // Load current language
-    this.selectedLanguage = this.i18n.currentLanguage().code;
+  ngOnInit(): void {
+    // Load current language and store original
+    // Wait for language to be loaded (async operation in I18nService constructor)
+    const currentLang = this.i18n.currentLanguage();
+    if (currentLang) {
+      this.selectedLanguage = currentLang.code;
+      this.originalLanguage = this.selectedLanguage;
+      console.log(`⚙️ [Settings] Current language: ${this.selectedLanguage}`);
+    } else {
+      // Fallback: read from localStorage directly
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      this.selectedLanguage = savedLang;
+      this.originalLanguage = savedLang;
+      console.warn(`⚠️ [Settings] Language not loaded yet, using fallback: ${savedLang}`);
+    }
   }
 
   onLanguageChange(): void {
-    this.i18n.setLanguage(this.selectedLanguage);
-    this.successMessage.set('Language changed successfully! / Sprache erfolgreich geändert!');
+    // Just update the selection, don't apply yet
+    // Language will be applied when user clicks "Save Settings"
+    console.log(`🌐 [Settings] Language dropdown changed to: '${this.selectedLanguage}' (original: '${this.originalLanguage}')`);
   }
 
   saveSettings(): void {
@@ -529,19 +548,38 @@ export class SettingsComponent implements OnInit {
 
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
-        this.successMessage.set('Einstellungen erfolgreich gespeichert!');
-        this.isSaving.set(false);
+        console.log(`⚙️ [Settings] Settings saved successfully`);
+        console.log(`⚙️ [Settings] Selected language: ${this.selectedLanguage}, Original: ${this.originalLanguage}`);
 
-        // Passwortfelder leeren
-        this.currentPassword = '';
-        this.newPassword = '';
-        this.confirmPassword = '';
+        // Check if language changed
+        console.log(`🌐 [Settings] Checking language change: selected='${this.selectedLanguage}', original='${this.originalLanguage}'`);
+        if (this.selectedLanguage !== this.originalLanguage) {
+          console.log(`🌐 [Settings] Language changed from '${this.originalLanguage}' to '${this.selectedLanguage}', applying...`);
+          // Apply language change - setLanguage saves to localStorage
+          this.i18n.setLanguage(this.selectedLanguage).then(() => {
+            console.log(`🌐 [Settings] Language set to '${this.selectedLanguage}', localStorage value: '${localStorage.getItem('preferredLanguage')}', reloading page...`);
+            // Small delay to ensure localStorage is written
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          }).catch((error) => {
+            console.error(`❌ [Settings] Failed to set language:`, error);
+            this.errorMessage.set('Failed to change language');
+            this.isSaving.set(false);
+          });
+        } else {
+          console.log(`⚙️ [Settings] Language unchanged, showing success message`);
+          this.successMessage.set(this.i18n.t('settings.success'));
+          this.isSaving.set(false);
 
-        // User-Daten neu laden, um aktualisierte Werte anzuzeigen
-        this.authService.loadCurrentUser();
+          // Passwortfelder leeren
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
 
-        // User neu laden
-        this.authService.loadCurrentUser();
+          // User-Daten neu laden, um aktualisierte Werte anzuzeigen
+          this.authService.loadCurrentUser();
+        }
       },
       error: (error) => {
         this.isSaving.set(false);
@@ -614,7 +652,7 @@ export class SettingsComponent implements OnInit {
     this.http.post('/api/users/me/profile-picture', formData).subscribe({
       next: (response: any) => {
         this.uploadingProfilePicture.set(false);
-        this.successMessage.set('Profilbild erfolgreich hochgeladen!');
+        this.successMessage.set(this.i18n.t('settings.success'));
 
         // Reload current user to update profile picture
         this.authService.loadCurrentUser();

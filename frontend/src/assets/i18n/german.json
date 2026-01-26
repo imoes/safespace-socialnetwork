@@ -9,7 +9,10 @@
     "users": "Benutzer",
     "settings": "Einstellungen",
     "logout": "Abmelden",
-    "searchPlaceholder": "Benutzer suchen..."
+    "searchPlaceholder": "Benutzer suchen...",
+    "privacyPolicy": "Datenschutzerklärung",
+    "impressum": "Impressum",
+    "info": "Info"
   },
   "feed": {
     "title": "Mein Feed",
@@ -80,18 +83,28 @@
     "subtitle": "Verwalte dein Konto",
     "profile": "Profil",
     "username": "Benutzername",
+    "usernameCannotChange": "Der Benutzername kann nicht geändert werden",
     "email": "E-Mail",
     "bio": "Biografie",
+    "bioPlaceholder": "Erzähle etwas über dich...",
     "firstName": "Vorname",
+    "firstNamePlaceholder": "Dein Vorname",
     "lastName": "Nachname",
+    "lastNamePlaceholder": "Dein Nachname",
     "language": "Sprache",
-    "password": "Passwort",
+    "languageHelp": "Wähle deine bevorzugte Sprache / Choose your preferred language",
+    "passwordSection": "Passwort ändern",
     "currentPassword": "Aktuelles Passwort",
+    "currentPasswordPlaceholder": "Nur ausfüllen wenn Passwort geändert werden soll",
     "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
     "save": "Änderungen speichern",
-    "saving": "Wird gespeichert...",
+    "saving": "Speichern...",
+    "cancel": "Abbrechen",
+    "success": "Einstellungen erfolgreich gespeichert!",
     "profilePicture": "Profilbild",
-    "uploadPicture": "Bild hochladen",
+    "uploadPicture": "Profilbild hochladen",
+    "uploading": "Wird hochgeladen...",
     "dangerZone": "Gefahrenzone",
     "deleteAccount": "Konto löschen",
     "deleteAccountDesc": "Wenn du dein Konto löschst, werden alle deine Daten permanent gelöscht:",
@@ -179,6 +192,20 @@
   "welcome": {
     "understood": "Verstanden"
   },
+  "guardian": {
+    "title": "Guardian - AI-gestützte Inhaltsmoderation",
+    "whyFlagged": "Warum wurde dieser Inhalt markiert?",
+    "whyAlternative": "💡 Warum diese Alternative?",
+    "alternatives": "Alternative Formulierungen",
+    "alternativesHint": "Wähle eine der folgenden Alternativen oder formuliere deinen Inhalt selbst um:",
+    "customLabel": "Oder schreibe eine eigene Formulierung:",
+    "customPlaceholder": "Deine eigene Formulierung...",
+    "useCustom": "Eigene Formulierung verwenden",
+    "dispute": "⚖️ Widerspruch einlegen",
+    "cancel": "Abbrechen",
+    "disclaimer": "⚠️ Hinweis: KI-Systeme können Fehler machen. Alle Vorschläge sind ohne Gewähr. Bei Unklarheiten kannst du Widerspruch einlegen.",
+    "categories": "Kategorien:"
+  },
   "common": {
     "loading": "Lädt...",
     "error": "Ein Fehler ist aufgetreten",
@@ -188,5 +215,19 @@
     "noResults": "Keine Ergebnisse gefunden",
     "confirm": "Bestätigen",
     "cancel": "Abbrechen"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "markAllRead": "Alle als gelesen",
+    "loading": "Lade Benachrichtigungen...",
+    "noNotifications": "Keine Benachrichtigungen",
+    "justNow": "Gerade eben",
+    "minutesAgo": "vor {{count}} Min.",
+    "hoursAgo": "vor {{count}} Std.",
+    "daysAgo": "vor {{count}} Tag(en)",
+    "postLiked": "{{username}} hat deinen Post geliked",
+    "postCommented": "{{username}} hat deinen Post kommentiert",
+    "commentLiked": "{{username}} hat deinen Kommentar geliked",
+    "newNotification": "Neue Benachrichtigung"
   }
 }

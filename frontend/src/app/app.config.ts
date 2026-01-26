@@ -1,9 +1,16 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER, inject } from '@angular/core';
 import { provideRouter, Routes } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { authGuard } from './guards/auth.guard';
+import { I18nService } from './services/i18n.service';
+
+// Factory function for APP_INITIALIZER
+function initializeI18n(): () => Promise<void> {
+  const i18nService = inject(I18nService);
+  return () => i18nService.initialize();
+}
 
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -46,6 +53,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor])),
+    // Initialize i18n service before app starts to ensure translations are loaded
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeI18n,
+      multi: true
+    }
   ]
 };

@@ -6,11 +6,13 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 import { TranslationService, TranslationResult } from '../../services/translation.service';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="post-card">
       <div class="post-header">
@@ -42,7 +44,7 @@ import { TranslationService, TranslationResult } from '../../services/translatio
           <div class="post-content translation">
             <div class="translation-label">
               <span class="translation-badge">{{ translationService.getLanguageFlag(translatedContent.detected_language) }} → {{ translationService.getLanguageFlag(translatedContent.target_language) }}</span>
-              <span class="translation-info">Übersetzt</span>
+              <span class="translation-info">{{ 'post.translated' | translate }}</span>
             </div>
             <p>{{ translatedContent.translated_text }}</p>
           </div>
@@ -74,7 +76,7 @@ import { TranslationService, TranslationResult } from '../../services/translatio
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         <button class="action-btn" (click)="toggleTranslation()" [disabled]="translating">
-          {{ showTranslation ? '📝' : '🌐' }} {{ translating ? 'Übersetzen...' : (showTranslation ? 'Original' : 'Übersetzen') }}
+          {{ showTranslation ? '📝' : '🌐' }} {{ translating ? ('post.translating' | translate) : (showTranslation ? ('post.original' | translate) : ('post.translate' | translate)) }}
         </button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
@@ -198,18 +200,18 @@ import { TranslationService, TranslationResult } from '../../services/translatio
           <div class="guardian-modal" (click)="$event.stopPropagation()">
             <div class="guardian-header">
               <span class="guardian-icon">🛡️</span>
-              <h2>Guardian - AI-gestützte Inhaltsmoderation</h2>
+              <h2>{{ 'guardian.title' | translate }}</h2>
             </div>
 
             @if (guardianResult) {
               <div class="guardian-content">
                 <div class="explanation-box">
-                  <h3>Warum wurde dieser Kommentar markiert?</h3>
+                  <h3>{{ 'guardian.whyFlagged' | translate }}</h3>
                   <p>{{ guardianResult.explanation }}</p>
 
                   @if (guardianResult.categories && guardianResult.categories.length > 0) {
                     <div class="categories">
-                      <strong>Kategorien:</strong>
+                      <strong>{{ 'guardian.categories' | translate }}</strong>
                       @for (cat of guardianResult.categories; track cat) {
                         <span class="category-tag">{{ getCategoryLabel(cat) }}</span>
                       }
@@ -217,9 +219,16 @@ import { TranslationService, TranslationResult } from '../../services/translatio
                   }
                 </div>
 
+                @if (guardianResult.revision_explanation) {
+                  <div class="revision-explanation-box">
+                    <h3>{{ 'guardian.whyAlternative' | translate }}</h3>
+                    <p>{{ guardianResult.revision_explanation }}</p>
+                  </div>
+                }
+
                 <div class="alternatives-section">
-                  <h3>Alternative Formulierungen</h3>
-                  <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Kommentar selbst um:</p>
+                  <h3>{{ 'guardian.alternatives' | translate }}</h3>
+                  <p class="alternatives-hint">{{ 'guardian.alternativesHint' | translate }}</p>
 
                   @for (alt of getAlternatives(); track alt; let i = $index) {
                     <button class="alternative-btn" (click)="useAlternative(alt)" [disabled]="isSubmittingComment">
@@ -229,26 +238,25 @@ import { TranslationService, TranslationResult } from '../../services/translatio
                   }
 
                   <div class="custom-alternative">
-                    <label>Oder schreibe eine eigene Formulierung:</label>
-                    <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..." [disabled]="isSubmittingComment"></textarea>
+                    <label>{{ 'guardian.customLabel' | translate }}</label>
+                    <textarea [(ngModel)]="customContent" rows="3" [placeholder]="'guardian.customPlaceholder' | translate" [disabled]="isSubmittingComment"></textarea>
                     <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim() || isSubmittingComment">
-                      Eigene Formulierung verwenden
+                      {{ 'guardian.useCustom' | translate }}
                     </button>
                   </div>
                 </div>
 
                 <div class="guardian-actions">
                   <button class="dispute-btn" (click)="disputeModeration()">
-                    ⚖️ Widerspruch einlegen
+                    {{ 'guardian.dispute' | translate }}
                   </button>
                   <button class="cancel-btn" (click)="closeGuardianModal()">
-                    Abbrechen
+                    {{ 'guardian.cancel' | translate }}
                   </button>
                 </div>
 
                 <div class="guardian-disclaimer">
-                  ⚠️ <strong>Hinweis:</strong> KI-Systeme können Fehler machen. Alle Vorschläge sind ohne Gewähr.
-                  Bei Unklarheiten kannst du Widerspruch einlegen.
+                  {{ 'guardian.disclaimer' | translate }}
                 </div>
               </div>
             }
@@ -350,6 +358,10 @@ import { TranslationService, TranslationResult } from '../../services/translatio
     .categories { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .category-tag { background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
 
+    .revision-explanation-box { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+    .revision-explanation-box h3 { margin: 0 0 12px; font-size: 18px; color: #0c5460; }
+    .revision-explanation-box p { margin: 0; color: #0c5460; line-height: 1.6; }
+
     .alternatives-section h3 { margin: 0 0 8px; font-size: 18px; }
     .alternatives-hint { color: #666; font-size: 14px; margin-bottom: 16px; }
     .alternative-btn { display: block; width: 100%; text-align: left; padding: 16px; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; font-size: 15px; }
@@ -386,6 +398,7 @@ export class PostCardComponent implements OnChanges {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   translationService = inject(TranslationService);
+  private i18n = inject(I18nService);
 
   isLiked = false;
   showReportModal = false;
@@ -618,15 +631,16 @@ export class PostCardComponent implements OnChanges {
 
   translatePost(): void {
     this.translating = true;
-    // Übersetze ins Deutsche (kann später konfigurierbar gemacht werden)
-    this.translationService.translateText(this.post.content, 'de', 'auto').subscribe({
+    // Translate to user's selected language
+    const targetLang = this.i18n.currentLanguage()?.code || 'en';
+    this.translationService.translateText(this.post.content, targetLang, 'auto').subscribe({
       next: (result) => {
         this.translatedContent = result;
         this.showTranslation = true;
         this.translating = false;
       },
       error: () => {
-        alert('Fehler beim Übersetzen des Posts');
+        alert(this.i18n.t('common.error'));
         this.translating = false;
       }
     });

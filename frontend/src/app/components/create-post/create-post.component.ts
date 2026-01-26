@@ -6,11 +6,13 @@ import { AuthService } from '../../services/auth.service';
 import { SafeSpaceService, ModerationCheckResult } from '../../services/safespace.service';
 import { VideoEditorComponent } from '../video-editor/video-editor.component';
 import { HttpClient } from '@angular/common/http';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, FormsModule, VideoEditorComponent],
+  imports: [CommonModule, FormsModule, VideoEditorComponent, TranslatePipe],
   template: `
     <div class="create-post">
       <div class="post-header">
@@ -49,18 +51,18 @@ import { HttpClient } from '@angular/common/http';
         <div class="guardian-modal" (click)="$event.stopPropagation()">
           <div class="guardian-header">
             <span class="guardian-icon">🛡️</span>
-            <h2>Guardian - AI-gestützte Inhaltsmoderation</h2>
+            <h2>{{ 'guardian.title' | translate }}</h2>
           </div>
 
           @if (guardianResult) {
             <div class="guardian-content">
               <div class="explanation-box">
-                <h3>Warum wurde dieser Inhalt markiert?</h3>
+                <h3>{{ 'guardian.whyFlagged' | translate }}</h3>
                 <p>{{ guardianResult.explanation }}</p>
 
                 @if (guardianResult.categories && guardianResult.categories.length > 0) {
                   <div class="categories">
-                    <strong>Kategorien:</strong>
+                    <strong>{{ 'guardian.categories' | translate }}</strong>
                     @for (cat of guardianResult.categories; track cat) {
                       <span class="category-tag">{{ getCategoryLabel(cat) }}</span>
                     }
@@ -68,9 +70,16 @@ import { HttpClient } from '@angular/common/http';
                 }
               </div>
 
+              @if (guardianResult.revision_explanation) {
+                <div class="revision-explanation-box">
+                  <h3>{{ 'guardian.whyAlternative' | translate }}</h3>
+                  <p>{{ guardianResult.revision_explanation }}</p>
+                </div>
+              }
+
               <div class="alternatives-section">
-                <h3>Alternative Formulierungen</h3>
-                <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Inhalt selbst um:</p>
+                <h3>{{ 'guardian.alternatives' | translate }}</h3>
+                <p class="alternatives-hint">{{ 'guardian.alternativesHint' | translate }}</p>
 
                 @for (alt of getAlternatives(); track alt; let i = $index) {
                   <button class="alternative-btn" (click)="useAlternative(alt)">
@@ -80,26 +89,25 @@ import { HttpClient } from '@angular/common/http';
                 }
 
                 <div class="custom-alternative">
-                  <label>Oder schreibe eine eigene Formulierung:</label>
-                  <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..."></textarea>
+                  <label>{{ 'guardian.customLabel' | translate }}</label>
+                  <textarea [(ngModel)]="customContent" rows="3" [placeholder]="'guardian.customPlaceholder' | translate"></textarea>
                   <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim()">
-                    Eigene Formulierung verwenden
+                    {{ 'guardian.useCustom' | translate }}
                   </button>
                 </div>
               </div>
 
               <div class="guardian-actions">
                 <button class="dispute-btn" (click)="disputeModeration()">
-                  ⚖️ Widerspruch einlegen
+                  {{ 'guardian.dispute' | translate }}
                 </button>
                 <button class="cancel-btn" (click)="closeGuardianModal()">
-                  Abbrechen
+                  {{ 'guardian.cancel' | translate }}
                 </button>
               </div>
 
               <div class="guardian-disclaimer">
-                ⚠️ <strong>Hinweis:</strong> KI-Systeme können Fehler machen. Alle Vorschläge sind ohne Gewähr.
-                Bei Unklarheiten kannst du Widerspruch einlegen.
+                {{ 'guardian.disclaimer' | translate }}
               </div>
             </div>
           }
@@ -139,6 +147,10 @@ import { HttpClient } from '@angular/common/http';
     .explanation-box p { margin: 0 0 12px; color: #856404; line-height: 1.6; }
     .categories { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .category-tag { background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+    .revision-explanation-box { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+    .revision-explanation-box h3 { margin: 0 0 12px; font-size: 18px; color: #0c5460; }
+    .revision-explanation-box p { margin: 0; color: #0c5460; line-height: 1.6; }
 
     .alternatives-section h3 { margin: 0 0 8px; font-size: 18px; }
     .alternatives-hint { color: #666; font-size: 14px; margin-bottom: 16px; }
