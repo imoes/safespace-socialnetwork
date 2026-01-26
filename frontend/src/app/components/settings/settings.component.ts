@@ -484,8 +484,10 @@ export class SettingsComponent implements OnInit {
   }
 
   onLanguageChange(): void {
-    this.i18n.setLanguage(this.selectedLanguage);
-    this.successMessage.set('Language changed successfully! / Sprache erfolgreich geändert!');
+    this.i18n.setLanguage(this.selectedLanguage).then(() => {
+      // Reload page to apply language changes
+      window.location.reload();
+    });
   }
 
   saveSettings(): void {
