@@ -215,5 +215,19 @@
     "noResults": "Keine Ergebnisse gefunden",
     "confirm": "Bestätigen",
     "cancel": "Abbrechen"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "markAllRead": "Alle als gelesen",
+    "loading": "Lade Benachrichtigungen...",
+    "noNotifications": "Keine Benachrichtigungen",
+    "justNow": "Gerade eben",
+    "minutesAgo": "vor {{count}} Min.",
+    "hoursAgo": "vor {{count}} Std.",
+    "daysAgo": "vor {{count}} Tag(en)",
+    "postLiked": "{{username}} hat deinen Post geliked",
+    "postCommented": "{{username}} hat deinen Post kommentiert",
+    "commentLiked": "{{username}} hat deinen Kommentar geliked",
+    "newNotification": "Neue Benachrichtigung"
   }
 }

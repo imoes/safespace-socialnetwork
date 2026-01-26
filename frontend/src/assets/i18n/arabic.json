@@ -162,6 +162,20 @@
     "confirm": "تأكيد",
     "cancel": "إلغاء"
   },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "loading": "جاري تحميل الإشعارات...",
+    "noNotifications": "لا توجد إشعارات",
+    "justNow": "الآن",
+    "minutesAgo": "منذ {{count}} دقيقة",
+    "hoursAgo": "منذ {{count}} ساعة",
+    "daysAgo": "منذ {{count}} يوم",
+    "postLiked": "{{username}} أعجب بمنشورك",
+    "postCommented": "{{username}} علق على منشورك",
+    "commentLiked": "{{username}} أعجب بتعليقك",
+    "newNotification": "إشعار جديد"
+  },
   "guardian": {
     "title": "Guardian - إشراف المحتوى بمساعدة الذكاء الاصطناعي",
     "whyFlagged": "لماذا تم وضع علامة على هذا المحتوى؟",

@@ -44,7 +44,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           <div class="post-content translation">
             <div class="translation-label">
               <span class="translation-badge">{{ translationService.getLanguageFlag(translatedContent.detected_language) }} → {{ translationService.getLanguageFlag(translatedContent.target_language) }}</span>
-              <span class="translation-info">Übersetzt</span>
+              <span class="translation-info">{{ 'post.translated' | translate }}</span>
             </div>
             <p>{{ translatedContent.translated_text }}</p>
           </div>
@@ -76,7 +76,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <button class="action-btn" [class.liked]="isLiked" (click)="toggleLike()">{{ isLiked ? '❤️' : '🤍' }} {{ post.likes_count }}</button>
         <button class="action-btn" (click)="toggleComments()">💬 {{ post.comments_count }}</button>
         <button class="action-btn" (click)="toggleTranslation()" [disabled]="translating">
-          {{ showTranslation ? '📝' : '🌐' }} {{ translating ? 'Übersetzen...' : (showTranslation ? 'Original' : 'Übersetzen') }}
+          {{ showTranslation ? '📝' : '🌐' }} {{ translating ? ('post.translating' | translate) : (showTranslation ? ('post.original' | translate) : ('post.translate' | translate)) }}
         </button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
@@ -398,6 +398,7 @@ export class PostCardComponent implements OnChanges {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   translationService = inject(TranslationService);
+  private i18n = inject(I18nService);
 
   isLiked = false;
   showReportModal = false;
@@ -630,15 +631,16 @@ export class PostCardComponent implements OnChanges {
 
   translatePost(): void {
     this.translating = true;
-    // Übersetze ins Deutsche (kann später konfigurierbar gemacht werden)
-    this.translationService.translateText(this.post.content, 'de', 'auto').subscribe({
+    // Translate to user's selected language
+    const targetLang = this.i18n.currentLanguage()?.code || 'en';
+    this.translationService.translateText(this.post.content, targetLang, 'auto').subscribe({
       next: (result) => {
         this.translatedContent = result;
         this.showTranslation = true;
         this.translating = false;
       },
       error: () => {
-        alert('Fehler beim Übersetzen des Posts');
+        alert(this.i18n.t('common.error'));
         this.translating = false;
       }
     });

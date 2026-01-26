@@ -215,5 +215,19 @@
     "noResults": "No results found",
     "confirm": "Confirm",
     "cancel": "Cancel"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "loading": "Loading notifications...",
+    "noNotifications": "No notifications",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} h ago",
+    "daysAgo": "{{count}} day(s) ago",
+    "postLiked": "{{username}} liked your post",
+    "postCommented": "{{username}} commented on your post",
+    "commentLiked": "{{username}} liked your comment",
+    "newNotification": "New notification"
   }
 }
