@@ -217,6 +217,13 @@ import { TranslationService, TranslationResult } from '../../services/translatio
                   }
                 </div>
 
+                @if (guardianResult.revision_explanation) {
+                  <div class="revision-explanation-box">
+                    <h3>💡 Warum diese Alternative?</h3>
+                    <p>{{ guardianResult.revision_explanation }}</p>
+                  </div>
+                }
+
                 <div class="alternatives-section">
                   <h3>Alternative Formulierungen</h3>
                   <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Kommentar selbst um:</p>
@@ -349,6 +356,10 @@ import { TranslationService, TranslationResult } from '../../services/translatio
     .explanation-box p { margin: 0 0 12px; color: #856404; line-height: 1.6; }
     .categories { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .category-tag { background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+    .revision-explanation-box { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+    .revision-explanation-box h3 { margin: 0 0 12px; font-size: 18px; color: #0c5460; }
+    .revision-explanation-box p { margin: 0; color: #0c5460; line-height: 1.6; }
 
     .alternatives-section h3 { margin: 0 0 8px; font-size: 18px; }
     .alternatives-hint { color: #666; font-size: 14px; margin-bottom: 16px; }
