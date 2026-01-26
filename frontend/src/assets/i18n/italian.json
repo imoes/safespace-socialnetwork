@@ -162,6 +162,20 @@
     "confirm": "Conferma",
     "cancel": "Annulla"
   },
+  "notifications": {
+    "title": "Notifiche",
+    "markAllRead": "Segna tutto come letto",
+    "loading": "Caricamento notifiche...",
+    "noNotifications": "Nessuna notifica",
+    "justNow": "Proprio ora",
+    "minutesAgo": "{{count}} min fa",
+    "hoursAgo": "{{count}} h fa",
+    "daysAgo": "{{count}} giorno/i fa",
+    "postLiked": "{{username}} ha messo mi piace al tuo post",
+    "postCommented": "{{username}} ha commentato il tuo post",
+    "commentLiked": "{{username}} ha messo mi piace al tuo commento",
+    "newNotification": "Nuova notifica"
+  },
   "guardian": {
     "title": "Guardian - Moderazione dei contenuti assistita da IA",
     "whyFlagged": "Perché questo contenuto è stato contrassegnato?",
