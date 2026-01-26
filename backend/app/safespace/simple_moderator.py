@@ -80,9 +80,13 @@ class SimpleModerator:
     """
 
     @classmethod
-    async def moderate_post(cls, post: PostMessage) -> ModerationResult:
+    async def moderate_post(cls, post: PostMessage, language: str = "de") -> ModerationResult:
         """
         Analysiert einen Post mit regelbasierten Methoden.
+
+        Args:
+            post: Der zu moderierende Post
+            language: Sprache (wird vom SimpleModerator aktuell nicht verwendet)
         """
         content_lower = post.content.lower()
 
