@@ -9,7 +9,10 @@
     "users": "Usuarios",
     "settings": "Configuración",
     "logout": "Cerrar sesión",
-    "searchPlaceholder": "Buscar usuarios..."
+    "searchPlaceholder": "Buscar usuarios...",
+    "privacyPolicy": "Política de Privacidad",
+    "impressum": "Aviso Legal",
+    "info": "Info"
   },
   "feed": {
     "title": "Mi Feed",

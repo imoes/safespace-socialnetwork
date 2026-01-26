@@ -9,7 +9,10 @@
     "users": "Users",
     "settings": "Settings",
     "logout": "Logout",
-    "searchPlaceholder": "Search users..."
+    "searchPlaceholder": "Search users...",
+    "privacyPolicy": "Privacy Policy",
+    "impressum": "Legal Notice",
+    "info": "Info"
   },
   "feed": {
     "title": "My Feed",
