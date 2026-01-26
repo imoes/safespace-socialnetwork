@@ -9,7 +9,10 @@
     "users": "المستخدمون",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
-    "searchPlaceholder": "البحث عن المستخدمين..."
+    "searchPlaceholder": "البحث عن المستخدمين...",
+    "privacyPolicy": "سياسة الخصوصية",
+    "impressum": "الإشعار القانوني",
+    "info": "معلومات"
   },
   "feed": {
     "title": "تغذيتي",

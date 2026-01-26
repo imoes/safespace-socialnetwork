@@ -4,6 +4,8 @@ import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { UserService, UserSearchResult } from './services/user.service';
+import { I18nService } from './services/i18n.service';
+import { TranslatePipe } from './pipes/translate.pipe';
 import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
 import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval } from 'rxjs';
@@ -12,7 +14,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, TranslatePipe],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
@@ -22,7 +24,7 @@ import { HttpClient } from '@angular/common/http';
           <input
             type="text"
             class="search-input"
-            placeholder="🔍 Benutzer suchen..."
+            [placeholder]="'🔍 ' + ('nav.searchPlaceholder' | translate)"
             [(ngModel)]="searchQuery"
             (input)="onSearchInput()"
             (focus)="onSearchFocus()"
@@ -47,7 +49,7 @@ import { HttpClient } from '@angular/common/http';
                     <div class="search-username">
                       {{ user.username }}
                       @if (user.is_friend) {
-                        <span class="friend-badge">✓ Freund</span>
+                        <span class="friend-badge">✓ {{ 'friends.title' | translate }}</span>
                       }
                     </div>
                     @if (user.bio) {
@@ -61,7 +63,7 @@ import { HttpClient } from '@angular/common/http';
           @if (showSearchResults() && searchQuery.length >= 2 && searchResults().length === 0) {
             <div class="search-overlay" (click)="closeSearch()"></div>
             <div class="search-results">
-              <div class="no-results">Keine Benutzer gefunden</div>
+              <div class="no-results">{{ 'common.noResults' | translate }}</div>
             </div>
           }
         </div>
@@ -69,12 +71,12 @@ import { HttpClient } from '@angular/common/http';
         <div class="nav-right">
           <!-- Social Features nur für normale User -->
           @if (!authService.isModerator() && !authService.isAdmin()) {
-            <a routerLink="/" class="nav-link">🏠 Feed</a>
-            <a routerLink="/my-posts" class="nav-link">📝 Meine Posts</a>
-            <a routerLink="/public-feed" class="nav-link">🌍 Öffentlich</a>
-            <a routerLink="/hashtags" class="nav-link">🏷️ Hashtags</a>
+            <a routerLink="/" class="nav-link">🏠 {{ 'nav.feed' | translate }}</a>
+            <a routerLink="/my-posts" class="nav-link">📝 {{ 'nav.myPosts' | translate }}</a>
+            <a routerLink="/public-feed" class="nav-link">🌍 {{ 'nav.public' | translate }}</a>
+            <a routerLink="/hashtags" class="nav-link">🏷️ {{ 'nav.hashtags' | translate }}</a>
             <a routerLink="/friends" class="nav-link nav-link-with-badge">
-              👫 Freunde
+              👫 {{ 'nav.friends' | translate }}
               @if (pendingRequestsCount() > 0) {
                 <span class="notification-badge">{{ pendingRequestsCount() }}</span>
               }
@@ -83,7 +85,7 @@ import { HttpClient } from '@angular/common/http';
           <app-notifications-dropdown />
           @if (authService.isModerator()) {
             <a routerLink="/admin" class="nav-link nav-link-with-badge">
-              🛡️ Moderation
+              🛡️ {{ 'nav.moderation' | translate }}
               @if (openReportsCount() > 0) {
                 <span class="notification-badge">{{ openReportsCount() }}</span>
               }
@@ -96,7 +98,7 @@ import { HttpClient } from '@angular/common/http';
                 <span class="notification-badge">{{ openReportsCount() }}</span>
               }
             </a>
-            <a routerLink="/users" class="nav-link">👥 Benutzer</a>
+            <a routerLink="/users" class="nav-link">👥 {{ 'nav.users' | translate }}</a>
           }
 
           <div class="user-menu">
@@ -109,21 +111,21 @@ import { HttpClient } from '@angular/common/http';
               <div class="dropdown-overlay" (click)="closeDropdown()"></div>
               <div class="dropdown-menu">
                 <a routerLink="/settings" class="dropdown-item" (click)="closeDropdown()">
-                  ⚙️ Einstellungen
+                  ⚙️ {{ 'nav.settings' | translate }}
                 </a>
                 <div class="dropdown-divider"></div>
                 <a routerLink="/info" class="dropdown-item" (click)="closeDropdown()">
-                  ℹ️ Info
+                  ℹ️ {{ 'nav.info' | translate }}
                 </a>
                 <a routerLink="/privacy-policy" class="dropdown-item" (click)="closeDropdown()">
-                  📜 Datenschutzerklärung
+                  📜 {{ 'nav.privacyPolicy' | translate }}
                 </a>
                 <a routerLink="/impressum" class="dropdown-item" (click)="closeDropdown()">
-                  ⚖️ Impressum
+                  ⚖️ {{ 'nav.impressum' | translate }}
                 </a>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">
-                  🚪 Abmelden
+                  🚪 {{ 'nav.logout' | translate }}
                 </button>
               </div>
             }
