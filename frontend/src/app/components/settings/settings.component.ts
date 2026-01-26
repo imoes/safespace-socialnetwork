@@ -481,8 +481,19 @@ export class SettingsComponent implements OnInit {
     }
 
     // Load current language and store original
-    this.selectedLanguage = this.i18n.currentLanguage().code;
-    this.originalLanguage = this.selectedLanguage;
+    // Wait for language to be loaded (async operation in I18nService constructor)
+    const currentLang = this.i18n.currentLanguage();
+    if (currentLang) {
+      this.selectedLanguage = currentLang.code;
+      this.originalLanguage = this.selectedLanguage;
+      console.log(`⚙️ [Settings] Current language: ${this.selectedLanguage}`);
+    } else {
+      // Fallback: read from localStorage directly
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      this.selectedLanguage = savedLang;
+      this.originalLanguage = savedLang;
+      console.warn(`⚠️ [Settings] Language not loaded yet, using fallback: ${savedLang}`);
+    }
   }
 
   onLanguageChange(): void {
@@ -531,13 +542,19 @@ export class SettingsComponent implements OnInit {
 
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
+        console.log(`⚙️ [Settings] Settings saved successfully`);
+        console.log(`⚙️ [Settings] Selected language: ${this.selectedLanguage}, Original: ${this.originalLanguage}`);
+
         // Check if language changed
         if (this.selectedLanguage !== this.originalLanguage) {
+          console.log(`🌐 [Settings] Language changed, applying new language and reloading...`);
           // Apply language change and reload page
           this.i18n.setLanguage(this.selectedLanguage).then(() => {
+            console.log(`🌐 [Settings] Language set, reloading page...`);
             window.location.reload();
           });
         } else {
+          console.log(`⚙️ [Settings] Language unchanged, showing success message`);
           this.successMessage.set('Einstellungen erfolgreich gespeichert!');
           this.isSaving.set(false);
 

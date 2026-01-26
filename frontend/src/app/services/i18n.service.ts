@@ -59,23 +59,29 @@ export class I18nService {
 
     // Warte bis Sprachen geladen sind
     if (availableLanguages.length === 0) {
+      console.warn('⚠️ [I18n] initLanguage called but no languages available yet');
       return;
     }
 
     // Check if user has a preferred language in localStorage
     const savedLang = localStorage.getItem('preferredLanguage');
+    console.log(`🌐 [I18n] Saved language in localStorage: ${savedLang || 'none'}`);
 
     let langCode = 'en'; // Default fallback
 
     if (savedLang) {
       // Use saved preference
       langCode = savedLang;
+      console.log(`🌐 [I18n] Using saved language: ${langCode}`);
     } else {
       // Detect browser language
       const browserLang = navigator.language.split('-')[0]; // e.g., "en-US" -> "en"
       const supportedLang = availableLanguages.find(l => l.code === browserLang);
       if (supportedLang) {
         langCode = browserLang;
+        console.log(`🌐 [I18n] Using browser language: ${langCode}`);
+      } else {
+        console.log(`🌐 [I18n] Browser language ${browserLang} not supported, using default: ${langCode}`);
       }
     }
 
@@ -83,14 +89,18 @@ export class I18nService {
   }
 
   public async setLanguage(code: string): Promise<void> {
+    console.log(`🌐 [I18n] setLanguage called with code: ${code}`);
     const availableLanguages = this.availableLanguagesSignal();
+    console.log(`🌐 [I18n] Available languages:`, availableLanguages.map(l => l.code));
+
     const language = availableLanguages.find(l => l.code === code);
     if (!language) {
-      console.error(`Language ${code} not found`);
+      console.error(`❌ [I18n] Language ${code} not found in available languages`);
       return;
     }
 
     try {
+      console.log(`🌐 [I18n] Loading translations from: /assets/i18n/${language.file}.json`);
       const translations = await firstValueFrom(
         this.http.get(`/assets/i18n/${language.file}.json`)
       );
@@ -98,6 +108,7 @@ export class I18nService {
       this.translations.set(translations);
       this.currentLangCode.set(code);
       localStorage.setItem('preferredLanguage', code);
+      console.log(`✅ [I18n] Language changed to: ${code}, saved to localStorage`);
 
       // Update HTML lang attribute
       document.documentElement.lang = code;
@@ -106,7 +117,7 @@ export class I18nService {
       document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';
 
     } catch (error) {
-      console.error(`Failed to load language ${code}:`, error);
+      console.error(`❌ [I18n] Failed to load language ${code}:`, error);
     }
   }
 
