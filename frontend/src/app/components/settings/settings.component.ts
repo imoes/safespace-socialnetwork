@@ -464,6 +464,7 @@ export class SettingsComponent implements OnInit {
   newPassword = '';
   confirmPassword = '';
   selectedLanguage = 'en';
+  originalLanguage = 'en';
 
   isSaving = signal(false);
   successMessage = signal('');
@@ -479,15 +480,14 @@ export class SettingsComponent implements OnInit {
       this.lastName = user.last_name || '';
     }
 
-    // Load current language
+    // Load current language and store original
     this.selectedLanguage = this.i18n.currentLanguage().code;
+    this.originalLanguage = this.selectedLanguage;
   }
 
   onLanguageChange(): void {
-    this.i18n.setLanguage(this.selectedLanguage).then(() => {
-      // Reload page to apply language changes
-      window.location.reload();
-    });
+    // Just update the selection, don't apply yet
+    // Language will be applied when user clicks "Save Settings"
   }
 
   saveSettings(): void {
@@ -531,19 +531,24 @@ export class SettingsComponent implements OnInit {
 
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
-        this.successMessage.set('Einstellungen erfolgreich gespeichert!');
-        this.isSaving.set(false);
+        // Check if language changed
+        if (this.selectedLanguage !== this.originalLanguage) {
+          // Apply language change and reload page
+          this.i18n.setLanguage(this.selectedLanguage).then(() => {
+            window.location.reload();
+          });
+        } else {
+          this.successMessage.set('Einstellungen erfolgreich gespeichert!');
+          this.isSaving.set(false);
 
-        // Passwortfelder leeren
-        this.currentPassword = '';
-        this.newPassword = '';
-        this.confirmPassword = '';
+          // Passwortfelder leeren
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
 
-        // User-Daten neu laden, um aktualisierte Werte anzuzeigen
-        this.authService.loadCurrentUser();
-
-        // User neu laden
-        this.authService.loadCurrentUser();
+          // User-Daten neu laden, um aktualisierte Werte anzuzeigen
+          this.authService.loadCurrentUser();
+        }
       },
       error: (error) => {
         this.isSaving.set(false);
