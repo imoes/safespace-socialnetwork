@@ -179,6 +179,20 @@
   "welcome": {
     "understood": "Understood"
   },
+  "guardian": {
+    "title": "Guardian - AI-assisted content moderation",
+    "whyFlagged": "Why was this content flagged?",
+    "whyAlternative": "💡 Why this alternative?",
+    "alternatives": "Alternative formulations",
+    "alternativesHint": "Choose one of the following alternatives or rephrase your content yourself:",
+    "customLabel": "Or write your own formulation:",
+    "customPlaceholder": "Your own formulation...",
+    "useCustom": "Use custom formulation",
+    "dispute": "⚖️ File objection",
+    "cancel": "Cancel",
+    "disclaimer": "⚠️ Note: AI systems can make mistakes. All suggestions are without guarantee. If unclear, you can file an objection.",
+    "categories": "Categories:"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

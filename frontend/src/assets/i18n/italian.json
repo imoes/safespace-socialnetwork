@@ -148,5 +148,19 @@
     "noResults": "Nessun risultato trovato",
     "confirm": "Conferma",
     "cancel": "Annulla"
+  },
+  "guardian": {
+    "title": "Guardian - Moderazione dei contenuti assistita da IA",
+    "whyFlagged": "Perché questo contenuto è stato contrassegnato?",
+    "whyAlternative": "💡 Perché questa alternativa?",
+    "alternatives": "Formulazioni alternative",
+    "alternativesHint": "Scegli una delle seguenti alternative o riformula tu stesso il contenuto:",
+    "customLabel": "O scrivi la tua formulazione:",
+    "customPlaceholder": "La tua formulazione...",
+    "useCustom": "Usa formulazione personalizzata",
+    "dispute": "⚖️ Presenta obiezione",
+    "cancel": "Annulla",
+    "disclaimer": "⚠️ Nota: I sistemi IA possono commettere errori. Tutti i suggerimenti sono senza garanzia. In caso di dubbi, puoi presentare un'obiezione.",
+    "categories": "Categorie:"
   }
 }

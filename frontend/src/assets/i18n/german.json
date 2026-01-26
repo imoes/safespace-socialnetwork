@@ -179,6 +179,20 @@
   "welcome": {
     "understood": "Verstanden"
   },
+  "guardian": {
+    "title": "Guardian - AI-gestützte Inhaltsmoderation",
+    "whyFlagged": "Warum wurde dieser Inhalt markiert?",
+    "whyAlternative": "💡 Warum diese Alternative?",
+    "alternatives": "Alternative Formulierungen",
+    "alternativesHint": "Wähle eine der folgenden Alternativen oder formuliere deinen Inhalt selbst um:",
+    "customLabel": "Oder schreibe eine eigene Formulierung:",
+    "customPlaceholder": "Deine eigene Formulierung...",
+    "useCustom": "Eigene Formulierung verwenden",
+    "dispute": "⚖️ Widerspruch einlegen",
+    "cancel": "Abbrechen",
+    "disclaimer": "⚠️ Hinweis: KI-Systeme können Fehler machen. Alle Vorschläge sind ohne Gewähr. Bei Unklarheiten kannst du Widerspruch einlegen.",
+    "categories": "Kategorien:"
+  },
   "common": {
     "loading": "Lädt...",
     "error": "Ein Fehler ist aufgetreten",

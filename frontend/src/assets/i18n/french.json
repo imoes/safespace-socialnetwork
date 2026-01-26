@@ -148,5 +148,19 @@
     "noResults": "Aucun résultat trouvé",
     "confirm": "Confirmer",
     "cancel": "Annuler"
+  },
+  "guardian": {
+    "title": "Guardian - Modération de contenu assistée par IA",
+    "whyFlagged": "Pourquoi ce contenu a-t-il été signalé?",
+    "whyAlternative": "💡 Pourquoi cette alternative?",
+    "alternatives": "Formulations alternatives",
+    "alternativesHint": "Choisissez l'une des alternatives suivantes ou reformulez votre contenu vous-même:",
+    "customLabel": "Ou écrivez votre propre formulation:",
+    "customPlaceholder": "Votre propre formulation...",
+    "useCustom": "Utiliser la formulation personnalisée",
+    "dispute": "⚖️ Déposer une objection",
+    "cancel": "Annuler",
+    "disclaimer": "⚠️ Note: Les systèmes IA peuvent faire des erreurs. Toutes les suggestions sont sans garantie. En cas de doute, vous pouvez déposer une objection.",
+    "categories": "Catégories:"
   }
 }
