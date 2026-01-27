@@ -68,8 +68,8 @@ export class VideoEditorComponent {
     const url = URL.createObjectURL(file);
     this.videoUrl.set(url);
 
-    // Lade Video-Metadaten
-    await this.loadVideoMetadata(file, url);
+    // Lade Video-Metadaten (separate URL to avoid revoking the preview)
+    await this.loadVideoMetadata(file);
 
     this.showEditor.set(true);
 
@@ -79,10 +79,11 @@ export class VideoEditorComponent {
     }
   }
 
-  private async loadVideoMetadata(file: File, url: string): Promise<void> {
+  private async loadVideoMetadata(file: File): Promise<void> {
     return new Promise((resolve) => {
       const video = document.createElement('video');
       video.preload = 'metadata';
+      const metadataUrl = URL.createObjectURL(file);
 
       video.onloadedmetadata = () => {
         const duration = video.duration;
@@ -103,16 +104,26 @@ export class VideoEditorComponent {
         this.trimStart.set(0);
         this.trimEnd.set(Math.min(duration, 300)); // Max 5 Min
 
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(metadataUrl);
         resolve();
       };
 
-      video.src = url;
+      video.src = metadataUrl;
     });
   }
 
   private async loadFFmpeg(): Promise<void> {
     try {
+      // Check if SharedArrayBuffer is available (requires cross-origin isolation)
+      if (typeof SharedArrayBuffer === 'undefined') {
+        console.error('SharedArrayBuffer not available - cross-origin isolation headers missing');
+        this.errorMessage.set(
+          'Video-Verarbeitung nicht verfügbar: Browser unterstützt SharedArrayBuffer nicht. ' +
+          'Bitte stelle sicher, dass die Seite mit Cross-Origin-Isolation-Headern geladen wird.'
+        );
+        return;
+      }
+
       this.ffmpeg = new FFmpeg();
 
       this.ffmpeg.on('log', ({ message }: { message: string }) => {
@@ -130,7 +141,7 @@ export class VideoEditorComponent {
       });
 
       this.ffmpegLoaded = true;
-      console.log('✅ FFmpeg loaded');
+      console.log('FFmpeg loaded successfully');
     } catch (error) {
       console.error('Failed to load FFmpeg:', error);
       this.errorMessage.set('FFmpeg konnte nicht geladen werden. Bitte versuche es später erneut.');
