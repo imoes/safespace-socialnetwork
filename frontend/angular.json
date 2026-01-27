@@ -23,6 +23,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "/assets"
+              },
+              {
+                "glob": "814.ffmpeg.js",
+                "input": "node_modules/@ffmpeg/ffmpeg/dist/umd",
+                "output": "/assets/ffmpeg"
               }
             ],
             "styles": [],

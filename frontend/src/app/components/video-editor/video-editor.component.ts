@@ -2,7 +2,7 @@ import { Component, signal, computed, Output, EventEmitter, inject } from '@angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
+import { fetchFile } from '@ffmpeg/util';
 
 interface VideoInfo {
   duration: number;
@@ -124,16 +124,15 @@ export class VideoEditorComponent {
         this.processingProgress.set(Math.round(progress * 100));
       });
 
-      // The worker is created with type:"module", so importScripts() is unavailable.
-      // The worker falls back to dynamic import(), which requires an ES module URL.
-      // Use the ESM core (not UMD) so import() works. Blob URLs don't work with import().
-      // Only classWorkerURL uses a blob URL to bypass Vite's worker resolution.
+      // The worker must be served from a real origin (not a blob URL) so that
+      // dynamic import() works inside it. Blob workers have opaque origins which
+      // block import(). The UMD worker bundle is copied to /assets/ffmpeg/ via
+      // angular.json assets config. Use the ESM core so import() can load it.
       const coreBaseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
-      const workerURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js';
       await this.ffmpeg.load({
         coreURL: `${coreBaseURL}/ffmpeg-core.js`,
         wasmURL: `${coreBaseURL}/ffmpeg-core.wasm`,
-        classWorkerURL: await toBlobURL(workerURL, 'text/javascript'),
+        classWorkerURL: '/assets/ffmpeg/814.ffmpeg.js',
       });
 
       this.ffmpegLoaded = true;
