@@ -744,9 +744,6 @@ export class PostCardComponent implements OnChanges {
   onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
     if (isHovering) {
       videoElement.play().catch(() => {});
-    } else {
-      videoElement.pause();
-      videoElement.currentTime = 0;
     }
   }
 
