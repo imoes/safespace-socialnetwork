@@ -90,6 +90,11 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(10)
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS birthday DATE
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (
@@ -248,7 +253,7 @@ async def get_user_by_uid(uid: int) -> dict | None:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """SELECT uid, username, email, password_hash, role, bio, is_banned, banned_until, created_at,
-                      profile_picture, first_name, last_name, preferred_language
+                      profile_picture, first_name, last_name, preferred_language, birthday
                FROM users WHERE uid = %s""",
             (uid,)
         )
@@ -684,3 +689,19 @@ async def decrement_user_posts_count(user_uid: int) -> None:
             (user_uid,)
         )
         await conn.commit()
+
+
+async def get_users_with_birthday_today() -> list[dict]:
+    """Gibt alle User zurück, die heute Geburtstag haben"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT uid, username, birthday
+            FROM users
+            WHERE birthday IS NOT NULL
+              AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE)
+              AND EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE)
+              AND is_banned = FALSE
+            """
+        )
+        return await result.fetchall()
