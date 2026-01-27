@@ -138,6 +138,14 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     'birthday': 'Geburtstag',
     'group_post': 'Gruppen-Post'
   };
+  placeholders = [
+    'username', 'actor', 'post_content', 'comment_content', 'action_button', 'birthday_age'
+  ];
+  subjectPlaceholderText = 'z.B. \x7B\x7Bactor\x7D\x7D hat deinen Post geliked!';
+
+  getPlaceholderTag(name: string): string {
+    return '\x7B\x7B' + name + '\x7D\x7D';
+  }
 
   // UI States
   loading = signal(false);

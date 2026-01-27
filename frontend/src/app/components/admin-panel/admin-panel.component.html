@@ -367,8 +367,7 @@
     <div class="tab-content">
       <h2>📧 E-Mail-Templates</h2>
       <p class="description">
-        Hier kannst du die E-Mail-Benachrichtigungen bearbeiten. Verwende Platzhalter wie
-        <code>&#123;&#123;username&#125;&#125;</code>, <code>&#123;&#123;actor&#125;&#125;</code> usw.
+        Hier kannst du die E-Mail-Benachrichtigungen bearbeiten. Verwende Platzhalter
         und übersetze Templates per Knopfdruck in alle Sprachen.
       </p>
 
@@ -401,7 +400,7 @@
             id="template-subject"
             type="text"
             [(ngModel)]="templateSubject"
-            placeholder="z.B. {{actor}} hat deinen Post geliked!">
+            [placeholder]="subjectPlaceholderText">
         </div>
 
         <!-- WYSIWYG Toolbar -->
@@ -433,12 +432,9 @@
         <div class="placeholder-section">
           <label>Platzhalter einfügen:</label>
           <div class="placeholder-buttons">
-            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{username}}')">&#123;&#123;username&#125;&#125;</button>
-            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{actor}}')">&#123;&#123;actor&#125;&#125;</button>
-            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{post_content}}')">&#123;&#123;post_content&#125;&#125;</button>
-            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{comment_content}}')">&#123;&#123;comment_content&#125;&#125;</button>
-            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{action_button}}')">&#123;&#123;action_button&#125;&#125;</button>
-            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{birthday_age}}')">&#123;&#123;birthday_age&#125;&#125;</button>
+            @for (ph of placeholders; track ph) {
+              <button type="button" class="placeholder-btn" (click)="insertPlaceholder(getPlaceholderTag(ph))">{{ getPlaceholderTag(ph) }}</button>
+            }
           </div>
         </div>
 
