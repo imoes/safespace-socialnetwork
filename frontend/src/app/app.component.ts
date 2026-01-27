@@ -609,12 +609,9 @@ export class AppComponent implements OnInit {
   private loadPendingRequestsCount(): void {
     this.http.get<{ requests: any[] }>('/api/friends/requests').subscribe({
       next: (response) => {
-        console.log('Pending friend requests:', response.requests.length);
         this.pendingRequestsCount.set(response.requests.length);
       },
-      error: (err) => {
-        console.error('Error loading pending requests:', err);
-      }
+      error: () => {}
     });
   }
 
@@ -623,15 +620,9 @@ export class AppComponent implements OnInit {
       params: { limit: '1000' }
     }).subscribe({
       next: (response) => {
-        console.log('Open reports:', response.reports.length);
         this.openReportsCount.set(response.reports.length);
       },
-      error: (err) => {
-        // Ignorieren wenn User keine Berechtigung hat
-        if (err.status !== 403) {
-          console.error('Error loading open reports:', err);
-        }
-      }
+      error: () => {}
     });
   }
 

@@ -450,23 +450,11 @@ export class PostCardComponent implements OnChanges {
   isSubmittingComment = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Wenn expandComments auf true gesetzt wird, Kommentare automatisch laden
-    if (changes['expandComments']) {
-      const change = changes['expandComments'];
-      console.log('expandComments changed from', change.previousValue, 'to', change.currentValue, 'for post', this.post.post_id);
-
-      if (this.expandComments) {
-        console.log('Auto-expanding comments for post', this.post.post_id);
-        if (!this.showComments) {
-          this.showComments = true;
-          if (this.comments.length === 0) {
-            console.log('Loading comments...');
-            this.loadComments();
-          } else {
-            console.log('Comments already loaded');
-          }
-        } else {
-          console.log('Comments already visible');
+    if (changes['expandComments'] && this.expandComments) {
+      if (!this.showComments) {
+        this.showComments = true;
+        if (this.comments.length === 0) {
+          this.loadComments();
         }
       }
     }
@@ -696,23 +684,13 @@ export class PostCardComponent implements OnChanges {
         this.newComment = '';
       },
       error: (error) => {
-        console.error('Comment error:', error);
-        console.log('Error status:', error.status);
-        console.log('Error body:', error.error);
-        console.log('Error detail:', error.error?.detail);
-
-        // Hatespeech-Fehler mit Guardian Modal
-        // Backend sendet: { detail: { error: "comment_contains_hate_speech", ... } }
         const errorDetail = error.error?.detail || error.error;
 
         if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
-          console.log('✅ Showing Guardian Modal');
           this.originalCommentContent = content;
           this.guardianResult = errorDetail;
           this.showGuardianModal = true;
         } else {
-          // Generischer Fehler
-          console.error('❌ Generic error, not hate speech');
           alert(this.i18n.t('errors.addComment'));
         }
       }
@@ -765,9 +743,7 @@ export class PostCardComponent implements OnChanges {
   onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
     if (isHovering) {
       // Play video on hover - läuft dann bis zum Ende durch
-      videoElement.play().catch(err => {
-        console.log('Video autoplay failed:', err);
-      });
+      videoElement.play().catch(() => {});
     }
     // Beim Verlassen passiert nichts - Video läuft weiter
   }
@@ -822,7 +798,6 @@ export class PostCardComponent implements OnChanges {
         this.closeGuardianModal();
       },
       error: (error) => {
-        console.error('Submit alternative error:', error);
         this.isSubmittingComment = false;
 
         // Falls auch die Alternative abgelehnt wird (sehr selten)
