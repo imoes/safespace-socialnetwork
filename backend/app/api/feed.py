@@ -329,7 +329,8 @@ async def add_comment(
             notification_type="post_commented",
             post_id=post_id,
             post_author_uid=author_uid,
-            comment_id=comment.get("comment_id")
+            comment_id=comment.get("comment_id"),
+            comment_content=content
         )
 
     return {

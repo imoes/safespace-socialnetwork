@@ -1,7 +1,17 @@
 """Birthday Notification Service - Prüft täglich um Mitternacht auf Geburtstage"""
 
 import asyncio
-from datetime import datetime, time, timedelta
+from datetime import datetime, date, time, timedelta
+
+
+def calculate_age(birthday: date) -> int:
+    """Berechnet das aktuelle Alter basierend auf dem Geburtsdatum"""
+    today = date.today()
+    age = today.year - birthday.year
+    # Prüfe ob der Geburtstag dieses Jahr schon war
+    if (today.month, today.day) < (birthday.month, birthday.day):
+        age -= 1
+    return age
 
 
 async def send_birthday_notifications():
@@ -13,16 +23,23 @@ async def send_birthday_notifications():
 
     for birthday_user in birthday_users:
         birthday_uid = birthday_user["uid"]
+        birthday_date = birthday_user["birthday"]
+
+        # Alter berechnen
+        age = calculate_age(birthday_date) if birthday_date else None
 
         # Alle Freunde des Geburtstagskinds benachrichtigen
         friend_uids = await get_friends(birthday_uid)
 
         for friend_uid in friend_uids:
             try:
+                # Alter wird im comment_id-Feld gespeichert (bei Birthday ungenutzt)
                 await create_notification(
                     user_uid=friend_uid,
                     actor_uid=birthday_uid,
-                    notification_type="birthday"
+                    notification_type="birthday",
+                    comment_id=age,
+                    birthday_age=age
                 )
             except Exception as e:
                 print(f"Fehler beim Senden der Geburtstags-Benachrichtigung an {friend_uid}: {e}")
