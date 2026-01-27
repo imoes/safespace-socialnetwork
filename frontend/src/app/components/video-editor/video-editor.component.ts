@@ -124,15 +124,15 @@ export class VideoEditorComponent {
         this.processingProgress.set(Math.round(progress * 100));
       });
 
-      // The worker must be served from a real origin (not a blob URL) so that
-      // dynamic import() works inside it. Blob workers have opaque origins which
-      // block import(). The UMD worker bundle is copied to /assets/ffmpeg/ via
-      // angular.json assets config. Use the ESM core so import() can load it.
+      // Serve the ESM worker from /assets/ffmpeg/ (copied via angular.json assets).
+      // The worker must be a real URL (not blob) so native import() works inside it.
+      // The ESM worker uses native import() to load ffmpeg-core, unlike the UMD
+      // bundle which uses webpack's require() that can't resolve URLs.
       const coreBaseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
       await this.ffmpeg.load({
         coreURL: `${coreBaseURL}/ffmpeg-core.js`,
         wasmURL: `${coreBaseURL}/ffmpeg-core.wasm`,
-        classWorkerURL: '/assets/ffmpeg/814.ffmpeg.js',
+        classWorkerURL: '/assets/ffmpeg/worker.js',
       });
 
       this.ffmpegLoaded = true;

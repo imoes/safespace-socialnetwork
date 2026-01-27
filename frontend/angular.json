@@ -25,8 +25,8 @@
                 "output": "/assets"
               },
               {
-                "glob": "814.ffmpeg.js",
-                "input": "node_modules/@ffmpeg/ffmpeg/dist/umd",
+                "glob": "{worker.js,const.js,errors.js}",
+                "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
                 "output": "/assets/ffmpeg"
               }
             ],
