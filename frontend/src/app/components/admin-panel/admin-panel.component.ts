@@ -90,7 +90,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   private i18n = inject(I18nService);
 
   // Tabs
-  activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings'>('welcome');
+  activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings' | 'email-templates'>('welcome');
 
   // Welcome Message
   welcomeMessage = signal<WelcomeMessage | null>(null);
@@ -114,6 +114,30 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   // Site Settings
   siteTitle = signal('SocialNet');
   siteTitleForm = '';
+
+  // Email Templates
+  emailTemplates = signal<any>({});
+  notificationTypes = signal<string[]>([]);
+  selectedNotificationType = 'post_liked';
+  selectedTemplateLang = 'de';
+  templateSubject = '';
+  templateBody = '';
+  translating = signal(false);
+  availableLanguages = [
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' }
+  ];
+  notificationTypeLabels: Record<string, string> = {
+    'post_liked': 'Post geliked',
+    'post_commented': 'Post kommentiert',
+    'comment_liked': 'Kommentar geliked',
+    'birthday': 'Geburtstag',
+    'group_post': 'Gruppen-Post'
+  };
 
   // UI States
   loading = signal(false);
@@ -284,17 +308,20 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings'): void {
+  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings' | 'email-templates'): void {
     this.activeTab.set(tab);
     this.error.set(null);
     this.success.set(null);
 
-    // Lade System-Status wenn Tab aktiviert wird
     if (tab === 'status') {
       this.loadSystemStatus();
       this.startAutoRefresh();
     } else {
       this.stopAutoRefresh();
+    }
+
+    if (tab === 'email-templates') {
+      this.loadEmailTemplates();
     }
   }
 
@@ -314,6 +341,135 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       'admin': 'friendsPage.roleAdmin'
     };
     return keyMap[role] ? this.i18n.t(keyMap[role]) : role;
+  }
+
+  // === Email Templates ===
+
+  async loadEmailTemplates(): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.get('/api/admin/email-templates', { headers }).toPromise();
+      this.emailTemplates.set(response.templates || {});
+      this.notificationTypes.set(response.notification_types || []);
+      this.loadTemplateForSelection();
+    } catch (err) {
+      console.error('Error loading email templates:', err);
+    }
+  }
+
+  loadTemplateForSelection(): void {
+    const templates = this.emailTemplates();
+    const typeTemplates = templates[this.selectedNotificationType];
+    if (typeTemplates && typeTemplates[this.selectedTemplateLang]) {
+      this.templateSubject = typeTemplates[this.selectedTemplateLang].subject || '';
+      this.templateBody = typeTemplates[this.selectedTemplateLang].body || '';
+    } else {
+      this.templateSubject = '';
+      this.templateBody = '';
+    }
+  }
+
+  onTemplateTypeChange(): void {
+    this.loadTemplateForSelection();
+  }
+
+  onTemplateLangChange(): void {
+    this.loadTemplateForSelection();
+  }
+
+  async saveEmailTemplate(): Promise<void> {
+    if (!this.templateSubject.trim() || !this.templateBody.trim()) {
+      this.error.set('Betreff und Inhalt sind erforderlich');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      await this.http.put('/api/admin/email-templates', {
+        notification_type: this.selectedNotificationType,
+        language: this.selectedTemplateLang,
+        subject: this.templateSubject,
+        body: this.templateBody
+      }, { headers }).toPromise();
+
+      this.success.set('Template erfolgreich gespeichert!');
+      await this.loadEmailTemplates();
+    } catch (err) {
+      this.error.set('Fehler beim Speichern des Templates');
+      console.error(err);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async translateTemplate(): Promise<void> {
+    if (!this.templateSubject.trim() || !this.templateBody.trim()) {
+      this.error.set('Bitte speichere erst das Template bevor du es übersetzt');
+      return;
+    }
+
+    this.translating.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.post('/api/admin/email-templates/translate', {
+        notification_type: this.selectedNotificationType,
+        language: this.selectedTemplateLang,
+        subject: this.templateSubject,
+        body: this.templateBody
+      }, { headers }).toPromise();
+
+      const translations = response.translations || {};
+      const successLangs = Object.keys(translations).filter(l => !translations[l].error);
+      const failedLangs = Object.keys(translations).filter(l => translations[l].error);
+
+      let msg = `Template in ${successLangs.length} Sprachen übersetzt!`;
+      if (failedLangs.length > 0) {
+        msg += ` (${failedLangs.length} fehlgeschlagen)`;
+      }
+      this.success.set(msg);
+      await this.loadEmailTemplates();
+    } catch (err) {
+      this.error.set('Fehler beim Übersetzen');
+      console.error(err);
+    } finally {
+      this.translating.set(false);
+    }
+  }
+
+  execCommand(command: string, value?: string): void {
+    document.execCommand(command, false, value);
+  }
+
+  onEditorInput(event: Event): void {
+    const target = event.target as HTMLElement;
+    this.templateBody = target.innerHTML;
+  }
+
+  insertPlaceholder(placeholder: string): void {
+    const editor = document.getElementById('template-editor');
+    if (editor) {
+      editor.focus();
+      document.execCommand('insertText', false, placeholder);
+      this.templateBody = editor.innerHTML;
+    }
+  }
+
+  getTemplateLanguages(type: string): string[] {
+    const templates = this.emailTemplates();
+    return templates[type] ? Object.keys(templates[type]) : [];
   }
 
   // === Site Settings ===

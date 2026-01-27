@@ -149,6 +149,34 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             <small class="form-text">{{ 'settings.languageHelp' | translate }}</small>
           </div>
 
+          <!-- E-Mail-Benachrichtigungen -->
+          <div class="section-divider">
+            <h3>📧 {{ 'settings.emailNotifications' | translate }}</h3>
+          </div>
+
+          <div class="notification-prefs">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.post_liked" name="notif_post_liked" />
+              <span>{{ 'settings.notifPostLiked' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.post_commented" name="notif_post_commented" />
+              <span>{{ 'settings.notifPostCommented' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.comment_liked" name="notif_comment_liked" />
+              <span>{{ 'settings.notifCommentLiked' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.birthday" name="notif_birthday" />
+              <span>{{ 'settings.notifBirthday' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.group_post" name="notif_group_post" />
+              <span>{{ 'settings.notifGroupPost' | translate }}</span>
+            </label>
+          </div>
+
           <!-- Passwort ändern -->
           <div class="section-divider">
             <h3>{{ 'settings.passwordSection' | translate }}</h3>
@@ -461,6 +489,40 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background: #c82333;
     }
 
+    .notification-prefs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 10px 12px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .checkbox-label:hover {
+      background: #f0f0f0;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1877f2;
+      cursor: pointer;
+    }
+
+    .checkbox-label span {
+      font-size: 14px;
+      color: #333;
+    }
+
     @media (max-width: 1024px) {
       .settings-container { margin: 16px auto; padding: 12px; }
       .settings-card { padding: 20px 16px; }
@@ -488,6 +550,14 @@ export class SettingsComponent implements OnInit {
   selectedLanguage = 'en';
   originalLanguage = 'en';
 
+  notifPrefs = {
+    post_liked: true,
+    post_commented: true,
+    comment_liked: true,
+    birthday: true,
+    group_post: true
+  };
+
   isSaving = signal(false);
   successMessage = signal('');
   errorMessage = signal('');
@@ -509,7 +579,6 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     // Load current language and store original
-    // Wait for language to be loaded (async operation in I18nService constructor)
     const currentLang = this.i18n.currentLanguage();
     if (currentLang) {
       this.selectedLanguage = currentLang.code;
@@ -519,6 +588,23 @@ export class SettingsComponent implements OnInit {
       this.selectedLanguage = savedLang;
       this.originalLanguage = savedLang;
     }
+
+    this.loadNotificationPreferences();
+  }
+
+  loadNotificationPreferences(): void {
+    this.http.get<any>('/api/users/me/notification-preferences').subscribe({
+      next: (prefs) => {
+        this.notifPrefs = {
+          post_liked: prefs.post_liked ?? true,
+          post_commented: prefs.post_commented ?? true,
+          comment_liked: prefs.comment_liked ?? true,
+          birthday: prefs.birthday ?? true,
+          group_post: prefs.group_post ?? true
+        };
+      },
+      error: () => {}
+    });
   }
 
   onLanguageChange(): void {
@@ -567,10 +653,12 @@ export class SettingsComponent implements OnInit {
       updateData.new_password = this.newPassword;
     }
 
+    // Save notification preferences in parallel
+    this.http.put('/api/users/me/notification-preferences', this.notifPrefs).subscribe();
+
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
         if (this.selectedLanguage !== this.originalLanguage) {
-          // Apply language change - setLanguage saves to localStorage
           this.i18n.setLanguage(this.selectedLanguage).then(() => {
             this.originalLanguage = this.selectedLanguage;
             this.successMessage.set(this.i18n.t('settings.success'));

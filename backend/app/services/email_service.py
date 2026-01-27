@@ -89,27 +89,33 @@ class EmailService:
         comment_id: Optional[int] = None,
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
-        birthday_age: Optional[int] = None
+        birthday_age: Optional[int] = None,
+        user_language: str = "de"
     ) -> bool:
         """
         Sendet eine Benachrichtigungs-E-Mail.
-
-        Args:
-            to_email: Empfänger E-Mail
-            to_username: Empfänger Username
-            actor_username: Username des Actors
-            notification_type: Art der Benachrichtigung
-            post_id: Post ID (optional)
-            post_author_uid: Post Author UID (optional)
-            comment_id: Comment ID (optional)
-            post_content: Inhalt des betroffenen Posts (optional)
-            comment_content: Inhalt des Kommentars (optional)
-            birthday_age: Alter des Geburtstagskinds (optional)
+        Verwendet gespeicherte Templates falls vorhanden, sonst Standard-Templates.
         """
-        subject, html_content, text_content = cls._build_notification_email(
-            to_username, actor_username, notification_type, post_id,
-            comment_id, post_content, comment_content, birthday_age
-        )
+        # Versuche gespeichertes Template zu laden
+        template = None
+        try:
+            from app.db.email_templates import get_template
+            template = await get_template(notification_type, user_language)
+            if not template:
+                template = await get_template(notification_type, "de")
+        except Exception:
+            pass
+
+        if template:
+            subject, html_content, text_content = cls._build_from_template(
+                template, to_username, actor_username,
+                post_id, post_content, comment_content, birthday_age
+            )
+        else:
+            subject, html_content, text_content = cls._build_notification_email(
+                to_username, actor_username, notification_type, post_id,
+                comment_id, post_content, comment_content, birthday_age
+            )
 
         return await cls.send_email(
             to_email=to_email,
@@ -117,6 +123,68 @@ class EmailService:
             html_content=html_content,
             text_content=text_content
         )
+
+    @classmethod
+    def _build_from_template(
+        cls,
+        template: dict,
+        to_username: str,
+        actor_username: str,
+        post_id: Optional[int],
+        post_content: Optional[str] = None,
+        comment_content: Optional[str] = None,
+        birthday_age: Optional[int] = None
+    ) -> tuple[str, str, str]:
+        """Erstellt E-Mail aus gespeichertem Template mit Platzhalter-Ersetzung."""
+        import html as html_module
+        import re
+
+        post_link = f"http://localhost:3000/my-posts?highlight={post_id}" if post_id else ""
+
+        # Post-Inhalt Block
+        post_content_html = ""
+        if post_content:
+            truncated = post_content[:300] + ("..." if len(post_content) > 300 else "")
+            safe_content = html_module.escape(truncated)
+            post_content_html = f'<div style="background: #f0f2f5; border-left: 4px solid #1877f2; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; color: #333;">{safe_content}</div>'
+
+        # Kommentar Block
+        comment_content_html = ""
+        if comment_content:
+            truncated_comment = comment_content[:300] + ("..." if len(comment_content) > 300 else "")
+            safe_comment = html_module.escape(truncated_comment)
+            comment_content_html = f'<div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; color: #333;">{safe_comment}</div>'
+
+        # Action Button
+        action_button_html = ""
+        if post_link:
+            action_button_html = f"<a href='{post_link}' class='button'>Post ansehen</a>"
+
+        # Birthday Age Block
+        birthday_age_html = ""
+        if birthday_age:
+            birthday_age_html = f'<p style="font-size: 24px; text-align: center; margin: 16px 0;">🎉 <strong>{birthday_age}</strong> 🎉</p>'
+
+        # Platzhalter ersetzen
+        subject = template["subject"]
+        subject = subject.replace("{{username}}", to_username)
+        subject = subject.replace("{{actor}}", actor_username)
+
+        body = template["body"]
+        body = body.replace("{{username}}", to_username)
+        body = body.replace("{{actor}}", actor_username)
+        body = body.replace("{{post_content}}", post_content_html)
+        body = body.replace("{{comment_content}}", comment_content_html)
+        body = body.replace("{{action_button}}", action_button_html)
+        body = body.replace("{{birthday_age}}", birthday_age_html)
+
+        html = cls._wrap_email_html("🔔", body)
+
+        # Einfache Text-Version
+        text = re.sub(r'<[^>]+>', '', body)
+        text = text.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+
+        return subject, html, text
 
     @classmethod
     def _build_notification_email(

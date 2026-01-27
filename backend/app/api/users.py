@@ -28,6 +28,14 @@ class LanguageUpdateRequest(BaseModel):
     preferred_language: str
 
 
+class NotificationPreferencesRequest(BaseModel):
+    post_liked: bool = True
+    post_commented: bool = True
+    comment_liked: bool = True
+    birthday: bool = True
+    group_post: bool = True
+
+
 class PersonalPostRequest(BaseModel):
     content: str
     visibility: str = "public"  # Persönliche Posts sind standardmäßig öffentlich
@@ -105,6 +113,54 @@ async def update_user_language(
         await conn.commit()
 
     return {"message": "Language updated", "preferred_language": lang_data.preferred_language}
+
+
+@router.get("/me/notification-preferences")
+async def get_notification_preferences(current_user: dict = Depends(get_current_user)):
+    """Gibt die E-Mail-Benachrichtigungseinstellungen zurück"""
+    import json
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT notification_preferences FROM users WHERE uid = %s",
+            (current_user["uid"],)
+        )
+        row = await result.fetchone()
+
+    prefs = row["notification_preferences"] if row and row.get("notification_preferences") else {}
+
+    # Default: alle aktiviert
+    defaults = {
+        "post_liked": True,
+        "post_commented": True,
+        "comment_liked": True,
+        "birthday": True,
+        "group_post": True
+    }
+
+    # Merge defaults mit gespeicherten Preferences
+    merged = {**defaults, **prefs}
+    return {"preferences": merged}
+
+
+@router.put("/me/notification-preferences")
+async def update_notification_preferences(
+    prefs: NotificationPreferencesRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert die E-Mail-Benachrichtigungseinstellungen"""
+    import json
+
+    prefs_dict = prefs.model_dump()
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET notification_preferences = %s WHERE uid = %s",
+            (json.dumps(prefs_dict), current_user["uid"])
+        )
+        await conn.commit()
+
+    return {"preferences": prefs_dict}
 
 
 @router.post("/me/profile-picture")
