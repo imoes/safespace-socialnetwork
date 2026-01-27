@@ -17,7 +17,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     <div class="create-post">
       <div class="post-header">
         <div class="avatar">{{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}</div>
-        <textarea [(ngModel)]="content" placeholder="Was denkst du gerade?" rows="3" [disabled]="isSubmitting()"></textarea>
+        <textarea [(ngModel)]="content" [placeholder]="'feed.createPost' | translate" rows="3" [disabled]="isSubmitting()"></textarea>
       </div>
 
       @if (selectedFiles().length > 0) {
@@ -32,15 +32,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <label class="media-btn">📷<input type="file" accept="image/*" multiple (change)="onFileSelect($event)" hidden /></label>
         <label class="media-btn">🎥<input #videoInput type="file" accept="video/*" (change)="onVideoSelect($event)" hidden /></label>
         <select [(ngModel)]="visibility">
-          <option value="public">🌍 Öffentlich</option>
-          <option value="friends">👥 Alle Freunde</option>
-          <option value="close_friends">💚 Enge Freunde</option>
-          <option value="family">👨‍👩‍👧‍👦 Familie</option>
-          <option value="private">🔒 Nur ich</option>
+          <option value="public">🌍 {{ 'visibility.public' | translate }}</option>
+          <option value="friends">👥 {{ 'visibility.friends' | translate }}</option>
+          <option value="close_friends">💚 {{ 'visibility.closeFriends' | translate }}</option>
+          <option value="family">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</option>
+          <option value="private">🔒 {{ 'visibility.private' | translate }}</option>
         </select>
 
         <button class="post-btn" (click)="submitPost()" [disabled]="!canPost() || isSubmitting()">
-          {{ isSubmitting() ? '...' : 'Posten' }}
+          {{ isSubmitting() ? '...' : ('feed.postButton' | translate) }}
         </button>
       </div>
     </div>
@@ -183,6 +183,7 @@ export class CreatePostComponent {
   authService = inject(AuthService);
   safeSpace = inject(SafeSpaceService);
   http = inject(HttpClient);
+  i18n = inject(I18nService);
 
   content = '';
   visibility = 'friends';
@@ -273,7 +274,7 @@ export class CreatePostComponent {
         this.selectedFiles.set([]);
         this.isSubmitting.set(false);
       },
-      error: () => { this.isSubmitting.set(false); alert('Fehler beim Posten!'); }
+      error: () => { this.isSubmitting.set(false); alert(this.i18n.t('errors.posting')); }
     });
   }
 
@@ -308,14 +309,14 @@ export class CreatePostComponent {
 
     this.http.post('/api/safespace/dispute', {
       content: this.content,
-      reason: 'User hat Widerspruch gegen die Moderation eingelegt'
+      reason: 'User dispute against moderation'
     }).subscribe({
       next: () => {
-        alert('Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.');
+        alert(this.i18n.t('errors.disputeSuccess'));
         this.closeGuardianModal();
       },
       error: () => {
-        alert('Fehler beim Einreichen des Widerspruchs.');
+        alert(this.i18n.t('errors.disputeSubmit'));
       }
     });
   }
@@ -327,18 +328,19 @@ export class CreatePostComponent {
   }
 
   getCategoryLabel(category: string): string {
-    const labels: Record<string, string> = {
-      racism: 'Rassismus',
-      sexism: 'Sexismus',
-      homophobia: 'Homophobie',
-      religious_hate: 'Religiöse Hetze',
-      disability_hate: 'Ableismus',
-      xenophobia: 'Fremdenfeindlichkeit',
-      general_hate: 'Hassrede',
-      threat: 'Drohung',
-      harassment: 'Belästigung',
-      none: 'Keine'
+    const keyMap: Record<string, string> = {
+      racism: 'categories.racism',
+      sexism: 'categories.sexism',
+      homophobia: 'categories.homophobia',
+      religious_hate: 'categories.religiousHate',
+      disability_hate: 'categories.disabilityHate',
+      xenophobia: 'categories.xenophobia',
+      general_hate: 'categories.generalHate',
+      threat: 'categories.threat',
+      harassment: 'categories.harassment',
+      none: 'categories.none'
     };
-    return labels[category] || category;
+    const key = keyMap[category];
+    return key ? this.i18n.t(key) : category;
   }
 }

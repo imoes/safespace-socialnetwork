@@ -513,21 +513,21 @@ export class SettingsComponent implements OnInit {
 
     // Validierung
     if (!this.email) {
-      this.errorMessage.set('E-Mail-Adresse ist erforderlich');
+      this.errorMessage.set(this.i18n.t('errors.emailRequired'));
       return;
     }
 
     if (this.currentPassword) {
       if (!this.newPassword) {
-        this.errorMessage.set('Bitte geben Sie ein neues Passwort ein');
+        this.errorMessage.set(this.i18n.t('errors.enterNewPassword'));
         return;
       }
       if (this.newPassword !== this.confirmPassword) {
-        this.errorMessage.set('Die Passwörter stimmen nicht überein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMismatch'));
         return;
       }
       if (this.newPassword.length < 6) {
-        this.errorMessage.set('Das Passwort muss mindestens 6 Zeichen lang sein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMinLength'));
         return;
       }
     }
@@ -584,9 +584,9 @@ export class SettingsComponent implements OnInit {
       error: (error) => {
         this.isSaving.set(false);
         if (error.status === 401) {
-          this.errorMessage.set('Aktuelles Passwort ist falsch');
+          this.errorMessage.set(this.i18n.t('errors.wrongPassword'));
         } else {
-          this.errorMessage.set(error.error?.detail || 'Fehler beim Speichern der Einstellungen');
+          this.errorMessage.set(error.error?.detail || this.i18n.t('errors.saveSettings'));
         }
       }
     });
@@ -597,13 +597,11 @@ export class SettingsComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    const confirmText = 'Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!';
-    if (!confirm(confirmText)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm1'))) {
       return;
     }
 
-    const doubleConfirm = 'Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?';
-    if (!confirm(doubleConfirm)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm2'))) {
       return;
     }
 
@@ -612,14 +610,13 @@ export class SettingsComponent implements OnInit {
 
     this.http.delete('/api/users/me/account').subscribe({
       next: () => {
-        alert('Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.');
-        // Logout und zur Login-Seite
+        alert(this.i18n.t('settings.deleteSuccess'));
         this.authService.logout();
         this.router.navigate(['/login']);
       },
       error: (error) => {
         this.isSaving.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Kontos');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.deleteAccount'));
       }
     });
   }
@@ -632,13 +629,13 @@ export class SettingsComponent implements OnInit {
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      this.errorMessage.set('Das Bild ist zu groß. Maximal 10MB erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.imageTooLarge'));
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.errorMessage.set('Nur Bilddateien sind erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.onlyImages'));
       return;
     }
 
@@ -662,7 +659,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (error) => {
         this.uploadingProfilePicture.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Hochladen des Profilbilds');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.uploadPicture'));
         input.value = '';
       }
     });

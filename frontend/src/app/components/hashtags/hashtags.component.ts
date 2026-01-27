@@ -4,16 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HashtagService, HashtagStat } from '../../services/hashtag.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-hashtags',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="hashtags-container">
       <div class="header">
-        <h2>🏷️ Hashtags</h2>
-        <p class="subtitle">Entdecke beliebte Themen und suche nach Hashtags</p>
+        <h2>🏷️ {{ 'hashtags.title' | translate }}</h2>
+        <p class="subtitle">{{ 'hashtags.subtitle' | translate }}</p>
       </div>
 
       <!-- Tabs -->
@@ -22,7 +24,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
           class="tab"
           [class.active]="activeTab() === 'search'"
           (click)="activeTab.set('search')">
-          🔍 Suche
+          🔍 {{ 'common.search' | translate }}
         </button>
         <button
           class="tab"
@@ -42,7 +44,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
               (input)="onSearchInput()"
               (focus)="onSearchFocus()"
               (keydown)="onSearchKeydown($event)"
-              placeholder="🔍 Hashtag suchen (mind. 2 Zeichen)..."
+              [placeholder]="'🔍 ' + ('common.search' | translate) + '...'"
               class="search-input"
             />
 
@@ -56,7 +58,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
                     (click)="selectHashtag(suggestion.hashtag)"
                     (mouseenter)="selectedIndex.set(i)">
                     <div class="suggestion-hashtag">#{{ suggestion.hashtag }}</div>
-                    <div class="suggestion-count">{{ suggestion.count }} Posts</div>
+                    <div class="suggestion-count">{{ suggestion.count }} {{ 'common.posts' | translate }}</div>
                   </div>
                 }
               </div>
@@ -65,11 +67,11 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
             @if (showSuggestions() && searchQuery.length >= 2 && suggestions().length === 0 && !loading()) {
               <div class="search-overlay" (click)="closeSuggestions()"></div>
               <div class="suggestions-dropdown">
-                <div class="no-results">Keine Hashtags gefunden</div>
+                <div class="no-results">{{ 'hashtags.noHashtags' | translate }}</div>
               </div>
             }
           </div>
-          <p class="search-hint">💡 Tipp: Beginne mit der Eingabe - ab 2 Zeichen werden dir Vorschläge angezeigt</p>
+          <p class="search-hint">💡 {{ 'friendsPage.minChars' | translate }}</p>
         </div>
       }
 
@@ -77,7 +79,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
       @if (activeTab() === 'trending') {
         <div class="trending-section">
           @if (loading()) {
-            <div class="loading">Lade Top Hashtags...</div>
+            <div class="loading">{{ 'common.loading' | translate }}</div>
           } @else if (trending().length > 0) {
             <div class="trending-list">
               @for (stat of trending(); track stat.hashtag; let i = $index) {
@@ -85,7 +87,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
                   <div class="rank">{{ i + 1 }}</div>
                   <div class="hashtag-info">
                     <div class="hashtag-name">#{{ stat.hashtag }}</div>
-                    <div class="hashtag-count">{{ stat.count }} Posts</div>
+                    <div class="hashtag-count">{{ stat.count }} {{ 'common.posts' | translate }}</div>
                   </div>
                   <div class="arrow">→</div>
                 </div>
@@ -93,7 +95,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
             </div>
           } @else {
             <div class="empty-state">
-              Keine Hashtags gefunden
+              {{ 'hashtags.noHashtags' | translate }}
             </div>
           }
         </div>
@@ -305,6 +307,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
 export class HashtagsComponent implements OnInit {
   private hashtagService = inject(HashtagService);
   private router = inject(Router);
+  private i18n = inject(I18nService);
 
   activeTab = signal<'search' | 'trending'>('trending');
   searchQuery = '';
@@ -346,7 +349,7 @@ export class HashtagsComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Fehler beim Laden der Trending Hashtags:', err);
+        console.error('Error loading trending hashtags:', err);
         this.loading.set(false);
       }
     });

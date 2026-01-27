@@ -6,11 +6,12 @@ import { FeedService, Post } from '../../services/feed.service';
 import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { CreatePostComponent } from '../create-post/create-post.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent],
+  imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent, TranslatePipe],
   template: `
     <div class="feed-container">
       <!-- Create Post -->
@@ -20,7 +21,7 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       @if (feedService.isLoading()) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade Feed...</p>
+          <p>{{ 'feed.loading' | translate }}</p>
         </div>
       }
 
@@ -28,7 +29,7 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       @if (feedService.error()) {
         <div class="error">
           <p>{{ feedService.error() }}</p>
-          <button (click)="refresh()">Erneut versuchen</button>
+          <button (click)="refresh()">{{ 'feed.retry' | translate }}</button>
         </div>
       }
 
@@ -52,8 +53,8 @@ import { CreatePostComponent } from '../create-post/create-post.component';
         } @empty {
           @if (!feedService.isLoading()) {
             <div class="empty-feed">
-              <p>Noch keine Posts vorhanden.</p>
-              <p>Füge Freunde hinzu oder erstelle deinen ersten Post!</p>
+              <p>{{ 'feed.empty' | translate }}</p>
+              <p>{{ 'feed.emptyHint' | translate }}</p>
             </div>
           }
         }
@@ -63,12 +64,12 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       @if (feedService.isLoading() && feedService.posts().length > 0) {
         <div class="loading-more">
           <div class="spinner-small"></div>
-          <p>Lade weitere Posts...</p>
+          <p>{{ 'feed.loadingMore' | translate }}</p>
         </div>
       }
 
       <!-- Refresh button -->
-      <button class="refresh-btn" (click)="refresh()" title="Feed aktualisieren">
+      <button class="refresh-btn" (click)="refresh()" [title]="'common.refresh' | translate">
         ↻
       </button>
     </div>
@@ -258,8 +259,6 @@ export class FeedComponent implements OnInit, OnDestroy {
   }
 
   onDelete(post: Post): void {
-    if (confirm('Post wirklich löschen?')) {
-      this.feedService.deletePost(post.post_id).subscribe();
-    }
+    this.feedService.deletePost(post.post_id).subscribe();
   }
 }
