@@ -14,6 +14,7 @@ export interface User {
   profile_picture?: string;
   first_name?: string;
   last_name?: string;
+  preferred_language?: string;
 }
 
 export interface AuthResponse {
@@ -106,6 +107,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem('preferredLanguage');
     this.currentUserSignal.set(null);
     this.router.navigate(['/login']);
   }
@@ -130,6 +132,19 @@ export class AuthService {
         console.log('✅ User geladen:', user.username);
         this.currentUserSignal.set(user);
         this.isLoadingSignal.set(false);
+
+        // Apply user's stored language preference
+        if (user.preferred_language) {
+          const currentLang = localStorage.getItem('preferredLanguage');
+          if (currentLang !== user.preferred_language) {
+            console.log(`🌐 Applying user language preference: ${user.preferred_language}`);
+            localStorage.setItem('preferredLanguage', user.preferred_language);
+            // Reload to apply language if it differs from current
+            if (currentLang && currentLang !== user.preferred_language) {
+              window.location.reload();
+            }
+          }
+        }
       }),
       catchError((error) => {
         console.error('❌ User laden fehlgeschlagen:', error);

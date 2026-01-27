@@ -538,7 +538,8 @@ export class SettingsComponent implements OnInit {
       email: this.email,
       bio: this.bio,
       first_name: this.firstName,
-      last_name: this.lastName
+      last_name: this.lastName,
+      preferred_language: this.selectedLanguage
     };
 
     if (this.currentPassword && this.newPassword) {
