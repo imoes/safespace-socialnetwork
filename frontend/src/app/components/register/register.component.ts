@@ -83,21 +83,24 @@ export class RegisterComponent {
         }, 1000);
       },
       error: (err) => {
-        console.error('❌ Registration fehlgeschlagen:', err);
+        console.error('Registration failed:', err);
 
-        // Benutzerfreundliche Fehlermeldungen mit i18n
-        const detail = err.error?.detail || '';
+        const detail = err.error?.detail;
 
-        if (detail === 'Username already registered') {
-          this.error = this.i18n.t('register.errors.usernameAlreadyRegistered');
-        } else if (detail === 'Email already registered') {
-          this.error = this.i18n.t('register.errors.emailAlreadyRegistered');
-        } else if (detail.includes('username')) {
-          this.error = this.i18n.t('register.errors.usernameAlreadyRegistered');
-        } else if (detail.includes('email')) {
-          this.error = this.i18n.t('register.errors.emailAlreadyRegistered');
+        if (typeof detail === 'string') {
+          if (detail === 'Username already registered') {
+            this.error = this.i18n.t('register.errors.usernameAlreadyRegistered');
+          } else if (detail === 'Email already registered') {
+            this.error = this.i18n.t('register.errors.emailAlreadyRegistered');
+          } else {
+            this.error = detail;
+          }
+        } else if (Array.isArray(detail)) {
+          // Pydantic validation errors (422)
+          const messages = detail.map((d: any) => d.msg || JSON.stringify(d));
+          this.error = messages.join(', ');
         } else {
-          this.error = detail || this.i18n.t('register.errors.registrationFailed');
+          this.error = this.i18n.t('register.errors.registrationFailed');
         }
 
         this.isLoading = false;

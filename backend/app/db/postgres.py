@@ -248,7 +248,7 @@ async def get_user_by_uid(uid: int) -> dict | None:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """SELECT uid, username, email, password_hash, role, bio, is_banned, banned_until, created_at,
-                      profile_picture, first_name, last_name
+                      profile_picture, first_name, last_name, preferred_language
                FROM users WHERE uid = %s""",
             (uid,)
         )
