@@ -342,7 +342,7 @@ export class NotificationsDropdownComponent implements OnInit {
       case 'comment_liked':
         return this.i18n.t('notifications.commentLiked', { username });
       case 'birthday':
-        return this.i18n.t('notifications.birthday', { username });
+        return this.i18n.t('notifications.birthday', { username, age: notification.comment_id?.toString() || '?' });
       default:
         return this.i18n.t('notifications.newNotification');
     }

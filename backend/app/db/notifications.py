@@ -36,7 +36,9 @@ async def create_notification(
     notification_type: str,
     post_id: Optional[int] = None,
     post_author_uid: Optional[int] = None,
-    comment_id: Optional[int] = None
+    comment_id: Optional[int] = None,
+    comment_content: Optional[str] = None,
+    birthday_age: Optional[int] = None
 ) -> dict:
     """
     Erstellt eine neue Benachrichtigung
@@ -90,6 +92,18 @@ async def create_notification(
                 user_row = await user_result.fetchone()
 
                 if user_row and user_row["to_email"]:
+                    # Post-Inhalt laden falls vorhanden
+                    post_content = None
+                    if post_id and post_author_uid:
+                        try:
+                            from app.db.sqlite_posts import UserPostsDB
+                            posts_db = UserPostsDB(post_author_uid)
+                            post = await posts_db.get_post(post_id)
+                            if post:
+                                post_content = post.get("content")
+                        except Exception as e:
+                            print(f"⚠️ Failed to load post content for email: {e}")
+
                     # Hintergrund-Task für E-Mail-Versand
                     asyncio.create_task(
                         EmailService.send_notification_email(
@@ -98,7 +112,11 @@ async def create_notification(
                             actor_username=user_row["actor_username"],
                             notification_type=notification_type,
                             post_id=post_id,
-                            comment_id=comment_id
+                            post_author_uid=post_author_uid,
+                            comment_id=comment_id,
+                            post_content=post_content,
+                            comment_content=comment_content,
+                            birthday_age=birthday_age
                         )
                     )
             except Exception as e:

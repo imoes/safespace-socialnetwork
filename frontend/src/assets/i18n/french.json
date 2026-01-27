@@ -346,7 +346,7 @@
     "commentLiked": "{{username}} a aimé votre commentaire",
     "newNotification": "Nouvelle notification",
     "groupPost": "{{username}} a publié dans le groupe {{group}}",
-    "birthday": "🎂 {{username}} fête son anniversaire aujourd'hui !"
+    "birthday": "🎂 {{username}} fête son anniversaire aujourd'hui et a maintenant {{age}} ans !"
   },
   "groups": {
     "title": "Groupes",
