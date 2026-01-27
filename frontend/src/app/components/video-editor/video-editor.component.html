@@ -118,8 +118,17 @@
 
       <!-- Codec Selection -->
       <div class="codec-section">
-        <h3>🎬 Video-Codec</h3>
+        <h3>🎬 Verarbeitungsmodus</h3>
         <div class="codec-options">
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="codec"
+              value="copy"
+              [(ngModel)]="selectedCodec"
+              [disabled]="isProcessing()">
+            <span>Schnell (nur zuschneiden, keine Umwandlung)</span>
+          </label>
           <label class="radio-option">
             <input
               type="radio"
@@ -127,16 +136,7 @@
               value="h264"
               [(ngModel)]="selectedCodec"
               [disabled]="isProcessing()">
-            <span>H.264 (empfohlen, bessere Kompatibilität)</span>
-          </label>
-          <label class="radio-option">
-            <input
-              type="radio"
-              name="codec"
-              value="h265"
-              [(ngModel)]="selectedCodec"
-              [disabled]="isProcessing()">
-            <span>H.265 (kleinere Dateigröße, neuere Geräte)</span>
+            <span>H.264 Re-Encoding (optimiert auf max. 720p)</span>
           </label>
         </div>
       </div>

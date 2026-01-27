@@ -43,11 +43,16 @@ export class VideoEditorComponent {
   errorMessage = signal<string | null>(null);
 
   // Codec selection
-  selectedCodec = signal<'h264' | 'h265'>('h264');
+  selectedCodec = signal<'h264' | 'copy'>('copy');
 
   // Computed
   duration = computed(() => this.videoInfo()?.duration || 0);
   trimmedDuration = computed(() => this.trimEnd() - this.trimStart());
+  isTrimOnly = computed(() => {
+    const info = this.videoInfo();
+    if (!info) return false;
+    return this.trimStart() > 0 || this.trimEnd() < info.duration;
+  });
   canProcess = computed(() => {
     const trimmed = this.trimmedDuration();
     return trimmed > 0 && trimmed <= 300; // Max 5 Minuten
@@ -163,23 +168,41 @@ export class VideoEditorComponent {
       // Schreibe Input-Datei
       await this.ffmpeg!.writeFile(inputName, await fetchFile(file));
 
-      // FFmpeg-Kommando erstellen
-      const codec = this.selectedCodec() === 'h264' ? 'libx264' : 'libx265';
       const start = this.trimStart();
       const duration = this.trimmedDuration();
+      const useCopy = this.selectedCodec() === 'copy';
 
-      const args = [
-        '-i', inputName,
-        '-ss', start.toString(),
-        '-t', duration.toString(),
-        '-c:v', codec,
-        '-preset', 'medium',
-        '-crf', '23',
-        '-c:a', 'aac',
-        '-b:a', '128k',
-        '-movflags', '+faststart',
-        outputName
-      ];
+      let args: string[];
+
+      if (useCopy) {
+        // Stream-Copy: kein Re-Encoding, extrem schnell
+        args = [
+          '-ss', start.toString(),
+          '-i', inputName,
+          '-t', duration.toString(),
+          '-c', 'copy',
+          '-movflags', '+faststart',
+          outputName
+        ];
+      } else {
+        // H.264 Re-Encoding mit Optimierungen für WASM-Performance
+        const info = this.videoInfo();
+        const needsScale = info && info.height > 720;
+
+        args = [
+          '-ss', start.toString(),
+          '-i', inputName,
+          '-t', duration.toString(),
+          '-c:v', 'libx264',
+          '-preset', 'ultrafast',
+          '-crf', '28',
+          ...(needsScale ? ['-vf', 'scale=-2:720'] : []),
+          '-c:a', 'aac',
+          '-b:a', '128k',
+          '-movflags', '+faststart',
+          outputName
+        ];
+      }
 
       console.log('FFmpeg args:', args);
       await this.ffmpeg!.exec(args);
