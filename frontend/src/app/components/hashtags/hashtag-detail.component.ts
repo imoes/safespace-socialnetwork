@@ -4,14 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HashtagService, HashtagPost } from '../../services/hashtag.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { Post } from '../../services/feed.service';
-import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-ticker.component';
 
 @Component({
   selector: 'app-hashtag-detail',
   standalone: true,
-  imports: [CommonModule, PostCardComponent, RecentPostsTickerComponent],
+  imports: [CommonModule, PostCardComponent],
   template: `
-    <app-recent-posts-ticker />
     <div class="hashtag-detail-container">
       <div class="header">
         <button class="back-btn" (click)="goBack()">← Zurück</button>
@@ -50,6 +48,10 @@ import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-
           <div class="end-message">Keine weiteren Posts</div>
         }
       }
+
+      <button class="refresh-btn" (click)="refresh()" title="Aktualisieren">
+        ↻
+      </button>
     </div>
   `,
   styles: [`
@@ -122,6 +124,26 @@ import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-
       padding: 20px;
       color: #65676b;
       font-size: 14px;
+    }
+
+    .refresh-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #1877f2;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .refresh-btn:hover {
+      background: #166fe5;
     }
   `]
 })
@@ -247,6 +269,11 @@ export class HashtagDetailComponent implements OnInit {
       likes_count: hashtagPost.likes_count,
       comments_count: hashtagPost.comments_count
     };
+  }
+
+  refresh(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.loadPosts();
   }
 
   goBack(): void {
