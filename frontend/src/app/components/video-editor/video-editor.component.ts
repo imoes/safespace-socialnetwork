@@ -114,15 +114,6 @@ export class VideoEditorComponent {
 
   private async loadFFmpeg(): Promise<void> {
     try {
-      // Check if SharedArrayBuffer is available (requires cross-origin isolation)
-      if (typeof SharedArrayBuffer === 'undefined') {
-        this.errorMessage.set(
-          'Video-Verarbeitung nicht verfügbar: Browser unterstützt SharedArrayBuffer nicht. ' +
-          'Bitte stelle sicher, dass die Seite mit Cross-Origin-Isolation-Headern geladen wird.'
-        );
-        return;
-      }
-
       this.ffmpeg = new FFmpeg();
 
       this.ffmpeg.on('log', ({ message }: { message: string }) => {
@@ -134,11 +125,13 @@ export class VideoEditorComponent {
       });
 
       const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-      // Fetch the self-contained UMD worker bundle to avoid Vite worker resolution issues
+      // Use direct URLs for coreURL/wasmURL so the worker can import() them.
+      // Blob URLs cannot be dynamically imported inside module workers.
+      // Use a blob URL only for classWorkerURL to bypass Vite worker resolution.
       const workerURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js';
       await this.ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        coreURL: `${baseURL}/ffmpeg-core.js`,
+        wasmURL: `${baseURL}/ffmpeg-core.wasm`,
         classWorkerURL: await toBlobURL(workerURL, 'text/javascript'),
       });
 
