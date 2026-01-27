@@ -4,28 +4,29 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="register-container">
       <div class="register-card">
-        <h1>Registrieren</h1>
-        <p class="subtitle">Erstelle dein Konto</p>
+        <h1>{{ 'register.title' | translate }}</h1>
+        <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         @if (success) { <div class="success">{{ success }}</div> }
         <form (ngSubmit)="register()">
-          <input type="text" [(ngModel)]="username" name="username" placeholder="Benutzername" required minlength="3" />
-          <input type="text" [(ngModel)]="firstName" name="firstName" placeholder="Vorname" />
-          <input type="text" [(ngModel)]="lastName" name="lastName" placeholder="Nachname" />
-          <input type="email" [(ngModel)]="email" name="email" placeholder="E-Mail" required />
-          <input type="password" [(ngModel)]="password" name="password" placeholder="Passwort" required minlength="6" />
-          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Passwort bestätigen" required />
-          <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : 'Registrieren' }}</button>
+          <input type="text" [(ngModel)]="username" name="username" [placeholder]="'register.username' | translate" required minlength="3" />
+          <input type="text" [(ngModel)]="firstName" name="firstName" [placeholder]="'settings.firstName' | translate" />
+          <input type="text" [(ngModel)]="lastName" name="lastName" [placeholder]="'settings.lastName' | translate" />
+          <input type="email" [(ngModel)]="email" name="email" [placeholder]="'register.email' | translate" required />
+          <input type="password" [(ngModel)]="password" name="password" [placeholder]="'register.password' | translate" required minlength="6" />
+          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" [placeholder]="'register.confirmPassword' | translate" required />
+          <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
         </form>
-        <p class="link">Bereits ein Konto? <a routerLink="/login">Anmelden</a></p>
+        <p class="link">{{ 'register.hasAccount' | translate }} <a routerLink="/login">{{ 'register.login' | translate }}</a></p>
       </div>
     </div>
   `,

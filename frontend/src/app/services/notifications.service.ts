@@ -1,6 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { I18nService } from './i18n.service';
 
 export interface Notification {
   notification_id: number;
@@ -21,6 +22,7 @@ export interface Notification {
 })
 export class NotificationsService {
   private readonly API_URL = '/api/notifications';
+  private i18n = inject(I18nService);
 
   // Signals
   private notificationsSignal = signal<Notification[]>([]);
@@ -146,13 +148,13 @@ export class NotificationsService {
   getNotificationMessage(notification: Notification): string {
     switch (notification.type) {
       case 'post_liked':
-        return `${notification.actor_username} hat einen deiner Posts geliked`;
+        return this.i18n.t('notifications.postLiked').replace('{{username}}', notification.actor_username);
       case 'post_commented':
-        return `${notification.actor_username} hat deinen Post kommentiert`;
+        return this.i18n.t('notifications.postCommented').replace('{{username}}', notification.actor_username);
       case 'comment_liked':
-        return `${notification.actor_username} hat deinen Kommentar geliked`;
+        return this.i18n.t('notifications.commentLiked').replace('{{username}}', notification.actor_username);
       default:
-        return 'Neue Benachrichtigung';
+        return this.i18n.t('notifications.newNotification');
     }
   }
 }

@@ -37,10 +37,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
       @if (editingPost) {
         <div class="post-edit">
-          <textarea [(ngModel)]="editPostContent" placeholder="Was möchtest du ändern?" rows="5"></textarea>
+          <textarea [(ngModel)]="editPostContent" [placeholder]="'post.editPlaceholder' | translate" rows="5"></textarea>
           <div class="post-edit-actions">
-            <button class="btn-save-post" (click)="updatePostContent()">💾 Speichern</button>
-            <button class="btn-cancel-post" (click)="cancelEditPost()">❌ Abbrechen</button>
+            <button class="btn-save-post" (click)="updatePostContent()">💾 {{ 'post.save' | translate }}</button>
+            <button class="btn-cancel-post" (click)="cancelEditPost()">❌ {{ 'post.cancel' | translate }}</button>
           </div>
         </div>
       } @else {
@@ -84,24 +84,24 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         </button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
-            <button class="action-icon-btn" (click)="startEditPost()" title="Bearbeiten">✏️</button>
-            <button class="action-icon-btn" (click)="onDelete()" title="Löschen">🗑️</button>
+            <button class="action-icon-btn" (click)="startEditPost()" [title]="'post.edit' | translate">✏️</button>
+            <button class="action-icon-btn" (click)="onDelete()" [title]="'post.delete' | translate">🗑️</button>
             <div class="visibility-wrapper" #visibilityWrapper>
-              <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+              <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" [title]="'post.changeVisibility' | translate">{{ getVisibilityLabel() }}</span>
               @if (showVisibilityDropdown) {
                 <div class="visibility-dropdown">
-                  <button (click)="changeVisibility('public')">🌍 Öffentlich</button>
-                  <button (click)="changeVisibility('friends')">👥 Alle Freunde</button>
-                  <button (click)="changeVisibility('close_friends')">💚 Enge Freunde</button>
-                  <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 Familie</button>
-                  <button (click)="changeVisibility('private')">🔒 Nur ich</button>
+                  <button (click)="changeVisibility('public')">🌍 {{ 'visibility.public' | translate }}</button>
+                  <button (click)="changeVisibility('friends')">👥 {{ 'visibility.friends' | translate }}</button>
+                  <button (click)="changeVisibility('close_friends')">💚 {{ 'visibility.closeFriends' | translate }}</button>
+                  <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</button>
+                  <button (click)="changeVisibility('private')">🔒 {{ 'visibility.private' | translate }}</button>
                 </div>
               }
             </div>
           </div>
         } @else {
           <div class="post-controls">
-            <button class="action-btn report-btn" (click)="showReportModal = true" title="Melden">🚨</button>
+            <button class="action-btn report-btn" (click)="showReportModal = true" [title]="'post.report' | translate">🚨</button>
             <span class="visibility">{{ getVisibilityLabel() }}</span>
           </div>
         }
@@ -110,12 +110,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       @if (showComments) {
         <div class="comments-section">
           <div class="comment-input">
-            <input type="text" [(ngModel)]="newComment" placeholder="Schreibe einen Kommentar..." (keyup.enter)="addComment()" />
-            <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">Senden</button>
+            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" />
+            <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">{{ 'post.send' | translate }}</button>
           </div>
 
           @if (loadingComments) {
-            <div class="loading">Kommentare werden geladen...</div>
+            <div class="loading">{{ 'post.loadingComments' | translate }}</div>
           }
 
           @if (comments.length > 0) {
@@ -133,8 +133,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                     <div class="comment-edit">
                       <input type="text" [(ngModel)]="editCommentContent" (keyup.enter)="saveCommentEdit(comment)" (keyup.escape)="cancelCommentEdit()" />
                       <div class="comment-edit-actions">
-                        <button class="btn-save-comment" (click)="saveCommentEdit(comment)">💾 Speichern</button>
-                        <button class="btn-cancel-comment" (click)="cancelCommentEdit()">❌ Abbrechen</button>
+                        <button class="btn-save-comment" (click)="saveCommentEdit(comment)">💾 {{ 'post.save' | translate }}</button>
+                        <button class="btn-cancel-comment" (click)="cancelCommentEdit()">❌ {{ 'post.cancel' | translate }}</button>
                       </div>
                     </div>
                   } @else {
@@ -145,15 +145,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                       {{ comment.is_liked_by_user ? '❤️' : '🤍' }} {{ comment.likes_count }}
                     </button>
                     @if (comment.user_uid === currentUid) {
-                      <button class="comment-action-btn" (click)="startEditComment(comment)">✏️ Bearbeiten</button>
-                      <button class="comment-action-btn" (click)="deleteCommentConfirm(comment)">🗑️ Löschen</button>
+                      <button class="comment-action-btn" (click)="startEditComment(comment)">✏️ {{ 'post.edit' | translate }}</button>
+                      <button class="comment-action-btn" (click)="deleteCommentConfirm(comment)">🗑️ {{ 'post.delete' | translate }}</button>
                     }
                   </div>
                 </div>
               }
             </div>
           } @else if (!loadingComments) {
-            <div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>
+            <div class="no-comments">{{ 'post.noComments' | translate }}</div>
           }
         </div>
       }
@@ -161,18 +161,18 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       @if (showReportModal) {
         <div class="modal-overlay" (click)="showReportModal = false">
           <div class="report-modal" (click)="$event.stopPropagation()">
-            <h3>🚨 Post melden</h3>
+            <h3>🚨 {{ 'post.reportTitle' | translate }}</h3>
             <select [(ngModel)]="reportCategory">
-              <option value="hate_speech">Hassrede</option>
-              <option value="harassment">Belästigung</option>
-              <option value="spam">Spam</option>
-              <option value="inappropriate">Unangemessen</option>
-              <option value="other">Sonstiges</option>
+              <option value="hate_speech">{{ 'report.hateSpeech' | translate }}</option>
+              <option value="harassment">{{ 'report.harassment' | translate }}</option>
+              <option value="spam">{{ 'report.spam' | translate }}</option>
+              <option value="inappropriate">{{ 'report.inappropriate' | translate }}</option>
+              <option value="other">{{ 'report.other' | translate }}</option>
             </select>
-            <textarea [(ngModel)]="reportReason" placeholder="Warum meldest du diesen Post?" rows="3"></textarea>
+            <textarea [(ngModel)]="reportReason" [placeholder]="'post.reportPlaceholder' | translate" rows="3"></textarea>
             <div class="modal-actions">
-              <button class="btn-cancel" (click)="showReportModal = false">Abbrechen</button>
-              <button class="btn-submit" (click)="submitReport()" [disabled]="!reportReason">Melden</button>
+              <button class="btn-cancel" (click)="showReportModal = false">{{ 'post.cancel' | translate }}</button>
+              <button class="btn-submit" (click)="submitReport()" [disabled]="!reportReason">{{ 'post.report' | translate }}</button>
             </div>
           </div>
         </div>
@@ -181,18 +181,18 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       @if (showVisibilityModal) {
         <div class="modal-overlay" (click)="showVisibilityModal = false">
           <div class="visibility-modal" (click)="$event.stopPropagation()">
-            <h3>👁️ Sichtbarkeit ändern</h3>
-            <p class="current-visibility">Aktuelle Sichtbarkeit: <strong>{{ getVisibilityLabel() }}</strong></p>
+            <h3>👁️ {{ 'post.visibilityTitle' | translate }}</h3>
+            <p class="current-visibility">{{ 'post.currentVisibility' | translate }} <strong>{{ getVisibilityLabel() }}</strong></p>
             <select [(ngModel)]="newVisibility">
-              <option value="public">🌍 Öffentlich</option>
-              <option value="friends">👥 Alle Freunde</option>
-              <option value="close_friends">💚 Enge Freunde</option>
-              <option value="family">👨‍👩‍👧‍👦 Familie</option>
-              <option value="private">🔒 Nur ich</option>
+              <option value="public">🌍 {{ 'visibility.public' | translate }}</option>
+              <option value="friends">👥 {{ 'visibility.friends' | translate }}</option>
+              <option value="close_friends">💚 {{ 'visibility.closeFriends' | translate }}</option>
+              <option value="family">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</option>
+              <option value="private">🔒 {{ 'visibility.private' | translate }}</option>
             </select>
             <div class="modal-actions">
-              <button class="btn-cancel" (click)="showVisibilityModal = false">Abbrechen</button>
-              <button class="btn-submit" (click)="updateVisibility()">Speichern</button>
+              <button class="btn-cancel" (click)="showVisibilityModal = false">{{ 'post.cancel' | translate }}</button>
+              <button class="btn-submit" (click)="updateVisibility()">{{ 'post.save' | translate }}</button>
             </div>
           </div>
         </div>
@@ -467,9 +467,7 @@ export class PostCardComponent implements OnChanges {
   }
 
   onDelete(): void {
-    if (confirm('Post wirklich löschen?')) {
-      this.delete.emit(this.post);
-    }
+    this.delete.emit(this.post);
   }
 
   submitReport(): void {
@@ -480,11 +478,11 @@ export class PostCardComponent implements OnChanges {
       category: this.reportCategory
     }).subscribe({
       next: () => {
-        alert('Danke für deine Meldung! Ein Moderator wird sie prüfen.');
+        alert(this.i18n.t('post.reportSuccess'));
         this.showReportModal = false;
         this.reportReason = '';
       },
-      error: () => alert('Fehler beim Melden')
+      error: () => alert(this.i18n.t('errors.report'))
     });
   }
 
@@ -500,7 +498,7 @@ export class PostCardComponent implements OnChanges {
           this.showVisibilityModal = false;
         },
         error: () => {
-          alert('Fehler beim Ändern der Sichtbarkeit');
+          alert(this.i18n.t('errors.changeVisibility'));
         }
       });
     } else {
@@ -529,7 +527,7 @@ export class PostCardComponent implements OnChanges {
           this.showVisibilityDropdown = false;
         },
         error: () => {
-          alert('Fehler beim Ändern der Sichtbarkeit');
+          alert(this.i18n.t('errors.changeVisibility'));
           this.showVisibilityDropdown = false;
         }
       });
@@ -559,7 +557,7 @@ export class PostCardComponent implements OnChanges {
         this.editPostContent = '';
       },
       error: () => {
-        alert('Fehler beim Bearbeiten des Posts');
+        alert(this.i18n.t('errors.editPost'));
       }
     });
   }
@@ -585,39 +583,39 @@ export class PostCardComponent implements OnChanges {
         this.editCommentContent = '';
       },
       error: () => {
-        alert('Fehler beim Bearbeiten des Kommentars');
+        alert(this.i18n.t('errors.editComment'));
       }
     });
   }
 
   deleteCommentConfirm(comment: Comment): void {
-    if (confirm('Kommentar wirklich löschen?')) {
-      this.feedService.deleteComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
-        next: () => {
-          this.comments = this.comments.filter(c => c.comment_id !== comment.comment_id);
-          this.post.comments_count = Math.max(0, this.post.comments_count - 1);
-        },
-        error: () => {
-          alert('Fehler beim Löschen des Kommentars');
-        }
-      });
-    }
+    this.feedService.deleteComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
+      next: () => {
+        this.comments = this.comments.filter(c => c.comment_id !== comment.comment_id);
+        this.post.comments_count = Math.max(0, this.post.comments_count - 1);
+      },
+      error: () => {
+        alert(this.i18n.t('errors.deleteComment'));
+      }
+    });
   }
 
   isImage(url: string): boolean { return /\.(jpg|jpeg|png|gif|webp)$/i.test(url); }
   isVideo(url: string): boolean { return /\.(mp4|webm|mov)$/i.test(url); }
   
   getVisibilityLabel(): string {
-    const labels: Record<string, string> = {
-      public: '🌍 Öffentlich',
-      acquaintance: '👋 Bekannte',
-      friends: '👥 Alle Freunde',
-      close_friends: '💚 Enge Freunde',
-      close_friend: '💚 Enge Freunde',
-      family: '👨‍👩‍👧‍👦 Familie',
-      private: '🔒 Privat'
+    const emojiMap: Record<string, string> = {
+      public: '🌍',
+      acquaintance: '👋',
+      friends: '👥',
+      close_friends: '💚',
+      close_friend: '💚',
+      family: '👨‍👩‍👧‍👦',
+      private: '🔒'
     };
-    return labels[this.post.visibility] || this.post.visibility;
+    const emoji = emojiMap[this.post.visibility] || '';
+    const label = this.i18n.t('visibility.' + this.post.visibility);
+    return emoji ? `${emoji} ${label}` : label;
   }
 
   toggleComments(): void {
@@ -666,7 +664,7 @@ export class PostCardComponent implements OnChanges {
         this.loadingComments = false;
       },
       error: () => {
-        alert('Fehler beim Laden der Kommentare');
+        alert(this.i18n.t('errors.loadComments'));
         this.loadingComments = false;
       }
     });
@@ -700,7 +698,7 @@ export class PostCardComponent implements OnChanges {
         } else {
           // Generischer Fehler
           console.error('❌ Generic error, not hate speech');
-          alert('Fehler beim Hinzufügen des Kommentars');
+          alert(this.i18n.t('errors.addComment'));
         }
       }
     });
@@ -715,7 +713,7 @@ export class PostCardComponent implements OnChanges {
           comment.is_liked_by_user = false;
           comment.likes_count = Math.max(0, comment.likes_count - 1);
         },
-        error: () => alert('Fehler beim Entfernen des Likes')
+        error: () => alert(this.i18n.t('errors.commentUnlike'))
       });
     } else {
       this.feedService.likeComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
@@ -723,7 +721,7 @@ export class PostCardComponent implements OnChanges {
           comment.is_liked_by_user = true;
           comment.likes_count++;
         },
-        error: () => alert('Fehler beim Liken des Kommentars')
+        error: () => alert(this.i18n.t('errors.commentLike'))
       });
     }
   }
@@ -819,7 +817,7 @@ export class PostCardComponent implements OnChanges {
           this.guardianResult = errorDetail;
           this.customContent = '';
         } else {
-          alert('Fehler beim Senden des Kommentars');
+          alert(this.i18n.t('errors.sendComment'));
           this.closeGuardianModal();
         }
       }
@@ -827,26 +825,27 @@ export class PostCardComponent implements OnChanges {
   }
 
   disputeModeration(): void {
-    const reason = prompt('Bitte begründe deinen Widerspruch:');
+    const reason = prompt(this.i18n.t('post.disputePrompt'));
     if (!reason) return;
 
-    alert('Dein Widerspruch wurde an die Moderatoren weitergeleitet. Du erhältst eine Rückmeldung innerhalb von 48 Stunden.');
+    alert(this.i18n.t('post.disputeSuccess'));
     this.closeGuardianModal();
   }
 
   getCategoryLabel(category: string): string {
-    const labels: Record<string, string> = {
-      'racism': 'Rassismus',
-      'sexism': 'Sexismus',
-      'homophobia': 'Homophobie',
-      'religious_hate': 'Religiöse Hetze',
-      'disability_hate': 'Ableismus',
-      'xenophobia': 'Fremdenfeindlichkeit',
-      'general_hate': 'Hassrede',
-      'threat': 'Drohung',
-      'harassment': 'Belästigung',
-      'none': 'Keine'
+    const keyMap: Record<string, string> = {
+      'racism': 'categories.racism',
+      'sexism': 'categories.sexism',
+      'homophobia': 'categories.homophobia',
+      'religious_hate': 'categories.religiousHate',
+      'disability_hate': 'categories.disabilityHate',
+      'xenophobia': 'categories.xenophobia',
+      'general_hate': 'categories.generalHate',
+      'threat': 'categories.threat',
+      'harassment': 'categories.harassment',
+      'none': 'categories.none'
     };
-    return labels[category] || category;
+    const key = keyMap[category];
+    return key ? this.i18n.t(key) : category;
   }
 }

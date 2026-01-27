@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { I18nService } from '../../services/i18n.service';
 
 interface WelcomeMessage {
   id: number;
@@ -86,6 +87,7 @@ interface SystemStatus {
 export class AdminPanelComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private i18n = inject(I18nService);
 
   // Tabs
   activeTab = signal<'welcome' | 'broadcast' | 'status'>('welcome');
@@ -140,7 +142,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       }
     } catch (err: any) {
       if (err.status === 403) {
-        this.error.set('Nur Admins haben Zugriff auf diese Seite');
+        this.error.set(this.i18n.t('admin.errorOnlyAdmins'));
         setTimeout(() => this.router.navigate(['/feed']), 2000);
       } else {
         console.error('Error loading welcome message:', err);
@@ -150,7 +152,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   async saveWelcomeMessage(): Promise<void> {
     if (!this.welcomeForm.title || !this.welcomeForm.content) {
-      this.error.set('Titel und Inhalt sind erforderlich');
+      this.error.set(this.i18n.t('admin.welcomeFormTitle') + ' / ' + this.i18n.t('admin.welcomeFormContent') + ' required');
       return;
     }
 
@@ -163,10 +165,10 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       await this.http.put('/api/admin/welcome-message', this.welcomeForm, { headers }).toPromise();
-      this.success.set('Willkommensnachricht gespeichert!');
+      this.success.set(this.i18n.t('admin.successSaved'));
       await this.loadWelcomeMessage();
     } catch (err) {
-      this.error.set('Fehler beim Speichern');
+      this.error.set(this.i18n.t('admin.errorSaving'));
       console.error(err);
     } finally {
       this.loading.set(false);
@@ -174,7 +176,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   }
 
   async deleteWelcomeMessage(): Promise<void> {
-    if (!confirm('Willkommensnachricht wirklich löschen?')) return;
+    if (!confirm(this.i18n.t('admin.welcomeDeleteConfirm'))) return;
 
     this.loading.set(true);
     try {
@@ -182,12 +184,12 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       await this.http.delete('/api/admin/welcome-message', { headers }).toPromise();
-      this.success.set('Willkommensnachricht gelöscht');
+      this.success.set(this.i18n.t('admin.successDeleted'));
       this.welcomeMessage.set(null);
       this.welcomeStats.set(null);
       this.welcomeForm = { title: '', content: '' };
     } catch (err) {
-      this.error.set('Fehler beim Löschen');
+      this.error.set(this.i18n.t('admin.errorDeleting'));
       console.error(err);
     } finally {
       this.loading.set(false);
@@ -208,7 +210,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   async createBroadcastPost(): Promise<void> {
     if (!this.broadcastForm.content.trim()) {
-      this.error.set('Post-Inhalt ist erforderlich');
+      this.error.set(this.i18n.t('admin.broadcastFormContent') + ' required');
       return;
     }
 
@@ -221,11 +223,11 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       await this.http.post('/api/admin/broadcast-post', this.broadcastForm, { headers }).toPromise();
-      this.success.set('Broadcast-Post erstellt! Alle Benutzer sehen ihn jetzt.');
+      this.success.set(this.i18n.t('admin.successPostCreated'));
       this.broadcastForm.content = '';
       await this.loadBroadcastPosts();
     } catch (err) {
-      this.error.set('Fehler beim Erstellen des Posts');
+      this.error.set(this.i18n.t('admin.errorSaving'));
       console.error(err);
     } finally {
       this.loading.set(false);
@@ -233,17 +235,17 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   }
 
   async deleteBroadcastPost(postId: number): Promise<void> {
-    if (!confirm('Broadcast-Post wirklich löschen?')) return;
+    if (!confirm(this.i18n.t('admin.broadcastDeleteConfirm'))) return;
 
     try {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       await this.http.delete(`/api/admin/broadcast-post/${postId}`, { headers }).toPromise();
-      this.success.set('Broadcast-Post gelöscht');
+      this.success.set(this.i18n.t('admin.successPostDeleted'));
       await this.loadBroadcastPosts();
     } catch (err) {
-      this.error.set('Fehler beim Löschen');
+      this.error.set(this.i18n.t('admin.errorDeleting'));
       console.error(err);
     }
   }
@@ -257,7 +259,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       this.systemStatus.set(response);
     } catch (err) {
       console.error('Error loading system status:', err);
-      this.error.set('Fehler beim Laden des System-Status');
+      this.error.set(this.i18n.t('admin.errorLoading'));
     }
   }
 
@@ -301,11 +303,11 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   }
 
   getRoleLabel(role: string): string {
-    const labels: { [key: string]: string } = {
-      'user': 'Benutzer',
-      'moderator': 'Moderatoren',
-      'admin': 'Admins'
+    const keyMap: Record<string, string> = {
+      'user': 'friendsPage.roleUser',
+      'moderator': 'friendsPage.roleModerator',
+      'admin': 'friendsPage.roleAdmin'
     };
-    return labels[role] || role;
+    return keyMap[role] ? this.i18n.t(keyMap[role]) : role;
   }
 }
