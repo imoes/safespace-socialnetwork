@@ -392,7 +392,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .post-actions { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
       .action-btn { padding: 6px 8px; font-size: 13px; }
       .post-controls { margin-left: 0; width: 100%; justify-content: flex-end; }

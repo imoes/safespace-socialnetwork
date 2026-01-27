@@ -490,7 +490,7 @@ interface FriendRequest {
       gap: 8px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .friends-container { padding: 16px 12px; }
       h2 { font-size: 22px; }
       .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; }

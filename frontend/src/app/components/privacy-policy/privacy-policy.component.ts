@@ -270,7 +270,7 @@ import { CommonModule } from '@angular/common';
       font-size: 14px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .legal-content {
         padding: 24px 16px;
       }

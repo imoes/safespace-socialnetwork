@@ -181,7 +181,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background: #166fe5;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .feed-container { padding: 12px 8px; }
       .posts { gap: 12px; }
     }

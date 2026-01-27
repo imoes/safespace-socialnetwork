@@ -174,7 +174,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .create-post { padding: 12px; }
       .post-footer { flex-wrap: wrap; }
       .post-btn { width: 100%; margin-left: 0; }
