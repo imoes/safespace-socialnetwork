@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
+import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-ticker.component';
 
 @Component({
   selector: 'app-public-feed',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, PostCardComponent, RecentPostsTickerComponent],
   template: `
+    <app-recent-posts-ticker />
     <div class="public-feed-container">
       <div class="page-header">
         <h1>🌍 Öffentliche Posts</h1>

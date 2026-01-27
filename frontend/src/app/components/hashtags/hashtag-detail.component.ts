@@ -4,12 +4,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HashtagService, HashtagPost } from '../../services/hashtag.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { Post } from '../../services/feed.service';
+import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-ticker.component';
 
 @Component({
   selector: 'app-hashtag-detail',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, PostCardComponent, RecentPostsTickerComponent],
   template: `
+    <app-recent-posts-ticker />
     <div class="hashtag-detail-container">
       <div class="header">
         <button class="back-btn" (click)="goBack()">← Zurück</button>
