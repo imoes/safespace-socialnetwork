@@ -114,9 +114,9 @@ class FeedService:
                 allowed_visibility = cls._get_visible_posts_for_tier(my_tier)
                 visibility = allowed_visibility
                 allowed_tiers = None
-            
+
             tasks.append(
-                cls._load_user_posts(user_uid, visibility, profile_data_map)
+                cls._load_user_posts(user_uid, visibility, profile_data_map, viewer_uid=uid)
             )
         
         # Parallel ausführen
@@ -171,7 +171,8 @@ class FeedService:
         cls,
         user_uid: int,
         visibility: list[str] | None,
-        profile_data_map: dict[int, dict]
+        profile_data_map: dict[int, dict],
+        viewer_uid: int | None = None
     ) -> list[dict]:
         """Lädt Posts eines Users und reichert sie mit Metadaten an"""
 
@@ -188,6 +189,7 @@ class FeedService:
             # Likes und Comments Count laden
             likes_count = await posts_db.get_likes_count(post["post_id"])
             comments_count = await posts_db.get_comments_count(post["post_id"])
+            is_liked = await posts_db.is_liked_by_user(post["post_id"], viewer_uid) if viewer_uid else False
 
             enriched.append({
                 "post_id": post["post_id"],
@@ -199,7 +201,8 @@ class FeedService:
                 "visibility": post["visibility"],
                 "created_at": post["created_at"],
                 "likes_count": likes_count,
-                "comments_count": comments_count
+                "comments_count": comments_count,
+                "is_liked_by_user": is_liked
             })
 
         return enriched

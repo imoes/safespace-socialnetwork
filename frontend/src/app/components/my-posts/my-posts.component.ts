@@ -233,15 +233,12 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     // Check for highlight query parameter - subscribe to changes
     this.route.queryParams.subscribe(params => {
       const highlightId = params['highlight'];
-      console.log('Query params changed, highlight:', highlightId);
       if (highlightId) {
         const postId = +highlightId;
         this.highlightedPostId.set(postId);
-        console.log('Set highlightedPostId to', postId);
 
         // Stelle sicher, dass wir auf "Meine Posts" Tab sind
         if (this.activeTab !== 'my-posts') {
-          console.log('Switching to my-posts tab');
           this.activeTab = 'my-posts';
           this.posts = [];
           this.offset = 0;
@@ -251,7 +248,6 @@ export class MyPostsComponent implements OnInit, OnDestroy {
 
         // Scroll to post after a short delay to ensure it's rendered
         setTimeout(() => {
-          console.log('Scrolling to post', postId);
           this.scrollToPost(postId);
         }, 800);
       } else {
@@ -322,9 +318,12 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   }
 
   likePost(post: Post): void {
-    this.http.post(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
-      next: () => {
-        post.likes_count++;
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
       },
       error: () => {
         alert(this.i18n.t('errors.like'));
@@ -333,9 +332,12 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   }
 
   unlikePost(post: Post): void {
-    this.http.delete(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
-      next: () => {
-        post.likes_count = Math.max(0, post.likes_count - 1);
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
       },
       error: () => {
         alert(this.i18n.t('errors.unlike'));
@@ -355,32 +357,23 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   }
 
   private scrollToPost(postId: number): void {
-    console.log('Attempting to scroll to post', postId);
-    console.log('Current posts:', this.posts.map(p => p.post_id));
-
     const element = document.getElementById(`post-${postId}`);
-    console.log('Found element:', element);
 
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log('Scrolled to element');
-      // Clear highlight after animation (increased to 5 seconds)
       setTimeout(() => {
-        console.log('Clearing highlight');
         this.highlightedPostId.set(null);
       }, 5000);
     } else {
-      console.warn(`Post ${postId} not found in DOM`);
-      console.log('Available post IDs:', this.posts.map(p => p.post_id));
       // Retry after posts might have loaded
       setTimeout(() => {
-        console.log('Retrying scroll after delay...');
         const retryElement = document.getElementById(`post-${postId}`);
         if (retryElement) {
           retryElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           setTimeout(() => this.highlightedPostId.set(null), 5000);
         } else {
-          console.error(`Post ${postId} still not found after retry`);
+          // Post not on current page, clear highlight silently
+          this.highlightedPostId.set(null);
         }
       }, 1000);
     }

@@ -102,7 +102,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             </div>
           } @else {
             @for (post of posts(); track post.post_id) {
-              <app-post-card [post]="post" (delete)="onPostDeleted(post)"></app-post-card>
+              <app-post-card [post]="post" (like)="onLike(post)" (unlike)="onUnlike(post)" (delete)="onPostDeleted(post)"></app-post-card>
             }
           }
         </div>
@@ -232,6 +232,28 @@ export class UserProfileComponent implements OnInit {
 
   onPostDeleted(post: Post): void {
     this.posts.set(this.posts().filter(p => p.post_id !== post.post_id));
+  }
+
+  onLike(post: Post): void {
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
+      }
+    });
+  }
+
+  onUnlike(post: Post): void {
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
+      }
+    });
   }
 
   sendFriendRequest(): void {

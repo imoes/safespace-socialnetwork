@@ -21,6 +21,7 @@ from app.db.welcome_message import (
 )
 from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
 from app.db.postgres import PostgresDB
+from app.db.site_settings import get_site_title, set_site_title, get_all_site_settings
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
 
@@ -60,6 +61,10 @@ class WelcomeMessageRequest(BaseModel):
 class BroadcastPostRequest(BaseModel):
     content: str
     visibility: str = "public"
+
+
+class SiteTitleRequest(BaseModel):
+    site_title: str
 
 
 async def require_moderator(current_user: dict = Depends(get_current_user)) -> dict:
@@ -346,3 +351,19 @@ async def get_system_status(moderator: dict = Depends(require_moderator)):
             "total_reports": total_reports
         }
     }
+
+
+# === Site Settings Endpoints ===
+
+@router.get("/site-settings")
+async def get_site_settings_admin(admin: dict = Depends(require_admin)):
+    """Gibt die Site-Settings zurück (Admin)"""
+    settings = await get_all_site_settings()
+    return settings
+
+
+@router.put("/site-settings/title")
+async def update_site_title(request: SiteTitleRequest, admin: dict = Depends(require_admin)):
+    """Aktualisiert den Site-Titel"""
+    title = await set_site_title(request.site_title)
+    return {"site_title": title}
