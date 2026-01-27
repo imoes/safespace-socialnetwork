@@ -90,7 +90,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   private i18n = inject(I18nService);
 
   // Tabs
-  activeTab = signal<'welcome' | 'broadcast' | 'status'>('welcome');
+  activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings'>('welcome');
 
   // Welcome Message
   welcomeMessage = signal<WelcomeMessage | null>(null);
@@ -107,6 +107,9 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     visibility: 'public'
   };
 
+  // Site Settings
+  siteTitle = '';
+
   // System Status
   systemStatus = signal<SystemStatus | null>(null);
   autoRefreshInterval: any = null;
@@ -120,6 +123,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     this.checkAdminAccess();
     this.loadWelcomeMessage();
     this.loadBroadcastPosts();
+    this.loadSiteSettings();
   }
 
   private checkAdminAccess(): void {
@@ -279,7 +283,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'welcome' | 'broadcast' | 'status'): void {
+  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings'): void {
     this.activeTab.set(tab);
     this.error.set(null);
     this.success.set(null);
@@ -295,6 +299,46 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopAutoRefresh();
+  }
+
+  // === Site Settings ===
+
+  async loadSiteSettings(): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.get('/api/admin/site-settings', { headers }).toPromise();
+      if (response.settings) {
+        this.siteTitle = response.settings.site_title || 'SocialNet';
+      }
+    } catch (err) {
+      console.error('Error loading site settings:', err);
+    }
+  }
+
+  async saveSiteSettings(): Promise<void> {
+    if (!this.siteTitle.trim()) {
+      this.error.set('Seitentitel darf nicht leer sein');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      await this.http.put('/api/admin/site-settings', { site_title: this.siteTitle.trim() }, { headers }).toPromise();
+      this.success.set('Seitentitel gespeichert!');
+    } catch (err) {
+      this.error.set('Fehler beim Speichern der Einstellungen');
+      console.error(err);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   // Helper-Methoden für Template

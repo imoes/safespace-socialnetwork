@@ -233,27 +233,20 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     // Check for highlight query parameter - subscribe to changes
     this.route.queryParams.subscribe(params => {
       const highlightId = params['highlight'];
-      console.log('Query params changed, highlight:', highlightId);
       if (highlightId) {
         const postId = +highlightId;
         this.highlightedPostId.set(postId);
-        console.log('Set highlightedPostId to', postId);
 
         // Stelle sicher, dass wir auf "Meine Posts" Tab sind
         if (this.activeTab !== 'my-posts') {
-          console.log('Switching to my-posts tab');
           this.activeTab = 'my-posts';
           this.posts = [];
           this.offset = 0;
           this.hasMore = true;
-          this.loadPosts();
         }
 
-        // Scroll to post after a short delay to ensure it's rendered
-        setTimeout(() => {
-          console.log('Scrolling to post', postId);
-          this.scrollToPost(postId);
-        }, 800);
+        // Load posts until we find the target post, then scroll
+        this.loadPostsUntilFound(postId);
       } else {
         // Clear highlight if no parameter
         this.highlightedPostId.set(null);
@@ -354,35 +347,38 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadPostsUntilFound(postId: number): void {
+    // Wait for any current load to finish, then check if post is present
+    const checkAndLoad = () => {
+      if (this.loading) {
+        // Wait for current load to finish
+        setTimeout(checkAndLoad, 200);
+        return;
+      }
+
+      const found = this.posts.some(p => p.post_id === postId);
+      if (found) {
+        // Post is loaded, scroll to it after Angular renders the DOM
+        setTimeout(() => this.scrollToPost(postId), 100);
+      } else if (this.hasMore) {
+        // Post not yet loaded, load more
+        this.loadMore();
+        setTimeout(checkAndLoad, 200);
+      } else {
+        // All posts loaded but post not found - it may have been deleted
+        console.warn(`Post ${postId} not found in user's posts`);
+      }
+    };
+
+    checkAndLoad();
+  }
+
   private scrollToPost(postId: number): void {
-    console.log('Attempting to scroll to post', postId);
-    console.log('Current posts:', this.posts.map(p => p.post_id));
-
     const element = document.getElementById(`post-${postId}`);
-    console.log('Found element:', element);
-
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log('Scrolled to element');
-      // Clear highlight after animation (increased to 5 seconds)
-      setTimeout(() => {
-        console.log('Clearing highlight');
-        this.highlightedPostId.set(null);
-      }, 5000);
-    } else {
-      console.warn(`Post ${postId} not found in DOM`);
-      console.log('Available post IDs:', this.posts.map(p => p.post_id));
-      // Retry after posts might have loaded
-      setTimeout(() => {
-        console.log('Retrying scroll after delay...');
-        const retryElement = document.getElementById(`post-${postId}`);
-        if (retryElement) {
-          retryElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setTimeout(() => this.highlightedPostId.set(null), 5000);
-        } else {
-          console.error(`Post ${postId} still not found after retry`);
-        }
-      }, 1000);
+      // Clear highlight after animation
+      setTimeout(() => this.highlightedPostId.set(null), 5000);
     }
   }
 }

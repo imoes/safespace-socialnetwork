@@ -95,6 +95,22 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS birthday DATE
             """)
 
+            # Site Settings (Key-Value Store für Admin-Einstellungen)
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS site_settings (
+                    key VARCHAR(100) PRIMARY KEY,
+                    value TEXT NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Default site title
+            await conn.execute("""
+                INSERT INTO site_settings (key, value)
+                VALUES ('site_title', 'SocialNet')
+                ON CONFLICT (key) DO NOTHING
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (

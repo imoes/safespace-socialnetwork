@@ -23,6 +23,12 @@
       (click)="setActiveTab('status')">
       📊 System-Status
     </button>
+    <button
+      class="tab"
+      [class.active]="activeTab() === 'settings'"
+      (click)="setActiveTab('settings')">
+      ⚙️ Einstellungen
+    </button>
   </div>
 
   <!-- Messages -->
@@ -315,6 +321,35 @@
           <p>⏳ Lade System-Status...</p>
         </div>
       }
+    </div>
+  }
+
+  <!-- Settings Tab -->
+  @if (activeTab() === 'settings') {
+    <div class="tab-content">
+      <h2>⚙️ Seiten-Einstellungen</h2>
+      <p class="description">
+        Hier kannst du den Titel der Seite ändern. Der Titel wird in der Navigationsleiste angezeigt.
+      </p>
+
+      <div class="form-card">
+        <div class="form-group">
+          <label for="site-title">Seitentitel</label>
+          <input
+            id="site-title"
+            type="text"
+            [(ngModel)]="siteTitle"
+            placeholder="z.B. SocialNet"
+            maxlength="50">
+        </div>
+
+        <button
+          class="btn btn-primary"
+          (click)="saveSiteSettings()"
+          [disabled]="loading()">
+          {{ loading() ? '⏳ Speichern...' : '💾 Seitentitel speichern' }}
+        </button>
+      </div>
     </div>
   }
 </div>

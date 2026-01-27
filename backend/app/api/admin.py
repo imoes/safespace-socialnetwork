@@ -62,6 +62,10 @@ class BroadcastPostRequest(BaseModel):
     visibility: str = "public"
 
 
+class SiteSettingsRequest(BaseModel):
+    site_title: str
+
+
 async def require_moderator(current_user: dict = Depends(get_current_user)) -> dict:
     if not await is_moderator_or_admin(current_user["uid"]):
         raise HTTPException(status_code=403, detail="Moderator access required")
@@ -346,3 +350,39 @@ async def get_system_status(moderator: dict = Depends(require_moderator)):
             "total_reports": total_reports
         }
     }
+
+
+# === Site Settings Endpoints ===
+
+@router.get("/site-settings")
+async def get_site_settings(admin: dict = Depends(require_admin)):
+    """Holt die Site-Einstellungen (Admin)"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute("SELECT key, value FROM site_settings")
+        rows = await result.fetchall()
+        settings_dict = {row["key"]: row["value"] for row in rows}
+        return {"settings": settings_dict}
+
+
+@router.put("/site-settings")
+async def update_site_settings(request: SiteSettingsRequest, admin: dict = Depends(require_admin)):
+    """Aktualisiert die Site-Einstellungen"""
+    async with PostgresDB.connection() as conn:
+        await conn.execute("""
+            INSERT INTO site_settings (key, value, updated_at)
+            VALUES ('site_title', %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP
+        """, (request.site_title,))
+        await conn.commit()
+    return {"message": "Settings updated", "site_title": request.site_title}
+
+
+@router.get("/public/site-title")
+async def get_public_site_title():
+    """Öffentlicher Endpoint für den Seitentitel (kein Auth nötig)"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT value FROM site_settings WHERE key = 'site_title'"
+        )
+        row = await result.fetchone()
+        return {"site_title": row["value"] if row else "SocialNet"}

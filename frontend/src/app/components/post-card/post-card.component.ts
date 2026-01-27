@@ -465,7 +465,13 @@ export class PostCardComponent implements OnChanges {
   }
 
   toggleLike(): void {
-    this.isLiked ? this.unlike.emit(this.post) : this.like.emit(this.post);
+    if (this.isLiked) {
+      this.unlike.emit(this.post);
+      this.post.likes_count = Math.max(0, this.post.likes_count - 1);
+    } else {
+      this.like.emit(this.post);
+      this.post.likes_count++;
+    }
     this.isLiked = !this.isLiked;
   }
 

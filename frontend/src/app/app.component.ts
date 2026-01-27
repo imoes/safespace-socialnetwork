@@ -18,7 +18,7 @@ import { HttpClient } from '@angular/common/http';
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
-        <a routerLink="/" class="logo">SocialNet</a>
+        <a routerLink="/" class="logo">{{ siteTitle() }}</a>
 
         <div class="search-container desktop-only">
           <input
@@ -528,6 +528,7 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
 
+  siteTitle = signal('SocialNet');
   showDropdown = signal(false);
   showSearchResults = signal(false);
   searchResults = signal<UserSearchResult[]>([]);
@@ -593,6 +594,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadSiteTitle();
+
     // Refresh pending requests count every 30 seconds
     interval(30000).subscribe(() => {
       if (this.authService.isAuthenticated()) {
@@ -603,6 +606,17 @@ export class AppComponent implements OnInit {
           this.loadOpenReportsCount();
         }
       }
+    });
+  }
+
+  private loadSiteTitle(): void {
+    this.http.get<{ site_title: string }>('/api/admin/public/site-title').subscribe({
+      next: (response) => {
+        if (response.site_title) {
+          this.siteTitle.set(response.site_title);
+        }
+      },
+      error: () => {}
     });
   }
 
