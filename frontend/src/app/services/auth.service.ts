@@ -1,7 +1,8 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
+import { I18nService } from './i18n.service';
 
 export interface User {
   uid: number;
@@ -41,21 +42,19 @@ export class AuthService {
     return role === 'admin' || role === 'moderator';
   });
 
+  private i18n = inject(I18nService);
+
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    console.log(`🔧 [Auth] Constructor called. Token exists: ${!!this.getToken()}, localStorage.preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
     if (this.getToken()) {
       this.loadCurrentUser();
     }
   }
 
-  // Hilfsfunktion: Headers mit Token erstellen
   private getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
-    console.log('🔑 Creating headers with token:', token ? 'YES' : 'NO');
-    
     if (token) {
       return new HttpHeaders({
         'Authorization': `Bearer ${token}`
@@ -66,8 +65,6 @@ export class AuthService {
 
   login(username: string, password: string): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
-    console.log(`🔐 [Auth] Login attempt for: ${username}`);
-    console.log(`🔐 [Auth] localStorage at login time: preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
 
     const formData = new FormData();
     formData.append('username', username);
@@ -75,8 +72,6 @@ export class AuthService {
 
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, formData).pipe(
       tap(response => {
-        console.log('✅ [Auth] Login erfolgreich, Token erhalten');
-        console.log(`🔐 [Auth] localStorage after login response: preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
         this.setToken(response.access_token);
         this.loadCurrentUser();
       }),
@@ -98,7 +93,6 @@ export class AuthService {
       last_name: lastName
     }).pipe(
       tap(response => {
-        console.log('✅ Registration erfolgreich, Token erhalten');
         this.setToken(response.access_token);
         this.loadCurrentUser();
       }),
@@ -110,12 +104,22 @@ export class AuthService {
   }
 
   logout(): void {
-    console.log(`🔓 [Auth] Logout called`);
-    console.log(`🔓 [Auth] localStorage before cleanup: token=${localStorage.getItem(this.TOKEN_KEY) ? 'YES' : 'NO'}, preferredLanguage=${localStorage.getItem('preferredLanguage')}`);
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem('preferredLanguage');
-    console.log(`🔓 [Auth] localStorage after cleanup: token=${localStorage.getItem(this.TOKEN_KEY)}, preferredLanguage=${localStorage.getItem('preferredLanguage')}`);
     this.currentUserSignal.set(null);
+
+    // Reset i18n to browser default language so the login page doesn't show
+    // the previous user's language
+    try {
+      const browserLang = navigator.language.split('-')[0];
+      const languages = this.i18n.languages();
+      const supported = languages.find(l => l.code === browserLang);
+      const defaultLang = supported ? browserLang : 'en';
+      this.i18n.setLanguage(defaultLang);
+    } catch (e) {
+      // i18n not available, ignore
+    }
+
     this.router.navigate(['/login']);
   }
 
@@ -124,42 +128,38 @@ export class AuthService {
   }
 
   private setToken(token: string): void {
-    console.log('💾 Speichere Token in localStorage');
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
   loadCurrentUser(): void {
-    console.log('📡 [Auth] loadCurrentUser called');
-    console.log(`📡 [Auth] Current localStorage: preferredLanguage=${localStorage.getItem('preferredLanguage')}`);
-
-    // WICHTIG: Headers direkt hier setzen statt auf Interceptor zu vertrauen!
     this.http.get<User>(`${this.API_URL}/me`, {
       headers: this.getAuthHeaders()
     }).pipe(
       tap(user => {
-        console.log('✅ [Auth] User geladen:', user.username, '| preferred_language:', user.preferred_language);
         this.currentUserSignal.set(user);
         this.isLoadingSignal.set(false);
 
         // Apply user's stored language preference
-        const currentLang = localStorage.getItem('preferredLanguage');
-        console.log(`🌐 [Auth] Language check: user.preferred_language='${user.preferred_language}', localStorage='${currentLang}'`);
+        const currentI18nLang = this.i18n.currentLanguage()?.code;
 
         if (user.preferred_language) {
-          if (currentLang !== user.preferred_language) {
-            console.log(`🌐 [Auth] Language mismatch! Setting localStorage to '${user.preferred_language}' and reloading`);
+          // User has a language in DB - apply it if different from current
+          if (currentI18nLang !== user.preferred_language) {
             localStorage.setItem('preferredLanguage', user.preferred_language);
-            window.location.reload();
-          } else {
-            console.log(`🌐 [Auth] Language already matches, no reload needed`);
+            this.i18n.setLanguage(user.preferred_language);
           }
         } else {
-          console.log(`🌐 [Auth] User has no preferred_language stored in DB`);
+          // User has no language in DB - save current language to DB for future logins
+          const currentLang = localStorage.getItem('preferredLanguage') || currentI18nLang || 'en';
+          this.http.patch('/api/users/me/language', {
+            preferred_language: currentLang
+          }, {
+            headers: this.getAuthHeaders()
+          }).subscribe();
         }
       }),
       catchError((error) => {
-        console.error('❌ [Auth] User laden fehlgeschlagen:', error);
-        console.log('Token war:', this.getToken()?.substring(0, 20));
+        console.error('Failed to load user:', error);
         this.logout();
         return of(null);
       })
