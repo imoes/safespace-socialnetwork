@@ -28,6 +28,8 @@ import { PublicFeedComponent } from './components/public-feed/public-feed.compon
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { ImpressumComponent } from './components/impressum/impressum.component';
 import { InfoComponent } from './components/info/info.component';
+import { GroupsComponent } from './components/groups/groups.component';
+import { GroupDetailComponent } from './components/groups/group-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -42,6 +44,8 @@ export const routes: Routes = [
   { path: 'profile/:uid', component: UserProfileComponent, canActivate: [authGuard] },
   { path: 'hashtags', component: HashtagsComponent, canActivate: [authGuard] },
   { path: 'hashtag/:hashtag', component: HashtagDetailComponent, canActivate: [authGuard] },
+  { path: 'groups', component: GroupsComponent, canActivate: [authGuard] },
+  { path: 'groups/:id', component: GroupDetailComponent, canActivate: [authGuard] },
   { path: 'privacy-policy', component: PrivacyPolicyComponent, canActivate: [authGuard] },
   { path: 'impressum', component: ImpressumComponent, canActivate: [authGuard] },
   { path: 'info', component: InfoComponent, canActivate: [authGuard] },

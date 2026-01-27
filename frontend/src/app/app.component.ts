@@ -81,6 +81,7 @@ import { HttpClient } from '@angular/common/http';
                 <span class="notification-badge">{{ pendingRequestsCount() }}</span>
               }
             </a>
+            <a routerLink="/groups" class="nav-link">👥 {{ 'nav.groups' | translate }}</a>
           }
           <app-notifications-dropdown />
           @if (authService.isModerator()) {

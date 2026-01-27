@@ -12,7 +12,8 @@
     "searchPlaceholder": "البحث عن المستخدمين...",
     "privacyPolicy": "سياسة الخصوصية",
     "impressum": "الإشعار القانوني",
-    "info": "معلومات"
+    "info": "معلومات",
+    "groups": "المجموعات"
   },
   "feed": {
     "title": "تغذيتي",
@@ -340,7 +341,35 @@
     "postLiked": "{{username}} أعجب بمنشورك",
     "postCommented": "{{username}} علق على منشورك",
     "commentLiked": "{{username}} أعجب بتعليقك",
-    "newNotification": "إشعار جديد"
+    "newNotification": "إشعار جديد",
+    "groupPost": "{{username}} نشر في مجموعة {{group}}"
+  },
+  "groups": {
+    "title": "المجموعات",
+    "subtitle": "انضم إلى المجموعات وشارك مع أشخاص متشابهين في التفكير",
+    "createGroup": "إنشاء مجموعة",
+    "namePlaceholder": "اسم المجموعة",
+    "descriptionPlaceholder": "وصف المجموعة (اختياري)",
+    "create": "إنشاء",
+    "myGroups": "مجموعاتي",
+    "noGroups": "لست عضواً في أي مجموعة بعد.",
+    "searchGroups": "البحث عن مجموعات",
+    "searchPlaceholder": "البحث عن أسماء المجموعات...",
+    "members": "الأعضاء",
+    "owner": "المالك",
+    "admin": "مدير",
+    "member": "عضو",
+    "join": "انضمام",
+    "leave": "مغادرة",
+    "deleteGroup": "حذف المجموعة",
+    "posts": "المنشورات",
+    "noPosts": "لا توجد منشورات في هذه المجموعة بعد.",
+    "postPlaceholder": "اكتب شيئاً في المجموعة...",
+    "visibilityInternal": "داخلي (الأعضاء فقط)",
+    "visibilityPublic": "عام",
+    "makeAdmin": "تعيين كمدير",
+    "removeAdmin": "إزالة المدير",
+    "removeMember": "إزالة العضو"
   },
   "guardian": {
     "title": "Guardian - إشراف المحتوى بمساعدة الذكاء الاصطناعي",

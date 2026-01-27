@@ -158,6 +158,7 @@ services:
       SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
     volumes:
       - user_data:/data/users
+      - group_data:/data/groups
       - ./backend/app:/app/app:ro
     ports:
       - "8000:8000"
@@ -233,3 +234,4 @@ volumes:
   zookeeper_log:
   minio_data:
   user_data:
+  group_data:
