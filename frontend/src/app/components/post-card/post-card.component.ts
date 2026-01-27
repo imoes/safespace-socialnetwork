@@ -65,6 +65,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               <video
                 #videoElement
                 [src]="url"
+                controls
                 muted
                 playsinline
                 preload="metadata"
