@@ -16,6 +16,7 @@ export interface User {
   first_name?: string;
   last_name?: string;
   preferred_language?: string;
+  birthday?: string;
 }
 
 export interface AuthResponse {

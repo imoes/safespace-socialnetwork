@@ -221,7 +221,8 @@
     "friendRequestSent": "Friend request was sent!",
     "roleUser": "User",
     "roleModerator": "Moderator",
-    "roleAdmin": "Administrator"
+    "roleAdmin": "Administrator",
+    "birthday": "Birthday"
   },
   "login": {
     "title": "Login",
@@ -279,6 +280,8 @@
     "firstNamePlaceholder": "Your first name",
     "lastName": "Last Name",
     "lastNamePlaceholder": "Your last name",
+    "birthday": "Birthday",
+    "birthdayPlaceholder": "Enter your birthday",
     "language": "Language",
     "languageHelp": "Choose your preferred language",
     "passwordSection": "Change Password",
@@ -396,7 +399,8 @@
     "postCommented": "{{username}} commented on your post",
     "commentLiked": "{{username}} liked your comment",
     "newNotification": "New notification",
-    "groupPost": "{{username}} posted in group {{group}}"
+    "groupPost": "{{username}} posted in group {{group}}",
+    "birthday": "🎂 {{username}} has a birthday today!"
   },
   "groups": {
     "title": "Groups",

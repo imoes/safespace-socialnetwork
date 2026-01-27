@@ -57,7 +57,14 @@ async def lifespan(app: FastAPI):
         print("✅ Kafka Producer initialized")
     except Exception as e:
         print(f"⚠️ Kafka not available: {e}")
-    
+
+    # Birthday Notification Scheduler starten
+    try:
+        from app.services.birthday_service import start_birthday_scheduler
+        start_birthday_scheduler()
+    except Exception as e:
+        print(f"⚠️ Failed to start birthday scheduler: {e}")
+
     yield
     
     # Shutdown

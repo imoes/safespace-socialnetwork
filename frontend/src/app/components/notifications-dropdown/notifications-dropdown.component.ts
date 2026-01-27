@@ -341,6 +341,8 @@ export class NotificationsDropdownComponent implements OnInit {
         return this.i18n.t('notifications.postCommented', { username });
       case 'comment_liked':
         return this.i18n.t('notifications.commentLiked', { username });
+      case 'birthday':
+        return this.i18n.t('notifications.birthday', { username });
       default:
         return this.i18n.t('notifications.newNotification');
     }

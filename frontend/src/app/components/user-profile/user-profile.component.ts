@@ -37,6 +37,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               @if (profile.bio) {
                 <p class="profile-bio">{{ profile.bio }}</p>
               }
+              @if (profile.birthday) {
+                <p class="profile-birthday">🎂 {{ 'profile.birthday' | translate }}: {{ profile.birthday | date:'dd.MM.yyyy' }}</p>
+              }
               <div class="profile-meta">
                 <span class="role-badge" [class]="'role-' + profile.role">{{ getRoleLabel(profile.role) }}</span>
                 <span class="joined-date">{{ 'profile.memberSince' | translate }} {{ profile.created_at | date:'dd.MM.yyyy' }}</span>
@@ -126,6 +129,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .profile-username { margin: 0 0 4px; font-size: 28px; font-weight: 700; color: #050505; }
     .profile-realname { margin: 0 0 8px; font-size: 15px; color: #65676b; font-weight: 400; }
     .profile-bio { margin: 0 0 16px; color: #65676b; line-height: 1.5; }
+    .profile-birthday { margin: 0 0 12px; color: #65676b; font-size: 15px; }
     .profile-meta { display: flex; gap: 16px; align-items: center; }
 
     .role-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }

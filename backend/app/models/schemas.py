@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from enum import Enum
 
@@ -71,6 +71,7 @@ class UserProfile(UserPublic):
     first_name: str | None = None
     last_name: str | None = None
     preferred_language: str | None = None
+    birthday: date | None = None
 
 
 class UserWithStats(UserPublic):

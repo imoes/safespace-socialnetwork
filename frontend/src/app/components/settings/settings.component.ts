@@ -106,6 +106,18 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             />
           </div>
 
+          <!-- Geburtstag -->
+          <div class="form-group">
+            <label for="birthday">🎂 {{ 'settings.birthday' | translate }}</label>
+            <input
+              id="birthday"
+              type="date"
+              [(ngModel)]="birthday"
+              name="birthday"
+              class="form-control"
+            />
+          </div>
+
           <!-- Bio -->
           <div class="form-group">
             <label for="bio">{{ 'settings.bio' | translate }}</label>
@@ -469,6 +481,7 @@ export class SettingsComponent implements OnInit {
   bio = '';
   firstName = '';
   lastName = '';
+  birthday = '';
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -489,6 +502,7 @@ export class SettingsComponent implements OnInit {
         this.bio = user.bio || '';
         this.firstName = user.first_name || '';
         this.lastName = user.last_name || '';
+        this.birthday = user.birthday || '';
       }
     });
   }
@@ -544,7 +558,8 @@ export class SettingsComponent implements OnInit {
       bio: this.bio,
       first_name: this.firstName,
       last_name: this.lastName,
-      preferred_language: this.selectedLanguage
+      preferred_language: this.selectedLanguage,
+      birthday: this.birthday || null
     };
 
     if (this.currentPassword && this.newPassword) {

@@ -221,7 +221,8 @@
     "friendRequestSent": "¡La solicitud de amistad fue enviada!",
     "roleUser": "Usuario",
     "roleModerator": "Moderador",
-    "roleAdmin": "Administrador"
+    "roleAdmin": "Administrador",
+    "birthday": "Cumpleaños"
   },
   "friends": {
     "title": "Amigos",
@@ -249,6 +250,8 @@
     "firstNamePlaceholder": "Tu nombre",
     "lastName": "Apellido",
     "lastNamePlaceholder": "Tu apellido",
+    "birthday": "Cumpleaños",
+    "birthdayPlaceholder": "Ingresa tu cumpleaños",
     "language": "Idioma",
     "languageHelp": "Elige tu idioma preferido / Choose your preferred language",
     "passwordSection": "Cambiar contraseña",
@@ -342,7 +345,8 @@
     "postCommented": "{{username}} comentó en tu publicación",
     "commentLiked": "{{username}} le dio me gusta a tu comentario",
     "newNotification": "Nueva notificación",
-    "groupPost": "{{username}} publicó en el grupo {{group}}"
+    "groupPost": "{{username}} publicó en el grupo {{group}}",
+    "birthday": "🎂 ¡{{username}} cumple años hoy!"
   },
   "groups": {
     "title": "Grupos",
