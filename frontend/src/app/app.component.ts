@@ -510,7 +510,7 @@ import { HttpClient } from '@angular/common/http';
     /* === Responsive visibility === */
     .mobile-only { display: none; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .desktop-only { display: none !important; }
       .mobile-only { display: flex !important; }
 

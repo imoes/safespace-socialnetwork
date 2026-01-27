@@ -449,7 +449,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background: #c82333;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .settings-container { margin: 16px auto; padding: 12px; }
       .settings-card { padding: 20px 16px; }
       h2 { font-size: 20px; }

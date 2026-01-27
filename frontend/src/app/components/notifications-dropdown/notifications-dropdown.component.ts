@@ -224,7 +224,7 @@ import { interval } from 'rxjs';
       flex-shrink: 0;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .dropdown-menu {
         position: fixed;
         top: auto;
