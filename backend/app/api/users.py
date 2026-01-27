@@ -19,6 +19,7 @@ class UserUpdateRequest(BaseModel):
     last_name: Optional[str] = None
     current_password: Optional[str] = None
     new_password: Optional[str] = None
+    preferred_language: Optional[str] = None
 
 
 class PersonalPostRequest(BaseModel):
@@ -68,14 +69,14 @@ async def update_user_profile(
             # Neues Passwort hashen und speichern
             new_hash = get_password_hash(update_data.new_password)
             await conn.execute(
-                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, password_hash = %s WHERE uid = %s",
-                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, new_hash, current_user["uid"])
+                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, password_hash = %s, preferred_language = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, new_hash, update_data.preferred_language, current_user["uid"])
             )
         else:
-            # Nur E-Mail, Bio und Namen aktualisieren
+            # Nur E-Mail, Bio, Namen und Sprache aktualisieren
             await conn.execute(
-                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s WHERE uid = %s",
-                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, current_user["uid"])
+                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, preferred_language = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, update_data.preferred_language, current_user["uid"])
             )
 
         await conn.commit()

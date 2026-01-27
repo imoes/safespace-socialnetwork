@@ -85,6 +85,11 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS posts_count INTEGER DEFAULT 0
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(10)
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (

@@ -70,6 +70,7 @@ class UserProfile(UserPublic):
     profile_picture: str | None = None
     first_name: str | None = None
     last_name: str | None = None
+    preferred_language: str | None = None
 
 
 class UserWithStats(UserPublic):

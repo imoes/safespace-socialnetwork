@@ -619,7 +619,10 @@ export class GroupDetailComponent implements OnInit {
     const gid = this.group()?.group_id;
     if (!gid) return;
     this.groupsService.updateMemberRole(gid, userUid, role).subscribe({
-      next: () => this.loadMembers(),
+      next: () => {
+        this.loadMembers();
+        this.loadGroup(gid);
+      },
       error: (err) => console.error('Error changing role:', err)
     });
   }

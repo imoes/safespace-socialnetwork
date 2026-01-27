@@ -469,12 +469,12 @@ async def update_member_role(
 
     async with PostgresDB.connection() as conn:
         await conn.execute(
-            "UPDATE group_members SET role = %s WHERE group_id = %s AND user_uid = %s",
+            "UPDATE group_members SET role = %s WHERE group_id = %s AND user_uid = %s AND status = 'active'",
             (data.role, group_id, user_uid)
         )
         await conn.commit()
 
-    return {"message": f"Role updated to {data.role}"}
+    return {"message": f"Role updated to {data.role}", "role": data.role}
 
 
 @router.delete("/{group_id}/members/{user_uid}")
