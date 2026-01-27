@@ -187,7 +187,7 @@ async def get_user_by_uid(uid: int) -> dict | None:
 async def get_user_by_username(username: str) -> dict | None:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
-            "SELECT * FROM users WHERE username = %s",
+            "SELECT * FROM users WHERE LOWER(username) = LOWER(%s)",
             (username,)
         )
         return await result.fetchone()
@@ -204,10 +204,10 @@ async def get_user_by_email(email: str) -> dict | None:
 
 
 async def get_user_by_username_or_email(identifier: str) -> dict | None:
-    """Holt User anhand Username ODER E-Mail"""
+    """Holt User anhand Username ODER E-Mail (case-insensitive)"""
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
-            "SELECT * FROM users WHERE username = %s OR email = %s",
+            "SELECT * FROM users WHERE LOWER(username) = LOWER(%s) OR LOWER(email) = LOWER(%s)",
             (identifier, identifier)
         )
         return await result.fetchone()

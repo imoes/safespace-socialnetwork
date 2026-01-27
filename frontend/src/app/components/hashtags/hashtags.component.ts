@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HashtagService, HashtagStat } from '../../services/hashtag.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-ticker.component';
 
 @Component({
   selector: 'app-hashtags',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RecentPostsTickerComponent],
   template: `
+    <app-recent-posts-ticker />
     <div class="hashtags-container">
       <div class="header">
         <h2>🏷️ Hashtags</h2>

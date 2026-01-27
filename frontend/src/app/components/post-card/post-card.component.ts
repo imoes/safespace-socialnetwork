@@ -17,15 +17,19 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     <div class="post-card">
       <div class="post-header">
         @if (post.author_profile_picture) {
-          <img [src]="post.author_profile_picture" class="avatar avatar-img" [alt]="post.author_username" />
+          <img [src]="post.author_profile_picture" class="avatar avatar-img clickable-avatar" [alt]="post.author_username" (click)="goToProfile(post.author_uid)" />
         } @else {
-          <div class="avatar">{{ post.author_username.charAt(0).toUpperCase() }}</div>
+          <div class="avatar clickable-avatar" (click)="goToProfile(post.author_uid)">{{ post.author_username.charAt(0).toUpperCase() }}</div>
         }
         <div class="author-info">
           @if (post.recipient_username) {
-            <span class="username personal-post-header">{{ post.recipient_username }} <span class="arrow">›</span> {{ post.author_username }}</span>
+            <span class="username personal-post-header">
+              <span class="clickable-username" (click)="goToProfile(post.recipient_uid!)">{{ post.recipient_username }}</span>
+              <span class="arrow">›</span>
+              <span class="clickable-username" (click)="goToProfile(post.author_uid)">{{ post.author_username }}</span>
+            </span>
           } @else {
-            <span class="username">{{ post.author_username }}</span>
+            <span class="username clickable-username" (click)="goToProfile(post.author_uid)">{{ post.author_username }}</span>
           }
           <span class="timestamp">{{ post.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
         </div>
@@ -273,6 +277,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .avatar-img { object-fit: cover; }
     .author-info { flex: 1; display: flex; flex-direction: column; }
     .username { font-weight: 600; }
+    .clickable-username { cursor: pointer; }
+    .clickable-username:hover { text-decoration: underline; color: #1877f2; }
+    .clickable-avatar { cursor: pointer; transition: opacity 0.2s; }
+    .clickable-avatar:hover { opacity: 0.8; }
     .personal-post-header .arrow { color: #1877f2; font-weight: bold; margin: 0 4px; }
     .timestamp { font-size: 12px; color: #65676b; }
     .post-content { padding: 0 16px 12px; }
@@ -447,6 +455,10 @@ export class PostCardComponent implements OnChanges {
         }
       }
     }
+  }
+
+  goToProfile(uid: number): void {
+    this.router.navigate(['/profile', uid]);
   }
 
   toggleLike(): void {
