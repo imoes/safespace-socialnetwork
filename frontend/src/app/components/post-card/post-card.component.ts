@@ -68,6 +68,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 controls
                 muted
                 playsinline
+                preload="metadata"
                 (mouseenter)="onVideoHover(videoElement, true)"
                 (mouseleave)="onVideoHover(videoElement, false)">
               </video>
@@ -742,10 +743,11 @@ export class PostCardComponent implements OnChanges {
 
   onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
     if (isHovering) {
-      // Play video on hover - läuft dann bis zum Ende durch
       videoElement.play().catch(() => {});
+    } else {
+      videoElement.pause();
+      videoElement.currentTime = 0;
     }
-    // Beim Verlassen passiert nichts - Video läuft weiter
   }
 
   // Guardian Modal Methods
