@@ -29,6 +29,12 @@
       (click)="setActiveTab('settings')">
       ⚙️ Seiteneinstellungen
     </button>
+    <button
+      class="tab"
+      [class.active]="activeTab() === 'email-templates'"
+      (click)="setActiveTab('email-templates')">
+      📧 E-Mail-Templates
+    </button>
   </div>
 
   <!-- Messages -->
@@ -351,6 +357,127 @@
             [disabled]="loading()">
             {{ loading() ? '⏳ Speichern...' : '💾 Titel speichern' }}
           </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Email Templates Tab -->
+  @if (activeTab() === 'email-templates') {
+    <div class="tab-content">
+      <h2>📧 E-Mail-Templates</h2>
+      <p class="description">
+        Hier kannst du die E-Mail-Benachrichtigungen bearbeiten. Verwende Platzhalter wie
+        <code ngNonBindable>&#123;&#123;username&#125;&#125;</code>, <code ngNonBindable>&#123;&#123;actor&#125;&#125;</code> usw.
+        und übersetze Templates per Knopfdruck in alle Sprachen.
+      </p>
+
+      <div class="form-card">
+        <!-- Typ und Sprache Auswahl -->
+        <div class="template-selectors">
+          <div class="form-group">
+            <label for="template-type">Benachrichtigungstyp</label>
+            <select id="template-type" [(ngModel)]="selectedNotificationType" (change)="onTemplateTypeChange()">
+              @for (type of notificationTypes(); track type) {
+                <option [value]="type">{{ notificationTypeLabels[type] || type }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="template-lang">Sprache</label>
+            <select id="template-lang" [(ngModel)]="selectedTemplateLang" (change)="onTemplateLangChange()">
+              @for (lang of availableLanguages; track lang.code) {
+                <option [value]="lang.code">{{ lang.flag }} {{ lang.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Betreff -->
+        <div class="form-group">
+          <label for="template-subject">Betreff</label>
+          <input
+            id="template-subject"
+            type="text"
+            [(ngModel)]="templateSubject"
+            [placeholder]="'z.B. {{actor}} hat deinen Post geliked!'">
+        </div>
+
+        <!-- WYSIWYG Toolbar -->
+        <div class="form-group">
+          <label>Inhalt</label>
+          <div class="editor-toolbar">
+            <button type="button" class="toolbar-btn" (click)="execCommand('bold')" title="Fett"><b>B</b></button>
+            <button type="button" class="toolbar-btn" (click)="execCommand('italic')" title="Kursiv"><i>I</i></button>
+            <button type="button" class="toolbar-btn" (click)="execCommand('underline')" title="Unterstrichen"><u>U</u></button>
+            <span class="toolbar-separator"></span>
+            <button type="button" class="toolbar-btn" (click)="execCommand('insertUnorderedList')" title="Liste">&#8226;</button>
+            <button type="button" class="toolbar-btn" (click)="execCommand('justifyLeft')" title="Links">&#8676;</button>
+            <button type="button" class="toolbar-btn" (click)="execCommand('justifyCenter')" title="Zentriert">&#8596;</button>
+            <span class="toolbar-separator"></span>
+            <button type="button" class="toolbar-btn" (click)="execCommand('removeFormat')" title="Formatierung entfernen">&#10005;</button>
+          </div>
+
+          <!-- Editor -->
+          <div
+            id="template-editor"
+            class="wysiwyg-editor"
+            contenteditable="true"
+            (input)="onEditorInput($event)"
+            [innerHTML]="templateBody">
+          </div>
+        </div>
+
+        <!-- Platzhalter Buttons -->
+        <div class="placeholder-section">
+          <label>Platzhalter einfügen:</label>
+          <div class="placeholder-buttons">
+            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{username}}')"><span ngNonBindable>&#123;&#123;username&#125;&#125;</span></button>
+            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{actor}}')"><span ngNonBindable>&#123;&#123;actor&#125;&#125;</span></button>
+            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{post_content}}')"><span ngNonBindable>&#123;&#123;post_content&#125;&#125;</span></button>
+            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{comment_content}}')"><span ngNonBindable>&#123;&#123;comment_content&#125;&#125;</span></button>
+            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{action_button}}')"><span ngNonBindable>&#123;&#123;action_button&#125;&#125;</span></button>
+            <button type="button" class="placeholder-btn" (click)="insertPlaceholder('{{birthday_age}}')"><span ngNonBindable>&#123;&#123;birthday_age&#125;&#125;</span></button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group" style="margin-top: 20px;">
+          <button
+            class="btn btn-primary"
+            (click)="saveEmailTemplate()"
+            [disabled]="loading()">
+            {{ loading() ? '⏳ Speichern...' : '💾 Template speichern' }}
+          </button>
+          <button
+            class="btn btn-translate"
+            (click)="translateTemplate()"
+            [disabled]="translating()">
+            {{ translating() ? '⏳ Übersetze...' : '🌐 In alle Sprachen übersetzen' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Template Übersicht -->
+      <div class="form-card" style="margin-top: 20px;">
+        <h3>Vorhandene Templates</h3>
+        <div class="template-overview">
+          @for (type of notificationTypes(); track type) {
+            <div class="template-overview-row">
+              <span class="template-type-label">{{ notificationTypeLabels[type] || type }}</span>
+              <div class="template-lang-badges">
+                @for (lang of availableLanguages; track lang.code) {
+                  <span
+                    class="lang-badge"
+                    [class.lang-badge-active]="getTemplateLanguages(type).includes(lang.code)"
+                    [title]="lang.name">
+                    {{ lang.flag }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
         </div>
       </div>
     </div>
