@@ -95,6 +95,11 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS birthday DATE
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{}'::jsonb
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (

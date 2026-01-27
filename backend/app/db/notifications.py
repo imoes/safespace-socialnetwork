@@ -81,9 +81,11 @@ async def create_notification(
                 from app.services.email_service import EmailService
                 import asyncio
 
-                # User-Daten für E-Mail abrufen
+                # User-Daten für E-Mail abrufen (inkl. Preferences und Sprache)
                 user_result = await conn.execute("""
                     SELECT u1.username as to_username, u1.email as to_email,
+                           u1.notification_preferences as prefs,
+                           u1.preferred_language as language,
                            u2.username as actor_username
                     FROM users u1
                     JOIN users u2 ON u2.uid = %s
@@ -92,33 +94,41 @@ async def create_notification(
                 user_row = await user_result.fetchone()
 
                 if user_row and user_row["to_email"]:
-                    # Post-Inhalt laden falls vorhanden
-                    post_content = None
-                    if post_id and post_author_uid:
-                        try:
-                            from app.db.sqlite_posts import UserPostsDB
-                            posts_db = UserPostsDB(post_author_uid)
-                            post = await posts_db.get_post(post_id)
-                            if post:
-                                post_content = post.get("content")
-                        except Exception as e:
-                            print(f"⚠️ Failed to load post content for email: {e}")
+                    # Prüfe ob User diese Benachrichtigung per E-Mail erhalten möchte
+                    prefs = user_row.get("prefs") or {}
+                    email_enabled = prefs.get(notification_type, True)  # Default: aktiviert
 
-                    # Hintergrund-Task für E-Mail-Versand
-                    asyncio.create_task(
-                        EmailService.send_notification_email(
-                            to_email=user_row["to_email"],
-                            to_username=user_row["to_username"],
-                            actor_username=user_row["actor_username"],
-                            notification_type=notification_type,
-                            post_id=post_id,
-                            post_author_uid=post_author_uid,
-                            comment_id=comment_id,
-                            post_content=post_content,
-                            comment_content=comment_content,
-                            birthday_age=birthday_age
+                    if email_enabled:
+                        # Post-Inhalt laden falls vorhanden
+                        post_content = None
+                        if post_id and post_author_uid:
+                            try:
+                                from app.db.sqlite_posts import UserPostsDB
+                                posts_db = UserPostsDB(post_author_uid)
+                                post = await posts_db.get_post(post_id)
+                                if post:
+                                    post_content = post.get("content")
+                            except Exception as e:
+                                print(f"⚠️ Failed to load post content for email: {e}")
+
+                        user_language = user_row.get("language") or "de"
+
+                        # Hintergrund-Task für E-Mail-Versand
+                        asyncio.create_task(
+                            EmailService.send_notification_email(
+                                to_email=user_row["to_email"],
+                                to_username=user_row["to_username"],
+                                actor_username=user_row["actor_username"],
+                                notification_type=notification_type,
+                                post_id=post_id,
+                                post_author_uid=post_author_uid,
+                                comment_id=comment_id,
+                                post_content=post_content,
+                                comment_content=comment_content,
+                                birthday_age=birthday_age,
+                                user_language=user_language
+                            )
                         )
-                    )
             except Exception as e:
                 # E-Mail-Fehler sollen Notification nicht blockieren
                 print(f"⚠️ Failed to send notification email: {e}")
