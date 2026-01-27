@@ -124,14 +124,15 @@ export class VideoEditorComponent {
         this.processingProgress.set(Math.round(progress * 100));
       });
 
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-      // Use direct URLs for coreURL/wasmURL so the worker can import() them.
-      // Blob URLs cannot be dynamically imported inside module workers.
-      // Use a blob URL only for classWorkerURL to bypass Vite worker resolution.
+      // The worker is created with type:"module", so importScripts() is unavailable.
+      // The worker falls back to dynamic import(), which requires an ES module URL.
+      // Use the ESM core (not UMD) so import() works. Blob URLs don't work with import().
+      // Only classWorkerURL uses a blob URL to bypass Vite's worker resolution.
+      const coreBaseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
       const workerURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js';
       await this.ffmpeg.load({
-        coreURL: `${baseURL}/ffmpeg-core.js`,
-        wasmURL: `${baseURL}/ffmpeg-core.wasm`,
+        coreURL: `${coreBaseURL}/ffmpeg-core.js`,
+        wasmURL: `${coreBaseURL}/ffmpeg-core.wasm`,
         classWorkerURL: await toBlobURL(workerURL, 'text/javascript'),
       });
 
