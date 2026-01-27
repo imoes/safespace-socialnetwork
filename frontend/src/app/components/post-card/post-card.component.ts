@@ -68,6 +68,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 controls
                 muted
                 playsinline
+                preload="metadata"
                 (mouseenter)="onVideoHover(videoElement, true)"
                 (mouseleave)="onVideoHover(videoElement, false)">
               </video>
@@ -391,6 +392,21 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
+
+    @media (max-width: 1024px) {
+      .post-actions { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+      .action-btn { padding: 6px 8px; font-size: 13px; }
+      .post-controls { margin-left: 0; width: 100%; justify-content: flex-end; }
+      .post-header { padding: 10px 12px; }
+      .post-content { padding: 0 12px 10px; }
+      .comments-section { padding: 12px; }
+      .comment-input { flex-direction: column; }
+      .comment-input input { width: 100%; }
+      .guardian-modal { width: 95%; max-width: none; }
+      .guardian-content { padding: 16px; }
+      .guardian-header { padding: 16px; }
+      .guardian-header h2 { font-size: 18px; }
+    }
   `]
 })
 export class PostCardComponent implements OnChanges {
@@ -435,23 +451,11 @@ export class PostCardComponent implements OnChanges {
   isSubmittingComment = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Wenn expandComments auf true gesetzt wird, Kommentare automatisch laden
-    if (changes['expandComments']) {
-      const change = changes['expandComments'];
-      console.log('expandComments changed from', change.previousValue, 'to', change.currentValue, 'for post', this.post.post_id);
-
-      if (this.expandComments) {
-        console.log('Auto-expanding comments for post', this.post.post_id);
-        if (!this.showComments) {
-          this.showComments = true;
-          if (this.comments.length === 0) {
-            console.log('Loading comments...');
-            this.loadComments();
-          } else {
-            console.log('Comments already loaded');
-          }
-        } else {
-          console.log('Comments already visible');
+    if (changes['expandComments'] && this.expandComments) {
+      if (!this.showComments) {
+        this.showComments = true;
+        if (this.comments.length === 0) {
+          this.loadComments();
         }
       }
     }
@@ -681,23 +685,13 @@ export class PostCardComponent implements OnChanges {
         this.newComment = '';
       },
       error: (error) => {
-        console.error('Comment error:', error);
-        console.log('Error status:', error.status);
-        console.log('Error body:', error.error);
-        console.log('Error detail:', error.error?.detail);
-
-        // Hatespeech-Fehler mit Guardian Modal
-        // Backend sendet: { detail: { error: "comment_contains_hate_speech", ... } }
         const errorDetail = error.error?.detail || error.error;
 
         if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
-          console.log('✅ Showing Guardian Modal');
           this.originalCommentContent = content;
           this.guardianResult = errorDetail;
           this.showGuardianModal = true;
         } else {
-          // Generischer Fehler
-          console.error('❌ Generic error, not hate speech');
           alert(this.i18n.t('errors.addComment'));
         }
       }
@@ -749,12 +743,9 @@ export class PostCardComponent implements OnChanges {
 
   onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
     if (isHovering) {
-      // Play video on hover - läuft dann bis zum Ende durch
-      videoElement.play().catch(err => {
-        console.log('Video autoplay failed:', err);
-      });
+      videoElement.muted = true;
+      videoElement.play().catch(() => {});
     }
-    // Beim Verlassen passiert nichts - Video läuft weiter
   }
 
   // Guardian Modal Methods
@@ -807,7 +798,6 @@ export class PostCardComponent implements OnChanges {
         this.closeGuardianModal();
       },
       error: (error) => {
-        console.error('Submit alternative error:', error);
         this.isSubmittingComment = false;
 
         // Falls auch die Alternative abgelehnt wird (sehr selten)

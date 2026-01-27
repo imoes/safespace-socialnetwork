@@ -489,6 +489,17 @@ interface FriendRequest {
       display: flex;
       gap: 8px;
     }
+
+    @media (max-width: 1024px) {
+      .friends-container { padding: 16px 12px; }
+      h2 { font-size: 22px; }
+      .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; }
+      .tab { padding: 10px 14px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+      .search-section, .friends-section, .requests-section { padding: 16px; }
+      .user-card, .friend-card, .request-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .friend-actions, .request-actions { width: 100%; justify-content: flex-end; }
+      .friend-meta { flex-wrap: wrap; }
+    }
   `]
 })
 export class FriendsComponent implements OnInit {

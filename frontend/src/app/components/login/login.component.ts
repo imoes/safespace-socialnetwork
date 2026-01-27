@@ -38,6 +38,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     button:disabled { background: #ccc; }
     .link { text-align: center; margin-top: 20px; }
     .link a { color: #1877f2; text-decoration: none; }
+
+    @media (max-width: 1024px) {
+      .login-container { padding: 16px; }
+      .login-card { padding: 28px 20px; }
+    }
   `]
 })
 export class LoginComponent {

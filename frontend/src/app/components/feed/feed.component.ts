@@ -180,6 +180,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .refresh-btn:hover {
       background: #166fe5;
     }
+
+    @media (max-width: 1024px) {
+      .feed-container { padding: 12px 8px; }
+      .posts { gap: 12px; }
+    }
   `]
 })
 export class FeedComponent implements OnInit, OnDestroy {

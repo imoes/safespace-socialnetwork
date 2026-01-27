@@ -223,6 +223,20 @@ import { interval } from 'rxjs';
       border-radius: 50%;
       flex-shrink: 0;
     }
+
+    @media (max-width: 1024px) {
+      .dropdown-menu {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 16px 16px 0 0;
+        margin-top: 0;
+      }
+    }
   `]
 })
 export class NotificationsDropdownComponent implements OnInit {
