@@ -116,7 +116,6 @@ export class VideoEditorComponent {
     try {
       // Check if SharedArrayBuffer is available (requires cross-origin isolation)
       if (typeof SharedArrayBuffer === 'undefined') {
-        console.error('SharedArrayBuffer not available - cross-origin isolation headers missing');
         this.errorMessage.set(
           'Video-Verarbeitung nicht verfügbar: Browser unterstützt SharedArrayBuffer nicht. ' +
           'Bitte stelle sicher, dass die Seite mit Cross-Origin-Isolation-Headern geladen wird.'
@@ -135,13 +134,15 @@ export class VideoEditorComponent {
       });
 
       const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+      // Fetch the self-contained UMD worker bundle to avoid Vite worker resolution issues
+      const workerURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.15/dist/umd/814.ffmpeg.js';
       await this.ffmpeg.load({
         coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
         wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        classWorkerURL: await toBlobURL(workerURL, 'text/javascript'),
       });
 
       this.ffmpegLoaded = true;
-      console.log('FFmpeg loaded successfully');
     } catch (error) {
       console.error('Failed to load FFmpeg:', error);
       this.errorMessage.set('FFmpeg konnte nicht geladen werden. Bitte versuche es später erneut.');
