@@ -173,6 +173,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .create-post { padding: 12px; }
+      .post-footer { flex-wrap: wrap; }
+      .post-btn { width: 100%; margin-left: 0; }
+      select { flex: 1; }
+      .guardian-modal { width: 95%; max-width: none; }
+      .guardian-content { padding: 16px; }
+    }
   `]
 })
 export class CreatePostComponent {
