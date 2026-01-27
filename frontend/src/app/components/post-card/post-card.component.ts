@@ -391,6 +391,21 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .post-actions { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+      .action-btn { padding: 6px 8px; font-size: 13px; }
+      .post-controls { margin-left: 0; width: 100%; justify-content: flex-end; }
+      .post-header { padding: 10px 12px; }
+      .post-content { padding: 0 12px 10px; }
+      .comments-section { padding: 12px; }
+      .comment-input { flex-direction: column; }
+      .comment-input input { width: 100%; }
+      .guardian-modal { width: 95%; max-width: none; }
+      .guardian-content { padding: 16px; }
+      .guardian-header { padding: 16px; }
+      .guardian-header h2 { font-size: 18px; }
+    }
   `]
 })
 export class PostCardComponent implements OnChanges {

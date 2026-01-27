@@ -448,6 +448,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .btn-danger:hover:not(:disabled) {
       background: #c82333;
     }
+
+    @media (max-width: 768px) {
+      .settings-container { margin: 16px auto; padding: 12px; }
+      .settings-card { padding: 20px 16px; }
+      h2 { font-size: 20px; }
+      .profile-picture-section { flex-direction: column; text-align: center; gap: 16px; }
+      .button-group { flex-direction: column; }
+      .btn { width: 100%; text-align: center; }
+    }
   `]
 })
 export class SettingsComponent implements OnInit {
