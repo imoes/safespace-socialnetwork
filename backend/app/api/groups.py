@@ -17,6 +17,7 @@ router = APIRouter(prefix="/groups", tags=["groups"])
 class GroupCreate(BaseModel):
     name: str
     description: Optional[str] = None
+    join_mode: str = "open"  # open or approval
 
 
 class GroupPostCreate(BaseModel):
@@ -26,6 +27,10 @@ class GroupPostCreate(BaseModel):
 
 class RoleUpdate(BaseModel):
     role: str  # admin or member
+
+
+class GroupSettings(BaseModel):
+    join_mode: str  # open or approval
 
 
 # === Helper Functions ===
@@ -42,13 +47,25 @@ async def _get_group_or_404(group_id: int) -> dict:
 
 
 async def _get_member_role(group_id: int, user_uid: int) -> str | None:
+    """Returns role only for active members (not pending)."""
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
-            "SELECT role FROM group_members WHERE group_id = %s AND user_uid = %s",
+            "SELECT role FROM group_members WHERE group_id = %s AND user_uid = %s AND status = 'active'",
             (group_id, user_uid)
         )
         row = await result.fetchone()
         return row["role"] if row else None
+
+
+async def _get_member_status(group_id: int, user_uid: int) -> str | None:
+    """Returns member status (active/pending) or None if not in group."""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT status FROM group_members WHERE group_id = %s AND user_uid = %s",
+            (group_id, user_uid)
+        )
+        row = await result.fetchone()
+        return row["status"] if row else None
 
 
 async def _is_member(group_id: int, user_uid: int) -> bool:
@@ -67,22 +84,25 @@ async def create_group(data: GroupCreate, current_user: dict = Depends(get_curre
     """Erstellt eine neue Gruppe. Ersteller wird automatisch Owner."""
     uid = current_user["uid"]
 
+    if data.join_mode not in ("open", "approval"):
+        raise HTTPException(status_code=400, detail="join_mode must be 'open' or 'approval'")
+
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            INSERT INTO groups (name, description, created_by)
-            VALUES (%s, %s, %s)
-            RETURNING group_id, name, description, created_by, created_at
+            INSERT INTO groups (name, description, created_by, join_mode)
+            VALUES (%s, %s, %s, %s)
+            RETURNING group_id, name, description, join_mode, created_by, created_at
             """,
-            (data.name, data.description, uid)
+            (data.name, data.description, uid, data.join_mode)
         )
         group = await result.fetchone()
 
         # Ersteller als Owner hinzufügen
         await conn.execute(
             """
-            INSERT INTO group_members (group_id, user_uid, role)
-            VALUES (%s, %s, 'owner')
+            INSERT INTO group_members (group_id, user_uid, role, status)
+            VALUES (%s, %s, 'owner', 'active')
             """,
             (group["group_id"], uid)
         )
@@ -110,7 +130,7 @@ async def list_groups(
                 """
                 SELECT g.*, COUNT(gm.id) as member_count
                 FROM groups g
-                LEFT JOIN group_members gm ON g.group_id = gm.group_id
+                LEFT JOIN group_members gm ON g.group_id = gm.group_id AND gm.status = 'active'
                 WHERE LOWER(g.name) LIKE LOWER(%s)
                 GROUP BY g.group_id
                 ORDER BY g.created_at DESC
@@ -123,7 +143,7 @@ async def list_groups(
                 """
                 SELECT g.*, COUNT(gm.id) as member_count
                 FROM groups g
-                LEFT JOIN group_members gm ON g.group_id = gm.group_id
+                LEFT JOIN group_members gm ON g.group_id = gm.group_id AND gm.status = 'active'
                 GROUP BY g.group_id
                 ORDER BY g.created_at DESC
                 LIMIT %s OFFSET %s
@@ -151,11 +171,11 @@ async def my_groups(current_user: dict = Depends(get_current_user)):
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            SELECT g.*, gm.role as my_role, COUNT(gm2.id) as member_count
+            SELECT g.*, gm.role as my_role, gm.status as my_status, COUNT(gm2.id) as member_count
             FROM groups g
             INNER JOIN group_members gm ON g.group_id = gm.group_id AND gm.user_uid = %s
-            LEFT JOIN group_members gm2 ON g.group_id = gm2.group_id
-            GROUP BY g.group_id, gm.role
+            LEFT JOIN group_members gm2 ON g.group_id = gm2.group_id AND gm2.status = 'active'
+            GROUP BY g.group_id, gm.role, gm.status
             ORDER BY g.created_at DESC
             """,
             (uid,)
@@ -179,22 +199,32 @@ async def get_group(group_id: int, current_user: dict = Depends(get_current_user
     group = await _get_group_or_404(group_id)
     uid = current_user["uid"]
 
-    # Mitgliederzahl
+    # Mitgliederzahl (nur aktive)
     async with PostgresDB.connection() as conn:
         count_result = await conn.execute(
-            "SELECT COUNT(*) as count FROM group_members WHERE group_id = %s",
+            "SELECT COUNT(*) as count FROM group_members WHERE group_id = %s AND status = 'active'",
             (group_id,)
         )
         count_row = await count_result.fetchone()
 
+        # Pending requests count (für Admins)
+        pending_result = await conn.execute(
+            "SELECT COUNT(*) as count FROM group_members WHERE group_id = %s AND status = 'pending'",
+            (group_id,)
+        )
+        pending_row = await pending_result.fetchone()
+
     my_role = await _get_member_role(group_id, uid)
+    my_status = await _get_member_status(group_id, uid)
 
     return {
         "group": {
             **dict(group),
             "created_at": group["created_at"].isoformat() if group["created_at"] else None,
             "member_count": count_row["count"],
-            "my_role": my_role
+            "pending_count": pending_row["count"],
+            "my_role": my_role,
+            "my_status": my_status
         }
     }
 
@@ -219,24 +249,34 @@ async def delete_group(group_id: int, current_user: dict = Depends(get_current_u
 
 @router.post("/{group_id}/join")
 async def join_group(group_id: int, current_user: dict = Depends(get_current_user)):
-    """Tritt einer Gruppe bei."""
-    await _get_group_or_404(group_id)
+    """Tritt einer Gruppe bei. Bei approval-Modus wird eine Anfrage gestellt."""
+    group = await _get_group_or_404(group_id)
     uid = current_user["uid"]
 
-    if await _is_member(group_id, uid):
+    # Check if already a member or has pending request
+    existing_status = await _get_member_status(group_id, uid)
+    if existing_status == "active":
         raise HTTPException(status_code=400, detail="Already a member")
+    if existing_status == "pending":
+        raise HTTPException(status_code=400, detail="Join request already pending")
+
+    join_mode = group.get("join_mode", "open")
+    member_status = "active" if join_mode == "open" else "pending"
 
     async with PostgresDB.connection() as conn:
         await conn.execute(
             """
-            INSERT INTO group_members (group_id, user_uid, role)
-            VALUES (%s, %s, 'member')
+            INSERT INTO group_members (group_id, user_uid, role, status)
+            VALUES (%s, %s, 'member', %s)
+            ON CONFLICT (group_id, user_uid) DO UPDATE SET status = %s
             """,
-            (group_id, uid)
+            (group_id, uid, member_status, member_status)
         )
         await conn.commit()
 
-    return {"message": "Joined group"}
+    if member_status == "pending":
+        return {"message": "Join request sent", "status": "pending"}
+    return {"message": "Joined group", "status": "active"}
 
 
 @router.post("/{group_id}/leave")
@@ -263,7 +303,7 @@ async def leave_group(group_id: int, current_user: dict = Depends(get_current_us
 
 @router.get("/{group_id}/members")
 async def get_members(group_id: int, current_user: dict = Depends(get_current_user)):
-    """Listet Gruppenmitglieder auf."""
+    """Listet aktive Gruppenmitglieder auf."""
     await _get_group_or_404(group_id)
 
     async with PostgresDB.connection() as conn:
@@ -273,7 +313,7 @@ async def get_members(group_id: int, current_user: dict = Depends(get_current_us
                    u.username, u.profile_picture
             FROM group_members gm
             JOIN users u ON gm.user_uid = u.uid
-            WHERE gm.group_id = %s
+            WHERE gm.group_id = %s AND gm.status = 'active'
             ORDER BY
                 CASE gm.role
                     WHEN 'owner' THEN 0
@@ -295,6 +335,112 @@ async def get_members(group_id: int, current_user: dict = Depends(get_current_us
             for m in members
         ]
     }
+
+
+@router.get("/{group_id}/pending")
+async def get_pending_members(group_id: int, current_user: dict = Depends(get_current_user)):
+    """Listet ausstehende Beitrittsanfragen auf. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can view pending requests")
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT gm.user_uid, gm.joined_at,
+                   u.username, u.profile_picture
+            FROM group_members gm
+            JOIN users u ON gm.user_uid = u.uid
+            WHERE gm.group_id = %s AND gm.status = 'pending'
+            ORDER BY gm.joined_at ASC
+            """,
+            (group_id,)
+        )
+        pending = await result.fetchall()
+
+    return {
+        "pending": [
+            {
+                **dict(p),
+                "joined_at": p["joined_at"].isoformat() if p["joined_at"] else None
+            }
+            for p in pending
+        ]
+    }
+
+
+@router.post("/{group_id}/approve/{user_uid}")
+async def approve_member(group_id: int, user_uid: int, current_user: dict = Depends(get_current_user)):
+    """Genehmigt eine Beitrittsanfrage. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can approve requests")
+
+    member_status = await _get_member_status(group_id, user_uid)
+    if member_status != "pending":
+        raise HTTPException(status_code=400, detail="No pending request from this user")
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE group_members SET status = 'active' WHERE group_id = %s AND user_uid = %s",
+            (group_id, user_uid)
+        )
+        await conn.commit()
+
+    return {"message": "Member approved"}
+
+
+@router.post("/{group_id}/reject/{user_uid}")
+async def reject_member(group_id: int, user_uid: int, current_user: dict = Depends(get_current_user)):
+    """Lehnt eine Beitrittsanfrage ab. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can reject requests")
+
+    member_status = await _get_member_status(group_id, user_uid)
+    if member_status != "pending":
+        raise HTTPException(status_code=400, detail="No pending request from this user")
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "DELETE FROM group_members WHERE group_id = %s AND user_uid = %s",
+            (group_id, user_uid)
+        )
+        await conn.commit()
+
+    return {"message": "Request rejected"}
+
+
+@router.put("/{group_id}/settings")
+async def update_group_settings(
+    group_id: int,
+    data: GroupSettings,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert Gruppen-Einstellungen. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can change group settings")
+
+    if data.join_mode not in ("open", "approval"):
+        raise HTTPException(status_code=400, detail="join_mode must be 'open' or 'approval'")
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE groups SET join_mode = %s WHERE group_id = %s",
+            (data.join_mode, group_id)
+        )
+        await conn.commit()
+
+    return {"message": "Settings updated", "join_mode": data.join_mode}
 
 
 @router.put("/{group_id}/members/{user_uid}/role")

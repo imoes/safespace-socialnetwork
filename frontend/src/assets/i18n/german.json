@@ -423,6 +423,16 @@
     "visibilityPublic": "Öffentlich",
     "makeAdmin": "Zum Admin machen",
     "removeAdmin": "Admin entfernen",
-    "removeMember": "Mitglied entfernen"
+    "removeMember": "Mitglied entfernen",
+    "joinMode": "Beitrittsmodus",
+    "joinModeOpen": "Offen (jeder kann beitreten)",
+    "joinModeApproval": "Genehmigung erforderlich",
+    "requestJoin": "Beitritt anfragen",
+    "pendingRequest": "Anfrage ausstehend",
+    "pending": "Ausstehend",
+    "pendingRequests": "Offene Anfragen",
+    "noPendingRequests": "Keine offenen Anfragen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen"
   }
 }

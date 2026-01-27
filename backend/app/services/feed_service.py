@@ -217,7 +217,7 @@ class FeedService:
                 SELECT g.group_id, g.name as group_name
                 FROM groups g
                 INNER JOIN group_members gm ON g.group_id = gm.group_id
-                WHERE gm.user_uid = %s
+                WHERE gm.user_uid = %s AND gm.status = 'active'
                 """,
                 (uid,)
             )

@@ -369,7 +369,17 @@
     "visibilityPublic": "عام",
     "makeAdmin": "تعيين كمدير",
     "removeAdmin": "إزالة المدير",
-    "removeMember": "إزالة العضو"
+    "removeMember": "إزالة العضو",
+    "joinMode": "وضع الانضمام",
+    "joinModeOpen": "مفتوح (يمكن لأي شخص الانضمام)",
+    "joinModeApproval": "يتطلب موافقة",
+    "requestJoin": "طلب الانضمام",
+    "pendingRequest": "الطلب قيد الانتظار",
+    "pending": "قيد الانتظار",
+    "pendingRequests": "طلبات قيد الانتظار",
+    "noPendingRequests": "لا توجد طلبات قيد الانتظار",
+    "approve": "قبول",
+    "reject": "رفض"
   },
   "guardian": {
     "title": "Guardian - إشراف المحتوى بمساعدة الذكاء الاصطناعي",

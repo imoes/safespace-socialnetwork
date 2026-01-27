@@ -175,9 +175,16 @@ class PostgresDB:
                     group_id SERIAL PRIMARY KEY,
                     name VARCHAR(100) NOT NULL,
                     description TEXT,
+                    join_mode VARCHAR(20) DEFAULT 'open',
                     created_by INTEGER REFERENCES users(uid) ON DELETE CASCADE,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
+            """)
+
+            # Migration: add join_mode column if missing
+            await conn.execute("""
+                ALTER TABLE groups
+                ADD COLUMN IF NOT EXISTS join_mode VARCHAR(20) DEFAULT 'open'
             """)
 
             # Group Members
@@ -187,9 +194,16 @@ class PostgresDB:
                     group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
                     user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
                     role VARCHAR(20) DEFAULT 'member',
+                    status VARCHAR(20) DEFAULT 'active',
                     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE(group_id, user_uid)
                 )
+            """)
+
+            # Migration: add status column if missing
+            await conn.execute("""
+                ALTER TABLE group_members
+                ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active'
             """)
 
             # Group Posts (metadata linking to SQLite)

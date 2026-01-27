@@ -423,6 +423,16 @@
     "visibilityPublic": "Public",
     "makeAdmin": "Make Admin",
     "removeAdmin": "Remove Admin",
-    "removeMember": "Remove Member"
+    "removeMember": "Remove Member",
+    "joinMode": "Join Mode",
+    "joinModeOpen": "Open (anyone can join)",
+    "joinModeApproval": "Approval required",
+    "requestJoin": "Request to Join",
+    "pendingRequest": "Request Pending",
+    "pending": "Pending",
+    "pendingRequests": "Pending Requests",
+    "noPendingRequests": "No pending requests",
+    "approve": "Approve",
+    "reject": "Reject"
   }
 }
