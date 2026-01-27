@@ -3,23 +3,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="login-container">
       <div class="login-card">
         <h1>SocialNet</h1>
-        <p class="subtitle">Verbinde dich mit Freunden</p>
+        <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         <form (ngSubmit)="login()">
-          <input type="text" [(ngModel)]="username" name="username" placeholder="Benutzername" required />
-          <input type="password" [(ngModel)]="password" name="password" placeholder="Passwort" required />
-          <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : 'Anmelden' }}</button>
+          <input type="text" [(ngModel)]="username" name="username" [placeholder]="'login.username' | translate" required />
+          <input type="password" [(ngModel)]="password" name="password" [placeholder]="'login.password' | translate" required />
+          <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('login.loginButton' | translate) }}</button>
         </form>
-        <p class="link">Noch kein Konto? <a routerLink="/register">Registrieren</a></p>
+        <p class="link">{{ 'login.noAccount' | translate }} <a routerLink="/register">{{ 'login.register' | translate }}</a></p>
       </div>
     </div>
   `,
@@ -41,6 +43,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private i18n = inject(I18nService);
   username = '';
   password = '';
   error = '';
@@ -51,7 +54,7 @@ export class LoginComponent {
     this.error = '';
     this.authService.login(this.username, this.password).subscribe({
       next: () => this.router.navigate(['/']),
-      error: (err) => { this.error = err.error?.detail || 'Anmeldung fehlgeschlagen'; this.isLoading = false; }
+      error: (err) => { this.error = err.error?.detail || this.i18n.t('login.errors.loginFailed'); this.isLoading = false; }
     });
   }
 }

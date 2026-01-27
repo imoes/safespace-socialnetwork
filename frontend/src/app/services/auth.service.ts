@@ -1,7 +1,8 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
+import { I18nService } from './i18n.service';
 
 export interface User {
   uid: number;
@@ -14,6 +15,7 @@ export interface User {
   profile_picture?: string;
   first_name?: string;
   last_name?: string;
+  preferred_language?: string;
 }
 
 export interface AuthResponse {
@@ -40,6 +42,8 @@ export class AuthService {
     return role === 'admin' || role === 'moderator';
   });
 
+  private i18n = inject(I18nService);
+
   constructor(
     private http: HttpClient,
     private router: Router
@@ -49,11 +53,8 @@ export class AuthService {
     }
   }
 
-  // Hilfsfunktion: Headers mit Token erstellen
   private getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
-    console.log('🔑 Creating headers with token:', token ? 'YES' : 'NO');
-    
     if (token) {
       return new HttpHeaders({
         'Authorization': `Bearer ${token}`
@@ -64,14 +65,13 @@ export class AuthService {
 
   login(username: string, password: string): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
-    
+
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
 
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, formData).pipe(
       tap(response => {
-        console.log('✅ Login erfolgreich, Token erhalten');
         this.setToken(response.access_token);
         this.loadCurrentUser();
       }),
@@ -93,7 +93,6 @@ export class AuthService {
       last_name: lastName
     }).pipe(
       tap(response => {
-        console.log('✅ Registration erfolgreich, Token erhalten');
         this.setToken(response.access_token);
         this.loadCurrentUser();
       }),
@@ -106,7 +105,21 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem('preferredLanguage');
     this.currentUserSignal.set(null);
+
+    // Reset i18n to browser default language so the login page doesn't show
+    // the previous user's language
+    try {
+      const browserLang = navigator.language.split('-')[0];
+      const languages = this.i18n.languages();
+      const supported = languages.find(l => l.code === browserLang);
+      const defaultLang = supported ? browserLang : 'en';
+      this.i18n.setLanguage(defaultLang);
+    } catch (e) {
+      // i18n not available, ignore
+    }
+
     this.router.navigate(['/login']);
   }
 
@@ -115,25 +128,38 @@ export class AuthService {
   }
 
   private setToken(token: string): void {
-    console.log('💾 Speichere Token in localStorage');
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
   loadCurrentUser(): void {
-    console.log('📡 Lade User mit Token...');
-
-    // WICHTIG: Headers direkt hier setzen statt auf Interceptor zu vertrauen!
     this.http.get<User>(`${this.API_URL}/me`, {
       headers: this.getAuthHeaders()
     }).pipe(
       tap(user => {
-        console.log('✅ User geladen:', user.username);
         this.currentUserSignal.set(user);
         this.isLoadingSignal.set(false);
+
+        // Apply user's stored language preference
+        const currentI18nLang = this.i18n.currentLanguage()?.code;
+
+        if (user.preferred_language) {
+          // User has a language in DB - apply it if different from current
+          if (currentI18nLang !== user.preferred_language) {
+            localStorage.setItem('preferredLanguage', user.preferred_language);
+            this.i18n.setLanguage(user.preferred_language);
+          }
+        } else {
+          // User has no language in DB - save current language to DB for future logins
+          const currentLang = localStorage.getItem('preferredLanguage') || currentI18nLang || 'en';
+          this.http.patch('/api/users/me/language', {
+            preferred_language: currentLang
+          }, {
+            headers: this.getAuthHeaders()
+          }).subscribe();
+        }
       }),
       catchError((error) => {
-        console.error('❌ User laden fehlgeschlagen:', error);
-        console.log('Token war:', this.getToken()?.substring(0, 20));
+        console.error('Failed to load user:', error);
         this.logout();
         return of(null);
       })

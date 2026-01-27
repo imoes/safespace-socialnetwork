@@ -49,9 +49,6 @@ export class I18nService {
     return this.initPromise;
   }
 
-  /**
-   * Lädt verfügbare Sprachen aus dem Dateisystem
-   */
   private async loadAvailableLanguages(): Promise<void> {
     try {
       const languages = await firstValueFrom(
@@ -59,13 +56,11 @@ export class I18nService {
       );
 
       this.availableLanguagesSignal.set(languages);
-      console.log('✅ Loaded available languages:', languages.length);
 
-      // Nach dem Laden der Sprachen initialisieren wir die Benutzersprache
       await this.initLanguage();
     } catch (error) {
       console.error('Failed to load available languages:', error);
-      // Fallback auf Englisch wenn Manifest nicht geladen werden kann
+      // Fallback to English if manifest can't be loaded
       this.availableLanguagesSignal.set([
         { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧', file: 'english' }
       ]);
@@ -76,57 +71,45 @@ export class I18nService {
   private async initLanguage(): Promise<void> {
     const availableLanguages = this.availableLanguagesSignal();
 
-    // Warte bis Sprachen geladen sind
     if (availableLanguages.length === 0) {
-      console.warn('⚠️ [I18n] initLanguage called but no languages available yet');
       return;
     }
 
     // Check if user has a preferred language in localStorage
     const savedLang = localStorage.getItem('preferredLanguage');
-    console.log(`🌐 [I18n] Saved language in localStorage: ${savedLang || 'none'}`);
 
     let langCode = 'en'; // Default fallback
 
     if (savedLang) {
       // Use saved preference
       langCode = savedLang;
-      console.log(`🌐 [I18n] Using saved language: ${langCode}`);
     } else {
       // Detect browser language
-      const browserLang = navigator.language.split('-')[0]; // e.g., "en-US" -> "en"
+      const browserLang = navigator.language.split('-')[0];
       const supportedLang = availableLanguages.find(l => l.code === browserLang);
       if (supportedLang) {
         langCode = browserLang;
-        console.log(`🌐 [I18n] Using browser language: ${langCode}`);
-      } else {
-        console.log(`🌐 [I18n] Browser language ${browserLang} not supported, using default: ${langCode}`);
       }
     }
 
     await this.setLanguage(langCode);
     this.initialized = true;
-    console.log('✅ [I18n] Service initialized');
   }
 
   public async setLanguage(code: string): Promise<void> {
-    console.log(`🌐 [I18n] setLanguage called with code: '${code}'`);
     const availableLanguages = this.availableLanguagesSignal();
-    console.log(`🌐 [I18n] Available languages:`, availableLanguages.map(l => l.code).join(', '));
 
     if (availableLanguages.length === 0) {
-      console.error(`❌ [I18n] No languages available! Service might not be initialized.`);
       throw new Error('I18n service not initialized');
     }
 
     const language = availableLanguages.find(l => l.code === code);
     if (!language) {
-      console.error(`❌ [I18n] Language '${code}' not found in available languages: [${availableLanguages.map(l => l.code).join(', ')}]`);
+      console.error(`Language '${code}' not found in available languages`);
       throw new Error(`Language ${code} not available`);
     }
 
     try {
-      console.log(`🌐 [I18n] Loading translations from: /assets/i18n/${language.file}.json`);
       const translations = await firstValueFrom(
         this.http.get(`/assets/i18n/${language.file}.json`)
       );
@@ -134,7 +117,6 @@ export class I18nService {
       this.translations.set(translations);
       this.currentLangCode.set(code);
       localStorage.setItem('preferredLanguage', code);
-      console.log(`✅ [I18n] Language changed to: ${code}, saved to localStorage`);
 
       // Update HTML lang attribute
       document.documentElement.lang = code;
@@ -143,7 +125,7 @@ export class I18nService {
       document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';
 
     } catch (error) {
-      console.error(`❌ [I18n] Failed to load language ${code}:`, error);
+      console.error(`Failed to load language ${code}:`, error);
     }
   }
 

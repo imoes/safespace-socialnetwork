@@ -491,20 +491,16 @@ export class SettingsComponent implements OnInit {
     if (currentLang) {
       this.selectedLanguage = currentLang.code;
       this.originalLanguage = this.selectedLanguage;
-      console.log(`⚙️ [Settings] Current language: ${this.selectedLanguage}`);
     } else {
-      // Fallback: read from localStorage directly
       const savedLang = localStorage.getItem('preferredLanguage') || 'en';
       this.selectedLanguage = savedLang;
       this.originalLanguage = savedLang;
-      console.warn(`⚠️ [Settings] Language not loaded yet, using fallback: ${savedLang}`);
     }
   }
 
   onLanguageChange(): void {
     // Just update the selection, don't apply yet
     // Language will be applied when user clicks "Save Settings"
-    console.log(`🌐 [Settings] Language dropdown changed to: '${this.selectedLanguage}' (original: '${this.originalLanguage}')`);
   }
 
   saveSettings(): void {
@@ -513,21 +509,21 @@ export class SettingsComponent implements OnInit {
 
     // Validierung
     if (!this.email) {
-      this.errorMessage.set('E-Mail-Adresse ist erforderlich');
+      this.errorMessage.set(this.i18n.t('errors.emailRequired'));
       return;
     }
 
     if (this.currentPassword) {
       if (!this.newPassword) {
-        this.errorMessage.set('Bitte geben Sie ein neues Passwort ein');
+        this.errorMessage.set(this.i18n.t('errors.enterNewPassword'));
         return;
       }
       if (this.newPassword !== this.confirmPassword) {
-        this.errorMessage.set('Die Passwörter stimmen nicht überein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMismatch'));
         return;
       }
       if (this.newPassword.length < 6) {
-        this.errorMessage.set('Das Passwort muss mindestens 6 Zeichen lang sein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMinLength'));
         return;
       }
     }
@@ -538,7 +534,8 @@ export class SettingsComponent implements OnInit {
       email: this.email,
       bio: this.bio,
       first_name: this.firstName,
-      last_name: this.lastName
+      last_name: this.lastName,
+      preferred_language: this.selectedLanguage
     };
 
     if (this.currentPassword && this.newPassword) {
@@ -548,45 +545,36 @@ export class SettingsComponent implements OnInit {
 
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
-        console.log(`⚙️ [Settings] Settings saved successfully`);
-        console.log(`⚙️ [Settings] Selected language: ${this.selectedLanguage}, Original: ${this.originalLanguage}`);
-
-        // Check if language changed
-        console.log(`🌐 [Settings] Checking language change: selected='${this.selectedLanguage}', original='${this.originalLanguage}'`);
         if (this.selectedLanguage !== this.originalLanguage) {
-          console.log(`🌐 [Settings] Language changed from '${this.originalLanguage}' to '${this.selectedLanguage}', applying...`);
           // Apply language change - setLanguage saves to localStorage
           this.i18n.setLanguage(this.selectedLanguage).then(() => {
-            console.log(`🌐 [Settings] Language set to '${this.selectedLanguage}', localStorage value: '${localStorage.getItem('preferredLanguage')}', reloading page...`);
-            // Small delay to ensure localStorage is written
-            setTimeout(() => {
-              window.location.reload();
-            }, 100);
-          }).catch((error) => {
-            console.error(`❌ [Settings] Failed to set language:`, error);
+            this.originalLanguage = this.selectedLanguage;
+            this.successMessage.set(this.i18n.t('settings.success'));
+            this.isSaving.set(false);
+            this.authService.loadCurrentUser();
+          }).catch(() => {
             this.errorMessage.set('Failed to change language');
             this.isSaving.set(false);
           });
         } else {
-          console.log(`⚙️ [Settings] Language unchanged, showing success message`);
           this.successMessage.set(this.i18n.t('settings.success'));
           this.isSaving.set(false);
 
-          // Passwortfelder leeren
+          // Clear password fields
           this.currentPassword = '';
           this.newPassword = '';
           this.confirmPassword = '';
 
-          // User-Daten neu laden, um aktualisierte Werte anzuzeigen
+          // Reload user data to reflect updates
           this.authService.loadCurrentUser();
         }
       },
       error: (error) => {
         this.isSaving.set(false);
         if (error.status === 401) {
-          this.errorMessage.set('Aktuelles Passwort ist falsch');
+          this.errorMessage.set(this.i18n.t('errors.wrongPassword'));
         } else {
-          this.errorMessage.set(error.error?.detail || 'Fehler beim Speichern der Einstellungen');
+          this.errorMessage.set(error.error?.detail || this.i18n.t('errors.saveSettings'));
         }
       }
     });
@@ -597,13 +585,11 @@ export class SettingsComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    const confirmText = 'Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!';
-    if (!confirm(confirmText)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm1'))) {
       return;
     }
 
-    const doubleConfirm = 'Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?';
-    if (!confirm(doubleConfirm)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm2'))) {
       return;
     }
 
@@ -612,14 +598,13 @@ export class SettingsComponent implements OnInit {
 
     this.http.delete('/api/users/me/account').subscribe({
       next: () => {
-        alert('Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.');
-        // Logout und zur Login-Seite
+        alert(this.i18n.t('settings.deleteSuccess'));
         this.authService.logout();
         this.router.navigate(['/login']);
       },
       error: (error) => {
         this.isSaving.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Kontos');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.deleteAccount'));
       }
     });
   }
@@ -632,13 +617,13 @@ export class SettingsComponent implements OnInit {
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      this.errorMessage.set('Das Bild ist zu groß. Maximal 10MB erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.imageTooLarge'));
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.errorMessage.set('Nur Bilddateien sind erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.onlyImages'));
       return;
     }
 
@@ -662,7 +647,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (error) => {
         this.uploadingProfilePicture.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Hochladen des Profilbilds');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.uploadPicture'));
         input.value = '';
       }
     });

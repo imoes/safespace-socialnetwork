@@ -4,29 +4,31 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-my-posts',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, PostCardComponent, TranslatePipe],
   template: `
     <div class="my-posts-container">
       <div class="page-header">
-        <h1>📝 Meine Posts</h1>
-        <p class="subtitle">Alle deine veröffentlichten Beiträge und Interaktionen</p>
+        <h1>📝 {{ 'myPosts.title' | translate }}</h1>
+        <p class="subtitle">{{ 'myPosts.subtitle' | translate }}</p>
 
         <div class="tabs">
           <button
             class="tab"
             [class.active]="activeTab === 'my-posts'"
             (click)="switchTab('my-posts')">
-            📝 Meine Posts
+            📝 {{ 'myPosts.tabMyPosts' | translate }}
           </button>
           <button
             class="tab"
             [class.active]="activeTab === 'commented'"
             (click)="switchTab('commented')">
-            💬 Kommentierte Posts
+            💬 {{ 'myPosts.tabCommented' | translate }}
           </button>
         </div>
       </div>
@@ -34,15 +36,15 @@ import { PostCardComponent } from '../post-card/post-card.component';
       @if (loading && posts.length === 0) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade deine Posts...</p>
+          <p>{{ 'myPosts.loading' | translate }}</p>
         </div>
       }
 
       @if (!loading && posts.length === 0) {
         <div class="empty-state">
           <div class="empty-icon">📭</div>
-          <h2>Noch keine Posts</h2>
-          <p>Du hast noch keine Beiträge veröffentlicht.</p>
+          <h2>{{ 'myPosts.noPosts' | translate }}</h2>
+          <p>{{ 'myPosts.noPostsDesc' | translate }}</p>
         </div>
       }
 
@@ -64,7 +66,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
       @if (loading && posts.length > 0) {
         <div class="loading-more">
           <div class="spinner"></div>
-          <p>Lade weitere Posts...</p>
+          <p>{{ 'myPosts.loadingMore' | translate }}</p>
         </div>
       }
     </div>
@@ -213,6 +215,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
 export class MyPostsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
+  private i18n = inject(I18nService);
 
   posts: Post[] = [];
   loading = false;
@@ -324,7 +327,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         post.likes_count++;
       },
       error: () => {
-        alert('Fehler beim Liken');
+        alert(this.i18n.t('errors.like'));
       }
     });
   }
@@ -335,7 +338,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         post.likes_count = Math.max(0, post.likes_count - 1);
       },
       error: () => {
-        alert('Fehler beim Unlike');
+        alert(this.i18n.t('errors.unlike'));
       }
     });
   }
@@ -346,7 +349,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         this.posts = this.posts.filter(p => p.post_id !== post.post_id);
       },
       error: () => {
-        alert('Fehler beim Löschen');
+        alert(this.i18n.t('errors.delete'));
       }
     });
   }

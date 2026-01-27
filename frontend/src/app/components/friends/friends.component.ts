@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 interface UserSearchResult {
   uid: number;
@@ -28,13 +30,13 @@ interface FriendRequest {
 @Component({
   selector: 'app-friends',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="friends-container">
       <!-- Header -->
       <div class="header">
-        <h2>👫 Freunde & Vernetzung</h2>
-        <p class="subtitle">Vernetzen Sie sich mit anderen Benutzern</p>
+        <h2>👫 {{ 'friendsPage.title' | translate }}</h2>
+        <p class="subtitle">{{ 'friendsPage.subtitle' | translate }}</p>
       </div>
 
       <!-- Tabs -->
@@ -43,19 +45,19 @@ interface FriendRequest {
           class="tab"
           [class.active]="activeTab() === 'search'"
           (click)="activeTab.set('search')">
-          🔍 Benutzer suchen
+          🔍 {{ 'friendsPage.searchUsers' | translate }}
         </button>
         <button
           class="tab"
           [class.active]="activeTab() === 'friends'"
           (click)="loadFriends(); activeTab.set('friends')">
-          👥 Meine Freunde ({{ friends().length }})
+          👥 {{ 'friends.myFriends' | translate }} ({{ friends().length }})
         </button>
         <button
           class="tab"
           [class.active]="activeTab() === 'requests'"
           (click)="loadRequests(); activeTab.set('requests')">
-          📬 Anfragen ({{ requests().length }})
+          📬 {{ 'friendsPage.requests' | translate }} ({{ requests().length }})
         </button>
       </div>
 
@@ -75,7 +77,7 @@ interface FriendRequest {
               type="text"
               [(ngModel)]="searchQuery"
               (input)="onSearchInput()"
-              placeholder="Benutzernamen suchen..."
+              [placeholder]="'friendsPage.searchPlaceholder' | translate"
               class="search-input"
             />
             @if (searching()) {
@@ -98,18 +100,18 @@ interface FriendRequest {
                     class="btn btn-primary"
                     (click)="sendFriendRequest(user)"
                     [disabled]="isSending.has(user.uid)">
-                    {{ isSending.has(user.uid) ? 'Sende...' : '➕ Freundschaftsanfrage' }}
+                    {{ isSending.has(user.uid) ? ('friendsPage.sending' | translate) : ('➕ ' + ('friendsPage.friendRequest' | translate)) }}
                   </button>
                 </div>
               }
             </div>
           } @else if (searchQuery.length >= 2) {
             <div class="empty-state">
-              Keine Benutzer gefunden mit "{{ searchQuery }}"
+              {{ 'friendsPage.noUsersFound' | translate }} "{{ searchQuery }}"
             </div>
           } @else if (searchQuery.length > 0) {
             <div class="empty-state">
-              Bitte mindestens 2 Zeichen eingeben
+              {{ 'friendsPage.minChars' | translate }}
             </div>
           }
         </div>
@@ -119,7 +121,7 @@ interface FriendRequest {
       @if (activeTab() === 'friends') {
         <div class="friends-section">
           @if (loadingFriends()) {
-            <div class="loading">Lade Freunde...</div>
+            <div class="loading">{{ 'friendsPage.loadingFriends' | translate }}</div>
           } @else if (friends().length > 0) {
             <div class="friends-list">
               @for (friend of friends(); track friend.uid) {
@@ -131,7 +133,7 @@ interface FriendRequest {
                         {{ getRelationshipLabel(friend.relationship) }}
                       </span>
                       <span class="friend-since">
-                        Freunde seit {{ formatDate(friend.created_at) }}
+                        {{ 'friendsPage.friendsSince' | translate }} {{ formatDate(friend.created_at) }}
                       </span>
                     </div>
                   </div>
@@ -140,17 +142,17 @@ interface FriendRequest {
                       [value]="friend.relationship"
                       (change)="updateRelationship(friend, $event)"
                       class="relationship-select">
-                      <option value="acquaintance">Bekannte</option>
-                      <option value="friend">Freund</option>
-                      <option value="close_friend">Enger Freund</option>
-                      <option value="family">Familie</option>
+                      <option value="acquaintance">{{ 'friendsPage.acquaintance' | translate }}</option>
+                      <option value="friend">{{ 'friendsPage.friend' | translate }}</option>
+                      <option value="close_friend">{{ 'friendsPage.closeFriend' | translate }}</option>
+                      <option value="family">{{ 'visibility.family' | translate }}</option>
                     </select>
                     <button
                       class="btn btn-unfriend"
                       (click)="unfriend(friend)"
                       [disabled]="isProcessing.has(friend.uid)"
-                      title="Freundschaft beenden">
-                      🚫 Beenden
+                      [title]="'friendsPage.endFriendship' | translate">
+                      🚫 {{ 'friendsPage.end' | translate }}
                     </button>
                   </div>
                 </div>
@@ -158,8 +160,8 @@ interface FriendRequest {
             </div>
           } @else {
             <div class="empty-state">
-              <p>Sie haben noch keine Freunde.</p>
-              <p>Nutzen Sie die Suche, um Benutzer zu finden!</p>
+              <p>{{ 'friendsPage.noFriendsDesc' | translate }}</p>
+              <p>{{ 'friendsPage.noFriendsHint' | translate }}</p>
             </div>
           }
         </div>
@@ -169,7 +171,7 @@ interface FriendRequest {
       @if (activeTab() === 'requests') {
         <div class="requests-section">
           @if (loadingRequests()) {
-            <div class="loading">Lade Anfragen...</div>
+            <div class="loading">{{ 'friendsPage.loadingRequests' | translate }}</div>
           } @else if (requests().length > 0) {
             <div class="requests-list">
               @for (request of requests(); track request.uid) {
@@ -183,13 +185,13 @@ interface FriendRequest {
                       class="btn btn-success"
                       (click)="acceptRequest(request)"
                       [disabled]="isProcessing.has(request.uid)">
-                      ✓ Annehmen
+                      ✓ {{ 'friendsPage.acceptBtn' | translate }}
                     </button>
                     <button
                       class="btn btn-danger"
                       (click)="declineRequest(request)"
                       [disabled]="isProcessing.has(request.uid)">
-                      ✗ Ablehnen
+                      ✗ {{ 'friendsPage.declineBtn' | translate }}
                     </button>
                   </div>
                 </div>
@@ -197,7 +199,7 @@ interface FriendRequest {
             </div>
           } @else {
             <div class="empty-state">
-              Keine ausstehenden Freundschaftsanfragen
+              {{ 'friendsPage.noPendingRequests' | translate }}
             </div>
           }
         </div>
@@ -493,6 +495,7 @@ export class FriendsComponent implements OnInit {
   authService = inject(AuthService);
   http = inject(HttpClient);
   router = inject(Router);
+  private i18n = inject(I18nService);
 
   activeTab = signal<'search' | 'friends' | 'requests'>('search');
 
@@ -545,7 +548,7 @@ export class FriendsComponent implements OnInit {
         this.searching.set(false);
       },
       error: (error) => {
-        this.errorMessage.set('Fehler bei der Suche');
+        this.errorMessage.set(this.i18n.t('errors.search'));
         this.searching.set(false);
         setTimeout(() => this.errorMessage.set(''), 3000);
       }
@@ -558,14 +561,14 @@ export class FriendsComponent implements OnInit {
 
     this.http.post('/api/friends/request', { target_uid: user.uid, relation_type: 'friend' }).subscribe({
       next: () => {
-        this.successMessage.set(`Freundschaftsanfrage an ${user.username} gesendet!`);
+        this.successMessage.set(this.i18n.t('friendsPage.requestSent').replace('{{username}}', user.username));
         this.isSending.delete(user.uid);
-        // Entfernen aus Suchergebnissen
+        // Remove from search results
         this.searchResults.set(this.searchResults().filter(u => u.uid !== user.uid));
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Senden der Anfrage');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.sendRequest'));
         this.isSending.delete(user.uid);
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
@@ -582,7 +585,7 @@ export class FriendsComponent implements OnInit {
         this.loadingFriends.set(false);
       },
       error: (error) => {
-        this.errorMessage.set('Fehler beim Laden der Freunde');
+        this.errorMessage.set(this.i18n.t('errors.loadFriends'));
         this.loadingFriends.set(false);
         setTimeout(() => this.errorMessage.set(''), 3000);
       }
@@ -599,7 +602,7 @@ export class FriendsComponent implements OnInit {
         this.loadingRequests.set(false);
       },
       error: (error) => {
-        this.errorMessage.set('Fehler beim Laden der Anfragen');
+        this.errorMessage.set(this.i18n.t('errors.loadRequests'));
         this.loadingRequests.set(false);
         setTimeout(() => this.errorMessage.set(''), 3000);
       }
@@ -612,14 +615,14 @@ export class FriendsComponent implements OnInit {
 
     this.http.post(`/api/friends/accept/${request.uid}`, {}).subscribe({
       next: () => {
-        this.successMessage.set(`${request.username} ist jetzt dein Freund!`);
+        this.successMessage.set(this.i18n.t('friendsPage.friendAccepted').replace('{{username}}', request.username));
         this.isProcessing.delete(request.uid);
         this.loadRequests();
         this.loadFriends();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Annehmen der Anfrage');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.acceptRequest'));
         this.isProcessing.delete(request.uid);
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
@@ -631,7 +634,7 @@ export class FriendsComponent implements OnInit {
     this.clearMessages();
 
     // TODO: Implement decline endpoint
-    this.errorMessage.set('Ablehnen ist noch nicht implementiert');
+    this.errorMessage.set(this.i18n.t('friendsPage.notImplemented'));
     this.isProcessing.delete(request.uid);
     setTimeout(() => this.errorMessage.set(''), 3000);
   }
@@ -642,36 +645,32 @@ export class FriendsComponent implements OnInit {
 
     this.http.put(`/api/friends/${friend.uid}/relationship`, { relationship: newRelationship }).subscribe({
       next: () => {
-        this.successMessage.set('Beziehung aktualisiert');
+        this.successMessage.set(this.i18n.t('friendsPage.relationshipUpdated'));
         friend.relationship = newRelationship;
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Aktualisieren');
-        select.value = friend.relationship; // Zurücksetzen
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.updateRelationship'));
+        select.value = friend.relationship;
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   unfriend(friend: Friend): void {
-    if (!confirm(`Möchtest du die Freundschaft mit ${friend.username} wirklich beenden?`)) {
-      return;
-    }
-
     this.isProcessing.add(friend.uid);
     this.clearMessages();
 
     this.http.delete(`/api/friends/${friend.uid}`).subscribe({
       next: () => {
-        this.successMessage.set(`Freundschaft mit ${friend.username} wurde beendet`);
+        this.successMessage.set(this.i18n.t('friendsPage.friendshipEnded').replace('{{username}}', friend.username));
         this.isProcessing.delete(friend.uid);
-        // Entfernen aus der Liste
+        // Remove from list
         this.friends.set(this.friends().filter(f => f.uid !== friend.uid));
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Beenden der Freundschaft');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.unfriend'));
         this.isProcessing.delete(friend.uid);
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
@@ -679,27 +678,33 @@ export class FriendsComponent implements OnInit {
   }
 
   getRoleLabel(role: string): string {
-    const labels: Record<string, string> = {
-      'admin': 'Administrator',
-      'moderator': 'Moderator',
-      'user': 'Benutzer'
+    const keyMap: Record<string, string> = {
+      'admin': 'friendsPage.roleAdmin',
+      'moderator': 'friendsPage.roleModerator',
+      'user': 'friendsPage.roleUser'
     };
-    return labels[role] || role;
+    return keyMap[role] ? this.i18n.t(keyMap[role]) : role;
   }
 
   getRelationshipLabel(relationship: string): string {
-    const labels: Record<string, string> = {
-      'family': 'Familie',
-      'close_friend': 'Enger Freund',
-      'friend': 'Freund',
-      'acquaintance': 'Bekannte'
+    const keyMap: Record<string, string> = {
+      'family': 'visibility.family',
+      'close_friend': 'friendsPage.closeFriend',
+      'friend': 'friendsPage.friend',
+      'acquaintance': 'friendsPage.acquaintance'
     };
-    return labels[relationship] || relationship;
+    return keyMap[relationship] ? this.i18n.t(keyMap[relationship]) : relationship;
   }
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('de-DE', {
+    const lang = this.i18n.currentLanguage()?.code || 'en';
+    const locale = lang === 'de' ? 'de-DE' :
+                   lang === 'es' ? 'es-ES' :
+                   lang === 'it' ? 'it-IT' :
+                   lang === 'fr' ? 'fr-FR' :
+                   lang === 'ar' ? 'ar-SA' : 'en-US';
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

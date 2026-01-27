@@ -12,7 +12,8 @@
     "searchPlaceholder": "Search users...",
     "privacyPolicy": "Privacy Policy",
     "impressum": "Legal Notice",
-    "info": "Info"
+    "info": "Info",
+    "groups": "Groups"
   },
   "feed": {
     "title": "My Feed",
@@ -32,7 +33,11 @@
     "newerPosts": "Newer Posts",
     "noOlderPosts": "No older posts",
     "noPosts": "No posts yet",
-    "loading": "Loading your feed..."
+    "loading": "Loading your feed...",
+    "retry": "Try again",
+    "empty": "No posts yet.",
+    "emptyHint": "Add friends or create your first post!",
+    "loadingMore": "Loading more posts..."
   },
   "post": {
     "like": "Like",
@@ -47,7 +52,92 @@
     "cancel": "Cancel",
     "deleteConfirm": "Really delete this post?",
     "report": "Report",
-    "changeVisibility": "Click to change"
+    "changeVisibility": "Click to change",
+    "commentPlaceholder": "Write a comment...",
+    "send": "Send",
+    "loadingComments": "Loading comments...",
+    "noComments": "No comments yet. Be the first!",
+    "deleteCommentConfirm": "Really delete this comment?",
+    "editPlaceholder": "What would you like to change?",
+    "reportTitle": "Report Post",
+    "reportPlaceholder": "Why are you reporting this post?",
+    "reportSuccess": "Thank you for your report! A moderator will review it.",
+    "visibilityTitle": "Change Visibility",
+    "currentVisibility": "Current visibility:",
+    "disputePrompt": "Please explain your objection:",
+    "disputeSuccess": "Your objection has been forwarded to the moderators. You will receive a response within 48 hours.",
+    "sendComment": "Send comment"
+  },
+  "visibility": {
+    "public": "Public",
+    "acquaintance": "Acquaintances",
+    "friends": "All Friends",
+    "closeFriends": "Close Friends",
+    "close_friends": "Close Friends",
+    "close_friend": "Close Friends",
+    "family": "Family",
+    "private": "Only Me",
+    "privat": "Private"
+  },
+  "report": {
+    "hateSpeech": "Hate Speech",
+    "harassment": "Harassment",
+    "spam": "Spam",
+    "inappropriate": "Inappropriate",
+    "other": "Other"
+  },
+  "categories": {
+    "racism": "Racism",
+    "sexism": "Sexism",
+    "homophobia": "Homophobia",
+    "religiousHate": "Religious Hate",
+    "disabilityHate": "Ableism",
+    "xenophobia": "Xenophobia",
+    "generalHate": "Hate Speech",
+    "threat": "Threat",
+    "harassment": "Harassment",
+    "none": "None"
+  },
+  "errors": {
+    "like": "Error liking",
+    "unlike": "Error unliking",
+    "delete": "Error deleting",
+    "posting": "Error posting!",
+    "editPost": "Error editing post",
+    "editComment": "Error editing comment",
+    "deleteComment": "Error deleting comment",
+    "loadComments": "Error loading comments",
+    "addComment": "Error adding comment",
+    "commentLike": "Error liking comment",
+    "commentUnlike": "Error removing like",
+    "report": "Error reporting",
+    "changeVisibility": "Error changing visibility",
+    "loadPosts": "Error loading posts",
+    "search": "Error searching",
+    "sendRequest": "Error sending request",
+    "loadFriends": "Error loading friends",
+    "loadRequests": "Error loading requests",
+    "acceptRequest": "Error accepting request",
+    "updateRelationship": "Error updating",
+    "unfriend": "Error ending friendship",
+    "uploadPicture": "Error uploading profile picture",
+    "saveSettings": "Error saving settings",
+    "deleteAccount": "Error deleting account",
+    "imageTooLarge": "The image is too large. Maximum 10MB allowed.",
+    "onlyImages": "Only image files are allowed.",
+    "emailRequired": "Email address is required",
+    "enterNewPassword": "Please enter a new password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "wrongPassword": "Current password is incorrect",
+    "loadProfile": "Could not load profile.",
+    "sendFriendRequest": "Error sending friend request.",
+    "alreadySentRequest": "You have already sent a friend request to this user.",
+    "alreadyFriends": "You are already friends!",
+    "createPost": "Error creating post. Please try again.",
+    "disputeSubmit": "Error submitting objection.",
+    "disputeSuccess": "Your objection has been forwarded for review by a moderator.",
+    "sendComment": "Error sending comment"
   },
   "myPosts": {
     "title": "My Posts",
@@ -55,7 +145,9 @@
     "tabMyPosts": "My Posts",
     "tabCommented": "Commented Posts",
     "noPosts": "No posts yet",
-    "noPostsDesc": "You haven't published any posts yet."
+    "noPostsDesc": "You haven't published any posts yet.",
+    "loading": "Loading your posts...",
+    "loadingMore": "Loading more posts..."
   },
   "publicFeed": {
     "title": "Public Posts",
@@ -63,7 +155,103 @@
     "noPosts": "No public posts",
     "noPostsDesc": "There are no public posts yet.",
     "loadMore": "Load next 25 posts",
-    "postsCount": "{{current}} of {{total}} posts shown"
+    "postsCount": "{{current}} of {{total}} posts shown",
+    "loading": "Loading public posts...",
+    "loadingMore": "Loading more posts...",
+    "allSeen": "You've seen all posts!"
+  },
+  "hashtagDetail": {
+    "loading": "Loading posts...",
+    "noPosts": "No posts found",
+    "noPostsDesc": "There are no posts with this hashtag yet.",
+    "loadingOlder": "Loading older posts...",
+    "loadingNewer": "Loading newer posts...",
+    "noMore": "No more posts"
+  },
+  "friendsPage": {
+    "title": "Friends & Networking",
+    "subtitle": "Connect with other users",
+    "searchUsers": "Search Users",
+    "searchPlaceholder": "Search usernames...",
+    "sending": "Sending...",
+    "friendRequest": "Friend Request",
+    "noUsersFound": "No users found with",
+    "minChars": "Please enter at least 2 characters",
+    "loadingFriends": "Loading friends...",
+    "friendsSince": "Friends since",
+    "acquaintance": "Acquaintance",
+    "friend": "Friend",
+    "closeFriend": "Close Friend",
+    "endFriendship": "End friendship",
+    "end": "End",
+    "noFriendsDesc": "You have no friends yet.",
+    "noFriendsHint": "Use the search to find users!",
+    "loadingRequests": "Loading requests...",
+    "acceptBtn": "Accept",
+    "declineBtn": "Decline",
+    "noPendingRequests": "No pending friend requests",
+    "requestSent": "Friend request sent to {{username}}!",
+    "friendAccepted": "{{username}} is now your friend!",
+    "relationshipUpdated": "Relationship updated",
+    "unfriendConfirm": "Do you really want to end the friendship with {{username}}?",
+    "friendshipEnded": "Friendship with {{username}} has ended",
+    "notImplemented": "Decline is not yet implemented",
+    "roleAdmin": "Administrator",
+    "roleModerator": "Moderator",
+    "roleUser": "User",
+    "requests": "Requests"
+  },
+  "profile": {
+    "loading": "Loading profile...",
+    "memberSince": "Member since",
+    "sendRequest": "Send friend request",
+    "requestSent": "Request sent",
+    "personalPost": "Leave a personal post",
+    "personalPostPlaceholder": "Write something on {{username}}'s profile...",
+    "posting": "Posting...",
+    "leavePost": "Leave post",
+    "yourPosts": "Your Posts",
+    "postsBy": "Posts by {{username}}",
+    "loadingPosts": "Loading posts...",
+    "noOwnPosts": "You haven't created any posts yet.",
+    "noUserPosts": "This user hasn't created any posts yet.",
+    "notFriendHint": "Posts from users can only be seen by friends. Add {{username}} as a friend to see more posts!",
+    "hint": "Note",
+    "error": "Error",
+    "friendRequestSent": "Friend request was sent!",
+    "roleUser": "User",
+    "roleModerator": "Moderator",
+    "roleAdmin": "Administrator"
+  },
+  "login": {
+    "title": "Login",
+    "subtitle": "Connect with friends",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Login",
+    "noAccount": "Don't have an account?",
+    "register": "Register now",
+    "errors": {
+      "invalidCredentials": "Invalid credentials",
+      "loginFailed": "Login failed. Please try again."
+    }
+  },
+  "register": {
+    "title": "Register",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "registerButton": "Register",
+    "hasAccount": "Already have an account?",
+    "login": "Login here",
+    "errors": {
+      "usernameAlreadyRegistered": "This username is already taken. Please choose another one.",
+      "emailAlreadyRegistered": "This email address is already registered. Please use a different one or log in.",
+      "passwordMismatch": "Passwords do not match",
+      "registrationFailed": "Registration failed. Please try again."
+    },
+    "success": "Registration successful! Redirecting..."
   },
   "friends": {
     "title": "Friends",
@@ -115,7 +303,10 @@
       "Your user profile and all personal data"
     ],
     "deleteAccountWarning": "This action cannot be undone!",
-    "deleteAccountButton": "Permanently Delete Account"
+    "deleteAccountButton": "Permanently Delete Account",
+    "deleteConfirm1": "Are you absolutely sure? This action CANNOT be undone!",
+    "deleteConfirm2": "Last warning: ALL your data will be permanently deleted. Do you really want to continue?",
+    "deleteSuccess": "Your account has been successfully deleted. You will now be logged out."
   },
   "hashtags": {
     "title": "Trending Hashtags",
@@ -123,34 +314,6 @@
     "postsCount": "{{count}} posts",
     "noHashtags": "No trending hashtags",
     "viewPosts": "View Posts"
-  },
-  "login": {
-    "title": "Login",
-    "username": "Username",
-    "password": "Password",
-    "loginButton": "Login",
-    "noAccount": "Don't have an account?",
-    "register": "Register now",
-    "errors": {
-      "invalidCredentials": "Invalid credentials",
-      "loginFailed": "Login failed. Please try again."
-    }
-  },
-  "register": {
-    "title": "Register",
-    "username": "Username",
-    "email": "Email",
-    "password": "Password",
-    "registerButton": "Register",
-    "hasAccount": "Already have an account?",
-    "login": "Login here",
-    "errors": {
-      "usernameAlreadyRegistered": "This username is already taken. Please choose another one.",
-      "emailAlreadyRegistered": "This email address is already registered. Please use a different one or log in.",
-      "passwordMismatch": "Passwords do not match",
-      "registrationFailed": "Registration failed. Please try again."
-    },
-    "success": "Registration successful! Redirecting..."
   },
   "admin": {
     "title": "Admin Panel",
@@ -195,15 +358,15 @@
   "guardian": {
     "title": "Guardian - AI-assisted content moderation",
     "whyFlagged": "Why was this content flagged?",
-    "whyAlternative": "💡 Why this alternative?",
+    "whyAlternative": "Why this alternative?",
     "alternatives": "Alternative formulations",
     "alternativesHint": "Choose one of the following alternatives or rephrase your content yourself:",
     "customLabel": "Or write your own formulation:",
     "customPlaceholder": "Your own formulation...",
     "useCustom": "Use custom formulation",
-    "dispute": "⚖️ File objection",
+    "dispute": "File objection",
     "cancel": "Cancel",
-    "disclaimer": "⚠️ Note: AI systems can make mistakes. All suggestions are without guarantee. If unclear, you can file an objection.",
+    "disclaimer": "Note: AI systems can make mistakes. All suggestions are without guarantee. If unclear, you can file an objection.",
     "categories": "Categories:"
   },
   "common": {
@@ -214,7 +377,11 @@
     "search": "Search",
     "noResults": "No results found",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "posts": "Posts",
+    "back": "Back",
+    "save": "Save"
   },
   "notifications": {
     "title": "Notifications",
@@ -228,6 +395,44 @@
     "postLiked": "{{username}} liked your post",
     "postCommented": "{{username}} commented on your post",
     "commentLiked": "{{username}} liked your comment",
-    "newNotification": "New notification"
+    "newNotification": "New notification",
+    "groupPost": "{{username}} posted in group {{group}}"
+  },
+  "groups": {
+    "title": "Groups",
+    "subtitle": "Join groups and share with like-minded people",
+    "createGroup": "Create Group",
+    "namePlaceholder": "Group name",
+    "descriptionPlaceholder": "Group description (optional)",
+    "create": "Create",
+    "myGroups": "My Groups",
+    "noGroups": "You are not a member of any group yet.",
+    "searchGroups": "Search Groups",
+    "searchPlaceholder": "Search group names...",
+    "members": "Members",
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member",
+    "join": "Join",
+    "leave": "Leave",
+    "deleteGroup": "Delete Group",
+    "posts": "Posts",
+    "noPosts": "No posts in this group yet.",
+    "postPlaceholder": "Write something in the group...",
+    "visibilityInternal": "Internal (members only)",
+    "visibilityPublic": "Public",
+    "makeAdmin": "Make Admin",
+    "removeAdmin": "Remove Admin",
+    "removeMember": "Remove Member",
+    "joinMode": "Join Mode",
+    "joinModeOpen": "Open (anyone can join)",
+    "joinModeApproval": "Approval required",
+    "requestJoin": "Request to Join",
+    "pendingRequest": "Request Pending",
+    "pending": "Pending",
+    "pendingRequests": "Pending Requests",
+    "noPendingRequests": "No pending requests",
+    "approve": "Approve",
+    "reject": "Reject"
   }
 }

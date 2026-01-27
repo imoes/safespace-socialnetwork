@@ -137,6 +137,13 @@ class FeedService:
         except Exception as e:
             print(f"Error loading broadcast posts: {e}")
 
+        # Group-Posts hinzufügen
+        try:
+            group_posts = await cls._load_group_posts(uid, profile_data_map)
+            all_posts.extend(group_posts)
+        except Exception as e:
+            print(f"Error loading group posts: {e}")
+
         # Nach Datum sortieren (neueste zuerst)
         all_posts.sort(key=lambda p: p["created_at"], reverse=True)
 
@@ -197,6 +204,65 @@ class FeedService:
 
         return enriched
     
+    @classmethod
+    async def _load_group_posts(cls, uid: int, profile_data_map: dict[int, dict]) -> list[dict]:
+        """Lädt Posts aus allen Gruppen des Users für den Feed."""
+        from app.db.postgres import PostgresDB
+        from app.db.sqlite_group_posts import GroupPostsDB
+
+        # Gruppen des Users laden
+        async with PostgresDB.connection() as conn:
+            result = await conn.execute(
+                """
+                SELECT g.group_id, g.name as group_name
+                FROM groups g
+                INNER JOIN group_members gm ON g.group_id = gm.group_id
+                WHERE gm.user_uid = %s AND gm.status = 'active'
+                """,
+                (uid,)
+            )
+            user_groups = await result.fetchall()
+
+        if not user_groups:
+            return []
+
+        all_group_posts = []
+        for group in user_groups:
+            group_id = group["group_id"]
+            group_name = group["group_name"]
+
+            group_db = GroupPostsDB(group_id)
+            try:
+                posts = await group_db.get_posts(limit=50)
+            except Exception:
+                continue
+
+            for post in posts:
+                author_uid = post["author_uid"]
+                if author_uid not in profile_data_map:
+                    from app.db.postgres import get_user_profile_data_map as get_pdm
+                    extra = await get_pdm([author_uid])
+                    profile_data_map.update(extra)
+
+                author_data = profile_data_map.get(author_uid, {"username": "Unknown", "profile_picture": None})
+
+                all_group_posts.append({
+                    "post_id": post["post_id"],
+                    "author_uid": author_uid,
+                    "author_username": author_data["username"],
+                    "author_profile_picture": author_data.get("profile_picture"),
+                    "content": post["content"],
+                    "media_urls": [],
+                    "visibility": post["visibility"],
+                    "created_at": post["created_at"],
+                    "likes_count": 0,
+                    "comments_count": 0,
+                    "group_id": group_id,
+                    "group_name": group_name
+                })
+
+        return all_group_posts
+
     @classmethod
     def _build_media_urls(cls, uid: int, media_paths: list[str]) -> list[str]:
         """Baut URLs für Media-Dateien"""
