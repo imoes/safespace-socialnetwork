@@ -106,6 +106,7 @@ class PostResponse(BaseModel):
     comments_count: int = 0
     is_flagged: bool = False
     is_own_post: bool = False
+    is_liked_by_user: bool = False
 
 
 class FeedResponse(BaseModel):

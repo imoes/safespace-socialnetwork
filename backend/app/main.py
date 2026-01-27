@@ -129,3 +129,11 @@ async def root():
 async def health_check():
     """Health Check für Docker/Kubernetes"""
     return {"status": "healthy"}
+
+
+@app.get("/api/site-settings/title")
+async def get_public_site_title():
+    """Öffentlicher Endpunkt für den Site-Titel"""
+    from app.db.site_settings import get_site_title
+    title = await get_site_title()
+    return {"site_title": title}

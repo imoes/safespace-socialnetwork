@@ -289,9 +289,12 @@ export class PublicFeedComponent implements OnInit, OnDestroy {
   }
 
   likePost(post: Post): void {
-    this.http.post(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
-      next: () => {
-        post.likes_count++;
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
       },
       error: () => {
         alert(this.i18n.t('errors.like'));
@@ -300,9 +303,12 @@ export class PublicFeedComponent implements OnInit, OnDestroy {
   }
 
   unlikePost(post: Post): void {
-    this.http.delete(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
-      next: () => {
-        post.likes_count = Math.max(0, post.likes_count - 1);
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
       },
       error: () => {
         alert(this.i18n.t('errors.unlike'));

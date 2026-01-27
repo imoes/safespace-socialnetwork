@@ -368,6 +368,7 @@ async def get_my_commented_posts(
 
                     likes_count = await posts_db.get_likes_count(post["post_id"])
                     comments_count = await posts_db.get_comments_count(post["post_id"])
+                    is_liked = await posts_db.is_liked_by_user(post["post_id"], user_uid)
 
                     media_urls = []
                     if post.get("media_paths"):
@@ -382,6 +383,7 @@ async def get_my_commented_posts(
                         "created_at": post["created_at"],
                         "likes_count": likes_count,
                         "comments_count": comments_count,
+                        "is_liked_by_user": is_liked,
                         "recipient_uid": post.get("recipient_uid"),
                         "_friend_uid": friend_uid  # Temporary field for enrichment
                     })
@@ -459,6 +461,7 @@ async def get_my_posts(
     for post in raw_posts:
         likes_count = await posts_db.get_likes_count(post["post_id"])
         comments_count = await posts_db.get_comments_count(post["post_id"])
+        is_liked = await posts_db.is_liked_by_user(post["post_id"], user_uid)
 
         # Media URLs bauen
         media_urls = []
@@ -483,6 +486,7 @@ async def get_my_posts(
             "created_at": post["created_at"],
             "likes_count": likes_count,
             "comments_count": comments_count,
+            "is_liked_by_user": is_liked,
             "is_own_post": True,
             "recipient_uid": recipient_uid,
             "recipient_username": recipient_username
@@ -558,6 +562,7 @@ async def get_user_posts(
     for post in raw_posts:
         likes_count = await posts_db.get_likes_count(post["post_id"])
         comments_count = await posts_db.get_comments_count(post["post_id"])
+        is_liked = await posts_db.is_liked_by_user(post["post_id"], current_user["uid"])
 
         # Media URLs bauen
         media_urls = []
@@ -591,6 +596,7 @@ async def get_user_posts(
             "created_at": post["created_at"],
             "likes_count": likes_count,
             "comments_count": comments_count,
+            "is_liked_by_user": is_liked,
             "is_own_post": is_own_profile and not post.get("author_uid"),  # Nur eigene normale Posts
             "recipient_uid": recipient_uid,
             "recipient_username": recipient_username
