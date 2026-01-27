@@ -22,6 +22,10 @@ class UserUpdateRequest(BaseModel):
     preferred_language: Optional[str] = None
 
 
+class LanguageUpdateRequest(BaseModel):
+    preferred_language: str
+
+
 class PersonalPostRequest(BaseModel):
     content: str
     visibility: str = "public"  # Persönliche Posts sind standardmäßig öffentlich
@@ -82,6 +86,22 @@ async def update_user_profile(
         await conn.commit()
 
         return {"message": "Profil erfolgreich aktualisiert"}
+
+
+@router.patch("/me/language")
+async def update_user_language(
+    lang_data: LanguageUpdateRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Updates only the preferred language for the current user"""
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET preferred_language = %s WHERE uid = %s",
+            (lang_data.preferred_language, current_user["uid"])
+        )
+        await conn.commit()
+
+    return {"message": "Language updated", "preferred_language": lang_data.preferred_language}
 
 
 @router.post("/me/profile-picture")

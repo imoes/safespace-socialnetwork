@@ -491,20 +491,16 @@ export class SettingsComponent implements OnInit {
     if (currentLang) {
       this.selectedLanguage = currentLang.code;
       this.originalLanguage = this.selectedLanguage;
-      console.log(`⚙️ [Settings] Current language: ${this.selectedLanguage}`);
     } else {
-      // Fallback: read from localStorage directly
       const savedLang = localStorage.getItem('preferredLanguage') || 'en';
       this.selectedLanguage = savedLang;
       this.originalLanguage = savedLang;
-      console.warn(`⚠️ [Settings] Language not loaded yet, using fallback: ${savedLang}`);
     }
   }
 
   onLanguageChange(): void {
     // Just update the selection, don't apply yet
     // Language will be applied when user clicks "Save Settings"
-    console.log(`🌐 [Settings] Language dropdown changed to: '${this.selectedLanguage}' (original: '${this.originalLanguage}')`);
   }
 
   saveSettings(): void {
@@ -549,36 +545,27 @@ export class SettingsComponent implements OnInit {
 
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
-        console.log(`⚙️ [Settings] Settings saved successfully`);
-        console.log(`⚙️ [Settings] Selected language: ${this.selectedLanguage}, Original: ${this.originalLanguage}`);
-
-        // Check if language changed
-        console.log(`🌐 [Settings] Checking language change: selected='${this.selectedLanguage}', original='${this.originalLanguage}'`);
         if (this.selectedLanguage !== this.originalLanguage) {
-          console.log(`🌐 [Settings] Language changed from '${this.originalLanguage}' to '${this.selectedLanguage}', applying...`);
           // Apply language change - setLanguage saves to localStorage
           this.i18n.setLanguage(this.selectedLanguage).then(() => {
-            console.log(`🌐 [Settings] Language set to '${this.selectedLanguage}', localStorage value: '${localStorage.getItem('preferredLanguage')}', reloading page...`);
-            // Small delay to ensure localStorage is written
-            setTimeout(() => {
-              window.location.reload();
-            }, 100);
-          }).catch((error) => {
-            console.error(`❌ [Settings] Failed to set language:`, error);
+            this.originalLanguage = this.selectedLanguage;
+            this.successMessage.set(this.i18n.t('settings.success'));
+            this.isSaving.set(false);
+            this.authService.loadCurrentUser();
+          }).catch(() => {
             this.errorMessage.set('Failed to change language');
             this.isSaving.set(false);
           });
         } else {
-          console.log(`⚙️ [Settings] Language unchanged, showing success message`);
           this.successMessage.set(this.i18n.t('settings.success'));
           this.isSaving.set(false);
 
-          // Passwortfelder leeren
+          // Clear password fields
           this.currentPassword = '';
           this.newPassword = '';
           this.confirmPassword = '';
 
-          // User-Daten neu laden, um aktualisierte Werte anzuzeigen
+          // Reload user data to reflect updates
           this.authService.loadCurrentUser();
         }
       },
