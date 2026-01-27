@@ -12,7 +12,8 @@
     "searchPlaceholder": "Search users...",
     "privacyPolicy": "Privacy Policy",
     "impressum": "Legal Notice",
-    "info": "Info"
+    "info": "Info",
+    "groups": "Groups"
   },
   "feed": {
     "title": "My Feed",
@@ -394,6 +395,34 @@
     "postLiked": "{{username}} liked your post",
     "postCommented": "{{username}} commented on your post",
     "commentLiked": "{{username}} liked your comment",
-    "newNotification": "New notification"
+    "newNotification": "New notification",
+    "groupPost": "{{username}} posted in group {{group}}"
+  },
+  "groups": {
+    "title": "Groups",
+    "subtitle": "Join groups and share with like-minded people",
+    "createGroup": "Create Group",
+    "namePlaceholder": "Group name",
+    "descriptionPlaceholder": "Group description (optional)",
+    "create": "Create",
+    "myGroups": "My Groups",
+    "noGroups": "You are not a member of any group yet.",
+    "searchGroups": "Search Groups",
+    "searchPlaceholder": "Search group names...",
+    "members": "Members",
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member",
+    "join": "Join",
+    "leave": "Leave",
+    "deleteGroup": "Delete Group",
+    "posts": "Posts",
+    "noPosts": "No posts in this group yet.",
+    "postPlaceholder": "Write something in the group...",
+    "visibilityInternal": "Internal (members only)",
+    "visibilityPublic": "Public",
+    "makeAdmin": "Make Admin",
+    "removeAdmin": "Remove Admin",
+    "removeMember": "Remove Member"
   }
 }

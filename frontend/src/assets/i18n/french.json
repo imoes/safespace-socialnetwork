@@ -12,7 +12,8 @@
     "searchPlaceholder": "Rechercher des utilisateurs...",
     "privacyPolicy": "Politique de confidentialité",
     "impressum": "Mentions légales",
-    "info": "Info"
+    "info": "Info",
+    "groups": "Groupes"
   },
   "feed": {
     "title": "Mon Feed",
@@ -340,7 +341,35 @@
     "postLiked": "{{username}} a aimé votre post",
     "postCommented": "{{username}} a commenté votre post",
     "commentLiked": "{{username}} a aimé votre commentaire",
-    "newNotification": "Nouvelle notification"
+    "newNotification": "Nouvelle notification",
+    "groupPost": "{{username}} a publié dans le groupe {{group}}"
+  },
+  "groups": {
+    "title": "Groupes",
+    "subtitle": "Rejoignez des groupes et partagez avec des personnes partageant les mêmes idées",
+    "createGroup": "Créer un groupe",
+    "namePlaceholder": "Nom du groupe",
+    "descriptionPlaceholder": "Description du groupe (optionnel)",
+    "create": "Créer",
+    "myGroups": "Mes groupes",
+    "noGroups": "Vous n'êtes encore membre d'aucun groupe.",
+    "searchGroups": "Rechercher des groupes",
+    "searchPlaceholder": "Rechercher des noms de groupe...",
+    "members": "Membres",
+    "owner": "Propriétaire",
+    "admin": "Admin",
+    "member": "Membre",
+    "join": "Rejoindre",
+    "leave": "Quitter",
+    "deleteGroup": "Supprimer le groupe",
+    "posts": "Publications",
+    "noPosts": "Pas encore de publications dans ce groupe.",
+    "postPlaceholder": "Écrivez quelque chose dans le groupe...",
+    "visibilityInternal": "Interne (membres uniquement)",
+    "visibilityPublic": "Public",
+    "makeAdmin": "Nommer admin",
+    "removeAdmin": "Retirer admin",
+    "removeMember": "Retirer le membre"
   },
   "guardian": {
     "title": "Guardian - Modération de contenu assistée par IA",

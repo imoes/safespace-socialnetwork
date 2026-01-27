@@ -169,6 +169,58 @@ class PostgresDB:
                 ON users(last_login)
             """)
 
+            # Groups
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS groups (
+                    group_id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    description TEXT,
+                    created_by INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Group Members
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS group_members (
+                    id SERIAL PRIMARY KEY,
+                    group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    role VARCHAR(20) DEFAULT 'member',
+                    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(group_id, user_uid)
+                )
+            """)
+
+            # Group Posts (metadata linking to SQLite)
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS group_posts (
+                    id SERIAL PRIMARY KEY,
+                    group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
+                    post_id INTEGER NOT NULL,
+                    author_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    visibility VARCHAR(20) DEFAULT 'internal',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_groups_name_lower
+                ON groups(LOWER(name))
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_group_members_group
+                ON group_members(group_id)
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_group_members_user
+                ON group_members(user_uid)
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_group_posts_group
+                ON group_posts(group_id, created_at DESC)
+            """)
+
             await conn.commit()
 
 

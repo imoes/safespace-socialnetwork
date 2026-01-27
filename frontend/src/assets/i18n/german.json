@@ -12,7 +12,8 @@
     "searchPlaceholder": "Benutzer suchen...",
     "privacyPolicy": "Datenschutzerklärung",
     "impressum": "Impressum",
-    "info": "Info"
+    "info": "Info",
+    "groups": "Gruppen"
   },
   "feed": {
     "title": "Mein Feed",
@@ -394,6 +395,34 @@
     "postLiked": "{{username}} hat deinen Post geliked",
     "postCommented": "{{username}} hat deinen Post kommentiert",
     "commentLiked": "{{username}} hat deinen Kommentar geliked",
-    "newNotification": "Neue Benachrichtigung"
+    "newNotification": "Neue Benachrichtigung",
+    "groupPost": "{{username}} hat in der Gruppe {{group}} gepostet"
+  },
+  "groups": {
+    "title": "Gruppen",
+    "subtitle": "Tritt Gruppen bei und teile mit Gleichgesinnten",
+    "createGroup": "Gruppe erstellen",
+    "namePlaceholder": "Gruppenname",
+    "descriptionPlaceholder": "Gruppenbeschreibung (optional)",
+    "create": "Erstellen",
+    "myGroups": "Meine Gruppen",
+    "noGroups": "Du bist noch in keiner Gruppe Mitglied.",
+    "searchGroups": "Gruppen suchen",
+    "searchPlaceholder": "Gruppennamen suchen...",
+    "members": "Mitglieder",
+    "owner": "Eigentümer",
+    "admin": "Admin",
+    "member": "Mitglied",
+    "join": "Beitreten",
+    "leave": "Verlassen",
+    "deleteGroup": "Gruppe löschen",
+    "posts": "Beiträge",
+    "noPosts": "Noch keine Beiträge in dieser Gruppe.",
+    "postPlaceholder": "Schreibe etwas in die Gruppe...",
+    "visibilityInternal": "Intern (nur Mitglieder)",
+    "visibilityPublic": "Öffentlich",
+    "makeAdmin": "Zum Admin machen",
+    "removeAdmin": "Admin entfernen",
+    "removeMember": "Mitglied entfernen"
   }
 }

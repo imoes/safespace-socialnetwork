@@ -45,6 +45,7 @@ async def create_notification(
     - 'post_liked': Jemand hat deinen Post geliked
     - 'post_commented': Jemand hat deinen Post kommentiert
     - 'comment_liked': Jemand hat deinen Kommentar geliked
+    - 'group_post': Jemand hat in deiner Gruppe gepostet
     """
     # Erstelle keine Benachrichtigung wenn User sich selbst liked/kommentiert
     if user_uid == actor_uid:
