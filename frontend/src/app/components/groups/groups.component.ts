@@ -32,6 +32,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             [placeholder]="'groups.descriptionPlaceholder' | translate"
             class="input"
           />
+          <div class="join-mode-row">
+            <label class="join-mode-label">{{ 'groups.joinMode' | translate }}:</label>
+            <select [(ngModel)]="newGroupJoinMode" class="join-mode-select">
+              <option value="open">{{ 'groups.joinModeOpen' | translate }}</option>
+              <option value="approval">{{ 'groups.joinModeApproval' | translate }}</option>
+            </select>
+          </div>
           <button
             class="btn btn-primary"
             (click)="createGroup()"
@@ -61,7 +68,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                   }
                   <div class="group-meta">
                     {{ group.member_count }} {{ 'groups.members' | translate }}
-                    @if (group.my_role) {
+                    @if (group.my_status === 'pending') {
+                      <span class="role-badge pending-badge">{{ 'groups.pending' | translate }}</span>
+                    } @else if (group.my_role) {
                       <span class="role-badge" [class.role-admin]="group.my_role === 'admin' || group.my_role === 'owner'">
                         {{ group.my_role === 'owner' ? ('groups.owner' | translate) : group.my_role === 'admin' ? ('groups.admin' | translate) : ('groups.member' | translate) }}
                       </span>
@@ -168,6 +177,14 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background: #e4e6eb; color: #65676b;
     }
     .role-admin { background: #e7f3ff; color: #1877f2; }
+    .pending-badge { background: #fff3cd; color: #856404; }
+
+    .join-mode-row { display: flex; align-items: center; gap: 10px; }
+    .join-mode-label { font-size: 14px; font-weight: 600; color: #333; white-space: nowrap; }
+    .join-mode-select {
+      padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 14px; outline: none; background: white; flex: 1;
+    }
 
     .loading { color: #65676b; text-align: center; padding: 20px; }
     .empty { color: #65676b; text-align: center; padding: 20px; }
@@ -184,6 +201,7 @@ export class GroupsComponent implements OnInit {
 
   newGroupName = '';
   newGroupDescription = '';
+  newGroupJoinMode = 'open';
   searchQuery = '';
   private searchTimeout: any;
 
@@ -206,10 +224,11 @@ export class GroupsComponent implements OnInit {
     const name = this.newGroupName.trim();
     if (!name) return;
 
-    this.groupsService.createGroup(name, this.newGroupDescription.trim() || undefined).subscribe({
+    this.groupsService.createGroup(name, this.newGroupDescription.trim() || undefined, this.newGroupJoinMode).subscribe({
       next: (res) => {
         this.newGroupName = '';
         this.newGroupDescription = '';
+        this.newGroupJoinMode = 'open';
         this.loadMyGroups();
         this.router.navigate(['/groups', res.group.group_id]);
       },

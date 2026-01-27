@@ -369,7 +369,17 @@
     "visibilityPublic": "Public",
     "makeAdmin": "Nommer admin",
     "removeAdmin": "Retirer admin",
-    "removeMember": "Retirer le membre"
+    "removeMember": "Retirer le membre",
+    "joinMode": "Mode d'adhésion",
+    "joinModeOpen": "Ouvert (tout le monde peut rejoindre)",
+    "joinModeApproval": "Approbation requise",
+    "requestJoin": "Demander à rejoindre",
+    "pendingRequest": "Demande en attente",
+    "pending": "En attente",
+    "pendingRequests": "Demandes en attente",
+    "noPendingRequests": "Aucune demande en attente",
+    "approve": "Approuver",
+    "reject": "Rejeter"
   },
   "guardian": {
     "title": "Guardian - Modération de contenu assistée par IA",

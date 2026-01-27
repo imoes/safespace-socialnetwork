@@ -38,8 +38,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             </div>
           </div>
           <div class="group-actions">
-            @if (!group()!.my_role) {
-              <button class="btn btn-primary" (click)="joinGroup()">{{ 'groups.join' | translate }}</button>
+            @if (!group()!.my_role && group()!.my_status !== 'pending') {
+              <button class="btn btn-primary" (click)="joinGroup()">
+                {{ group()!.join_mode === 'approval' ? ('groups.requestJoin' | translate) : ('groups.join' | translate) }}
+              </button>
+            } @else if (group()!.my_status === 'pending') {
+              <button class="btn btn-secondary" disabled>{{ 'groups.pendingRequest' | translate }}</button>
             } @else if (group()!.my_role !== 'owner') {
               <button class="btn btn-secondary" (click)="leaveGroup()">{{ 'groups.leave' | translate }}</button>
             }
@@ -47,6 +51,21 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               <button class="btn btn-danger" (click)="deleteGroup()">{{ 'groups.deleteGroup' | translate }}</button>
             }
           </div>
+
+          <!-- Join Mode Settings (Admins only) -->
+          @if (isGroupAdmin()) {
+            <div class="settings-row">
+              <label class="setting-label">{{ 'groups.joinMode' | translate }}:</label>
+              <select
+                [ngModel]="group()!.join_mode || 'open'"
+                (ngModelChange)="updateJoinMode($event)"
+                class="visibility-select"
+              >
+                <option value="open">{{ 'groups.joinModeOpen' | translate }}</option>
+                <option value="approval">{{ 'groups.joinModeApproval' | translate }}</option>
+              </select>
+            </div>
+          }
         </div>
 
         <!-- Tabs -->
@@ -58,6 +77,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           >
             {{ 'groups.posts' | translate }}
           </button>
+          @if (isGroupAdmin() && group()!.pending_count) {
+            <button
+              class="tab"
+              [class.active]="activeTab() === 'pending'"
+              (click)="activeTab.set('pending'); loadPendingMembers()"
+            >
+              {{ 'groups.pendingRequests' | translate }} ({{ group()!.pending_count }})
+            </button>
+          }
           <button
             class="tab"
             [class.active]="activeTab() === 'members'"
@@ -157,6 +185,41 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 }
               </div>
             }
+          }
+        }
+
+        <!-- Pending Tab -->
+        @if (activeTab() === 'pending') {
+          @if (loadingPending()) {
+            <p class="loading">{{ 'common.loading' | translate }}</p>
+          } @else if (pendingMembers().length === 0) {
+            <p class="empty">{{ 'groups.noPendingRequests' | translate }}</p>
+          } @else {
+            <div class="members-list">
+              @for (member of pendingMembers(); track member.user_uid) {
+                <div class="member-card">
+                  <div class="member-avatar" (click)="goToProfile(member.user_uid)">
+                    @if (member.profile_picture) {
+                      <img [src]="member.profile_picture" class="avatar-img" [alt]="member.username" />
+                    } @else {
+                      {{ member.username.charAt(0).toUpperCase() }}
+                    }
+                  </div>
+                  <div class="member-info">
+                    <span class="member-name" (click)="goToProfile(member.user_uid)">{{ member.username }}</span>
+                    <span class="member-role pending-badge">{{ 'groups.pending' | translate }}</span>
+                  </div>
+                  <div class="member-actions">
+                    <button class="btn btn-sm btn-primary" (click)="approveMember(member.user_uid)">
+                      {{ 'groups.approve' | translate }}
+                    </button>
+                    <button class="btn btn-sm btn-danger-outline" (click)="rejectMember(member.user_uid)">
+                      {{ 'groups.reject' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
           }
         }
 
@@ -341,6 +404,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .member-role { font-size: 12px; }
     .member-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
+    .settings-row {
+      display: flex; align-items: center; gap: 12px; margin-top: 12px;
+      padding-top: 12px; border-top: 1px solid #e4e6eb;
+    }
+    .setting-label { font-size: 14px; font-weight: 600; color: #333; white-space: nowrap; }
+    .pending-badge { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+
     .loading { color: #65676b; text-align: center; padding: 30px; }
     .empty { color: #65676b; text-align: center; padding: 30px; }
   `]
@@ -357,7 +427,9 @@ export class GroupDetailComponent implements OnInit {
   loading = signal(true);
   loadingPosts = signal(false);
   loadingMembers = signal(false);
-  activeTab = signal<'posts' | 'members'>('posts');
+  activeTab = signal<'posts' | 'members' | 'pending'>('posts');
+  pendingMembers = signal<GroupMember[]>([]);
+  loadingPending = signal(false);
 
   expandedComments = signal<Set<number>>(new Set());
   postComments = signal<Map<number, GroupComment[]>>(new Map());
@@ -561,6 +633,54 @@ export class GroupDetailComponent implements OnInit {
         this.loadGroup(gid);
       },
       error: (err) => console.error('Error removing member:', err)
+    });
+  }
+
+  loadPendingMembers(): void {
+    const gid = this.group()?.group_id;
+    if (!gid) return;
+    this.loadingPending.set(true);
+    this.groupsService.getPendingMembers(gid).subscribe({
+      next: (res) => {
+        this.pendingMembers.set(res.pending);
+        this.loadingPending.set(false);
+      },
+      error: () => this.loadingPending.set(false)
+    });
+  }
+
+  approveMember(userUid: number): void {
+    const gid = this.group()?.group_id;
+    if (!gid) return;
+    this.groupsService.approveMember(gid, userUid).subscribe({
+      next: () => {
+        this.loadPendingMembers();
+        this.loadGroup(gid);
+      },
+      error: (err) => console.error('Error approving member:', err)
+    });
+  }
+
+  rejectMember(userUid: number): void {
+    const gid = this.group()?.group_id;
+    if (!gid) return;
+    this.groupsService.rejectMember(gid, userUid).subscribe({
+      next: () => {
+        this.loadPendingMembers();
+        this.loadGroup(gid);
+      },
+      error: (err) => console.error('Error rejecting member:', err)
+    });
+  }
+
+  updateJoinMode(mode: string): void {
+    const gid = this.group()?.group_id;
+    if (!gid) return;
+    this.groupsService.updateGroupSettings(gid, mode).subscribe({
+      next: () => {
+        this.group.update(g => g ? { ...g, join_mode: mode } : g);
+      },
+      error: (err) => console.error('Error updating join mode:', err)
     });
   }
 

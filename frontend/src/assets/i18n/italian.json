@@ -369,7 +369,17 @@
     "visibilityPublic": "Pubblico",
     "makeAdmin": "Nomina admin",
     "removeAdmin": "Rimuovi admin",
-    "removeMember": "Rimuovi membro"
+    "removeMember": "Rimuovi membro",
+    "joinMode": "Modalità di ingresso",
+    "joinModeOpen": "Aperto (chiunque può unirsi)",
+    "joinModeApproval": "Approvazione richiesta",
+    "requestJoin": "Richiedi di unirti",
+    "pendingRequest": "Richiesta in attesa",
+    "pending": "In attesa",
+    "pendingRequests": "Richieste in attesa",
+    "noPendingRequests": "Nessuna richiesta in attesa",
+    "approve": "Approva",
+    "reject": "Rifiuta"
   },
   "guardian": {
     "title": "Guardian - Moderazione dei contenuti assistita da IA",
