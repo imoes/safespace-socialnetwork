@@ -134,6 +134,10 @@ export class NotificationsService {
         return this.i18n.t('notifications.commentLiked').replace('{{username}}', notification.actor_username);
       case 'group_post':
         return this.i18n.t('notifications.groupPost').replace('{{username}}', notification.actor_username);
+      case 'birthday':
+        return this.i18n.t('notifications.birthday')
+          .replace('{{username}}', notification.actor_username)
+          .replace('{{age}}', notification.comment_id?.toString() || '?');
       default:
         return this.i18n.t('notifications.newNotification');
     }

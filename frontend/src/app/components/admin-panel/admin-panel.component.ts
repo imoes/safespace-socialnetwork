@@ -90,7 +90,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   private i18n = inject(I18nService);
 
   // Tabs
-  activeTab = signal<'welcome' | 'broadcast' | 'status'>('welcome');
+  activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings'>('welcome');
 
   // Welcome Message
   welcomeMessage = signal<WelcomeMessage | null>(null);
@@ -111,6 +111,10 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   systemStatus = signal<SystemStatus | null>(null);
   autoRefreshInterval: any = null;
 
+  // Site Settings
+  siteTitle = signal('SocialNet');
+  siteTitleForm = '';
+
   // UI States
   loading = signal(false);
   error = signal<string | null>(null);
@@ -120,6 +124,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     this.checkAdminAccess();
     this.loadWelcomeMessage();
     this.loadBroadcastPosts();
+    this.loadSiteSettings();
   }
 
   private checkAdminAccess(): void {
@@ -279,7 +284,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'welcome' | 'broadcast' | 'status'): void {
+  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings'): void {
     this.activeTab.set(tab);
     this.error.set(null);
     this.success.set(null);
@@ -309,5 +314,47 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       'admin': 'friendsPage.roleAdmin'
     };
     return keyMap[role] ? this.i18n.t(keyMap[role]) : role;
+  }
+
+  // === Site Settings ===
+
+  async loadSiteSettings(): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.get('/api/admin/site-settings', { headers }).toPromise();
+      if (response?.site_title) {
+        this.siteTitle.set(response.site_title);
+        this.siteTitleForm = response.site_title;
+      }
+    } catch (err) {
+      console.error('Error loading site settings:', err);
+    }
+  }
+
+  async saveSiteTitle(): Promise<void> {
+    if (!this.siteTitleForm.trim()) {
+      this.error.set('Titel darf nicht leer sein');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      await this.http.put('/api/admin/site-settings/title', { site_title: this.siteTitleForm.trim() }, { headers }).toPromise();
+      this.siteTitle.set(this.siteTitleForm.trim());
+      this.success.set('Seitentitel erfolgreich gespeichert!');
+    } catch (err) {
+      this.error.set('Fehler beim Speichern des Titels');
+      console.error(err);
+    } finally {
+      this.loading.set(false);
+    }
   }
 }

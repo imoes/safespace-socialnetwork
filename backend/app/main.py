@@ -57,7 +57,14 @@ async def lifespan(app: FastAPI):
         print("✅ Kafka Producer initialized")
     except Exception as e:
         print(f"⚠️ Kafka not available: {e}")
-    
+
+    # Birthday Notification Scheduler starten
+    try:
+        from app.services.birthday_service import start_birthday_scheduler
+        start_birthday_scheduler()
+    except Exception as e:
+        print(f"⚠️ Failed to start birthday scheduler: {e}")
+
     yield
     
     # Shutdown
@@ -122,3 +129,11 @@ async def root():
 async def health_check():
     """Health Check für Docker/Kubernetes"""
     return {"status": "healthy"}
+
+
+@app.get("/api/site-settings/title")
+async def get_public_site_title():
+    """Öffentlicher Endpunkt für den Site-Titel"""
+    from app.db.site_settings import get_site_title
+    title = await get_site_title()
+    return {"site_title": title}

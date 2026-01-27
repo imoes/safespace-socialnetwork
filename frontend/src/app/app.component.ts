@@ -10,6 +10,7 @@ import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.
 import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval, filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,7 @@ import { HttpClient } from '@angular/common/http';
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
-        <a routerLink="/" class="logo">SocialNet</a>
+        <a routerLink="/" class="logo">{{ siteTitle() }}</a>
 
         <div class="search-container desktop-only">
           <input
@@ -527,6 +528,7 @@ export class AppComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private titleService = inject(Title);
 
   showDropdown = signal(false);
   showSearchResults = signal(false);
@@ -534,6 +536,7 @@ export class AppComponent implements OnInit {
   selectedIndex = signal(-1);
   pendingRequestsCount = signal(0);
   openReportsCount = signal(0);
+  siteTitle = signal('SocialNet');
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
@@ -593,6 +596,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadSiteTitle();
+
     // Refresh pending requests count every 30 seconds
     interval(30000).subscribe(() => {
       if (this.authService.isAuthenticated()) {
@@ -603,6 +608,18 @@ export class AppComponent implements OnInit {
           this.loadOpenReportsCount();
         }
       }
+    });
+  }
+
+  private loadSiteTitle(): void {
+    this.http.get<{ site_title: string }>('/api/site-settings/title').subscribe({
+      next: (response) => {
+        if (response.site_title) {
+          this.siteTitle.set(response.site_title);
+          this.titleService.setTitle(response.site_title);
+        }
+      },
+      error: () => {}
     });
   }
 

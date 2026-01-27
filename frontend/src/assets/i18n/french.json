@@ -221,7 +221,8 @@
     "friendRequestSent": "La demande d'amitié a été envoyée !",
     "roleUser": "Utilisateur",
     "roleModerator": "Modérateur",
-    "roleAdmin": "Administrateur"
+    "roleAdmin": "Administrateur",
+    "birthday": "Anniversaire"
   },
   "friends": {
     "title": "Amis",
@@ -249,6 +250,8 @@
     "firstNamePlaceholder": "Votre prénom",
     "lastName": "Nom",
     "lastNamePlaceholder": "Votre nom",
+    "birthday": "Anniversaire",
+    "birthdayPlaceholder": "Entrez votre anniversaire",
     "language": "Langue",
     "languageHelp": "Choisissez votre langue préférée / Choose your preferred language",
     "passwordSection": "Changer le mot de passe",
@@ -342,7 +345,8 @@
     "postCommented": "{{username}} a commenté votre post",
     "commentLiked": "{{username}} a aimé votre commentaire",
     "newNotification": "Nouvelle notification",
-    "groupPost": "{{username}} a publié dans le groupe {{group}}"
+    "groupPost": "{{username}} a publié dans le groupe {{group}}",
+    "birthday": "🎂 {{username}} fête son anniversaire aujourd'hui et a maintenant {{age}} ans !"
   },
   "groups": {
     "title": "Groupes",

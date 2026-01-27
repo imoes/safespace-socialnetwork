@@ -424,7 +424,8 @@ export class PostCardComponent implements OnChanges {
   translationService = inject(TranslationService);
   private i18n = inject(I18nService);
 
-  isLiked = false;
+  isLiked: boolean = false;
+  private isLikedInitialized = false;
   showReportModal = false;
   showVisibilityModal = false;
   showVisibilityDropdown = false;
@@ -451,6 +452,12 @@ export class PostCardComponent implements OnChanges {
   isSubmittingComment = false;
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['post'] && this.post) {
+      if (!this.isLikedInitialized || changes['post'].previousValue?.post_id !== this.post.post_id) {
+        this.isLiked = !!this.post.is_liked_by_user;
+        this.isLikedInitialized = true;
+      }
+    }
     if (changes['expandComments'] && this.expandComments) {
       if (!this.showComments) {
         this.showComments = true;

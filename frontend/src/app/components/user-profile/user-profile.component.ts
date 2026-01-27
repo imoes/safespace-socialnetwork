@@ -37,6 +37,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               @if (profile.bio) {
                 <p class="profile-bio">{{ profile.bio }}</p>
               }
+              @if (profile.birthday) {
+                <p class="profile-birthday">🎂 {{ 'profile.birthday' | translate }}: {{ profile.birthday | date:'dd.MM.yyyy' }}</p>
+              }
               <div class="profile-meta">
                 <span class="role-badge" [class]="'role-' + profile.role">{{ getRoleLabel(profile.role) }}</span>
                 <span class="joined-date">{{ 'profile.memberSince' | translate }} {{ profile.created_at | date:'dd.MM.yyyy' }}</span>
@@ -99,7 +102,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             </div>
           } @else {
             @for (post of posts(); track post.post_id) {
-              <app-post-card [post]="post" (delete)="onPostDeleted(post)"></app-post-card>
+              <app-post-card [post]="post" (like)="onLike(post)" (unlike)="onUnlike(post)" (delete)="onPostDeleted(post)"></app-post-card>
             }
           }
         </div>
@@ -126,6 +129,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .profile-username { margin: 0 0 4px; font-size: 28px; font-weight: 700; color: #050505; }
     .profile-realname { margin: 0 0 8px; font-size: 15px; color: #65676b; font-weight: 400; }
     .profile-bio { margin: 0 0 16px; color: #65676b; line-height: 1.5; }
+    .profile-birthday { margin: 0 0 12px; color: #65676b; font-size: 15px; }
     .profile-meta { display: flex; gap: 16px; align-items: center; }
 
     .role-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
@@ -228,6 +232,28 @@ export class UserProfileComponent implements OnInit {
 
   onPostDeleted(post: Post): void {
     this.posts.set(this.posts().filter(p => p.post_id !== post.post_id));
+  }
+
+  onLike(post: Post): void {
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
+      }
+    });
+  }
+
+  onUnlike(post: Post): void {
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
+      }
+    });
   }
 
   sendFriendRequest(): void {

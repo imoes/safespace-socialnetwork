@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
+from datetime import date
 
 from app.services.auth_service import get_current_user, verify_password, get_password_hash
 from app.services.media_service import MediaService
@@ -20,6 +21,7 @@ class UserUpdateRequest(BaseModel):
     current_password: Optional[str] = None
     new_password: Optional[str] = None
     preferred_language: Optional[str] = None
+    birthday: Optional[date] = None
 
 
 class LanguageUpdateRequest(BaseModel):
@@ -51,6 +53,7 @@ class UserProfile(BaseModel):
     profile_picture: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    birthday: Optional[date] = None
 
 
 @router.put("/me")
@@ -73,14 +76,14 @@ async def update_user_profile(
             # Neues Passwort hashen und speichern
             new_hash = get_password_hash(update_data.new_password)
             await conn.execute(
-                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, password_hash = %s, preferred_language = %s WHERE uid = %s",
-                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, new_hash, update_data.preferred_language, current_user["uid"])
+                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, password_hash = %s, preferred_language = %s, birthday = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, new_hash, update_data.preferred_language, update_data.birthday, current_user["uid"])
             )
         else:
-            # Nur E-Mail, Bio, Namen und Sprache aktualisieren
+            # Nur E-Mail, Bio, Namen, Sprache und Geburtstag aktualisieren
             await conn.execute(
-                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, preferred_language = %s WHERE uid = %s",
-                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, update_data.preferred_language, current_user["uid"])
+                "UPDATE users SET email = %s, bio = %s, first_name = %s, last_name = %s, preferred_language = %s, birthday = %s WHERE uid = %s",
+                (update_data.email, update_data.bio, update_data.first_name, update_data.last_name, update_data.preferred_language, update_data.birthday, current_user["uid"])
             )
 
         await conn.commit()
@@ -284,7 +287,7 @@ async def get_user_profile(
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            SELECT uid, username, bio, role, created_at, profile_picture, first_name, last_name
+            SELECT uid, username, bio, role, created_at, profile_picture, first_name, last_name, birthday
             FROM users
             WHERE uid = %s AND is_banned = FALSE
             """,
@@ -306,7 +309,8 @@ async def get_user_profile(
             created_at=row["created_at"].isoformat() if row["created_at"] else "",
             profile_picture=row["profile_picture"] if "profile_picture" in row.keys() else None,
             first_name=row.get("first_name"),
-            last_name=row.get("last_name")
+            last_name=row.get("last_name"),
+            birthday=row.get("birthday")
         )
 
 
@@ -364,6 +368,7 @@ async def get_my_commented_posts(
 
                     likes_count = await posts_db.get_likes_count(post["post_id"])
                     comments_count = await posts_db.get_comments_count(post["post_id"])
+                    is_liked = await posts_db.is_liked_by_user(post["post_id"], user_uid)
 
                     media_urls = []
                     if post.get("media_paths"):
@@ -378,6 +383,7 @@ async def get_my_commented_posts(
                         "created_at": post["created_at"],
                         "likes_count": likes_count,
                         "comments_count": comments_count,
+                        "is_liked_by_user": is_liked,
                         "recipient_uid": post.get("recipient_uid"),
                         "_friend_uid": friend_uid  # Temporary field for enrichment
                     })
@@ -455,6 +461,7 @@ async def get_my_posts(
     for post in raw_posts:
         likes_count = await posts_db.get_likes_count(post["post_id"])
         comments_count = await posts_db.get_comments_count(post["post_id"])
+        is_liked = await posts_db.is_liked_by_user(post["post_id"], user_uid)
 
         # Media URLs bauen
         media_urls = []
@@ -479,6 +486,7 @@ async def get_my_posts(
             "created_at": post["created_at"],
             "likes_count": likes_count,
             "comments_count": comments_count,
+            "is_liked_by_user": is_liked,
             "is_own_post": True,
             "recipient_uid": recipient_uid,
             "recipient_username": recipient_username
@@ -554,6 +562,7 @@ async def get_user_posts(
     for post in raw_posts:
         likes_count = await posts_db.get_likes_count(post["post_id"])
         comments_count = await posts_db.get_comments_count(post["post_id"])
+        is_liked = await posts_db.is_liked_by_user(post["post_id"], current_user["uid"])
 
         # Media URLs bauen
         media_urls = []
@@ -587,6 +596,7 @@ async def get_user_posts(
             "created_at": post["created_at"],
             "likes_count": likes_count,
             "comments_count": comments_count,
+            "is_liked_by_user": is_liked,
             "is_own_post": is_own_profile and not post.get("author_uid"),  # Nur eigene normale Posts
             "recipient_uid": recipient_uid,
             "recipient_username": recipient_username

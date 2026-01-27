@@ -221,7 +221,8 @@
     "friendRequestSent": "تم إرسال طلب الصداقة!",
     "roleUser": "مستخدم",
     "roleModerator": "مشرف",
-    "roleAdmin": "مدير"
+    "roleAdmin": "مدير",
+    "birthday": "تاريخ الميلاد"
   },
   "friends": {
     "title": "الأصدقاء",
@@ -249,6 +250,8 @@
     "firstNamePlaceholder": "اسمك الأول",
     "lastName": "الاسم الأخير",
     "lastNamePlaceholder": "اسمك الأخير",
+    "birthday": "تاريخ الميلاد",
+    "birthdayPlaceholder": "أدخل تاريخ ميلادك",
     "language": "اللغة",
     "languageHelp": "اختر لغتك المفضلة / Choose your preferred language",
     "passwordSection": "تغيير كلمة المرور",
@@ -342,7 +345,8 @@
     "postCommented": "{{username}} علق على منشورك",
     "commentLiked": "{{username}} أعجب بتعليقك",
     "newNotification": "إشعار جديد",
-    "groupPost": "{{username}} نشر في مجموعة {{group}}"
+    "groupPost": "{{username}} نشر في مجموعة {{group}}",
+    "birthday": "🎂 {{username}} عيد ميلاده اليوم وأصبح عمره {{age}} سنة!"
   },
   "groups": {
     "title": "المجموعات",
