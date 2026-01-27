@@ -6,14 +6,12 @@ import { FeedService, Post } from '../../services/feed.service';
 import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { CreatePostComponent } from '../create-post/create-post.component';
-import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-ticker.component';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent, RecentPostsTickerComponent],
+  imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent],
   template: `
-    <app-recent-posts-ticker />
     <div class="feed-container">
       <!-- Create Post -->
       <app-create-post (postCreated)="onPostCreated($event)" />
@@ -239,6 +237,7 @@ export class FeedComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.feedService.loadFeed(true);
   }
 

@@ -3,14 +3,12 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
-import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-ticker.component';
 
 @Component({
   selector: 'app-public-feed',
   standalone: true,
-  imports: [CommonModule, PostCardComponent, RecentPostsTickerComponent],
+  imports: [CommonModule, PostCardComponent],
   template: `
-    <app-recent-posts-ticker />
     <div class="public-feed-container">
       <div class="page-header">
         <h1>🌍 Öffentliche Posts</h1>
@@ -56,6 +54,10 @@ import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-
           <p>🎉 Du hast alle Posts gesehen!</p>
         </div>
       }
+
+      <button class="refresh-btn" (click)="refresh()" title="Aktualisieren">
+        ↻
+      </button>
     </div>
   `,
   styles: [`
@@ -167,6 +169,26 @@ import { RecentPostsTickerComponent } from '../recent-posts-ticker/recent-posts-
       font-size: 15px;
       margin: 0;
     }
+
+    .refresh-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #1877f2;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .refresh-btn:hover {
+      background: #166fe5;
+    }
   `]
 })
 export class PublicFeedComponent implements OnInit {
@@ -250,6 +272,14 @@ export class PublicFeedComponent implements OnInit {
         alert('Fehler beim Unlike');
       }
     });
+  }
+
+  refresh(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.posts = [];
+    this.offset = 0;
+    this.hasMore = true;
+    this.loadPosts();
   }
 
   deletePost(post: Post): void {
