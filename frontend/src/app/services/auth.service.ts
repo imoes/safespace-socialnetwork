@@ -45,6 +45,7 @@ export class AuthService {
     private http: HttpClient,
     private router: Router
   ) {
+    console.log(`🔧 [Auth] Constructor called. Token exists: ${!!this.getToken()}, localStorage.preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
     if (this.getToken()) {
       this.loadCurrentUser();
     }
@@ -65,14 +66,17 @@ export class AuthService {
 
   login(username: string, password: string): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
-    
+    console.log(`🔐 [Auth] Login attempt for: ${username}`);
+    console.log(`🔐 [Auth] localStorage at login time: preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
+
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
 
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, formData).pipe(
       tap(response => {
-        console.log('✅ Login erfolgreich, Token erhalten');
+        console.log('✅ [Auth] Login erfolgreich, Token erhalten');
+        console.log(`🔐 [Auth] localStorage after login response: preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
         this.setToken(response.access_token);
         this.loadCurrentUser();
       }),
@@ -106,8 +110,11 @@ export class AuthService {
   }
 
   logout(): void {
+    console.log(`🔓 [Auth] Logout called`);
+    console.log(`🔓 [Auth] localStorage before cleanup: token=${localStorage.getItem(this.TOKEN_KEY) ? 'YES' : 'NO'}, preferredLanguage=${localStorage.getItem('preferredLanguage')}`);
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem('preferredLanguage');
+    console.log(`🔓 [Auth] localStorage after cleanup: token=${localStorage.getItem(this.TOKEN_KEY)}, preferredLanguage=${localStorage.getItem('preferredLanguage')}`);
     this.currentUserSignal.set(null);
     this.router.navigate(['/login']);
   }
@@ -122,32 +129,36 @@ export class AuthService {
   }
 
   loadCurrentUser(): void {
-    console.log('📡 Lade User mit Token...');
+    console.log('📡 [Auth] loadCurrentUser called');
+    console.log(`📡 [Auth] Current localStorage: preferredLanguage=${localStorage.getItem('preferredLanguage')}`);
 
     // WICHTIG: Headers direkt hier setzen statt auf Interceptor zu vertrauen!
     this.http.get<User>(`${this.API_URL}/me`, {
       headers: this.getAuthHeaders()
     }).pipe(
       tap(user => {
-        console.log('✅ User geladen:', user.username);
+        console.log('✅ [Auth] User geladen:', user.username, '| preferred_language:', user.preferred_language);
         this.currentUserSignal.set(user);
         this.isLoadingSignal.set(false);
 
         // Apply user's stored language preference
+        const currentLang = localStorage.getItem('preferredLanguage');
+        console.log(`🌐 [Auth] Language check: user.preferred_language='${user.preferred_language}', localStorage='${currentLang}'`);
+
         if (user.preferred_language) {
-          const currentLang = localStorage.getItem('preferredLanguage');
           if (currentLang !== user.preferred_language) {
-            console.log(`🌐 Applying user language preference: ${user.preferred_language}`);
+            console.log(`🌐 [Auth] Language mismatch! Setting localStorage to '${user.preferred_language}' and reloading`);
             localStorage.setItem('preferredLanguage', user.preferred_language);
-            // Reload to apply language if it differs from current
-            if (currentLang && currentLang !== user.preferred_language) {
-              window.location.reload();
-            }
+            window.location.reload();
+          } else {
+            console.log(`🌐 [Auth] Language already matches, no reload needed`);
           }
+        } else {
+          console.log(`🌐 [Auth] User has no preferred_language stored in DB`);
         }
       }),
       catchError((error) => {
-        console.error('❌ User laden fehlgeschlagen:', error);
+        console.error('❌ [Auth] User laden fehlgeschlagen:', error);
         console.log('Token war:', this.getToken()?.substring(0, 20));
         this.logout();
         return of(null);

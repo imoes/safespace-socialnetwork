@@ -39,6 +39,8 @@ export class I18nService {
    * Ensures translations are loaded before app starts
    */
   public initialize(): Promise<void> {
+    console.log(`🌐 [I18n] initialize() called. Already initialized: ${this.initialized}, Has promise: ${!!this.initPromise}`);
+    console.log(`🌐 [I18n] localStorage at init time: preferredLanguage='${localStorage.getItem('preferredLanguage')}'`);
     if (this.initialized) {
       return Promise.resolve();
     }
