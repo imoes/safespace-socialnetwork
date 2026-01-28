@@ -289,6 +289,7 @@
     "screenTimeTitle": "Tempo sullo Schermo & Benessere",
     "screenTimeEnabled": "Attiva il monitoraggio del tempo sullo schermo",
     "screenTimeDailyLimit": "Limite di utilizzo giornaliero",
+    "screenTimeReminderEnabled": "Attiva i promemoria di pausa",
     "screenTimeReminderInterval": "Promemoria pausa ogni",
     "screenTimeMinutes": "minuti",
     "screenTimeInfo": "Quando raggiungi il tuo limite giornaliero, riceverai un promemoria amichevole. Il promemoria della pausa appare regolarmente durante l'utilizzo per incoraggiarti a fare pause consapevoli."

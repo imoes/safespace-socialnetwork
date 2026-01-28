@@ -289,6 +289,7 @@
     "screenTimeTitle": "وقت الشاشة والرفاهية",
     "screenTimeEnabled": "تفعيل مراقبة وقت الشاشة",
     "screenTimeDailyLimit": "حد الاستخدام اليومي",
+    "screenTimeReminderEnabled": "تفعيل تذكيرات الاستراحة",
     "screenTimeReminderInterval": "تذكير بالاستراحة كل",
     "screenTimeMinutes": "دقيقة",
     "screenTimeInfo": "عند الوصول إلى الحد اليومي، ستتلقى تذكيرًا ودودًا. يظهر تذكير الاستراحة بانتظام أثناء الاستخدام لتشجيعك على أخذ فترات راحة واعية."

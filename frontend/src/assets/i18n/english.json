@@ -342,6 +342,7 @@
     "screenTimeTitle": "Screen Time & Well-being",
     "screenTimeEnabled": "Enable screen time monitoring",
     "screenTimeDailyLimit": "Daily usage limit",
+    "screenTimeReminderEnabled": "Enable break reminders",
     "screenTimeReminderInterval": "Break reminder every",
     "screenTimeMinutes": "minutes",
     "screenTimeInfo": "When you reach your daily limit, you'll receive a friendly reminder. The break reminder appears regularly during usage to encourage mindful breaks."

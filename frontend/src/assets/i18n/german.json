@@ -342,6 +342,7 @@
     "screenTimeTitle": "Bildschirmzeit & Wohlbefinden",
     "screenTimeEnabled": "Bildschirmzeit-Monitoring aktivieren",
     "screenTimeDailyLimit": "Tägliches Nutzungslimit",
+    "screenTimeReminderEnabled": "Pause-Erinnerung aktivieren",
     "screenTimeReminderInterval": "Pause-Erinnerung alle",
     "screenTimeMinutes": "Minuten",
     "screenTimeInfo": "Wenn du dein tägliches Limit erreichst, erhältst du eine freundliche Erinnerung. Die Pause-Erinnerung erscheint regelmäßig während der Nutzung, damit du bewusst Pausen machst."

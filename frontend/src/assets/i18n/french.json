@@ -289,6 +289,7 @@
     "screenTimeTitle": "Temps d'écran & Bien-être",
     "screenTimeEnabled": "Activer le suivi du temps d'écran",
     "screenTimeDailyLimit": "Limite d'utilisation quotidienne",
+    "screenTimeReminderEnabled": "Activer les rappels de pause",
     "screenTimeReminderInterval": "Rappel de pause toutes les",
     "screenTimeMinutes": "minutes",
     "screenTimeInfo": "Lorsque vous atteignez votre limite quotidienne, vous recevez un rappel amical. Le rappel de pause apparaît régulièrement pour vous encourager à prendre des pauses conscientes."

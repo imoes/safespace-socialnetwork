@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { I18nService } from './i18n.service';
+import { ScreenTimeService } from './screen-time.service';
 
 export interface User {
   uid: number;
@@ -44,6 +45,7 @@ export class AuthService {
   });
 
   private i18n = inject(I18nService);
+  private screenTime = inject(ScreenTimeService);
 
   constructor(
     private http: HttpClient,
@@ -106,6 +108,10 @@ export class AuthService {
   }
 
   logout(): void {
+    // Persist screen time usage to backend before logout
+    this.screenTime.persistUsageToBackend();
+    this.screenTime.destroy();
+
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem('preferredLanguage');
     this.currentUserSignal.set(null);

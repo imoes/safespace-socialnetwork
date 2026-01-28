@@ -207,22 +207,29 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="reminderInterval">{{ 'settings.screenTimeReminderInterval' | translate }}</label>
-                <div class="range-group">
-                  <input
-                    id="reminderInterval"
-                    type="range"
-                    [(ngModel)]="screenTimeReminderInterval"
-                    name="reminder_interval"
-                    min="10"
-                    max="120"
-                    step="5"
-                    class="form-range"
-                  />
-                  <span class="range-value">{{ screenTimeReminderInterval }} {{ 'settings.screenTimeMinutes' | translate }}</span>
+              <label class="checkbox-label" style="margin-top: 16px;">
+                <input type="checkbox" [(ngModel)]="screenTimeReminderEnabled" name="screen_time_reminder_enabled" />
+                <span>{{ 'settings.screenTimeReminderEnabled' | translate }}</span>
+              </label>
+
+              @if (screenTimeReminderEnabled) {
+                <div class="form-group" style="margin-top: 16px;">
+                  <label for="reminderInterval">{{ 'settings.screenTimeReminderInterval' | translate }}</label>
+                  <div class="range-group">
+                    <input
+                      id="reminderInterval"
+                      type="range"
+                      [(ngModel)]="screenTimeReminderInterval"
+                      name="reminder_interval"
+                      min="10"
+                      max="120"
+                      step="5"
+                      class="form-range"
+                    />
+                    <span class="range-value">{{ screenTimeReminderInterval }} {{ 'settings.screenTimeMinutes' | translate }}</span>
+                  </div>
                 </div>
-              </div>
+              }
 
               <div class="screen-time-info">
                 <span class="info-icon">&#9432;</span>
@@ -681,6 +688,7 @@ export class SettingsComponent implements OnInit {
 
   screenTimeEnabled = true;
   screenTimeDailyLimit = 120;
+  screenTimeReminderEnabled = true;
   screenTimeReminderInterval = 30;
 
   isSaving = signal(false);
@@ -739,6 +747,7 @@ export class SettingsComponent implements OnInit {
         const s = response.settings;
         this.screenTimeEnabled = s.enabled ?? true;
         this.screenTimeDailyLimit = s.daily_limit_minutes ?? 120;
+        this.screenTimeReminderEnabled = s.reminder_enabled ?? true;
         this.screenTimeReminderInterval = s.reminder_interval_minutes ?? 30;
       },
       error: () => {}
@@ -798,6 +807,7 @@ export class SettingsComponent implements OnInit {
     const screenTimeSettings: ScreenTimeSettings = {
       enabled: this.screenTimeEnabled,
       daily_limit_minutes: this.screenTimeDailyLimit,
+      reminder_enabled: this.screenTimeReminderEnabled,
       reminder_interval_minutes: this.screenTimeReminderInterval
     };
     this.screenTimeService.saveSettings(screenTimeSettings);

@@ -39,7 +39,13 @@ class NotificationPreferencesRequest(BaseModel):
 class ScreenTimeSettingsRequest(BaseModel):
     enabled: bool = True
     daily_limit_minutes: int = 120
+    reminder_enabled: bool = True
     reminder_interval_minutes: int = 30
+
+
+class ScreenTimeUsageRequest(BaseModel):
+    date: str
+    minutes: float
 
 
 class PersonalPostRequest(BaseModel):
@@ -186,6 +192,7 @@ async def get_screen_time_settings(current_user: dict = Depends(get_current_user
     defaults = {
         "enabled": True,
         "daily_limit_minutes": 120,
+        "reminder_enabled": True,
         "reminder_interval_minutes": 30
     }
 
@@ -211,6 +218,42 @@ async def update_screen_time_settings(
         await conn.commit()
 
     return {"settings": settings_dict}
+
+
+@router.post("/me/screen-time-usage")
+async def save_screen_time_usage(
+    usage_data: ScreenTimeUsageRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Speichert die tägliche Nutzungszeit (wird beim Logout aufgerufen)"""
+    import json
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT screen_time_settings FROM users WHERE uid = %s",
+            (current_user["uid"],)
+        )
+        row = await result.fetchone()
+
+    current_settings = row["screen_time_settings"] if row and row.get("screen_time_settings") else {}
+
+    usage_log = current_settings.get("usage_log", {})
+    usage_log[usage_data.date] = round(usage_data.minutes, 1)
+
+    # Nur die letzten 30 Tage behalten
+    sorted_dates = sorted(usage_log.keys(), reverse=True)[:30]
+    usage_log = {d: usage_log[d] for d in sorted_dates}
+
+    current_settings["usage_log"] = usage_log
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET screen_time_settings = %s WHERE uid = %s",
+            (json.dumps(current_settings), current_user["uid"])
+        )
+        await conn.commit()
+
+    return {"saved": True}
 
 
 @router.post("/me/profile-picture")

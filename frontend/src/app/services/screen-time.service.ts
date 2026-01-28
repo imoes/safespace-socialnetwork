@@ -1,10 +1,10 @@
-import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { I18nService } from './i18n.service';
 
 export interface ScreenTimeSettings {
   enabled: boolean;
   daily_limit_minutes: number;
+  reminder_enabled: boolean;
   reminder_interval_minutes: number;
 }
 
@@ -18,11 +18,11 @@ const STORAGE_KEY_LIMIT_WARNED = 'screenTime_limitWarned';
 })
 export class ScreenTimeService {
   private http = inject(HttpClient);
-  private i18n = inject(I18nService);
 
   private settingsSignal = signal<ScreenTimeSettings>({
     enabled: true,
     daily_limit_minutes: 120,
+    reminder_enabled: true,
     reminder_interval_minutes: 30
   });
 
@@ -52,6 +52,21 @@ export class ScreenTimeService {
   saveSettings(settings: ScreenTimeSettings): void {
     this.settingsSignal.set(settings);
     this.http.put('/api/users/me/screen-time-settings', settings).subscribe();
+  }
+
+  /**
+   * Persist daily usage to the backend (called on logout).
+   */
+  persistUsageToBackend(): void {
+    this.persistSessionTime();
+    const todayKey = this.getTodayKey();
+    const minutes = this.getTodayMinutes();
+    if (minutes > 0) {
+      this.http.post('/api/users/me/screen-time-usage', {
+        date: todayKey,
+        minutes: minutes
+      }).subscribe();
+    }
   }
 
   private startTracking(): void {
@@ -119,17 +134,19 @@ export class ScreenTimeService {
       this.showDailyLimitWarning.set(true);
     }
 
-    // Check break reminder
-    const lastReminder = parseInt(sessionStorage.getItem(STORAGE_KEY_LAST_REMINDER) || '0', 10);
-    const now = Date.now();
-    const reminderIntervalMs = settings.reminder_interval_minutes * 60 * 1000;
+    // Check break reminder (only if reminder is enabled)
+    if (settings.reminder_enabled) {
+      const lastReminder = parseInt(sessionStorage.getItem(STORAGE_KEY_LAST_REMINDER) || '0', 10);
+      const now = Date.now();
+      const reminderIntervalMs = settings.reminder_interval_minutes * 60 * 1000;
 
-    if (lastReminder === 0) {
-      // First visit in this session - set initial reminder time
-      sessionStorage.setItem(STORAGE_KEY_LAST_REMINDER, now.toString());
-    } else if (now - lastReminder >= reminderIntervalMs) {
-      this.showBreakReminder.set(true);
-      sessionStorage.setItem(STORAGE_KEY_LAST_REMINDER, now.toString());
+      if (lastReminder === 0) {
+        // First visit in this session - set initial reminder time
+        sessionStorage.setItem(STORAGE_KEY_LAST_REMINDER, now.toString());
+      } else if (now - lastReminder >= reminderIntervalMs) {
+        this.showBreakReminder.set(true);
+        sessionStorage.setItem(STORAGE_KEY_LAST_REMINDER, now.toString());
+      }
     }
   }
 
