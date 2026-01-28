@@ -16,6 +16,7 @@ from app.api.broadcast import router as broadcast_router
 from app.api.notifications import router as notifications_router
 from app.safespace.api import router as safespace_router
 from app.api.groups import router as groups_router
+from app.api.link_preview import router as link_preview_router
 
 
 @asynccontextmanager
@@ -114,6 +115,7 @@ app.include_router(broadcast_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
 app.include_router(safespace_router, prefix="/api")
 app.include_router(groups_router, prefix="/api")
+app.include_router(link_preview_router, prefix="/api")
 
 
 @app.get("/")

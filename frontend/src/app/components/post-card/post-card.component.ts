@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { ReportService } from '../../services/report.service';
 import { TranslationService, TranslationResult } from '../../services/translation.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
 
 @Component({
   selector: 'app-post-card',
@@ -55,6 +56,21 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         } @else {
           <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
         }
+      }
+
+      @if (linkPreview) {
+        <a class="link-preview" [href]="linkPreview.url" target="_blank" rel="noopener noreferrer">
+          @if (linkPreview.image) {
+            <img [src]="linkPreview.image" class="link-preview-image" alt="" />
+          }
+          <div class="link-preview-info">
+            <span class="link-preview-title">{{ linkPreview.title || linkPreview.url }}</span>
+            @if (linkPreview.description) {
+              <span class="link-preview-description">{{ linkPreview.description }}</span>
+            }
+            <span class="link-preview-domain">{{ linkPreview.domain }}</span>
+          </div>
+        </a>
       }
 
       @if (post.media_urls.length > 0) {
@@ -288,6 +304,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
     .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
     .post-content ::ng-deep .hashtag:hover { text-decoration: underline; }
+    .post-content ::ng-deep a.auto-link { color: #1877f2; text-decoration: none; word-break: break-all; }
+    .post-content ::ng-deep a.auto-link:hover { text-decoration: underline; }
+
+    .link-preview { display: flex; flex-direction: column; margin: 0 16px 12px; border: 1px solid #e4e6e9; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: background 0.2s; }
+    .link-preview:hover { background: #f7f8fa; }
+    .link-preview-image { width: 100%; max-height: 250px; object-fit: cover; }
+    .link-preview-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .link-preview-title { font-weight: 600; font-size: 14px; color: #050505; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .link-preview-description { font-size: 13px; color: #65676b; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+    .link-preview-domain { font-size: 12px; color: #90949c; text-transform: uppercase; }
     .post-content.translation { background: #f0f8ff; border-left: 3px solid #1877f2; padding: 12px 16px; margin: 0 16px 12px; border-radius: 6px; }
     .translation-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: #65676b; }
     .translation-badge { font-size: 14px; }
@@ -409,7 +435,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     }
   `]
 })
-export class PostCardComponent implements OnChanges {
+export class PostCardComponent implements OnChanges, OnInit {
   @Input() post!: Post;
   @Input() currentUid?: number;
   @Input() expandComments: boolean = false;
@@ -423,6 +449,7 @@ export class PostCardComponent implements OnChanges {
   private sanitizer = inject(DomSanitizer);
   translationService = inject(TranslationService);
   private i18n = inject(I18nService);
+  private linkPreviewService = inject(LinkPreviewService);
 
   isLiked: boolean = false;
   private isLikedInitialized = false;
@@ -444,12 +471,19 @@ export class PostCardComponent implements OnChanges {
   translating = false;
   translatedContent: TranslationResult | null = null;
 
+  // Link Preview
+  linkPreview: LinkPreview | null = null;
+
   // Guardian Modal für Kommentare
   showGuardianModal = false;
   guardianResult: any = null;
   customContent = '';
   originalCommentContent = '';
   isSubmittingComment = false;
+
+  ngOnInit(): void {
+    this.loadLinkPreview();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['post'] && this.post) {
@@ -728,12 +762,31 @@ export class PostCardComponent implements OnChanges {
   }
 
   getContentWithHashtags(): SafeHtml {
-    // Parse content and make hashtags clickable
     const content = this.post.content || '';
+    // First, escape HTML to prevent XSS
+    const escaped = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Linkify URLs
+    const urlRegex = /(https?:\/\/[^\s<]+)/g;
+    const withLinks = escaped.replace(urlRegex, '<a class="auto-link" href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
     // Match hashtags: # followed by letters only (no numbers)
     const hashtagRegex = /#([a-zA-ZäöüÄÖÜß]+)/g;
-    const result = '<p>' + content.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
+    const result = '<p>' + withLinks.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
     return this.sanitizer.bypassSecurityTrustHtml(result);
+  }
+
+  private loadLinkPreview(): void {
+    const content = this.post?.content || '';
+    const urlMatch = content.match(/(https?:\/\/[^\s]+)/);
+    if (!urlMatch) return;
+
+    this.linkPreviewService.getPreview(urlMatch[0]).subscribe({
+      next: (preview) => {
+        if (preview && (preview.title || preview.description)) {
+          this.linkPreview = preview;
+        }
+      },
+      error: () => {} // silently ignore preview failures
+    });
   }
 
   handleContentClick(event: MouseEvent): void {
