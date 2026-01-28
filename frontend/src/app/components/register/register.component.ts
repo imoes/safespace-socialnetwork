@@ -22,6 +22,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           <input type="text" [(ngModel)]="firstName" name="firstName" [placeholder]="'settings.firstName' | translate" />
           <input type="text" [(ngModel)]="lastName" name="lastName" [placeholder]="'settings.lastName' | translate" />
           <input type="email" [(ngModel)]="email" name="email" [placeholder]="'register.email' | translate" required />
+          <div class="birthday-field">
+            <label>{{ 'register.birthday' | translate }} <span class="optional">({{ 'register.optional' | translate }})</span></label>
+            <input type="date" [(ngModel)]="birthday" name="birthday" />
+          </div>
           <input type="password" [(ngModel)]="password" name="password" [placeholder]="'register.password' | translate" required minlength="6" />
           <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" [placeholder]="'register.confirmPassword' | translate" required />
           <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
@@ -40,6 +44,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     form { display: flex; flex-direction: column; gap: 14px; }
     input { padding: 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
     input:focus { outline: none; border-color: #1877f2; }
+    .birthday-field { display: flex; flex-direction: column; gap: 4px; }
+    .birthday-field label { font-size: 14px; color: #333; }
+    .birthday-field .optional { color: #888; font-size: 12px; }
+    .birthday-field input { padding: 12px 14px; }
     button { padding: 14px; background: #42b72a; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     button:disabled { background: #ccc; }
     .link { text-align: center; margin-top: 20px; }
@@ -60,6 +68,7 @@ export class RegisterComponent {
   firstName = '';
   lastName = '';
   email = '';
+  birthday = '';
   password = '';
   confirmPassword = '';
   error = '';
@@ -77,7 +86,7 @@ export class RegisterComponent {
     this.isLoading = true;
     this.error = '';
 
-    this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName).subscribe({
+    this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName, this.birthday || undefined).subscribe({
       next: () => {
         console.log('✅ Registration erfolgreich, Token gespeichert!');
         this.success = this.i18n.t('register.success');

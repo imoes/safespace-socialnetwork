@@ -42,7 +42,8 @@ async def register(user_data: UserCreate):
         email=user_data.email,
         password=user_data.password,
         first_name=user_data.first_name,
-        last_name=user_data.last_name
+        last_name=user_data.last_name,
+        birthday=str(user_data.birthday) if user_data.birthday else None
     )
 
     # Set initial last_login timestamp

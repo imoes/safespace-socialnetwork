@@ -19,6 +19,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <form (ngSubmit)="login()">
           <input type="text" [(ngModel)]="username" name="username" [placeholder]="'login.username' | translate" required />
           <input type="password" [(ngModel)]="password" name="password" [placeholder]="'login.password' | translate" required />
+          <p class="forgot-password"><a routerLink="/forgot-password">{{ 'login.forgotPassword' | translate }}</a></p>
           <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('login.loginButton' | translate) }}</button>
         </form>
         <p class="link">{{ 'login.noAccount' | translate }} <a routerLink="/register">{{ 'login.register' | translate }}</a></p>
@@ -36,6 +37,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     input:focus { outline: none; border-color: #1877f2; }
     button { padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     button:disabled { background: #ccc; }
+    .forgot-password { text-align: right; margin: -8px 0 0 0; font-size: 13px; }
+    .forgot-password a { color: #1877f2; text-decoration: none; }
+    .forgot-password a:hover { text-decoration: underline; }
     .link { text-align: center; margin-top: 20px; }
     .link a { color: #1877f2; text-decoration: none; }
 
