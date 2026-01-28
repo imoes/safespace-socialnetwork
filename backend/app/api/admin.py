@@ -363,7 +363,8 @@ async def get_site_settings(admin: dict = Depends(require_admin)):
     """Holt alle Site-Einstellungen"""
     all_settings = await get_all_site_settings()
     return {
-        "site_url": all_settings.get("site_url", "http://localhost:4200")
+        "site_url": all_settings.get("site_url", "http://localhost:4200"),
+        "site_title": all_settings.get("site_title", "SocialNet")
     }
 
 
@@ -374,6 +375,20 @@ async def update_site_settings(request: SiteSettingsRequest, admin: dict = Depen
     site_url = request.site_url.rstrip("/")
     await set_site_setting("site_url", site_url)
     return {"message": "Einstellungen gespeichert", "site_url": site_url}
+
+
+class SiteTitleRequest(BaseModel):
+    site_title: str
+
+
+@router.put("/site-settings/title")
+async def update_site_title(request: SiteTitleRequest, admin: dict = Depends(require_admin)):
+    """Aktualisiert den Site-Titel"""
+    site_title = request.site_title.strip()
+    if not site_title:
+        raise HTTPException(status_code=400, detail="Titel darf nicht leer sein")
+    await set_site_setting("site_title", site_title)
+    return {"message": "Titel gespeichert", "site_title": site_title}
 
 
 # === Link Preview Endpoint ===

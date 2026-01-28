@@ -105,7 +105,8 @@ class EmailService:
 
         # Betreff und Nachricht basierend auf Typ
         subject, html_content, text_content = cls._build_notification_email(
-            to_username, actor_username, notification_type, post_id, comment_id, site_url
+            to_username, actor_username, notification_type, post_id, comment_id, site_url,
+            post_content=post_content, comment_content=comment_content, birthday_age=birthday_age
         )
 
         return await cls.send_email(
@@ -124,13 +125,14 @@ class EmailService:
         post_id: Optional[int],
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
-        birthday_age: Optional[int] = None
+        birthday_age: Optional[int] = None,
+        site_url: str = "http://localhost:4200"
     ) -> tuple[str, str, str]:
         """Erstellt E-Mail aus gespeichertem Template mit Platzhalter-Ersetzung."""
         import html as html_module
         import re
 
-        post_link = f"http://localhost:3000/my-posts?highlight={post_id}" if post_id else ""
+        post_link = f"{site_url}/my-posts?highlight={post_id}" if post_id else ""
 
         # Post-Inhalt Block
         post_content_html = ""
@@ -185,7 +187,10 @@ class EmailService:
         notification_type: str,
         post_id: Optional[int],
         comment_id: Optional[int],
-        site_url: str = "http://localhost:4200"
+        site_url: str = "http://localhost:4200",
+        post_content: Optional[str] = None,
+        comment_content: Optional[str] = None,
+        birthday_age: Optional[int] = None
     ) -> tuple[str, str, str]:
         """
         Erstellt Betreff und Inhalt für Benachrichtigungs-E-Mails.

@@ -312,7 +312,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings'): void {
+  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings' | 'email-templates'): void {
     this.activeTab.set(tab);
     this.error.set(null);
     this.success.set(null);
@@ -326,6 +326,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
     if (tab === 'settings' && !this.siteSettingsLoaded) {
       this.loadSiteSettings();
+    }
     if (tab === 'email-templates') {
       this.loadEmailTemplates();
     }
@@ -486,12 +487,15 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       const response: any = await this.http.get('/api/admin/site-settings', { headers }).toPromise();
+      this.siteSettingsForm.site_url = response.site_url || '';
       if (response?.site_title) {
         this.siteTitle.set(response.site_title);
         this.siteTitleForm = response.site_title;
       }
+      this.siteSettingsLoaded = true;
     } catch (err) {
       console.error('Error loading site settings:', err);
+      this.error.set('Fehler beim Laden der Einstellungen');
     }
   }
 
@@ -517,22 +521,6 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       console.error(err);
     } finally {
       this.loading.set(false);
-    }
-  }
-
-  // === Site Settings ===
-
-  async loadSiteSettings(): Promise<void> {
-    try {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      const response: any = await this.http.get('/api/admin/site-settings', { headers }).toPromise();
-      this.siteSettingsForm.site_url = response.site_url || '';
-      this.siteSettingsLoaded = true;
-    } catch (err) {
-      console.error('Error loading site settings:', err);
-      this.error.set('Fehler beim Laden der Einstellungen');
     }
   }
 
