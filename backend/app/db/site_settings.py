@@ -1,45 +1,51 @@
-"""Site-weite Einstellungen (JSON-basiert)"""
+"""Site Settings - Admin-konfigurierbare Einstellungen"""
 
-import json
-from pathlib import Path
-
-SETTINGS_FILE = Path("/data/site_settings.json")
-
-DEFAULT_SETTINGS = {
-    "site_title": "SocialNet"
-}
+from app.db.postgres import PostgresDB
 
 
-def _load_settings() -> dict:
-    """Lädt die Settings aus der JSON-Datei"""
-    if SETTINGS_FILE.exists():
-        try:
-            return json.loads(SETTINGS_FILE.read_text())
-        except (json.JSONDecodeError, OSError):
-            return dict(DEFAULT_SETTINGS)
-    return dict(DEFAULT_SETTINGS)
+async def init_site_settings_table():
+    """Erstellt die site_settings Tabelle"""
+    async with PostgresDB.connection() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS site_settings (
+                key VARCHAR(100) PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        await conn.commit()
 
 
-def _save_settings(settings: dict) -> None:
-    """Speichert die Settings in die JSON-Datei"""
-    SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    SETTINGS_FILE.write_text(json.dumps(settings, indent=2))
+async def get_site_setting(key: str, default: str = "") -> str:
+    """Holt eine Einstellung"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT value FROM site_settings WHERE key = %s",
+            (key,)
+        )
+        row = await result.fetchone()
+        return row["value"] if row else default
 
 
-async def get_site_title() -> str:
-    """Gibt den aktuellen Site-Titel zurück"""
-    settings = _load_settings()
-    return settings.get("site_title", DEFAULT_SETTINGS["site_title"])
-
-
-async def set_site_title(title: str) -> str:
-    """Setzt den Site-Titel"""
-    settings = _load_settings()
-    settings["site_title"] = title
-    _save_settings(settings)
-    return title
+async def set_site_setting(key: str, value: str) -> None:
+    """Setzt eine Einstellung (Insert oder Update)"""
+    async with PostgresDB.connection() as conn:
+        await conn.execute("""
+            INSERT INTO site_settings (key, value, updated_at)
+            VALUES (%s, %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP
+        """, (key, value))
+        await conn.commit()
 
 
 async def get_all_site_settings() -> dict:
-    """Gibt alle Site-Settings zurück"""
-    return _load_settings()
+    """Holt alle Einstellungen als Dictionary"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute("SELECT key, value FROM site_settings")
+        rows = await result.fetchall()
+        return {row["key"]: row["value"] for row in rows}
+
+
+async def get_site_url() -> str:
+    """Holt die Site-URL Einstellung"""
+    return await get_site_setting("site_url", "http://localhost:4200")

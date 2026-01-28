@@ -3,12 +3,22 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 import { TranslationService, TranslationResult } from '../../services/translation.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
+
+interface LinkPreview {
+  url: string;
+  title: string;
+  description: string;
+  image: string;
+  site_name: string;
+  domain: string;
+}
 
 @Component({
   selector: 'app-post-card',
@@ -58,19 +68,25 @@ import { LinkPreviewService, LinkPreview } from '../../services/link-preview.ser
         }
       }
 
-      @if (linkPreview) {
-        <a class="link-preview" [href]="linkPreview.url" target="_blank" rel="noopener noreferrer">
-          @if (linkPreview.image) {
-            <img [src]="linkPreview.image" class="link-preview-image" alt="" />
+      @if (linkPreviews.length > 0) {
+        <div class="link-previews">
+          @for (preview of linkPreviews; track preview.url) {
+            <a [href]="preview.url" target="_blank" rel="noopener noreferrer" class="link-preview-card">
+              @if (preview.image) {
+                <div class="link-preview-image">
+                  <img [src]="preview.image" [alt]="preview.title" (error)="onPreviewImageError($event)" />
+                </div>
+              }
+              <div class="link-preview-info">
+                <span class="link-preview-site">{{ preview.site_name || preview.domain }}</span>
+                <span class="link-preview-title">{{ preview.title }}</span>
+                @if (preview.description) {
+                  <span class="link-preview-desc">{{ preview.description }}</span>
+                }
+              </div>
+            </a>
           }
-          <div class="link-preview-info">
-            <span class="link-preview-title">{{ linkPreview.title || linkPreview.url }}</span>
-            @if (linkPreview.description) {
-              <span class="link-preview-description">{{ linkPreview.description }}</span>
-            }
-            <span class="link-preview-domain">{{ linkPreview.domain }}</span>
-          </div>
-        </a>
+        </div>
       }
 
       @if (post.media_urls.length > 0) {
@@ -304,16 +320,19 @@ import { LinkPreviewService, LinkPreview } from '../../services/link-preview.ser
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
     .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
     .post-content ::ng-deep .hashtag:hover { text-decoration: underline; }
-    .post-content ::ng-deep a.auto-link { color: #1877f2; text-decoration: none; word-break: break-all; }
-    .post-content ::ng-deep a.auto-link:hover { text-decoration: underline; }
+    .post-content ::ng-deep .auto-link { color: #1877f2; text-decoration: none; word-break: break-all; }
+    .post-content ::ng-deep .auto-link:hover { text-decoration: underline; }
 
-    .link-preview { display: flex; flex-direction: column; margin: 0 16px 12px; border: 1px solid #e4e6e9; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: background 0.2s; }
-    .link-preview:hover { background: #f7f8fa; }
-    .link-preview-image { width: 100%; max-height: 250px; object-fit: cover; }
-    .link-preview-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
-    .link-preview-title { font-weight: 600; font-size: 14px; color: #050505; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .link-preview-description { font-size: 13px; color: #65676b; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
-    .link-preview-domain { font-size: 12px; color: #90949c; text-transform: uppercase; }
+    /* Link Preview */
+    .link-previews { padding: 0 16px 12px; }
+    .link-preview-card { display: flex; flex-direction: column; border: 1px solid #e4e6e9; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: box-shadow 0.2s; cursor: pointer; }
+    .link-preview-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .link-preview-image { width: 100%; max-height: 250px; overflow: hidden; background: #f0f2f5; }
+    .link-preview-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .link-preview-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .link-preview-site { font-size: 12px; color: #65676b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .link-preview-title { font-size: 15px; font-weight: 600; color: #050505; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .link-preview-desc { font-size: 13px; color: #65676b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .post-content.translation { background: #f0f8ff; border-left: 3px solid #1877f2; padding: 12px 16px; margin: 0 16px 12px; border-radius: 6px; }
     .translation-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: #65676b; }
     .translation-badge { font-size: 14px; }
@@ -447,10 +466,14 @@ export class PostCardComponent implements OnChanges, OnInit {
   private feedService = inject(FeedService);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  private http = inject(HttpClient);
   translationService = inject(TranslationService);
   private i18n = inject(I18nService);
   private linkPreviewService = inject(LinkPreviewService);
 
+  isLiked = false;
+  linkPreviews: LinkPreview[] = [];
+  private previewsLoaded = false;
   isLiked: boolean = false;
   private isLikedInitialized = false;
   showReportModal = false;
@@ -482,7 +505,7 @@ export class PostCardComponent implements OnChanges, OnInit {
   isSubmittingComment = false;
 
   ngOnInit(): void {
-    this.loadLinkPreview();
+    this.loadLinkPreviews();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -761,16 +784,37 @@ export class PostCardComponent implements OnChanges, OnInit {
     }
   }
 
+  private extractUrls(text: string): string[] {
+    const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
+    const matches = text.match(urlRegex) || [];
+    // Deduplizieren
+    return [...new Set(matches)];
+  }
+
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   getContentWithHashtags(): SafeHtml {
     const content = this.post.content || '';
-    // First, escape HTML to prevent XSS
-    const escaped = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    // Linkify URLs
-    const urlRegex = /(https?:\/\/[^\s<]+)/g;
-    const withLinks = escaped.replace(urlRegex, '<a class="auto-link" href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-    // Match hashtags: # followed by letters only (no numbers)
+    // Erst HTML-Entities escapen
+    let escaped = this.escapeHtml(content);
+
+    // URLs erkennen und durch Links ersetzen
+    const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
+    escaped = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="auto-link">$1</a>');
+
+    // Hashtags erkennen (aber nicht innerhalb von Links)
     const hashtagRegex = /#([a-zA-ZäöüÄÖÜß]+)/g;
-    const result = '<p>' + withLinks.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
+    escaped = escaped.replace(hashtagRegex, (match, tag) => {
+      return `<span class="hashtag" data-hashtag="${tag}">#${tag}</span>`;
+    });
+
+    const result = '<p>' + escaped + '</p>';
     return this.sanitizer.bypassSecurityTrustHtml(result);
   }
 
@@ -798,6 +842,41 @@ export class PostCardComponent implements OnChanges, OnInit {
       if (hashtag) {
         this.router.navigate(['/hashtag', hashtag]);
       }
+    }
+    // Auto-links oeffnen sich via target="_blank" von alleine
+  }
+
+  loadLinkPreviews(): void {
+    if (this.previewsLoaded) return;
+    this.previewsLoaded = true;
+
+    const urls = this.extractUrls(this.post.content || '');
+    if (urls.length === 0) return;
+
+    // Maximal 3 Previews laden
+    const previewUrls = urls.slice(0, 3);
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    for (const url of previewUrls) {
+      this.http.get<LinkPreview>(`/api/admin/link-preview?url=${encodeURIComponent(url)}`, { headers }).subscribe({
+        next: (preview) => {
+          if (preview && preview.title) {
+            this.linkPreviews = [...this.linkPreviews, preview];
+          }
+        },
+        error: () => {
+          // Vorschau konnte nicht geladen werden - ignorieren
+        }
+      });
+    }
+  }
+
+  onPreviewImageError(event: Event): void {
+    // Bild konnte nicht geladen werden - Element verstecken
+    const img = event.target as HTMLImageElement;
+    if (img.parentElement) {
+      img.parentElement.style.display = 'none';
     }
   }
 
