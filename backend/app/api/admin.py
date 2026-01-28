@@ -25,6 +25,9 @@ from app.db.welcome_message import (
 from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
 from app.db.postgres import PostgresDB
 from app.db.site_settings import get_site_setting, set_site_setting, get_all_site_settings
+from app.db.email_templates import (
+    get_all_templates, get_template, save_template, get_notification_types
+)
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
 
@@ -68,6 +71,13 @@ class BroadcastPostRequest(BaseModel):
 
 class SiteSettingsRequest(BaseModel):
     site_url: str
+
+
+class EmailTemplateRequest(BaseModel):
+    notification_type: str
+    language: str
+    subject: str
+    body: str
 
 
 async def require_moderator(current_user: dict = Depends(get_current_user)) -> dict:
@@ -482,3 +492,75 @@ def _extract_og_tags(html: str, url: str) -> dict:
         "site_name": site_name or domain,
         "domain": domain
     }
+
+
+# === Email Template Endpoints ===
+
+@router.get("/email-templates")
+async def get_email_templates(admin: dict = Depends(require_admin)):
+    """Gibt alle E-Mail-Templates zurück"""
+    templates = await get_all_templates()
+    types = await get_notification_types()
+    return {"templates": templates, "notification_types": types}
+
+
+@router.put("/email-templates")
+async def update_email_template(request: EmailTemplateRequest, admin: dict = Depends(require_admin)):
+    """Speichert ein E-Mail-Template"""
+    template = await save_template(
+        notification_type=request.notification_type,
+        language=request.language,
+        subject=request.subject,
+        body=request.body
+    )
+    return {"template": template}
+
+
+@router.post("/email-templates/translate")
+async def translate_email_template(
+    request: EmailTemplateRequest,
+    admin: dict = Depends(require_admin)
+):
+    """Übersetzt ein E-Mail-Template in alle unterstützten Sprachen"""
+    from app.services.translation_service import TranslationService
+
+    target_languages = ["de", "en", "es", "fr", "it", "ar"]
+    results = {}
+
+    for lang in target_languages:
+        if lang == request.language:
+            await save_template(request.notification_type, lang, request.subject, request.body)
+            results[lang] = {"subject": request.subject, "body": request.body}
+            continue
+
+        try:
+            subject_result = await TranslationService.translate_text(
+                text=request.subject, target_lang=lang, source_lang=request.language
+            )
+            translated_subject = subject_result.get("translated_text", request.subject)
+
+            body = request.body
+            placeholders = ["{{username}}", "{{actor}}", "{{post_content}}", "{{comment_content}}",
+                          "{{action_button}}", "{{birthday_age}}"]
+            markers = {}
+            for i, ph in enumerate(placeholders):
+                marker = f"PLACEHOLDER{i}MARKER"
+                markers[marker] = ph
+                body = body.replace(ph, marker)
+
+            body_result = await TranslationService.translate_text(
+                text=body, target_lang=lang, source_lang=request.language
+            )
+            translated_body = body_result.get("translated_text", body)
+
+            for marker, ph in markers.items():
+                translated_body = translated_body.replace(marker, ph)
+
+            await save_template(request.notification_type, lang, translated_subject, translated_body)
+            results[lang] = {"subject": translated_subject, "body": translated_body}
+
+        except Exception as e:
+            print(f"Failed to translate to {lang}: {e}")
+            results[lang] = {"error": str(e)}
+
+    return {"translations": results}
