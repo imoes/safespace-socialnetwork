@@ -100,6 +100,11 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{}'::jsonb
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS screen_time_settings JSONB DEFAULT '{}'::jsonb
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (

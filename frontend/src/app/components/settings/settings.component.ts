@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
+import { ScreenTimeService, ScreenTimeSettings } from '../../services/screen-time.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
@@ -175,6 +176,59 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               <input type="checkbox" [(ngModel)]="notifPrefs.group_post" name="notif_group_post" />
               <span>{{ 'settings.notifGroupPost' | translate }}</span>
             </label>
+          </div>
+
+          <!-- Screen Time / Mental Health -->
+          <div class="section-divider">
+            <h3>{{ 'settings.screenTimeTitle' | translate }}</h3>
+          </div>
+
+          <div class="screen-time-section">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="screenTimeEnabled" name="screen_time_enabled" />
+              <span>{{ 'settings.screenTimeEnabled' | translate }}</span>
+            </label>
+
+            @if (screenTimeEnabled) {
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="dailyLimit">{{ 'settings.screenTimeDailyLimit' | translate }}</label>
+                <div class="range-group">
+                  <input
+                    id="dailyLimit"
+                    type="range"
+                    [(ngModel)]="screenTimeDailyLimit"
+                    name="daily_limit"
+                    min="15"
+                    max="480"
+                    step="15"
+                    class="form-range"
+                  />
+                  <span class="range-value">{{ screenTimeDailyLimit }} {{ 'settings.screenTimeMinutes' | translate }}</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="reminderInterval">{{ 'settings.screenTimeReminderInterval' | translate }}</label>
+                <div class="range-group">
+                  <input
+                    id="reminderInterval"
+                    type="range"
+                    [(ngModel)]="screenTimeReminderInterval"
+                    name="reminder_interval"
+                    min="10"
+                    max="120"
+                    step="5"
+                    class="form-range"
+                  />
+                  <span class="range-value">{{ screenTimeReminderInterval }} {{ 'settings.screenTimeMinutes' | translate }}</span>
+                </div>
+              </div>
+
+              <div class="screen-time-info">
+                <span class="info-icon">&#9432;</span>
+                {{ 'settings.screenTimeInfo' | translate }}
+              </div>
+            }
           </div>
 
           <!-- Passwort ändern -->
@@ -523,6 +577,72 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       color: #333;
     }
 
+    /* Screen Time */
+    .screen-time-section {
+      margin-bottom: 8px;
+    }
+
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .form-range {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #e4e6e9;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .form-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1877f2;
+      cursor: pointer;
+    }
+
+    .form-range::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1877f2;
+      cursor: pointer;
+      border: none;
+    }
+
+    .range-value {
+      min-width: 80px;
+      text-align: right;
+      font-weight: 600;
+      color: #1877f2;
+      font-size: 14px;
+    }
+
+    .screen-time-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #e8f4fd;
+      border-radius: 8px;
+      color: #1565c0;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 16px;
+    }
+
+    .info-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
     @media (max-width: 1024px) {
       .settings-container { margin: 16px auto; padding: 12px; }
       .settings-card { padding: 20px 16px; }
@@ -538,6 +658,7 @@ export class SettingsComponent implements OnInit {
   http = inject(HttpClient);
   router = inject(Router);
   i18n = inject(I18nService);
+  screenTimeService = inject(ScreenTimeService);
 
   email = '';
   bio = '';
@@ -557,6 +678,10 @@ export class SettingsComponent implements OnInit {
     birthday: true,
     group_post: true
   };
+
+  screenTimeEnabled = true;
+  screenTimeDailyLimit = 120;
+  screenTimeReminderInterval = 30;
 
   isSaving = signal(false);
   successMessage = signal('');
@@ -590,6 +715,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.loadNotificationPreferences();
+    this.loadScreenTimeSettings();
   }
 
   loadNotificationPreferences(): void {
@@ -602,6 +728,18 @@ export class SettingsComponent implements OnInit {
           birthday: prefs.birthday ?? true,
           group_post: prefs.group_post ?? true
         };
+      },
+      error: () => {}
+    });
+  }
+
+  loadScreenTimeSettings(): void {
+    this.http.get<{ settings: any }>('/api/users/me/screen-time-settings').subscribe({
+      next: (response) => {
+        const s = response.settings;
+        this.screenTimeEnabled = s.enabled ?? true;
+        this.screenTimeDailyLimit = s.daily_limit_minutes ?? 120;
+        this.screenTimeReminderInterval = s.reminder_interval_minutes ?? 30;
       },
       error: () => {}
     });
@@ -655,6 +793,14 @@ export class SettingsComponent implements OnInit {
 
     // Save notification preferences in parallel
     this.http.put('/api/users/me/notification-preferences', this.notifPrefs).subscribe();
+
+    // Save screen time settings in parallel
+    const screenTimeSettings: ScreenTimeSettings = {
+      enabled: this.screenTimeEnabled,
+      daily_limit_minutes: this.screenTimeDailyLimit,
+      reminder_interval_minutes: this.screenTimeReminderInterval
+    };
+    this.screenTimeService.saveSettings(screenTimeSettings);
 
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {

@@ -285,7 +285,26 @@
     "deleteAccountButton": "Supprimer définitivement le compte",
     "deleteConfirm1": "Êtes-vous absolument sûr ? Cette action NE PEUT PAS être annulée !",
     "deleteConfirm2": "Dernier avertissement : TOUTES vos données seront supprimées définitivement. Voulez-vous vraiment continuer ?",
-    "deleteSuccess": "Votre compte a été supprimé avec succès. Vous allez maintenant être déconnecté."
+    "deleteSuccess": "Votre compte a été supprimé avec succès. Vous allez maintenant être déconnecté.",
+    "screenTimeTitle": "Temps d'écran & Bien-être",
+    "screenTimeEnabled": "Activer le suivi du temps d'écran",
+    "screenTimeDailyLimit": "Limite d'utilisation quotidienne",
+    "screenTimeReminderInterval": "Rappel de pause toutes les",
+    "screenTimeMinutes": "minutes",
+    "screenTimeInfo": "Lorsque vous atteignez votre limite quotidienne, vous recevez un rappel amical. Le rappel de pause apparaît régulièrement pour vous encourager à prendre des pauses conscientes."
+  },
+  "screenTime": {
+    "breakTitle": "C'est l'heure d'une pause !",
+    "breakMessage": "Vous êtes en ligne depuis un moment. Et si vous faisiez une petite pause ?",
+    "breakTip1": "Levez-vous et étirez-vous",
+    "breakTip2": "Buvez un verre d'eau",
+    "breakTip3": "Regardez par la fenêtre un instant",
+    "dismissBreak": "Compris, merci !",
+    "limitTitle": "Limite quotidienne atteinte",
+    "limitMessage": "Vous avez atteint votre limite quotidienne de {{minutes}} minutes.",
+    "limitHint": "Vous pouvez ajuster votre limite dans les paramètres.",
+    "dismissLimit": "OK, compris",
+    "goToSettings": "Ouvrir les paramètres"
   },
   "hashtags": {
     "title": "Hashtags Tendances",

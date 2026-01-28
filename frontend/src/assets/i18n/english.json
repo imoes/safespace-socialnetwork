@@ -338,7 +338,13 @@
     "deleteAccountButton": "Permanently Delete Account",
     "deleteConfirm1": "Are you absolutely sure? This action CANNOT be undone!",
     "deleteConfirm2": "Last warning: ALL your data will be permanently deleted. Do you really want to continue?",
-    "deleteSuccess": "Your account has been successfully deleted. You will now be logged out."
+    "deleteSuccess": "Your account has been successfully deleted. You will now be logged out.",
+    "screenTimeTitle": "Screen Time & Well-being",
+    "screenTimeEnabled": "Enable screen time monitoring",
+    "screenTimeDailyLimit": "Daily usage limit",
+    "screenTimeReminderInterval": "Break reminder every",
+    "screenTimeMinutes": "minutes",
+    "screenTimeInfo": "When you reach your daily limit, you'll receive a friendly reminder. The break reminder appears regularly during usage to encourage mindful breaks."
   },
   "hashtags": {
     "title": "Trending Hashtags",
@@ -431,6 +437,19 @@
     "groupPost": "{{username}} posted in group {{group}}",
     "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
     "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\""
+  },
+  "screenTime": {
+    "breakTitle": "Time for a Break!",
+    "breakMessage": "You've been online for a while. How about a short break?",
+    "breakTip1": "Stand up and stretch",
+    "breakTip2": "Drink a glass of water",
+    "breakTip3": "Look out the window for a moment",
+    "dismissBreak": "Got it, thanks!",
+    "limitTitle": "Daily Limit Reached",
+    "limitMessage": "You've reached your daily usage limit of {{minutes}} minutes.",
+    "limitHint": "You can adjust your limit in the settings.",
+    "dismissLimit": "OK, got it",
+    "goToSettings": "Open Settings"
   },
   "groups": {
     "title": "Groups",

@@ -8,6 +8,8 @@ import { I18nService } from './services/i18n.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
 import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
+import { ScreenTimeModalComponent } from './components/screen-time-modal/screen-time-modal.component';
+import { ScreenTimeService } from './services/screen-time.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval, filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
@@ -15,7 +17,7 @@ import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, TranslatePipe],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, ScreenTimeModalComponent, TranslatePipe],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
@@ -235,6 +237,7 @@ import { Title } from '@angular/platform-browser';
     }
     <router-outlet />
     <app-welcome-modal />
+    <app-screen-time-modal />
   `,
   styles: [`
     /* === Navbar base === */
@@ -529,6 +532,7 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private titleService = inject(Title);
+  private screenTimeService = inject(ScreenTimeService);
 
   showDropdown = signal(false);
   showSearchResults = signal(false);
@@ -586,6 +590,7 @@ export class AppComponent implements OnInit {
     effect(() => {
       if (this.authService.isAuthenticated()) {
         this.loadPendingRequestsCount();
+        this.screenTimeService.loadSettings();
 
         // Reports für Admins und Moderatoren laden
         if (this.authService.isAdmin() || this.authService.isModerator()) {

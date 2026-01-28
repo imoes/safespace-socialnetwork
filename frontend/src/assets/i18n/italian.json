@@ -285,7 +285,26 @@
     "deleteAccountButton": "Elimina account permanentemente",
     "deleteConfirm1": "Sei assolutamente sicuro? Questa azione NON può essere annullata!",
     "deleteConfirm2": "Ultimo avviso: TUTTI i tuoi dati verranno eliminati permanentemente. Vuoi davvero continuare?",
-    "deleteSuccess": "Il tuo account è stato eliminato con successo. Verrai ora disconnesso."
+    "deleteSuccess": "Il tuo account è stato eliminato con successo. Verrai ora disconnesso.",
+    "screenTimeTitle": "Tempo sullo Schermo & Benessere",
+    "screenTimeEnabled": "Attiva il monitoraggio del tempo sullo schermo",
+    "screenTimeDailyLimit": "Limite di utilizzo giornaliero",
+    "screenTimeReminderInterval": "Promemoria pausa ogni",
+    "screenTimeMinutes": "minuti",
+    "screenTimeInfo": "Quando raggiungi il tuo limite giornaliero, riceverai un promemoria amichevole. Il promemoria della pausa appare regolarmente durante l'utilizzo per incoraggiarti a fare pause consapevoli."
+  },
+  "screenTime": {
+    "breakTitle": "È ora di una pausa!",
+    "breakMessage": "Sei online da un po'. Che ne dici di una breve pausa?",
+    "breakTip1": "Alzati e fai stretching",
+    "breakTip2": "Bevi un bicchiere d'acqua",
+    "breakTip3": "Guarda fuori dalla finestra per un momento",
+    "dismissBreak": "Capito, grazie!",
+    "limitTitle": "Limite giornaliero raggiunto",
+    "limitMessage": "Hai raggiunto il tuo limite giornaliero di utilizzo di {{minutes}} minuti.",
+    "limitHint": "Puoi modificare il tuo limite nelle impostazioni.",
+    "dismissLimit": "OK, capito",
+    "goToSettings": "Apri impostazioni"
   },
   "hashtags": {
     "title": "Hashtags di Tendenza",

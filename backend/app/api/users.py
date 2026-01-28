@@ -36,6 +36,12 @@ class NotificationPreferencesRequest(BaseModel):
     group_post: bool = True
 
 
+class ScreenTimeSettingsRequest(BaseModel):
+    enabled: bool = True
+    daily_limit_minutes: int = 120
+    reminder_interval_minutes: int = 30
+
+
 class PersonalPostRequest(BaseModel):
     content: str
     visibility: str = "public"  # Persönliche Posts sind standardmäßig öffentlich
@@ -161,6 +167,50 @@ async def update_notification_preferences(
         await conn.commit()
 
     return {"preferences": prefs_dict}
+
+
+@router.get("/me/screen-time-settings")
+async def get_screen_time_settings(current_user: dict = Depends(get_current_user)):
+    """Gibt die Screen-Time-Einstellungen zurück"""
+    import json
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT screen_time_settings FROM users WHERE uid = %s",
+            (current_user["uid"],)
+        )
+        row = await result.fetchone()
+
+    settings = row["screen_time_settings"] if row and row.get("screen_time_settings") else {}
+
+    defaults = {
+        "enabled": True,
+        "daily_limit_minutes": 120,
+        "reminder_interval_minutes": 30
+    }
+
+    merged = {**defaults, **settings}
+    return {"settings": merged}
+
+
+@router.put("/me/screen-time-settings")
+async def update_screen_time_settings(
+    settings_data: ScreenTimeSettingsRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert die Screen-Time-Einstellungen"""
+    import json
+
+    settings_dict = settings_data.model_dump()
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET screen_time_settings = %s WHERE uid = %s",
+            (json.dumps(settings_dict), current_user["uid"])
+        )
+        await conn.commit()
+
+    return {"settings": settings_dict}
 
 
 @router.post("/me/profile-picture")
