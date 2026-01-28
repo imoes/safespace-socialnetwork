@@ -225,10 +225,10 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   private offset = 0;
   private readonly limit = 15;
   highlightedPostId = signal<number | null>(null);
+  private pendingHighlightId: number | null = null;
 
   ngOnInit(): void {
     this.loadCurrentUser();
-    this.loadPosts();
 
     // Check for highlight query parameter - subscribe to changes
     this.route.queryParams.subscribe(params => {
@@ -236,23 +236,22 @@ export class MyPostsComponent implements OnInit, OnDestroy {
       if (highlightId) {
         const postId = +highlightId;
         this.highlightedPostId.set(postId);
+        this.pendingHighlightId = postId;
 
-        // Stelle sicher, dass wir auf "Meine Posts" Tab sind
-        if (this.activeTab !== 'my-posts') {
-          this.activeTab = 'my-posts';
-          this.posts = [];
-          this.offset = 0;
-          this.hasMore = true;
-          this.loadPosts();
-        }
-
-        // Scroll to post after a short delay to ensure it's rendered
-        setTimeout(() => {
-          this.scrollToPost(postId);
-        }, 800);
+        // Stelle sicher, dass wir auf "Meine Posts" Tab sind und Posts neu laden
+        this.activeTab = 'my-posts';
+        this.posts = [];
+        this.offset = 0;
+        this.hasMore = true;
+        this.loadPosts();
       } else {
         // Clear highlight if no parameter
         this.highlightedPostId.set(null);
+        this.pendingHighlightId = null;
+        // Initial load ohne highlight
+        if (this.posts.length === 0) {
+          this.loadPosts();
+        }
       }
     });
   }
@@ -294,6 +293,15 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         this.posts = [...this.posts, ...response.posts];
         this.hasMore = response.has_more;
         this.loading = false;
+
+        // Nach dem Laden: Prüfen ob ein Post hervorgehoben werden soll
+        if (this.pendingHighlightId !== null) {
+          const postId = this.pendingHighlightId;
+          // Kurzer Timeout für DOM-Rendering
+          setTimeout(() => {
+            this.scrollToPost(postId);
+          }, 100);
+        }
       },
       error: (err) => {
         console.error('Fehler beim Laden der Posts:', err);
@@ -361,6 +369,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
 
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      this.pendingHighlightId = null;
       setTimeout(() => {
         this.highlightedPostId.set(null);
       }, 5000);
@@ -370,9 +379,11 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         const retryElement = document.getElementById(`post-${postId}`);
         if (retryElement) {
           retryElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          this.pendingHighlightId = null;
           setTimeout(() => this.highlightedPostId.set(null), 5000);
         } else {
           // Post not on current page, clear highlight silently
+          this.pendingHighlightId = null;
           this.highlightedPostId.set(null);
         }
       }, 1000);
