@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from app.services.auth_service import get_current_user
 from app.services.opensearch_service import get_opensearch_service
 from app.db.postgres import get_friends_with_info
+from app.db.sqlite_posts import UserPostsDB
 
 
 router = APIRouter(prefix="/hashtags", tags=["Hashtags"])
@@ -27,6 +28,7 @@ class HashtagPost(BaseModel):
     created_at: str
     likes_count: int
     comments_count: int
+    is_liked_by_user: bool = False
 
 
 @router.get("/trending", response_model=List[HashtagStat])
@@ -177,8 +179,25 @@ async def search_by_hashtag(
         has_more = len(filtered_posts) > limit
         paginated_posts = filtered_posts[:limit]
 
+        # Add is_liked_by_user field to each post
+        enriched_posts = []
+        for post in paginated_posts:
+            author_uid = post.get("author_uid")
+            post_id = post.get("post_id")
+            is_liked = False
+            if author_uid and post_id:
+                try:
+                    posts_db = UserPostsDB(author_uid)
+                    is_liked = await posts_db.is_liked_by_user(post_id, current_user_uid)
+                except Exception:
+                    pass  # Ignore errors, default to False
+            enriched_posts.append({
+                **post,
+                "is_liked_by_user": is_liked
+            })
+
         return HashtagSearchResponse(
-            posts=[HashtagPost(**post) for post in paginated_posts],
+            posts=[HashtagPost(**post) for post in enriched_posts],
             has_more=has_more,
             total=total_count
         )
