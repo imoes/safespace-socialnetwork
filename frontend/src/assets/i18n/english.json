@@ -37,7 +37,8 @@
     "retry": "Try again",
     "empty": "No posts yet.",
     "emptyHint": "Add friends or create your first post!",
-    "loadingMore": "Loading more posts..."
+    "loadingMore": "Loading more posts...",
+    "scrollToTop": "Back to top & refresh"
   },
   "post": {
     "like": "Like",
