@@ -137,7 +137,8 @@
     "createPost": "Error al crear la publicación. Por favor, inténtalo de nuevo.",
     "disputeSubmit": "Error al enviar la objeción.",
     "disputeSuccess": "Tu objeción ha sido enviada para revisión por un moderador.",
-    "sendComment": "Error al enviar el comentario"
+    "sendComment": "Error al enviar el comentario",
+    "dataExport": "Error al exportar los datos"
   },
   "myPosts": {
     "title": "Mis Posts",
@@ -285,7 +286,39 @@
     "deleteAccountButton": "Eliminar cuenta permanentemente",
     "deleteConfirm1": "¿Estás completamente seguro? ¡Esta acción NO se puede deshacer!",
     "deleteConfirm2": "Última advertencia: TODOS tus datos serán eliminados permanentemente. ¿Realmente deseas continuar?",
-    "deleteSuccess": "Tu cuenta ha sido eliminada exitosamente. Ahora se cerrará tu sesión."
+    "deleteSuccess": "Tu cuenta ha sido eliminada exitosamente. Ahora se cerrará tu sesión.",
+    "screenTimeTitle": "Tiempo de Pantalla y Bienestar",
+    "screenTimeEnabled": "Activar monitoreo de tiempo de pantalla",
+    "screenTimeDailyLimit": "Límite de uso diario",
+    "screenTimeReminderEnabled": "Activar recordatorios de pausa",
+    "screenTimeReminderInterval": "Recordatorio de pausa cada",
+    "screenTimeMinutes": "minutos",
+    "screenTimeInfo": "Cuando alcances tu límite diario, recibirás un recordatorio amigable. El recordatorio de pausa aparece regularmente durante el uso para animarte a tomar descansos conscientes.",
+    "dataExportTitle": "Exportación de datos (RGPD Art. 20)",
+    "dataExportDesc": "Descarga todos tus datos almacenados como archivo JSON. Esto incluye tu perfil, publicaciones, amistades, grupos y configuraciones.",
+    "dataExportButton": "Exportar mis datos",
+    "dataExporting": "Exportando..."
+  },
+  "screenTime": {
+    "breakTitle": "¡Hora de un descanso!",
+    "breakMessage": "Llevas un rato en línea. ¿Qué tal un breve descanso?",
+    "breakTip1": "Levántate y estírate",
+    "breakTip2": "Bebe un vaso de agua",
+    "breakTip3": "Mira por la ventana un momento",
+    "dismissBreak": "¡Entendido, gracias!",
+    "limitTitle": "Límite diario alcanzado",
+    "limitMessage": "Has alcanzado tu límite diario de uso de {{minutes}} minutos.",
+    "limitHint": "Puedes ajustar tu límite en la configuración.",
+    "dismissLimit": "OK, entendido",
+    "goToSettings": "Abrir configuración"
+  },
+  "cookie": {
+    "title": "Aviso de cookies",
+    "message": "Este sitio web utiliza únicamente cookies técnicamente necesarias para la autenticación (sesión de inicio). No se utilizan cookies de seguimiento, análisis ni publicidad.",
+    "essential": "auth_token: Token JWT para la sesión de inicio (válido 24 horas)",
+    "noTracking": "No utilizamos ningún tipo de seguimiento ni análisis.",
+    "accept": "Entendido",
+    "moreInfo": "Política de privacidad"
   },
   "hashtags": {
     "title": "Hashtags Tendencia",

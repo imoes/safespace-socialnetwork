@@ -138,7 +138,8 @@
     "createPost": "Fehler beim Erstellen des Posts. Bitte versuche es erneut.",
     "disputeSubmit": "Fehler beim Einreichen des Widerspruchs.",
     "disputeSuccess": "Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.",
-    "sendComment": "Fehler beim Senden des Kommentars"
+    "sendComment": "Fehler beim Senden des Kommentars",
+    "dataExport": "Fehler beim Exportieren der Daten"
   },
   "myPosts": {
     "title": "Meine Posts",
@@ -338,7 +339,18 @@
     "deleteAccountButton": "Konto permanent löschen",
     "deleteConfirm1": "Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!",
     "deleteConfirm2": "Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?",
-    "deleteSuccess": "Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet."
+    "deleteSuccess": "Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.",
+    "screenTimeTitle": "Bildschirmzeit & Wohlbefinden",
+    "screenTimeEnabled": "Bildschirmzeit-Monitoring aktivieren",
+    "screenTimeDailyLimit": "Tägliches Nutzungslimit",
+    "screenTimeReminderEnabled": "Pause-Erinnerung aktivieren",
+    "screenTimeReminderInterval": "Pause-Erinnerung alle",
+    "screenTimeMinutes": "Minuten",
+    "screenTimeInfo": "Wenn du dein tägliches Limit erreichst, erhältst du eine freundliche Erinnerung. Die Pause-Erinnerung erscheint regelmäßig während der Nutzung, damit du bewusst Pausen machst.",
+    "dataExportTitle": "Datenexport (DSGVO Art. 20)",
+    "dataExportDesc": "Lade alle deine gespeicherten Daten als JSON-Datei herunter. Dies umfasst dein Profil, Posts, Freundschaften, Gruppen und Einstellungen.",
+    "dataExportButton": "Meine Daten exportieren",
+    "dataExporting": "Exportiere..."
   },
   "hashtags": {
     "title": "Trending Hashtags",
@@ -431,6 +443,27 @@
     "groupPost": "{{username}} hat in der Gruppe {{group}} gepostet",
     "birthday": "🎂 {{username}} hat heute Geburtstag und ist jetzt {{age}} Jahre alt!",
     "groupJoinRequest": "👥 {{username}} möchte der Gruppe \"{{groupName}}\" beitreten"
+  },
+  "screenTime": {
+    "breakTitle": "Zeit für eine Pause!",
+    "breakMessage": "Du bist schon eine Weile online. Wie wäre es mit einer kurzen Pause?",
+    "breakTip1": "Steh auf und strecke dich",
+    "breakTip2": "Trink ein Glas Wasser",
+    "breakTip3": "Schau kurz aus dem Fenster",
+    "dismissBreak": "Verstanden, danke!",
+    "limitTitle": "Tageslimit erreicht",
+    "limitMessage": "Du hast dein tägliches Nutzungslimit von {{minutes}} Minuten erreicht.",
+    "limitHint": "Du kannst dein Limit in den Einstellungen anpassen.",
+    "dismissLimit": "OK, verstanden",
+    "goToSettings": "Einstellungen öffnen"
+  },
+  "cookie": {
+    "title": "Cookie-Hinweis",
+    "message": "Diese Website verwendet ausschließlich technisch notwendige Cookies für die Authentifizierung (Login-Session). Es werden keine Tracking-, Analyse- oder Werbe-Cookies eingesetzt.",
+    "essential": "auth_token: JWT-Token für die Login-Session (Gültigkeit: 24 Stunden)",
+    "noTracking": "Wir verwenden keinerlei Tracking oder Analytics.",
+    "accept": "Verstanden",
+    "moreInfo": "Datenschutzerklärung"
   },
   "groups": {
     "title": "Gruppen",
