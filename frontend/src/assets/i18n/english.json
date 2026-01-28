@@ -429,7 +429,8 @@
     "commentLiked": "{{username}} liked your comment",
     "newNotification": "New notification",
     "groupPost": "{{username}} posted in group {{group}}",
-    "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!"
+    "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
+    "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\""
   },
   "groups": {
     "title": "Groups",

@@ -256,6 +256,13 @@ class PostgresDB:
                 ON group_posts(group_id, created_at DESC)
             """)
 
+            # Notifications table (created in notifications.py, but migration here)
+            # Migration: add group_id column for group-related notifications
+            await conn.execute("""
+                ALTER TABLE notifications
+                ADD COLUMN IF NOT EXISTS group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE
+            """)
+
             await conn.commit()
 
 

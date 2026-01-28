@@ -352,7 +352,8 @@
     "commentLiked": "{{username}} ha messo mi piace al tuo commento",
     "newNotification": "Nuova notifica",
     "groupPost": "{{username}} ha pubblicato nel gruppo {{group}}",
-    "birthday": "🎂 {{username}} compie gli anni oggi e ha ora {{age}} anni!"
+    "birthday": "🎂 {{username}} compie gli anni oggi e ha ora {{age}} anni!",
+    "groupJoinRequest": "👥 {{username}} vuole unirsi al gruppo \"{{groupName}}\""
   },
   "groups": {
     "title": "Gruppi",

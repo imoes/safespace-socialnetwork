@@ -13,6 +13,8 @@ export interface Notification {
   post_id?: number;
   post_author_uid?: number;
   comment_id?: number;
+  group_id?: number;
+  group_name?: string;
   is_read: boolean;
   created_at: string;
 }
@@ -134,6 +136,10 @@ export class NotificationsService {
         return this.i18n.t('notifications.commentLiked').replace('{{username}}', notification.actor_username);
       case 'group_post':
         return this.i18n.t('notifications.groupPost').replace('{{username}}', notification.actor_username);
+      case 'group_join_request':
+        return this.i18n.t('notifications.groupJoinRequest')
+          .replace('{{username}}', notification.actor_username)
+          .replace('{{groupName}}', notification.group_name || '');
       case 'birthday':
         return this.i18n.t('notifications.birthday')
           .replace('{{username}}', notification.actor_username)
