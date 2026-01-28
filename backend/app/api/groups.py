@@ -275,7 +275,34 @@ async def join_group(group_id: int, current_user: dict = Depends(get_current_use
         )
         await conn.commit()
 
+    # Send notifications to admins/owners when join request is pending
     if member_status == "pending":
+        # Get all admins and owners of the group
+        async with PostgresDB.connection() as conn:
+            admins_result = await conn.execute(
+                """
+                SELECT user_uid FROM group_members
+                WHERE group_id = %s AND role IN ('admin', 'owner') AND status = 'active'
+                """,
+                (group_id,)
+            )
+            admins = await admins_result.fetchall()
+
+        group_name = group.get("name", "")
+
+        # Send notification to each admin/owner
+        for admin in admins:
+            try:
+                await create_notification(
+                    user_uid=admin["user_uid"],
+                    actor_uid=uid,
+                    notification_type="group_join_request",
+                    group_id=group_id,
+                    group_name=group_name
+                )
+            except Exception as e:
+                print(f"Error creating group join request notification: {e}")
+
         return {"message": "Join request sent", "status": "pending"}
     return {"message": "Joined group", "status": "active"}
 

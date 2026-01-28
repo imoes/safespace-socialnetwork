@@ -17,6 +17,7 @@ async def create_notifications_table():
                 post_id INTEGER,
                 post_author_uid INTEGER,
                 comment_id INTEGER,
+                group_id INTEGER,
                 is_read BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -38,7 +39,9 @@ async def create_notification(
     post_author_uid: Optional[int] = None,
     comment_id: Optional[int] = None,
     comment_content: Optional[str] = None,
-    birthday_age: Optional[int] = None
+    birthday_age: Optional[int] = None,
+    group_id: Optional[int] = None,
+    group_name: Optional[str] = None
 ) -> dict:
     """
     Erstellt eine neue Benachrichtigung
@@ -48,6 +51,7 @@ async def create_notification(
     - 'post_commented': Jemand hat deinen Post kommentiert
     - 'comment_liked': Jemand hat deinen Kommentar geliked
     - 'group_post': Jemand hat in deiner Gruppe gepostet
+    - 'group_join_request': Jemand möchte deiner Gruppe beitreten
     - 'birthday': Ein Freund hat heute Geburtstag
     """
     # Erstelle keine Benachrichtigung wenn User sich selbst liked/kommentiert
@@ -56,10 +60,10 @@ async def create_notification(
 
     async with PostgresDB.connection() as conn:
         result = await conn.execute("""
-            INSERT INTO notifications (user_uid, actor_uid, type, post_id, post_author_uid, comment_id)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            RETURNING notification_id, user_uid, actor_uid, type, post_id, post_author_uid, comment_id, is_read, created_at
-        """, (user_uid, actor_uid, notification_type, post_id, post_author_uid, comment_id))
+            INSERT INTO notifications (user_uid, actor_uid, type, post_id, post_author_uid, comment_id, group_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING notification_id, user_uid, actor_uid, type, post_id, post_author_uid, comment_id, group_id, is_read, created_at
+        """, (user_uid, actor_uid, notification_type, post_id, post_author_uid, comment_id, group_id))
         row = await result.fetchone()
         await conn.commit()
 
@@ -72,6 +76,7 @@ async def create_notification(
                 "post_id": row["post_id"],
                 "post_author_uid": row["post_author_uid"],
                 "comment_id": row["comment_id"],
+                "group_id": row["group_id"],
                 "is_read": row["is_read"],
                 "created_at": row["created_at"].isoformat() if row["created_at"] else None
             }
@@ -126,7 +131,9 @@ async def create_notification(
                                 post_content=post_content,
                                 comment_content=comment_content,
                                 birthday_age=birthday_age,
-                                user_language=user_language
+                                user_language=user_language,
+                                group_id=group_id,
+                                group_name=group_name
                             )
                         )
             except Exception as e:
@@ -149,12 +156,15 @@ async def get_notifications(user_uid: int, limit: int = 50, offset: int = 0, unr
                 n.post_id,
                 n.post_author_uid,
                 n.comment_id,
+                n.group_id,
                 n.is_read,
                 n.created_at,
                 u.username as actor_username,
-                u.profile_picture as actor_profile_picture
+                u.profile_picture as actor_profile_picture,
+                g.name as group_name
             FROM notifications n
             JOIN users u ON n.actor_uid = u.uid
+            LEFT JOIN groups g ON n.group_id = g.group_id
             WHERE n.user_uid = %s
         """
 
@@ -180,6 +190,8 @@ async def get_notifications(user_uid: int, limit: int = 50, offset: int = 0, unr
                 "post_id": row["post_id"],
                 "post_author_uid": row["post_author_uid"],
                 "comment_id": row["comment_id"],
+                "group_id": row["group_id"],
+                "group_name": row["group_name"],
                 "is_read": row["is_read"],
                 "created_at": row["created_at"].isoformat() if row["created_at"] else None
             })

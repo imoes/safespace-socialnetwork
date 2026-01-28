@@ -91,7 +91,9 @@ class EmailService:
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
         birthday_age: Optional[int] = None,
-        user_language: str = "de"
+        user_language: str = "de",
+        group_id: Optional[int] = None,
+        group_name: Optional[str] = None
     ) -> bool:
         """
         Sendet eine Benachrichtigungs-E-Mail.
@@ -106,7 +108,8 @@ class EmailService:
         # Betreff und Nachricht basierend auf Typ
         subject, html_content, text_content = cls._build_notification_email(
             to_username, actor_username, notification_type, post_id, comment_id, site_url,
-            post_content=post_content, comment_content=comment_content, birthday_age=birthday_age
+            post_content=post_content, comment_content=comment_content, birthday_age=birthday_age,
+            group_id=group_id, group_name=group_name
         )
 
         return await cls.send_email(
@@ -190,7 +193,9 @@ class EmailService:
         site_url: str = "http://localhost:4200",
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
-        birthday_age: Optional[int] = None
+        birthday_age: Optional[int] = None,
+        group_id: Optional[int] = None,
+        group_name: Optional[str] = None
     ) -> tuple[str, str, str]:
         """
         Erstellt Betreff und Inhalt für Benachrichtigungs-E-Mails.
@@ -313,6 +318,31 @@ Dein SocialNet Team
                 <p><strong>{actor_username}</strong> hat heute Geburtstag!</p>
                 {age_html}
                 <p>Gratuliere jetzt auf SocialNet!</p>"""
+            )
+
+        elif notification_type == "group_join_request":
+            group_link = f"{site_url}/groups/{group_id}" if group_id else ""
+            group_display_name = group_name or "einer Gruppe"
+            subject = f"👥 {actor_username} möchte deiner Gruppe beitreten!"
+            text = f"""
+Hallo {to_username},
+
+{actor_username} möchte der Gruppe "{group_display_name}" beitreten.
+
+Bitte überprüfe die Anfrage und entscheide, ob du sie annehmen oder ablehnen möchtest.
+
+{f"Gruppe ansehen: {group_link}" if group_link else ""}
+
+Viele Grüße,
+Dein SocialNet Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "👥 Neue Beitrittsanfrage",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p><strong>{actor_username}</strong> möchte der Gruppe <strong>"{group_display_name}"</strong> beitreten.</p>
+                <p>Bitte überprüfe die Anfrage und entscheide, ob du sie annehmen oder ablehnen möchtest.</p>
+                {"<a href='" + group_link + "' class='button'>Anfrage überprüfen</a>" if group_link else ""}"""
             )
 
         else:
