@@ -88,7 +88,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   // Tabs
-  activeTab = signal<'welcome' | 'broadcast' | 'status'>('welcome');
+  activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings'>('welcome');
 
   // Welcome Message
   welcomeMessage = signal<WelcomeMessage | null>(null);
@@ -108,6 +108,12 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   // System Status
   systemStatus = signal<SystemStatus | null>(null);
   autoRefreshInterval: any = null;
+
+  // Site Settings
+  siteSettingsForm = {
+    site_url: ''
+  };
+  siteSettingsLoaded = false;
 
   // UI States
   loading = signal(false);
@@ -277,7 +283,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  setActiveTab(tab: 'welcome' | 'broadcast' | 'status'): void {
+  setActiveTab(tab: 'welcome' | 'broadcast' | 'status' | 'settings'): void {
     this.activeTab.set(tab);
     this.error.set(null);
     this.success.set(null);
@@ -288,6 +294,10 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       this.startAutoRefresh();
     } else {
       this.stopAutoRefresh();
+    }
+
+    if (tab === 'settings' && !this.siteSettingsLoaded) {
+      this.loadSiteSettings();
     }
   }
 
@@ -307,5 +317,46 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       'admin': 'Admins'
     };
     return labels[role] || role;
+  }
+
+  // === Site Settings ===
+
+  async loadSiteSettings(): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.get('/api/admin/site-settings', { headers }).toPromise();
+      this.siteSettingsForm.site_url = response.site_url || '';
+      this.siteSettingsLoaded = true;
+    } catch (err) {
+      console.error('Error loading site settings:', err);
+      this.error.set('Fehler beim Laden der Einstellungen');
+    }
+  }
+
+  async saveSiteSettings(): Promise<void> {
+    if (!this.siteSettingsForm.site_url.trim()) {
+      this.error.set('Site-URL ist erforderlich');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.put('/api/admin/site-settings', this.siteSettingsForm, { headers }).toPromise();
+      this.siteSettingsForm.site_url = response.site_url;
+      this.success.set('Einstellungen gespeichert!');
+    } catch (err) {
+      this.error.set('Fehler beim Speichern der Einstellungen');
+      console.error(err);
+    } finally {
+      this.loading.set(false);
+    }
   }
 }

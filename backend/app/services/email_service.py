@@ -5,6 +5,7 @@ from typing import Optional
 from datetime import datetime
 
 from app.config import settings
+from app.db.site_settings import get_site_url
 
 
 class EmailService:
@@ -98,9 +99,15 @@ class EmailService:
             post_id: Post ID (optional)
             comment_id: Comment ID (optional)
         """
+        # Site URL aus Einstellungen laden
+        try:
+            site_url = await get_site_url()
+        except Exception:
+            site_url = "http://localhost:4200"
+
         # Betreff und Nachricht basierend auf Typ
         subject, html_content, text_content = cls._build_notification_email(
-            to_username, actor_username, notification_type, post_id, comment_id
+            to_username, actor_username, notification_type, post_id, comment_id, site_url
         )
 
         return await cls.send_email(
@@ -117,7 +124,8 @@ class EmailService:
         actor_username: str,
         notification_type: str,
         post_id: Optional[int],
-        comment_id: Optional[int]
+        comment_id: Optional[int],
+        site_url: str = "http://localhost:4200"
     ) -> tuple[str, str, str]:
         """
         Erstellt Betreff und Inhalt für Benachrichtigungs-E-Mails.
@@ -125,8 +133,8 @@ class EmailService:
         Returns:
             (subject, html_content, text_content)
         """
-        # Post-Link (wenn verfügbar)
-        post_link = f"http://localhost:3000/my-posts?highlight={post_id}" if post_id else ""
+        # Post-Link (wenn verfügbar) - verwendet konfigurierte Site-URL
+        post_link = f"{site_url}/my-posts?highlight={post_id}" if post_id else ""
 
         if notification_type == "post_liked":
             subject = f"🎉 {actor_username} hat deinen Post geliked!"

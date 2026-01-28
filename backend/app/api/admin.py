@@ -5,7 +5,10 @@ from pydantic import BaseModel
 from typing import Optional
 import psutil
 import time
+import httpx
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
+import re
 
 from app.services.auth_service import get_current_user
 from app.db.moderation import (
@@ -21,6 +24,7 @@ from app.db.welcome_message import (
 )
 from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
 from app.db.postgres import PostgresDB
+from app.db.site_settings import get_site_setting, set_site_setting, get_all_site_settings
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
 
@@ -60,6 +64,10 @@ class WelcomeMessageRequest(BaseModel):
 class BroadcastPostRequest(BaseModel):
     content: str
     visibility: str = "public"
+
+
+class SiteSettingsRequest(BaseModel):
+    site_url: str
 
 
 async def require_moderator(current_user: dict = Depends(get_current_user)) -> dict:
@@ -345,4 +353,117 @@ async def get_system_status(moderator: dict = Depends(require_moderator)):
             "open_reports": open_reports,
             "total_reports": total_reports
         }
+    }
+
+
+# === Site Settings Endpoints ===
+
+@router.get("/site-settings")
+async def get_site_settings(admin: dict = Depends(require_admin)):
+    """Holt alle Site-Einstellungen"""
+    all_settings = await get_all_site_settings()
+    return {
+        "site_url": all_settings.get("site_url", "http://localhost:4200")
+    }
+
+
+@router.put("/site-settings")
+async def update_site_settings(request: SiteSettingsRequest, admin: dict = Depends(require_admin)):
+    """Aktualisiert die Site-Einstellungen"""
+    # Site URL bereinigen (trailing slash entfernen)
+    site_url = request.site_url.rstrip("/")
+    await set_site_setting("site_url", site_url)
+    return {"message": "Einstellungen gespeichert", "site_url": site_url}
+
+
+# === Link Preview Endpoint ===
+
+@router.get("/link-preview", dependencies=[])
+async def get_link_preview(url: str, current_user: dict = Depends(get_current_user)):
+    """Holt OpenGraph-Metadaten fuer eine URL (Link-Vorschau)"""
+    # URL validieren
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https"):
+            raise HTTPException(status_code=400, detail="Nur HTTP/HTTPS URLs erlaubt")
+        if not parsed.netloc:
+            raise HTTPException(status_code=400, detail="Ungueltige URL")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Ungueltige URL")
+
+    try:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=5.0) as client:
+            response = await client.get(url, headers={
+                "User-Agent": "Mozilla/5.0 (compatible; SafeSpaceBot/1.0)"
+            })
+            response.raise_for_status()
+            html = response.text[:50000]  # Max 50KB parsen
+
+        # OpenGraph Tags extrahieren
+        og_data = _extract_og_tags(html, url)
+        return og_data
+
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=408, detail="Timeout beim Laden der URL")
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=502, detail=f"Fehler beim Laden: {e.response.status_code}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail="Fehler beim Laden der URL")
+
+
+def _extract_og_tags(html: str, url: str) -> dict:
+    """Extrahiert OpenGraph-Tags aus HTML"""
+    import html as html_module
+
+    def get_meta(property_name: str) -> str:
+        # Suche nach og: und twitter: meta tags
+        patterns = [
+            rf'<meta[^>]*property=["\']og:{property_name}["\'][^>]*content=["\']([^"\']*)["\']',
+            rf'<meta[^>]*content=["\']([^"\']*)["\'][^>]*property=["\']og:{property_name}["\']',
+            rf'<meta[^>]*name=["\']twitter:{property_name}["\'][^>]*content=["\']([^"\']*)["\']',
+            rf'<meta[^>]*content=["\']([^"\']*)["\'][^>]*name=["\']twitter:{property_name}["\']',
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, html, re.IGNORECASE)
+            if match:
+                return html_module.unescape(match.group(1))
+        return ""
+
+    # Fallback: <title> Tag
+    title = get_meta("title")
+    if not title:
+        title_match = re.search(r'<title[^>]*>([^<]+)</title>', html, re.IGNORECASE)
+        if title_match:
+            title = html_module.unescape(title_match.group(1).strip())
+
+    description = get_meta("description")
+    if not description:
+        # Fallback: meta description
+        desc_match = re.search(
+            r'<meta[^>]*name=["\']description["\'][^>]*content=["\']([^"\']*)["\']',
+            html, re.IGNORECASE
+        )
+        if desc_match:
+            description = html_module.unescape(desc_match.group(1))
+
+    image = get_meta("image")
+    site_name = get_meta("site_name")
+
+    parsed = urlparse(url)
+    domain = parsed.netloc
+
+    # Bild-URL zu absoluter URL machen
+    if image and not image.startswith("http"):
+        if image.startswith("//"):
+            image = f"{parsed.scheme}:{image}"
+        elif image.startswith("/"):
+            image = f"{parsed.scheme}://{parsed.netloc}{image}"
+
+    return {
+        "url": url,
+        "title": title or domain,
+        "description": description[:300] if description else "",
+        "image": image,
+        "site_name": site_name or domain,
+        "domain": domain
     }

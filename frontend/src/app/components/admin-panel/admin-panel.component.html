@@ -23,6 +23,12 @@
       (click)="setActiveTab('status')">
       📊 System-Status
     </button>
+    <button
+      class="tab"
+      [class.active]="activeTab() === 'settings'"
+      (click)="setActiveTab('settings')">
+      ⚙️ Einstellungen
+    </button>
   </div>
 
   <!-- Messages -->
@@ -315,6 +321,41 @@
           <p>⏳ Lade System-Status...</p>
         </div>
       }
+    </div>
+  }
+
+  <!-- Settings Tab -->
+  @if (activeTab() === 'settings') {
+    <div class="tab-content">
+      <h2>⚙️ Site-Einstellungen</h2>
+      <p class="description">
+        Hier kannst du grundlegende Einstellungen fuer die Plattform konfigurieren.
+      </p>
+
+      <div class="form-card">
+        <div class="form-group">
+          <label for="site-url">Site-URL</label>
+          <p class="field-description">
+            Die oeffentliche URL deiner SafeSpace-Instanz. Wird in E-Mail-Benachrichtigungen
+            und Action-Buttons verwendet.
+          </p>
+          <input
+            id="site-url"
+            type="url"
+            [(ngModel)]="siteSettingsForm.site_url"
+            placeholder="https://deine-domain.de"
+            />
+        </div>
+
+        <div class="button-group">
+          <button
+            class="btn btn-primary"
+            (click)="saveSiteSettings()"
+            [disabled]="loading()">
+            {{ loading() ? '⏳ Speichern...' : '💾 Speichern' }}
+          </button>
+        </div>
+      </div>
     </div>
   }
 </div>

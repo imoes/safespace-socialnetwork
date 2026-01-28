@@ -49,6 +49,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️ Failed to initialize notifications table: {e}")
     
+    # Site Settings Tabelle erstellen
+    try:
+        from app.db.site_settings import init_site_settings_table
+        await init_site_settings_table()
+        print("✅ Site settings table initialized")
+    except Exception as e:
+        print(f"⚠️ Failed to initialize site settings table: {e}")
+
     # Kafka Producer initialisieren (optional, falls verfügbar)
     try:
         from app.safespace.kafka_service import KafkaService
