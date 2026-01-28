@@ -295,7 +295,7 @@ def main():
     print("=" * 70)
 
     # Save usernames to file
-    with open("/home/user/safespace-socialnetwork/test_users.txt", "w") as f:
+    with open("./test_users.txt", "w") as f:
         f.write("# Test Users - Username | Password\n")
         f.write("# All passwords are: Test123\n\n")
         for user in users:
