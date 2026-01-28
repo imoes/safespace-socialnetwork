@@ -138,7 +138,8 @@
     "createPost": "Error creating post. Please try again.",
     "disputeSubmit": "Error submitting objection.",
     "disputeSuccess": "Your objection has been forwarded for review by a moderator.",
-    "sendComment": "Error sending comment"
+    "sendComment": "Error sending comment",
+    "dataExport": "Error exporting data"
   },
   "myPosts": {
     "title": "My Posts",
@@ -345,7 +346,11 @@
     "screenTimeReminderEnabled": "Enable break reminders",
     "screenTimeReminderInterval": "Break reminder every",
     "screenTimeMinutes": "minutes",
-    "screenTimeInfo": "When you reach your daily limit, you'll receive a friendly reminder. The break reminder appears regularly during usage to encourage mindful breaks."
+    "screenTimeInfo": "When you reach your daily limit, you'll receive a friendly reminder. The break reminder appears regularly during usage to encourage mindful breaks.",
+    "dataExportTitle": "Data Export (GDPR Art. 20)",
+    "dataExportDesc": "Download all your stored data as a JSON file. This includes your profile, posts, friendships, groups, and settings.",
+    "dataExportButton": "Export My Data",
+    "dataExporting": "Exporting..."
   },
   "hashtags": {
     "title": "Trending Hashtags",
@@ -451,6 +456,14 @@
     "limitHint": "You can adjust your limit in the settings.",
     "dismissLimit": "OK, got it",
     "goToSettings": "Open Settings"
+  },
+  "cookie": {
+    "title": "Cookie Notice",
+    "message": "This website uses only technically necessary cookies for authentication (login session). No tracking, analytics, or advertising cookies are used.",
+    "essential": "auth_token: JWT token for login session (valid for 24 hours)",
+    "noTracking": "We do not use any tracking or analytics.",
+    "accept": "Got it",
+    "moreInfo": "Privacy Policy"
   },
   "groups": {
     "title": "Groups",

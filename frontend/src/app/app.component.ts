@@ -9,6 +9,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
 import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
 import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
 import { ScreenTimeModalComponent } from './components/screen-time-modal/screen-time-modal.component';
+import { CookieConsentComponent } from './components/cookie-consent/cookie-consent.component';
 import { ScreenTimeService } from './services/screen-time.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval, filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +18,7 @@ import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, ScreenTimeModalComponent, TranslatePipe],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, ScreenTimeModalComponent, CookieConsentComponent, TranslatePipe],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
@@ -238,6 +239,7 @@ import { Title } from '@angular/platform-browser';
     <router-outlet />
     <app-welcome-modal />
     <app-screen-time-modal />
+    <app-cookie-consent />
   `,
   styles: [`
     /* === Navbar base === */

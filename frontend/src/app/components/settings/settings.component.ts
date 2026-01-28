@@ -290,6 +290,17 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           </div>
         </form>
 
+        <!-- DSGVO: Datenexport -->
+        <div class="data-export-section">
+          <div class="section-divider">
+            <h3>{{ 'settings.dataExportTitle' | translate }}</h3>
+          </div>
+          <p class="export-desc">{{ 'settings.dataExportDesc' | translate }}</p>
+          <button type="button" class="btn btn-export" (click)="exportData()" [disabled]="isExporting()">
+            {{ (isExporting() ? 'settings.dataExporting' : 'settings.dataExportButton') | translate }}
+          </button>
+        </div>
+
         <!-- Gefahrenzone: Konto löschen -->
         <div class="danger-zone">
           <div class="section-divider">
@@ -501,6 +512,39 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background: #e4e6e9;
     }
 
+    /* Datenexport */
+    .data-export-section {
+      margin-top: 48px;
+    }
+
+    .export-desc {
+      color: #65676b;
+      font-size: 14px;
+      margin: 8px 0 16px 0;
+      line-height: 1.5;
+    }
+
+    .btn-export {
+      padding: 10px 24px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-export:hover:not(:disabled) {
+      background: #1b5e20;
+    }
+
+    .btn-export:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     /* Gefahrenzone */
     .danger-zone {
       margin-top: 48px;
@@ -692,6 +736,7 @@ export class SettingsComponent implements OnInit {
   screenTimeReminderInterval = 30;
 
   isSaving = signal(false);
+  isExporting = signal(false);
   successMessage = signal('');
   errorMessage = signal('');
   uploadingProfilePicture = signal(false);
@@ -850,6 +895,27 @@ export class SettingsComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  exportData(): void {
+    this.isExporting.set(true);
+    this.http.get('/api/users/me/data-export').subscribe({
+      next: (data) => {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `safespace-data-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.isExporting.set(false);
+      },
+      error: () => {
+        this.isExporting.set(false);
+        this.errorMessage.set(this.i18n.t('errors.dataExport'));
+      }
+    });
   }
 
   deleteAccount(): void {

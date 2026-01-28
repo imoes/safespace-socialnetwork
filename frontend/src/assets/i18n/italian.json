@@ -137,7 +137,8 @@
     "createPost": "Errore nella creazione del post. Per favore riprova.",
     "disputeSubmit": "Errore nell'invio dell'obiezione.",
     "disputeSuccess": "La tua obiezione è stata inoltrata per la revisione da parte di un moderatore.",
-    "sendComment": "Errore nell'invio del commento"
+    "sendComment": "Errore nell'invio del commento",
+    "dataExport": "Errore nell'esportazione dei dati"
   },
   "myPosts": {
     "title": "I miei Post",
@@ -292,7 +293,11 @@
     "screenTimeReminderEnabled": "Attiva i promemoria di pausa",
     "screenTimeReminderInterval": "Promemoria pausa ogni",
     "screenTimeMinutes": "minuti",
-    "screenTimeInfo": "Quando raggiungi il tuo limite giornaliero, riceverai un promemoria amichevole. Il promemoria della pausa appare regolarmente durante l'utilizzo per incoraggiarti a fare pause consapevoli."
+    "screenTimeInfo": "Quando raggiungi il tuo limite giornaliero, riceverai un promemoria amichevole. Il promemoria della pausa appare regolarmente durante l'utilizzo per incoraggiarti a fare pause consapevoli.",
+    "dataExportTitle": "Esportazione dati (GDPR Art. 20)",
+    "dataExportDesc": "Scarica tutti i tuoi dati memorizzati come file JSON. Questo include il tuo profilo, post, amicizie, gruppi e impostazioni.",
+    "dataExportButton": "Esporta i miei dati",
+    "dataExporting": "Esportazione..."
   },
   "screenTime": {
     "breakTitle": "È ora di una pausa!",
@@ -306,6 +311,14 @@
     "limitHint": "Puoi modificare il tuo limite nelle impostazioni.",
     "dismissLimit": "OK, capito",
     "goToSettings": "Apri impostazioni"
+  },
+  "cookie": {
+    "title": "Avviso sui cookie",
+    "message": "Questo sito utilizza esclusivamente cookie tecnicamente necessari per l'autenticazione (sessione di accesso). Non vengono utilizzati cookie di tracciamento, analisi o pubblicità.",
+    "essential": "auth_token: Token JWT per la sessione di accesso (valido 24 ore)",
+    "noTracking": "Non utilizziamo alcun tracciamento o analisi.",
+    "accept": "Capito",
+    "moreInfo": "Informativa sulla privacy"
   },
   "hashtags": {
     "title": "Hashtags di Tendenza",

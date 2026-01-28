@@ -138,7 +138,8 @@
     "createPost": "Fehler beim Erstellen des Posts. Bitte versuche es erneut.",
     "disputeSubmit": "Fehler beim Einreichen des Widerspruchs.",
     "disputeSuccess": "Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.",
-    "sendComment": "Fehler beim Senden des Kommentars"
+    "sendComment": "Fehler beim Senden des Kommentars",
+    "dataExport": "Fehler beim Exportieren der Daten"
   },
   "myPosts": {
     "title": "Meine Posts",
@@ -345,7 +346,11 @@
     "screenTimeReminderEnabled": "Pause-Erinnerung aktivieren",
     "screenTimeReminderInterval": "Pause-Erinnerung alle",
     "screenTimeMinutes": "Minuten",
-    "screenTimeInfo": "Wenn du dein tägliches Limit erreichst, erhältst du eine freundliche Erinnerung. Die Pause-Erinnerung erscheint regelmäßig während der Nutzung, damit du bewusst Pausen machst."
+    "screenTimeInfo": "Wenn du dein tägliches Limit erreichst, erhältst du eine freundliche Erinnerung. Die Pause-Erinnerung erscheint regelmäßig während der Nutzung, damit du bewusst Pausen machst.",
+    "dataExportTitle": "Datenexport (DSGVO Art. 20)",
+    "dataExportDesc": "Lade alle deine gespeicherten Daten als JSON-Datei herunter. Dies umfasst dein Profil, Posts, Freundschaften, Gruppen und Einstellungen.",
+    "dataExportButton": "Meine Daten exportieren",
+    "dataExporting": "Exportiere..."
   },
   "hashtags": {
     "title": "Trending Hashtags",
@@ -451,6 +456,14 @@
     "limitHint": "Du kannst dein Limit in den Einstellungen anpassen.",
     "dismissLimit": "OK, verstanden",
     "goToSettings": "Einstellungen öffnen"
+  },
+  "cookie": {
+    "title": "Cookie-Hinweis",
+    "message": "Diese Website verwendet ausschließlich technisch notwendige Cookies für die Authentifizierung (Login-Session). Es werden keine Tracking-, Analyse- oder Werbe-Cookies eingesetzt.",
+    "essential": "auth_token: JWT-Token für die Login-Session (Gültigkeit: 24 Stunden)",
+    "noTracking": "Wir verwenden keinerlei Tracking oder Analytics.",
+    "accept": "Verstanden",
+    "moreInfo": "Datenschutzerklärung"
   },
   "groups": {
     "title": "Gruppen",

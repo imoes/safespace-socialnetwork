@@ -137,7 +137,8 @@
     "createPost": "Erreur lors de la création du post. Veuillez réessayer.",
     "disputeSubmit": "Erreur lors de l'envoi de l'objection.",
     "disputeSuccess": "Votre objection a été transmise pour examen par un modérateur.",
-    "sendComment": "Erreur lors de l'envoi du commentaire"
+    "sendComment": "Erreur lors de l'envoi du commentaire",
+    "dataExport": "Erreur lors de l'exportation des données"
   },
   "myPosts": {
     "title": "Mes Posts",
@@ -292,7 +293,11 @@
     "screenTimeReminderEnabled": "Activer les rappels de pause",
     "screenTimeReminderInterval": "Rappel de pause toutes les",
     "screenTimeMinutes": "minutes",
-    "screenTimeInfo": "Lorsque vous atteignez votre limite quotidienne, vous recevez un rappel amical. Le rappel de pause apparaît régulièrement pour vous encourager à prendre des pauses conscientes."
+    "screenTimeInfo": "Lorsque vous atteignez votre limite quotidienne, vous recevez un rappel amical. Le rappel de pause apparaît régulièrement pour vous encourager à prendre des pauses conscientes.",
+    "dataExportTitle": "Export de données (RGPD Art. 20)",
+    "dataExportDesc": "Téléchargez toutes vos données stockées au format JSON. Cela inclut votre profil, publications, amitiés, groupes et paramètres.",
+    "dataExportButton": "Exporter mes données",
+    "dataExporting": "Exportation..."
   },
   "screenTime": {
     "breakTitle": "C'est l'heure d'une pause !",
@@ -306,6 +311,14 @@
     "limitHint": "Vous pouvez ajuster votre limite dans les paramètres.",
     "dismissLimit": "OK, compris",
     "goToSettings": "Ouvrir les paramètres"
+  },
+  "cookie": {
+    "title": "Avis sur les cookies",
+    "message": "Ce site n'utilise que des cookies techniquement nécessaires pour l'authentification (session de connexion). Aucun cookie de suivi, d'analyse ou publicitaire n'est utilisé.",
+    "essential": "auth_token : Jeton JWT pour la session de connexion (valide 24 heures)",
+    "noTracking": "Nous n'utilisons aucun suivi ni analyse.",
+    "accept": "Compris",
+    "moreInfo": "Politique de confidentialité"
   },
   "hashtags": {
     "title": "Hashtags Tendances",
