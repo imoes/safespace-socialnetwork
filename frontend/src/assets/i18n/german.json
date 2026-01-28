@@ -37,7 +37,8 @@
     "retry": "Erneut versuchen",
     "empty": "Noch keine Posts vorhanden.",
     "emptyHint": "Füge Freunde hinzu oder erstelle deinen ersten Post!",
-    "loadingMore": "Lade weitere Posts..."
+    "loadingMore": "Lade weitere Posts...",
+    "scrollToTop": "Nach oben & aktualisieren"
   },
   "post": {
     "like": "Gefällt mir",
