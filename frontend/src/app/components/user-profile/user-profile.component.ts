@@ -8,15 +8,17 @@ import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { Post } from '../../services/feed.service';
 import { HttpClient } from '@angular/common/http';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, PostCardComponent],
+  imports: [CommonModule, FormsModule, PostCardComponent, TranslatePipe],
   template: `
     <div class="profile-container">
       @if (loading) {
-        <div class="loading">Profil wird geladen...</div>
+        <div class="loading">{{ 'profile.loading' | translate }}</div>
       } @else if (profile) {
         <div class="profile-card">
           <div class="profile-header">
@@ -35,9 +37,12 @@ import { HttpClient } from '@angular/common/http';
               @if (profile.bio) {
                 <p class="profile-bio">{{ profile.bio }}</p>
               }
+              @if (profile.birthday) {
+                <p class="profile-birthday">🎂 {{ 'profile.birthday' | translate }}: {{ profile.birthday | date:'dd.MM.yyyy' }}</p>
+              }
               <div class="profile-meta">
                 <span class="role-badge" [class]="'role-' + profile.role">{{ getRoleLabel(profile.role) }}</span>
-                <span class="joined-date">Mitglied seit {{ profile.created_at | date:'dd.MM.yyyy' }}</span>
+                <span class="joined-date">{{ 'profile.memberSince' | translate }} {{ profile.created_at | date:'dd.MM.yyyy' }}</span>
               </div>
             </div>
           </div>
@@ -45,7 +50,7 @@ import { HttpClient } from '@angular/common/http';
           @if (!isOwnProfile) {
             <div class="profile-actions">
               <button class="btn-primary" (click)="sendFriendRequest()" [disabled]="requestSent">
-                {{ requestSent ? '✓ Anfrage gesendet' : '👋 Freundschaftsanfrage senden' }}
+                {{ requestSent ? ('✓ ' + ('profile.requestSent' | translate)) : ('👋 ' + ('profile.sendRequest' | translate)) }}
               </button>
             </div>
           }
@@ -53,10 +58,10 @@ import { HttpClient } from '@angular/common/http';
 
         @if (!isOwnProfile) {
           <div class="personal-post-card">
-            <h3 class="personal-post-title">✍️ Persönlichen Post hinterlassen</h3>
+            <h3 class="personal-post-title">✍️ {{ 'profile.personalPost' | translate }}</h3>
             <textarea
               [(ngModel)]="personalPostContent"
-              placeholder="Schreibe etwas auf das Profil von {{ profile.username }}..."
+              [placeholder]="getPersonalPostPlaceholder()"
               rows="3"
               class="personal-post-textarea"
             ></textarea>
@@ -65,7 +70,7 @@ import { HttpClient } from '@angular/common/http';
                 class="btn-post"
                 (click)="createPersonalPost()"
                 [disabled]="!personalPostContent.trim() || postingPersonalPost">
-                {{ postingPersonalPost ? 'Wird gepostet...' : '📤 Post hinterlassen' }}
+                {{ postingPersonalPost ? ('profile.posting' | translate) : ('📤 ' + ('profile.leavePost' | translate)) }}
               </button>
             </div>
           </div>
@@ -74,36 +79,36 @@ import { HttpClient } from '@angular/common/http';
         <div class="posts-section">
           <h2 class="posts-title">
             @if (isOwnProfile) {
-              Deine Posts
+              {{ 'profile.yourPosts' | translate }}
             } @else {
-              Posts von {{ profile.username }}
+              {{ getPostsByLabel() }}
             }
           </h2>
 
           @if (loadingPosts) {
-            <div class="loading-posts">Posts werden geladen...</div>
+            <div class="loading-posts">{{ 'profile.loadingPosts' | translate }}</div>
           } @else if (posts().length === 0) {
             <div class="no-posts">
               @if (isOwnProfile) {
-                Du hast noch keine Posts erstellt.
+                {{ 'profile.noOwnPosts' | translate }}
               } @else if (isFriend) {
-                Dieser Benutzer hat noch keine Posts erstellt.
+                {{ 'profile.noUserPosts' | translate }}
               } @else {
                 <div class="info-box">
-                  <h3>ℹ️ Hinweis</h3>
-                  <p>Posts von Benutzern können nur von Freunden gesehen werden. Füge {{ profile.username }} als Freund hinzu, um mehr Posts zu sehen!</p>
+                  <h3>ℹ️ {{ 'profile.hint' | translate }}</h3>
+                  <p>{{ getNotFriendHint() }}</p>
                 </div>
               }
             </div>
           } @else {
             @for (post of posts(); track post.post_id) {
-              <app-post-card [post]="post" (delete)="onPostDeleted(post)"></app-post-card>
+              <app-post-card [post]="post" (like)="onLike(post)" (unlike)="onUnlike(post)" (delete)="onPostDeleted(post)"></app-post-card>
             }
           }
         </div>
       } @else if (error) {
         <div class="error-box">
-          <h3>❌ Fehler</h3>
+          <h3>❌ {{ 'profile.error' | translate }}</h3>
           <p>{{ error }}</p>
         </div>
       }
@@ -124,6 +129,7 @@ import { HttpClient } from '@angular/common/http';
     .profile-username { margin: 0 0 4px; font-size: 28px; font-weight: 700; color: #050505; }
     .profile-realname { margin: 0 0 8px; font-size: 15px; color: #65676b; font-weight: 400; }
     .profile-bio { margin: 0 0 16px; color: #65676b; line-height: 1.5; }
+    .profile-birthday { margin: 0 0 12px; color: #65676b; font-size: 15px; }
     .profile-meta { display: flex; gap: 16px; align-items: center; }
 
     .role-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
@@ -166,6 +172,7 @@ export class UserProfileComponent implements OnInit {
   private friendsService = inject(FriendsService);
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private i18n = inject(I18nService);
 
   profile: UserProfile | null = null;
   loading = true;
@@ -195,16 +202,14 @@ export class UserProfileComponent implements OnInit {
     const currentUser = this.authService.currentUser();
     this.isOwnProfile = currentUser?.uid === uid;
 
-    // Profil laden
     this.userService.getUserProfile(uid).subscribe({
       next: (profile) => {
         this.profile = profile;
         this.loading = false;
-        // Posts laden
         this.loadPosts(uid);
       },
       error: (err) => {
-        this.error = 'Profil konnte nicht geladen werden.';
+        this.error = this.i18n.t('errors.loadProfile');
         this.loading = false;
         this.loadingPosts = false;
       }
@@ -219,7 +224,7 @@ export class UserProfileComponent implements OnInit {
         this.loadingPosts = false;
       },
       error: (err) => {
-        console.error('Fehler beim Laden der Posts:', err);
+        console.error('Error loading posts:', err);
         this.loadingPosts = false;
       }
     });
@@ -229,33 +234,55 @@ export class UserProfileComponent implements OnInit {
     this.posts.set(this.posts().filter(p => p.post_id !== post.post_id));
   }
 
+  onLike(post: Post): void {
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
+      }
+    });
+  }
+
+  onUnlike(post: Post): void {
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
+      }
+    });
+  }
+
   sendFriendRequest(): void {
     if (!this.profile) return;
 
     this.friendsService.sendFriendRequest(this.profile.uid).subscribe({
       next: () => {
         this.requestSent = true;
-        alert('Freundschaftsanfrage wurde gesendet!');
+        alert(this.i18n.t('profile.friendRequestSent'));
       },
       error: (err) => {
         if (err.error?.detail === 'Friend request already exists') {
-          alert('Du hast bereits eine Freundschaftsanfrage an diesen Benutzer gesendet.');
+          alert(this.i18n.t('errors.alreadySentRequest'));
         } else if (err.error?.detail === 'Already friends') {
-          alert('Ihr seid bereits befreundet!');
+          alert(this.i18n.t('errors.alreadyFriends'));
         } else {
-          alert('Fehler beim Senden der Freundschaftsanfrage.');
+          alert(this.i18n.t('errors.sendFriendRequest'));
         }
       }
     });
   }
 
   getRoleLabel(role: string): string {
-    const labels: Record<string, string> = {
-      user: 'Benutzer',
-      moderator: 'Moderator',
-      admin: 'Administrator'
+    const keyMap: Record<string, string> = {
+      user: 'profile.roleUser',
+      moderator: 'profile.roleModerator',
+      admin: 'profile.roleAdmin'
     };
-    return labels[role] || role;
+    return keyMap[role] ? this.i18n.t(keyMap[role]) : role;
   }
 
   getDisplayName(): string {
@@ -279,6 +306,21 @@ export class UserProfileComponent implements OnInit {
     return this.profile ? `@${this.profile.username}` : '';
   }
 
+  getPersonalPostPlaceholder(): string {
+    if (!this.profile) return '';
+    return this.i18n.t('profile.personalPostPlaceholder').replace('{{username}}', this.profile.username);
+  }
+
+  getPostsByLabel(): string {
+    if (!this.profile) return '';
+    return this.i18n.t('profile.postsBy').replace('{{username}}', this.profile.username);
+  }
+
+  getNotFriendHint(): string {
+    if (!this.profile) return '';
+    return this.i18n.t('profile.notFriendHint').replace('{{username}}', this.profile.username);
+  }
+
   createPersonalPost(): void {
     if (!this.profile || !this.personalPostContent.trim()) return;
 
@@ -289,17 +331,15 @@ export class UserProfileComponent implements OnInit {
       visibility: 'public'
     }).subscribe({
       next: () => {
-        // Kein Alert, direkt Posts aktualisieren
         this.personalPostContent = '';
         this.postingPersonalPost = false;
-        // Posts neu laden
         if (this.profile) {
           this.loadPosts(this.profile.uid);
         }
       },
       error: (err) => {
-        console.error('Fehler beim Erstellen des persönlichen Posts:', err);
-        alert('Fehler beim Erstellen des Posts. Bitte versuche es erneut.');
+        console.error('Error creating personal post:', err);
+        alert(this.i18n.t('errors.createPost'));
         this.postingPersonalPost = false;
       }
     });

@@ -4,29 +4,31 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-my-posts',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, PostCardComponent, TranslatePipe],
   template: `
     <div class="my-posts-container">
       <div class="page-header">
-        <h1>📝 Meine Posts</h1>
-        <p class="subtitle">Alle deine veröffentlichten Beiträge und Interaktionen</p>
+        <h1>📝 {{ 'myPosts.title' | translate }}</h1>
+        <p class="subtitle">{{ 'myPosts.subtitle' | translate }}</p>
 
         <div class="tabs">
           <button
             class="tab"
             [class.active]="activeTab === 'my-posts'"
             (click)="switchTab('my-posts')">
-            📝 Meine Posts
+            📝 {{ 'myPosts.tabMyPosts' | translate }}
           </button>
           <button
             class="tab"
             [class.active]="activeTab === 'commented'"
             (click)="switchTab('commented')">
-            💬 Kommentierte Posts
+            💬 {{ 'myPosts.tabCommented' | translate }}
           </button>
         </div>
       </div>
@@ -34,15 +36,15 @@ import { PostCardComponent } from '../post-card/post-card.component';
       @if (loading && posts.length === 0) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade deine Posts...</p>
+          <p>{{ 'myPosts.loading' | translate }}</p>
         </div>
       }
 
       @if (!loading && posts.length === 0) {
         <div class="empty-state">
           <div class="empty-icon">📭</div>
-          <h2>Noch keine Posts</h2>
-          <p>Du hast noch keine Beiträge veröffentlicht.</p>
+          <h2>{{ 'myPosts.noPosts' | translate }}</h2>
+          <p>{{ 'myPosts.noPostsDesc' | translate }}</p>
         </div>
       }
 
@@ -64,7 +66,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
       @if (loading && posts.length > 0) {
         <div class="loading-more">
           <div class="spinner"></div>
-          <p>Lade weitere Posts...</p>
+          <p>{{ 'myPosts.loadingMore' | translate }}</p>
         </div>
       }
     </div>
@@ -213,6 +215,7 @@ import { PostCardComponent } from '../post-card/post-card.component';
 export class MyPostsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
+  private i18n = inject(I18nService);
 
   posts: Post[] = [];
   loading = false;
@@ -230,15 +233,12 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     // Check for highlight query parameter - subscribe to changes
     this.route.queryParams.subscribe(params => {
       const highlightId = params['highlight'];
-      console.log('Query params changed, highlight:', highlightId);
       if (highlightId) {
         const postId = +highlightId;
         this.highlightedPostId.set(postId);
-        console.log('Set highlightedPostId to', postId);
 
         // Stelle sicher, dass wir auf "Meine Posts" Tab sind
         if (this.activeTab !== 'my-posts') {
-          console.log('Switching to my-posts tab');
           this.activeTab = 'my-posts';
           this.posts = [];
           this.offset = 0;
@@ -248,7 +248,6 @@ export class MyPostsComponent implements OnInit, OnDestroy {
 
         // Scroll to post after a short delay to ensure it's rendered
         setTimeout(() => {
-          console.log('Scrolling to post', postId);
           this.scrollToPost(postId);
         }, 800);
       } else {
@@ -319,23 +318,29 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   }
 
   likePost(post: Post): void {
-    this.http.post(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
-      next: () => {
-        post.likes_count++;
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
       },
       error: () => {
-        alert('Fehler beim Liken');
+        alert(this.i18n.t('errors.like'));
       }
     });
   }
 
   unlikePost(post: Post): void {
-    this.http.delete(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
-      next: () => {
-        post.likes_count = Math.max(0, post.likes_count - 1);
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
       },
       error: () => {
-        alert('Fehler beim Unlike');
+        alert(this.i18n.t('errors.unlike'));
       }
     });
   }
@@ -346,38 +351,29 @@ export class MyPostsComponent implements OnInit, OnDestroy {
         this.posts = this.posts.filter(p => p.post_id !== post.post_id);
       },
       error: () => {
-        alert('Fehler beim Löschen');
+        alert(this.i18n.t('errors.delete'));
       }
     });
   }
 
   private scrollToPost(postId: number): void {
-    console.log('Attempting to scroll to post', postId);
-    console.log('Current posts:', this.posts.map(p => p.post_id));
-
     const element = document.getElementById(`post-${postId}`);
-    console.log('Found element:', element);
 
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log('Scrolled to element');
-      // Clear highlight after animation (increased to 5 seconds)
       setTimeout(() => {
-        console.log('Clearing highlight');
         this.highlightedPostId.set(null);
       }, 5000);
     } else {
-      console.warn(`Post ${postId} not found in DOM`);
-      console.log('Available post IDs:', this.posts.map(p => p.post_id));
       // Retry after posts might have loaded
       setTimeout(() => {
-        console.log('Retrying scroll after delay...');
         const retryElement = document.getElementById(`post-${postId}`);
         if (retryElement) {
           retryElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           setTimeout(() => this.highlightedPostId.set(null), 5000);
         } else {
-          console.error(`Post ${postId} still not found after retry`);
+          // Post not on current page, clear highlight silently
+          this.highlightedPostId.set(null);
         }
       }, 1000);
     }

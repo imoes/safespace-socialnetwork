@@ -85,6 +85,21 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS posts_count INTEGER DEFAULT 0
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(10)
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS birthday DATE
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{}'::jsonb
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (
@@ -169,6 +184,72 @@ class PostgresDB:
                 ON users(last_login)
             """)
 
+            # Groups
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS groups (
+                    group_id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    description TEXT,
+                    join_mode VARCHAR(20) DEFAULT 'open',
+                    created_by INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Migration: add join_mode column if missing
+            await conn.execute("""
+                ALTER TABLE groups
+                ADD COLUMN IF NOT EXISTS join_mode VARCHAR(20) DEFAULT 'open'
+            """)
+
+            # Group Members
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS group_members (
+                    id SERIAL PRIMARY KEY,
+                    group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    role VARCHAR(20) DEFAULT 'member',
+                    status VARCHAR(20) DEFAULT 'active',
+                    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(group_id, user_uid)
+                )
+            """)
+
+            # Migration: add status column if missing
+            await conn.execute("""
+                ALTER TABLE group_members
+                ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active'
+            """)
+
+            # Group Posts (metadata linking to SQLite)
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS group_posts (
+                    id SERIAL PRIMARY KEY,
+                    group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
+                    post_id INTEGER NOT NULL,
+                    author_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    visibility VARCHAR(20) DEFAULT 'internal',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_groups_name_lower
+                ON groups(LOWER(name))
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_group_members_group
+                ON group_members(group_id)
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_group_members_user
+                ON group_members(user_uid)
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_group_posts_group
+                ON group_posts(group_id, created_at DESC)
+            """)
+
             await conn.commit()
 
 
@@ -177,7 +258,7 @@ async def get_user_by_uid(uid: int) -> dict | None:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """SELECT uid, username, email, password_hash, role, bio, is_banned, banned_until, created_at,
-                      profile_picture, first_name, last_name
+                      profile_picture, first_name, last_name, preferred_language, birthday
                FROM users WHERE uid = %s""",
             (uid,)
         )
@@ -613,3 +694,19 @@ async def decrement_user_posts_count(user_uid: int) -> None:
             (user_uid,)
         )
         await conn.commit()
+
+
+async def get_users_with_birthday_today() -> list[dict]:
+    """Gibt alle User zurück, die heute Geburtstag haben"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT uid, username, birthday
+            FROM users
+            WHERE birthday IS NOT NULL
+              AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE)
+              AND EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE)
+              AND is_banned = FALSE
+            """
+        )
+        return await result.fetchall()

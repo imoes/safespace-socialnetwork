@@ -9,6 +9,7 @@ import { ReportService } from '../../services/report.service';
 import { TranslationService, TranslationResult } from '../../services/translation.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
 
 interface LinkPreview {
   url: string;
@@ -47,10 +48,10 @@ interface LinkPreview {
 
       @if (editingPost) {
         <div class="post-edit">
-          <textarea [(ngModel)]="editPostContent" placeholder="Was möchtest du ändern?" rows="5"></textarea>
+          <textarea [(ngModel)]="editPostContent" [placeholder]="'post.editPlaceholder' | translate" rows="5"></textarea>
           <div class="post-edit-actions">
-            <button class="btn-save-post" (click)="updatePostContent()">💾 Speichern</button>
-            <button class="btn-cancel-post" (click)="cancelEditPost()">❌ Abbrechen</button>
+            <button class="btn-save-post" (click)="updatePostContent()">💾 {{ 'post.save' | translate }}</button>
+            <button class="btn-cancel-post" (click)="cancelEditPost()">❌ {{ 'post.cancel' | translate }}</button>
           </div>
         </div>
       } @else {
@@ -99,6 +100,7 @@ interface LinkPreview {
                 controls
                 muted
                 playsinline
+                preload="metadata"
                 (mouseenter)="onVideoHover(videoElement, true)"
                 (mouseleave)="onVideoHover(videoElement, false)">
               </video>
@@ -115,24 +117,24 @@ interface LinkPreview {
         </button>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
-            <button class="action-icon-btn" (click)="startEditPost()" title="Bearbeiten">✏️</button>
-            <button class="action-icon-btn" (click)="onDelete()" title="Löschen">🗑️</button>
+            <button class="action-icon-btn" (click)="startEditPost()" [title]="'post.edit' | translate">✏️</button>
+            <button class="action-icon-btn" (click)="onDelete()" [title]="'post.delete' | translate">🗑️</button>
             <div class="visibility-wrapper" #visibilityWrapper>
-              <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" title="Klicken zum Ändern">{{ getVisibilityLabel() }}</span>
+              <span class="visibility clickable" (click)="toggleVisibilityDropdown($event)" [title]="'post.changeVisibility' | translate">{{ getVisibilityLabel() }}</span>
               @if (showVisibilityDropdown) {
                 <div class="visibility-dropdown">
-                  <button (click)="changeVisibility('public')">🌍 Öffentlich</button>
-                  <button (click)="changeVisibility('friends')">👥 Alle Freunde</button>
-                  <button (click)="changeVisibility('close_friends')">💚 Enge Freunde</button>
-                  <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 Familie</button>
-                  <button (click)="changeVisibility('private')">🔒 Nur ich</button>
+                  <button (click)="changeVisibility('public')">🌍 {{ 'visibility.public' | translate }}</button>
+                  <button (click)="changeVisibility('friends')">👥 {{ 'visibility.friends' | translate }}</button>
+                  <button (click)="changeVisibility('close_friends')">💚 {{ 'visibility.closeFriends' | translate }}</button>
+                  <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</button>
+                  <button (click)="changeVisibility('private')">🔒 {{ 'visibility.private' | translate }}</button>
                 </div>
               }
             </div>
           </div>
         } @else {
           <div class="post-controls">
-            <button class="action-btn report-btn" (click)="showReportModal = true" title="Melden">🚨</button>
+            <button class="action-btn report-btn" (click)="showReportModal = true" [title]="'post.report' | translate">🚨</button>
             <span class="visibility">{{ getVisibilityLabel() }}</span>
           </div>
         }
@@ -141,12 +143,12 @@ interface LinkPreview {
       @if (showComments) {
         <div class="comments-section">
           <div class="comment-input">
-            <input type="text" [(ngModel)]="newComment" placeholder="Schreibe einen Kommentar..." (keyup.enter)="addComment()" />
-            <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">Senden</button>
+            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" />
+            <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">{{ 'post.send' | translate }}</button>
           </div>
 
           @if (loadingComments) {
-            <div class="loading">Kommentare werden geladen...</div>
+            <div class="loading">{{ 'post.loadingComments' | translate }}</div>
           }
 
           @if (comments.length > 0) {
@@ -164,8 +166,8 @@ interface LinkPreview {
                     <div class="comment-edit">
                       <input type="text" [(ngModel)]="editCommentContent" (keyup.enter)="saveCommentEdit(comment)" (keyup.escape)="cancelCommentEdit()" />
                       <div class="comment-edit-actions">
-                        <button class="btn-save-comment" (click)="saveCommentEdit(comment)">💾 Speichern</button>
-                        <button class="btn-cancel-comment" (click)="cancelCommentEdit()">❌ Abbrechen</button>
+                        <button class="btn-save-comment" (click)="saveCommentEdit(comment)">💾 {{ 'post.save' | translate }}</button>
+                        <button class="btn-cancel-comment" (click)="cancelCommentEdit()">❌ {{ 'post.cancel' | translate }}</button>
                       </div>
                     </div>
                   } @else {
@@ -176,15 +178,15 @@ interface LinkPreview {
                       {{ comment.is_liked_by_user ? '❤️' : '🤍' }} {{ comment.likes_count }}
                     </button>
                     @if (comment.user_uid === currentUid) {
-                      <button class="comment-action-btn" (click)="startEditComment(comment)">✏️ Bearbeiten</button>
-                      <button class="comment-action-btn" (click)="deleteCommentConfirm(comment)">🗑️ Löschen</button>
+                      <button class="comment-action-btn" (click)="startEditComment(comment)">✏️ {{ 'post.edit' | translate }}</button>
+                      <button class="comment-action-btn" (click)="deleteCommentConfirm(comment)">🗑️ {{ 'post.delete' | translate }}</button>
                     }
                   </div>
                 </div>
               }
             </div>
           } @else if (!loadingComments) {
-            <div class="no-comments">Noch keine Kommentare. Sei der Erste!</div>
+            <div class="no-comments">{{ 'post.noComments' | translate }}</div>
           }
         </div>
       }
@@ -192,18 +194,18 @@ interface LinkPreview {
       @if (showReportModal) {
         <div class="modal-overlay" (click)="showReportModal = false">
           <div class="report-modal" (click)="$event.stopPropagation()">
-            <h3>🚨 Post melden</h3>
+            <h3>🚨 {{ 'post.reportTitle' | translate }}</h3>
             <select [(ngModel)]="reportCategory">
-              <option value="hate_speech">Hassrede</option>
-              <option value="harassment">Belästigung</option>
-              <option value="spam">Spam</option>
-              <option value="inappropriate">Unangemessen</option>
-              <option value="other">Sonstiges</option>
+              <option value="hate_speech">{{ 'report.hateSpeech' | translate }}</option>
+              <option value="harassment">{{ 'report.harassment' | translate }}</option>
+              <option value="spam">{{ 'report.spam' | translate }}</option>
+              <option value="inappropriate">{{ 'report.inappropriate' | translate }}</option>
+              <option value="other">{{ 'report.other' | translate }}</option>
             </select>
-            <textarea [(ngModel)]="reportReason" placeholder="Warum meldest du diesen Post?" rows="3"></textarea>
+            <textarea [(ngModel)]="reportReason" [placeholder]="'post.reportPlaceholder' | translate" rows="3"></textarea>
             <div class="modal-actions">
-              <button class="btn-cancel" (click)="showReportModal = false">Abbrechen</button>
-              <button class="btn-submit" (click)="submitReport()" [disabled]="!reportReason">Melden</button>
+              <button class="btn-cancel" (click)="showReportModal = false">{{ 'post.cancel' | translate }}</button>
+              <button class="btn-submit" (click)="submitReport()" [disabled]="!reportReason">{{ 'post.report' | translate }}</button>
             </div>
           </div>
         </div>
@@ -212,18 +214,18 @@ interface LinkPreview {
       @if (showVisibilityModal) {
         <div class="modal-overlay" (click)="showVisibilityModal = false">
           <div class="visibility-modal" (click)="$event.stopPropagation()">
-            <h3>👁️ Sichtbarkeit ändern</h3>
-            <p class="current-visibility">Aktuelle Sichtbarkeit: <strong>{{ getVisibilityLabel() }}</strong></p>
+            <h3>👁️ {{ 'post.visibilityTitle' | translate }}</h3>
+            <p class="current-visibility">{{ 'post.currentVisibility' | translate }} <strong>{{ getVisibilityLabel() }}</strong></p>
             <select [(ngModel)]="newVisibility">
-              <option value="public">🌍 Öffentlich</option>
-              <option value="friends">👥 Alle Freunde</option>
-              <option value="close_friends">💚 Enge Freunde</option>
-              <option value="family">👨‍👩‍👧‍👦 Familie</option>
-              <option value="private">🔒 Nur ich</option>
+              <option value="public">🌍 {{ 'visibility.public' | translate }}</option>
+              <option value="friends">👥 {{ 'visibility.friends' | translate }}</option>
+              <option value="close_friends">💚 {{ 'visibility.closeFriends' | translate }}</option>
+              <option value="family">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</option>
+              <option value="private">🔒 {{ 'visibility.private' | translate }}</option>
             </select>
             <div class="modal-actions">
-              <button class="btn-cancel" (click)="showVisibilityModal = false">Abbrechen</button>
-              <button class="btn-submit" (click)="updateVisibility()">Speichern</button>
+              <button class="btn-cancel" (click)="showVisibilityModal = false">{{ 'post.cancel' | translate }}</button>
+              <button class="btn-submit" (click)="updateVisibility()">{{ 'post.save' | translate }}</button>
             </div>
           </div>
         </div>
@@ -435,6 +437,21 @@ interface LinkPreview {
 
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
+
+    @media (max-width: 1024px) {
+      .post-actions { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+      .action-btn { padding: 6px 8px; font-size: 13px; }
+      .post-controls { margin-left: 0; width: 100%; justify-content: flex-end; }
+      .post-header { padding: 10px 12px; }
+      .post-content { padding: 0 12px 10px; }
+      .comments-section { padding: 12px; }
+      .comment-input { flex-direction: column; }
+      .comment-input input { width: 100%; }
+      .guardian-modal { width: 95%; max-width: none; }
+      .guardian-content { padding: 16px; }
+      .guardian-header { padding: 16px; }
+      .guardian-header h2 { font-size: 18px; }
+    }
   `]
 })
 export class PostCardComponent implements OnChanges, OnInit {
@@ -452,10 +469,13 @@ export class PostCardComponent implements OnChanges, OnInit {
   private http = inject(HttpClient);
   translationService = inject(TranslationService);
   private i18n = inject(I18nService);
+  private linkPreviewService = inject(LinkPreviewService);
 
   isLiked = false;
   linkPreviews: LinkPreview[] = [];
   private previewsLoaded = false;
+  isLiked: boolean = false;
+  private isLikedInitialized = false;
   showReportModal = false;
   showVisibilityModal = false;
   showVisibilityDropdown = false;
@@ -474,6 +494,9 @@ export class PostCardComponent implements OnChanges, OnInit {
   translating = false;
   translatedContent: TranslationResult | null = null;
 
+  // Link Preview
+  linkPreview: LinkPreview | null = null;
+
   // Guardian Modal für Kommentare
   showGuardianModal = false;
   guardianResult: any = null;
@@ -486,23 +509,17 @@ export class PostCardComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Wenn expandComments auf true gesetzt wird, Kommentare automatisch laden
-    if (changes['expandComments']) {
-      const change = changes['expandComments'];
-      console.log('expandComments changed from', change.previousValue, 'to', change.currentValue, 'for post', this.post.post_id);
-
-      if (this.expandComments) {
-        console.log('Auto-expanding comments for post', this.post.post_id);
-        if (!this.showComments) {
-          this.showComments = true;
-          if (this.comments.length === 0) {
-            console.log('Loading comments...');
-            this.loadComments();
-          } else {
-            console.log('Comments already loaded');
-          }
-        } else {
-          console.log('Comments already visible');
+    if (changes['post'] && this.post) {
+      if (!this.isLikedInitialized || changes['post'].previousValue?.post_id !== this.post.post_id) {
+        this.isLiked = !!this.post.is_liked_by_user;
+        this.isLikedInitialized = true;
+      }
+    }
+    if (changes['expandComments'] && this.expandComments) {
+      if (!this.showComments) {
+        this.showComments = true;
+        if (this.comments.length === 0) {
+          this.loadComments();
         }
       }
     }
@@ -518,9 +535,7 @@ export class PostCardComponent implements OnChanges, OnInit {
   }
 
   onDelete(): void {
-    if (confirm('Post wirklich löschen?')) {
-      this.delete.emit(this.post);
-    }
+    this.delete.emit(this.post);
   }
 
   submitReport(): void {
@@ -531,11 +546,11 @@ export class PostCardComponent implements OnChanges, OnInit {
       category: this.reportCategory
     }).subscribe({
       next: () => {
-        alert('Danke für deine Meldung! Ein Moderator wird sie prüfen.');
+        alert(this.i18n.t('post.reportSuccess'));
         this.showReportModal = false;
         this.reportReason = '';
       },
-      error: () => alert('Fehler beim Melden')
+      error: () => alert(this.i18n.t('errors.report'))
     });
   }
 
@@ -551,7 +566,7 @@ export class PostCardComponent implements OnChanges, OnInit {
           this.showVisibilityModal = false;
         },
         error: () => {
-          alert('Fehler beim Ändern der Sichtbarkeit');
+          alert(this.i18n.t('errors.changeVisibility'));
         }
       });
     } else {
@@ -580,7 +595,7 @@ export class PostCardComponent implements OnChanges, OnInit {
           this.showVisibilityDropdown = false;
         },
         error: () => {
-          alert('Fehler beim Ändern der Sichtbarkeit');
+          alert(this.i18n.t('errors.changeVisibility'));
           this.showVisibilityDropdown = false;
         }
       });
@@ -610,7 +625,7 @@ export class PostCardComponent implements OnChanges, OnInit {
         this.editPostContent = '';
       },
       error: () => {
-        alert('Fehler beim Bearbeiten des Posts');
+        alert(this.i18n.t('errors.editPost'));
       }
     });
   }
@@ -636,39 +651,39 @@ export class PostCardComponent implements OnChanges, OnInit {
         this.editCommentContent = '';
       },
       error: () => {
-        alert('Fehler beim Bearbeiten des Kommentars');
+        alert(this.i18n.t('errors.editComment'));
       }
     });
   }
 
   deleteCommentConfirm(comment: Comment): void {
-    if (confirm('Kommentar wirklich löschen?')) {
-      this.feedService.deleteComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
-        next: () => {
-          this.comments = this.comments.filter(c => c.comment_id !== comment.comment_id);
-          this.post.comments_count = Math.max(0, this.post.comments_count - 1);
-        },
-        error: () => {
-          alert('Fehler beim Löschen des Kommentars');
-        }
-      });
-    }
+    this.feedService.deleteComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
+      next: () => {
+        this.comments = this.comments.filter(c => c.comment_id !== comment.comment_id);
+        this.post.comments_count = Math.max(0, this.post.comments_count - 1);
+      },
+      error: () => {
+        alert(this.i18n.t('errors.deleteComment'));
+      }
+    });
   }
 
   isImage(url: string): boolean { return /\.(jpg|jpeg|png|gif|webp)$/i.test(url); }
   isVideo(url: string): boolean { return /\.(mp4|webm|mov)$/i.test(url); }
   
   getVisibilityLabel(): string {
-    const labels: Record<string, string> = {
-      public: '🌍 Öffentlich',
-      acquaintance: '👋 Bekannte',
-      friends: '👥 Alle Freunde',
-      close_friends: '💚 Enge Freunde',
-      close_friend: '💚 Enge Freunde',
-      family: '👨‍👩‍👧‍👦 Familie',
-      private: '🔒 Privat'
+    const emojiMap: Record<string, string> = {
+      public: '🌍',
+      acquaintance: '👋',
+      friends: '👥',
+      close_friends: '💚',
+      close_friend: '💚',
+      family: '👨‍👩‍👧‍👦',
+      private: '🔒'
     };
-    return labels[this.post.visibility] || this.post.visibility;
+    const emoji = emojiMap[this.post.visibility] || '';
+    const label = this.i18n.t('visibility.' + this.post.visibility);
+    return emoji ? `${emoji} ${label}` : label;
   }
 
   toggleComments(): void {
@@ -717,7 +732,7 @@ export class PostCardComponent implements OnChanges, OnInit {
         this.loadingComments = false;
       },
       error: () => {
-        alert('Fehler beim Laden der Kommentare');
+        alert(this.i18n.t('errors.loadComments'));
         this.loadingComments = false;
       }
     });
@@ -734,24 +749,14 @@ export class PostCardComponent implements OnChanges, OnInit {
         this.newComment = '';
       },
       error: (error) => {
-        console.error('Comment error:', error);
-        console.log('Error status:', error.status);
-        console.log('Error body:', error.error);
-        console.log('Error detail:', error.error?.detail);
-
-        // Hatespeech-Fehler mit Guardian Modal
-        // Backend sendet: { detail: { error: "comment_contains_hate_speech", ... } }
         const errorDetail = error.error?.detail || error.error;
 
         if (error.status === 400 && errorDetail?.error === 'comment_contains_hate_speech') {
-          console.log('✅ Showing Guardian Modal');
           this.originalCommentContent = content;
           this.guardianResult = errorDetail;
           this.showGuardianModal = true;
         } else {
-          // Generischer Fehler
-          console.error('❌ Generic error, not hate speech');
-          alert('Fehler beim Hinzufügen des Kommentars');
+          alert(this.i18n.t('errors.addComment'));
         }
       }
     });
@@ -766,7 +771,7 @@ export class PostCardComponent implements OnChanges, OnInit {
           comment.is_liked_by_user = false;
           comment.likes_count = Math.max(0, comment.likes_count - 1);
         },
-        error: () => alert('Fehler beim Entfernen des Likes')
+        error: () => alert(this.i18n.t('errors.commentUnlike'))
       });
     } else {
       this.feedService.likeComment(this.post.author_uid, this.post.post_id, comment.comment_id).subscribe({
@@ -774,7 +779,7 @@ export class PostCardComponent implements OnChanges, OnInit {
           comment.is_liked_by_user = true;
           comment.likes_count++;
         },
-        error: () => alert('Fehler beim Liken des Kommentars')
+        error: () => alert(this.i18n.t('errors.commentLike'))
       });
     }
   }
@@ -811,6 +816,21 @@ export class PostCardComponent implements OnChanges, OnInit {
 
     const result = '<p>' + escaped + '</p>';
     return this.sanitizer.bypassSecurityTrustHtml(result);
+  }
+
+  private loadLinkPreview(): void {
+    const content = this.post?.content || '';
+    const urlMatch = content.match(/(https?:\/\/[^\s]+)/);
+    if (!urlMatch) return;
+
+    this.linkPreviewService.getPreview(urlMatch[0]).subscribe({
+      next: (preview) => {
+        if (preview && (preview.title || preview.description)) {
+          this.linkPreview = preview;
+        }
+      },
+      error: () => {} // silently ignore preview failures
+    });
   }
 
   handleContentClick(event: MouseEvent): void {
@@ -862,12 +882,9 @@ export class PostCardComponent implements OnChanges, OnInit {
 
   onVideoHover(videoElement: HTMLVideoElement, isHovering: boolean): void {
     if (isHovering) {
-      // Play video on hover - läuft dann bis zum Ende durch
-      videoElement.play().catch(err => {
-        console.log('Video autoplay failed:', err);
-      });
+      videoElement.muted = true;
+      videoElement.play().catch(() => {});
     }
-    // Beim Verlassen passiert nichts - Video läuft weiter
   }
 
   // Guardian Modal Methods
@@ -920,7 +937,6 @@ export class PostCardComponent implements OnChanges, OnInit {
         this.closeGuardianModal();
       },
       error: (error) => {
-        console.error('Submit alternative error:', error);
         this.isSubmittingComment = false;
 
         // Falls auch die Alternative abgelehnt wird (sehr selten)
@@ -930,7 +946,7 @@ export class PostCardComponent implements OnChanges, OnInit {
           this.guardianResult = errorDetail;
           this.customContent = '';
         } else {
-          alert('Fehler beim Senden des Kommentars');
+          alert(this.i18n.t('errors.sendComment'));
           this.closeGuardianModal();
         }
       }
@@ -938,26 +954,27 @@ export class PostCardComponent implements OnChanges, OnInit {
   }
 
   disputeModeration(): void {
-    const reason = prompt('Bitte begründe deinen Widerspruch:');
+    const reason = prompt(this.i18n.t('post.disputePrompt'));
     if (!reason) return;
 
-    alert('Dein Widerspruch wurde an die Moderatoren weitergeleitet. Du erhältst eine Rückmeldung innerhalb von 48 Stunden.');
+    alert(this.i18n.t('post.disputeSuccess'));
     this.closeGuardianModal();
   }
 
   getCategoryLabel(category: string): string {
-    const labels: Record<string, string> = {
-      'racism': 'Rassismus',
-      'sexism': 'Sexismus',
-      'homophobia': 'Homophobie',
-      'religious_hate': 'Religiöse Hetze',
-      'disability_hate': 'Ableismus',
-      'xenophobia': 'Fremdenfeindlichkeit',
-      'general_hate': 'Hassrede',
-      'threat': 'Drohung',
-      'harassment': 'Belästigung',
-      'none': 'Keine'
+    const keyMap: Record<string, string> = {
+      'racism': 'categories.racism',
+      'sexism': 'categories.sexism',
+      'homophobia': 'categories.homophobia',
+      'religious_hate': 'categories.religiousHate',
+      'disability_hate': 'categories.disabilityHate',
+      'xenophobia': 'categories.xenophobia',
+      'general_hate': 'categories.generalHate',
+      'threat': 'categories.threat',
+      'harassment': 'categories.harassment',
+      'none': 'categories.none'
     };
-    return labels[category] || category;
+    const key = keyMap[category];
+    return key ? this.i18n.t(key) : category;
   }
 }

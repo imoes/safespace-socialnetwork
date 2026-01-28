@@ -223,6 +223,20 @@ import { interval } from 'rxjs';
       border-radius: 50%;
       flex-shrink: 0;
     }
+
+    @media (max-width: 1024px) {
+      .dropdown-menu {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 16px 16px 0 0;
+        margin-top: 0;
+      }
+    }
   `]
 })
 export class NotificationsDropdownComponent implements OnInit {
@@ -327,6 +341,8 @@ export class NotificationsDropdownComponent implements OnInit {
         return this.i18n.t('notifications.postCommented', { username });
       case 'comment_liked':
         return this.i18n.t('notifications.commentLiked', { username });
+      case 'birthday':
+        return this.i18n.t('notifications.birthday', { username, age: notification.comment_id?.toString() || '?' });
       default:
         return this.i18n.t('notifications.newNotification');
     }

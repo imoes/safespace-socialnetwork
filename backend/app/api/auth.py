@@ -106,7 +106,9 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         created_at=current_user["created_at"],
         profile_picture=current_user.get("profile_picture"),
         first_name=current_user.get("first_name"),
-        last_name=current_user.get("last_name")
+        last_name=current_user.get("last_name"),
+        preferred_language=current_user.get("preferred_language"),
+        birthday=current_user.get("birthday")
     )
 
 

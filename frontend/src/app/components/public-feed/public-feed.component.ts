@@ -1,32 +1,34 @@
-import { Component, OnInit, inject, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-public-feed',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, PostCardComponent, TranslatePipe],
   template: `
     <div class="public-feed-container">
       <div class="page-header">
-        <h1>🌍 Öffentliche Posts</h1>
-        <p class="subtitle">Entdecke öffentliche Beiträge aus der Community</p>
+        <h1>🌍 {{ 'publicFeed.title' | translate }}</h1>
+        <p class="subtitle">{{ 'publicFeed.subtitle' | translate }}</p>
       </div>
 
       @if (loading && posts.length === 0) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade öffentliche Posts...</p>
+          <p>{{ 'publicFeed.loading' | translate }}</p>
         </div>
       }
 
       @if (!loading && posts.length === 0) {
         <div class="empty-state">
           <div class="empty-icon">📭</div>
-          <h2>Keine öffentlichen Posts</h2>
-          <p>Es sind noch keine öffentlichen Posts vorhanden.</p>
+          <h2>{{ 'publicFeed.noPosts' | translate }}</h2>
+          <p>{{ 'publicFeed.noPostsDesc' | translate }}</p>
         </div>
       }
 
@@ -45,17 +47,17 @@ import { PostCardComponent } from '../post-card/post-card.component';
       @if (loading && posts.length > 0) {
         <div class="loading-more">
           <div class="spinner"></div>
-          <p>Lade weitere Posts...</p>
+          <p>{{ 'publicFeed.loadingMore' | translate }}</p>
         </div>
       }
 
       @if (!loading && !hasMore && posts.length > 0) {
         <div class="end-message">
-          <p>🎉 Du hast alle Posts gesehen!</p>
+          <p>{{ 'publicFeed.allSeen' | translate }}</p>
         </div>
       }
 
-      <button class="refresh-btn" (click)="refresh()" title="Aktualisieren">
+      <button class="refresh-btn" (click)="refresh()" [title]="'common.refresh' | translate">
         ↻
       </button>
     </div>
@@ -191,8 +193,9 @@ import { PostCardComponent } from '../post-card/post-card.component';
     }
   `]
 })
-export class PublicFeedComponent implements OnInit {
+export class PublicFeedComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
+  private i18n = inject(I18nService);
 
   posts: Post[] = [];
   loading = false;
@@ -201,10 +204,43 @@ export class PublicFeedComponent implements OnInit {
   currentUid?: number;
   private offset = 0;
   private readonly limit = 15;
+  private readonly REFRESH_INTERVAL = 30000;
+  private refreshTimer: any;
 
   ngOnInit(): void {
     this.loadCurrentUser();
     this.loadPosts();
+    this.startAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoRefresh();
+  }
+
+  private startAutoRefresh(): void {
+    this.refreshTimer = setInterval(() => {
+      this.silentRefresh();
+    }, this.REFRESH_INTERVAL);
+  }
+
+  private stopAutoRefresh(): void {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  private silentRefresh(): void {
+    this.http.get<{ posts: Post[], total: number, has_more: boolean }>(
+      `/api/public-feed?limit=${this.limit}&offset=0`
+    ).subscribe({
+      next: (response) => {
+        this.posts = response.posts;
+        this.total = response.total;
+        this.hasMore = response.has_more;
+        this.offset = 0;
+      }
+    });
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -241,7 +277,7 @@ export class PublicFeedComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Fehler beim Laden der öffentlichen Posts:', err);
+        console.error('Error loading public posts:', err);
         this.loading = false;
       }
     });
@@ -253,23 +289,29 @@ export class PublicFeedComponent implements OnInit {
   }
 
   likePost(post: Post): void {
-    this.http.post(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
-      next: () => {
-        post.likes_count++;
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
       },
       error: () => {
-        alert('Fehler beim Liken');
+        alert(this.i18n.t('errors.like'));
       }
     });
   }
 
   unlikePost(post: Post): void {
-    this.http.delete(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
-      next: () => {
-        post.likes_count = Math.max(0, post.likes_count - 1);
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
       },
       error: () => {
-        alert('Fehler beim Unlike');
+        alert(this.i18n.t('errors.unlike'));
       }
     });
   }
@@ -288,7 +330,7 @@ export class PublicFeedComponent implements OnInit {
         this.posts = this.posts.filter(p => p.post_id !== post.post_id);
       },
       error: () => {
-        alert('Fehler beim Löschen');
+        alert(this.i18n.t('errors.delete'));
       }
     });
   }

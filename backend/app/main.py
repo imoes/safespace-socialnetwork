@@ -15,6 +15,8 @@ from app.api.welcome import router as welcome_router
 from app.api.broadcast import router as broadcast_router
 from app.api.notifications import router as notifications_router
 from app.safespace.api import router as safespace_router
+from app.api.groups import router as groups_router
+from app.api.link_preview import router as link_preview_router
 
 
 @asynccontextmanager
@@ -64,7 +66,14 @@ async def lifespan(app: FastAPI):
         print("✅ Kafka Producer initialized")
     except Exception as e:
         print(f"⚠️ Kafka not available: {e}")
-    
+
+    # Birthday Notification Scheduler starten
+    try:
+        from app.services.birthday_service import start_birthday_scheduler
+        start_birthday_scheduler()
+    except Exception as e:
+        print(f"⚠️ Failed to start birthday scheduler: {e}")
+
     yield
     
     # Shutdown
@@ -113,6 +122,8 @@ app.include_router(welcome_router, prefix="/api")
 app.include_router(broadcast_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
 app.include_router(safespace_router, prefix="/api")
+app.include_router(groups_router, prefix="/api")
+app.include_router(link_preview_router, prefix="/api")
 
 
 @app.get("/")
@@ -128,3 +139,11 @@ async def root():
 async def health_check():
     """Health Check für Docker/Kubernetes"""
     return {"status": "healthy"}
+
+
+@app.get("/api/site-settings/title")
+async def get_public_site_title():
+    """Öffentlicher Endpunkt für den Site-Titel"""
+    from app.db.site_settings import get_site_title
+    title = await get_site_title()
+    return {"site_title": title}

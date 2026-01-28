@@ -106,6 +106,18 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             />
           </div>
 
+          <!-- Geburtstag -->
+          <div class="form-group">
+            <label for="birthday">🎂 {{ 'settings.birthday' | translate }}</label>
+            <input
+              id="birthday"
+              type="date"
+              [(ngModel)]="birthday"
+              name="birthday"
+              class="form-control"
+            />
+          </div>
+
           <!-- Bio -->
           <div class="form-group">
             <label for="bio">{{ 'settings.bio' | translate }}</label>
@@ -135,6 +147,34 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               }
             </select>
             <small class="form-text">{{ 'settings.languageHelp' | translate }}</small>
+          </div>
+
+          <!-- E-Mail-Benachrichtigungen -->
+          <div class="section-divider">
+            <h3>📧 {{ 'settings.emailNotifications' | translate }}</h3>
+          </div>
+
+          <div class="notification-prefs">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.post_liked" name="notif_post_liked" />
+              <span>{{ 'settings.notifPostLiked' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.post_commented" name="notif_post_commented" />
+              <span>{{ 'settings.notifPostCommented' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.comment_liked" name="notif_comment_liked" />
+              <span>{{ 'settings.notifCommentLiked' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.birthday" name="notif_birthday" />
+              <span>{{ 'settings.notifBirthday' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.group_post" name="notif_group_post" />
+              <span>{{ 'settings.notifGroupPost' | translate }}</span>
+            </label>
           </div>
 
           <!-- Passwort ändern -->
@@ -448,6 +488,49 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .btn-danger:hover:not(:disabled) {
       background: #c82333;
     }
+
+    .notification-prefs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 10px 12px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .checkbox-label:hover {
+      background: #f0f0f0;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1877f2;
+      cursor: pointer;
+    }
+
+    .checkbox-label span {
+      font-size: 14px;
+      color: #333;
+    }
+
+    @media (max-width: 1024px) {
+      .settings-container { margin: 16px auto; padding: 12px; }
+      .settings-card { padding: 20px 16px; }
+      h2 { font-size: 20px; }
+      .profile-picture-section { flex-direction: column; text-align: center; gap: 16px; }
+      .button-group { flex-direction: column; }
+      .btn { width: 100%; text-align: center; }
+    }
   `]
 })
 export class SettingsComponent implements OnInit {
@@ -460,11 +543,20 @@ export class SettingsComponent implements OnInit {
   bio = '';
   firstName = '';
   lastName = '';
+  birthday = '';
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
   selectedLanguage = 'en';
   originalLanguage = 'en';
+
+  notifPrefs = {
+    post_liked: true,
+    post_commented: true,
+    comment_liked: true,
+    birthday: true,
+    group_post: true
+  };
 
   isSaving = signal(false);
   successMessage = signal('');
@@ -480,31 +572,44 @@ export class SettingsComponent implements OnInit {
         this.bio = user.bio || '';
         this.firstName = user.first_name || '';
         this.lastName = user.last_name || '';
+        this.birthday = user.birthday || '';
       }
     });
   }
 
   ngOnInit(): void {
     // Load current language and store original
-    // Wait for language to be loaded (async operation in I18nService constructor)
     const currentLang = this.i18n.currentLanguage();
     if (currentLang) {
       this.selectedLanguage = currentLang.code;
       this.originalLanguage = this.selectedLanguage;
-      console.log(`⚙️ [Settings] Current language: ${this.selectedLanguage}`);
     } else {
-      // Fallback: read from localStorage directly
       const savedLang = localStorage.getItem('preferredLanguage') || 'en';
       this.selectedLanguage = savedLang;
       this.originalLanguage = savedLang;
-      console.warn(`⚠️ [Settings] Language not loaded yet, using fallback: ${savedLang}`);
     }
+
+    this.loadNotificationPreferences();
+  }
+
+  loadNotificationPreferences(): void {
+    this.http.get<any>('/api/users/me/notification-preferences').subscribe({
+      next: (prefs) => {
+        this.notifPrefs = {
+          post_liked: prefs.post_liked ?? true,
+          post_commented: prefs.post_commented ?? true,
+          comment_liked: prefs.comment_liked ?? true,
+          birthday: prefs.birthday ?? true,
+          group_post: prefs.group_post ?? true
+        };
+      },
+      error: () => {}
+    });
   }
 
   onLanguageChange(): void {
     // Just update the selection, don't apply yet
     // Language will be applied when user clicks "Save Settings"
-    console.log(`🌐 [Settings] Language dropdown changed to: '${this.selectedLanguage}' (original: '${this.originalLanguage}')`);
   }
 
   saveSettings(): void {
@@ -513,21 +618,21 @@ export class SettingsComponent implements OnInit {
 
     // Validierung
     if (!this.email) {
-      this.errorMessage.set('E-Mail-Adresse ist erforderlich');
+      this.errorMessage.set(this.i18n.t('errors.emailRequired'));
       return;
     }
 
     if (this.currentPassword) {
       if (!this.newPassword) {
-        this.errorMessage.set('Bitte geben Sie ein neues Passwort ein');
+        this.errorMessage.set(this.i18n.t('errors.enterNewPassword'));
         return;
       }
       if (this.newPassword !== this.confirmPassword) {
-        this.errorMessage.set('Die Passwörter stimmen nicht überein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMismatch'));
         return;
       }
       if (this.newPassword.length < 6) {
-        this.errorMessage.set('Das Passwort muss mindestens 6 Zeichen lang sein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMinLength'));
         return;
       }
     }
@@ -538,7 +643,9 @@ export class SettingsComponent implements OnInit {
       email: this.email,
       bio: this.bio,
       first_name: this.firstName,
-      last_name: this.lastName
+      last_name: this.lastName,
+      preferred_language: this.selectedLanguage,
+      birthday: this.birthday || null
     };
 
     if (this.currentPassword && this.newPassword) {
@@ -546,47 +653,40 @@ export class SettingsComponent implements OnInit {
       updateData.new_password = this.newPassword;
     }
 
+    // Save notification preferences in parallel
+    this.http.put('/api/users/me/notification-preferences', this.notifPrefs).subscribe();
+
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
-        console.log(`⚙️ [Settings] Settings saved successfully`);
-        console.log(`⚙️ [Settings] Selected language: ${this.selectedLanguage}, Original: ${this.originalLanguage}`);
-
-        // Check if language changed
-        console.log(`🌐 [Settings] Checking language change: selected='${this.selectedLanguage}', original='${this.originalLanguage}'`);
         if (this.selectedLanguage !== this.originalLanguage) {
-          console.log(`🌐 [Settings] Language changed from '${this.originalLanguage}' to '${this.selectedLanguage}', applying...`);
-          // Apply language change - setLanguage saves to localStorage
           this.i18n.setLanguage(this.selectedLanguage).then(() => {
-            console.log(`🌐 [Settings] Language set to '${this.selectedLanguage}', localStorage value: '${localStorage.getItem('preferredLanguage')}', reloading page...`);
-            // Small delay to ensure localStorage is written
-            setTimeout(() => {
-              window.location.reload();
-            }, 100);
-          }).catch((error) => {
-            console.error(`❌ [Settings] Failed to set language:`, error);
+            this.originalLanguage = this.selectedLanguage;
+            this.successMessage.set(this.i18n.t('settings.success'));
+            this.isSaving.set(false);
+            this.authService.loadCurrentUser();
+          }).catch(() => {
             this.errorMessage.set('Failed to change language');
             this.isSaving.set(false);
           });
         } else {
-          console.log(`⚙️ [Settings] Language unchanged, showing success message`);
           this.successMessage.set(this.i18n.t('settings.success'));
           this.isSaving.set(false);
 
-          // Passwortfelder leeren
+          // Clear password fields
           this.currentPassword = '';
           this.newPassword = '';
           this.confirmPassword = '';
 
-          // User-Daten neu laden, um aktualisierte Werte anzuzeigen
+          // Reload user data to reflect updates
           this.authService.loadCurrentUser();
         }
       },
       error: (error) => {
         this.isSaving.set(false);
         if (error.status === 401) {
-          this.errorMessage.set('Aktuelles Passwort ist falsch');
+          this.errorMessage.set(this.i18n.t('errors.wrongPassword'));
         } else {
-          this.errorMessage.set(error.error?.detail || 'Fehler beim Speichern der Einstellungen');
+          this.errorMessage.set(error.error?.detail || this.i18n.t('errors.saveSettings'));
         }
       }
     });
@@ -597,13 +697,11 @@ export class SettingsComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    const confirmText = 'Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!';
-    if (!confirm(confirmText)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm1'))) {
       return;
     }
 
-    const doubleConfirm = 'Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?';
-    if (!confirm(doubleConfirm)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm2'))) {
       return;
     }
 
@@ -612,14 +710,13 @@ export class SettingsComponent implements OnInit {
 
     this.http.delete('/api/users/me/account').subscribe({
       next: () => {
-        alert('Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.');
-        // Logout und zur Login-Seite
+        alert(this.i18n.t('settings.deleteSuccess'));
         this.authService.logout();
         this.router.navigate(['/login']);
       },
       error: (error) => {
         this.isSaving.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Kontos');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.deleteAccount'));
       }
     });
   }
@@ -632,13 +729,13 @@ export class SettingsComponent implements OnInit {
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      this.errorMessage.set('Das Bild ist zu groß. Maximal 10MB erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.imageTooLarge'));
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.errorMessage.set('Nur Bilddateien sind erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.onlyImages'));
       return;
     }
 
@@ -662,7 +759,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (error) => {
         this.uploadingProfilePicture.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Hochladen des Profilbilds');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.uploadPicture'));
         input.value = '';
       }
     });

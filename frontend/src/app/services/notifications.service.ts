@@ -1,6 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { I18nService } from './i18n.service';
 
 export interface Notification {
   notification_id: number;
@@ -21,6 +22,7 @@ export interface Notification {
 })
 export class NotificationsService {
   private readonly API_URL = '/api/notifications';
+  private i18n = inject(I18nService);
 
   // Signals
   private notificationsSignal = signal<Notification[]>([]);
@@ -57,10 +59,9 @@ export class NotificationsService {
   loadUnreadCount(): void {
     this.http.get<{ count: number }>(`${this.API_URL}/unread-count`).subscribe({
       next: (response) => {
-        console.log('📊 Loaded unread count from backend:', response.count);
         this.unreadCountSignal.set(response.count);
       },
-      error: (err) => console.error('Error loading unread count:', err)
+      error: () => {}
     });
   }
 
@@ -102,40 +103,20 @@ export class NotificationsService {
    * Löscht eine Benachrichtigung
    */
   deleteNotification(notificationId: number): Observable<any> {
-    console.log('🗑️ Deleting notification', notificationId);
-    console.log('Current notifications:', this.notificationsSignal());
-    console.log('Current unread count:', this.unreadCountSignal());
-
     return this.http.delete(`${this.API_URL}/${notificationId}`).pipe(
       tap(() => {
-        // Notification aus Liste entfernen
         const notification = this.notificationsSignal().find(
           n => n.notification_id === notificationId
         );
-
-        console.log('Found notification to delete:', notification);
         const wasUnread = notification && !notification.is_read;
-        console.log('Was unread?', wasUnread);
 
         this.notificationsSignal.update(notifications =>
           notifications.filter(n => n.notification_id !== notificationId)
         );
 
-        console.log('After removal, notifications:', this.notificationsSignal());
-
-        // Unread count aktualisieren wenn Notification ungelesen war
         if (wasUnread) {
-          console.log('Decrementing unread count');
-          this.unreadCountSignal.update(count => {
-            const newCount = Math.max(0, count - 1);
-            console.log('Unread count updated from', count, 'to', newCount);
-            return newCount;
-          });
-        } else {
-          console.log('Not decrementing unread count (notification was already read or not found)');
+          this.unreadCountSignal.update(count => Math.max(0, count - 1));
         }
-
-        console.log('Final unread count:', this.unreadCountSignal());
       })
     );
   }
@@ -146,13 +127,19 @@ export class NotificationsService {
   getNotificationMessage(notification: Notification): string {
     switch (notification.type) {
       case 'post_liked':
-        return `${notification.actor_username} hat einen deiner Posts geliked`;
+        return this.i18n.t('notifications.postLiked').replace('{{username}}', notification.actor_username);
       case 'post_commented':
-        return `${notification.actor_username} hat deinen Post kommentiert`;
+        return this.i18n.t('notifications.postCommented').replace('{{username}}', notification.actor_username);
       case 'comment_liked':
-        return `${notification.actor_username} hat deinen Kommentar geliked`;
+        return this.i18n.t('notifications.commentLiked').replace('{{username}}', notification.actor_username);
+      case 'group_post':
+        return this.i18n.t('notifications.groupPost').replace('{{username}}', notification.actor_username);
+      case 'birthday':
+        return this.i18n.t('notifications.birthday')
+          .replace('{{username}}', notification.actor_username)
+          .replace('{{age}}', notification.comment_id?.toString() || '?');
       default:
-        return 'Neue Benachrichtigung';
+        return this.i18n.t('notifications.newNotification');
     }
   }
 }
