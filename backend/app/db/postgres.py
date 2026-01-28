@@ -202,6 +202,12 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS join_mode VARCHAR(20) DEFAULT 'open'
             """)
 
+            # Migration: add profile_picture column if missing
+            await conn.execute("""
+                ALTER TABLE groups
+                ADD COLUMN IF NOT EXISTS profile_picture TEXT
+            """)
+
             # Group Members
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS group_members (

@@ -466,6 +466,7 @@
     "pendingRequests": "Offene Anfragen",
     "noPendingRequests": "Keine offenen Anfragen",
     "approve": "Genehmigen",
-    "reject": "Ablehnen"
+    "reject": "Ablehnen",
+    "changeProfilePicture": "Profilbild ändern"
   }
 }
