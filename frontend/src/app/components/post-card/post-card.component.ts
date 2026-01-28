@@ -3,22 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, FeedService, Comment } from '../../services/feed.service';
 import { ReportService } from '../../services/report.service';
 import { TranslationService, TranslationResult } from '../../services/translation.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
-
-interface LinkPreview {
-  url: string;
-  title: string;
-  description: string;
-  image: string;
-  site_name: string;
-  domain: string;
-}
 
 @Component({
   selector: 'app-post-card',
@@ -466,16 +456,14 @@ export class PostCardComponent implements OnChanges, OnInit {
   private feedService = inject(FeedService);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
-  private http = inject(HttpClient);
   translationService = inject(TranslationService);
   private i18n = inject(I18nService);
   private linkPreviewService = inject(LinkPreviewService);
 
-  isLiked = false;
-  linkPreviews: LinkPreview[] = [];
-  private previewsLoaded = false;
   isLiked: boolean = false;
   private isLikedInitialized = false;
+  linkPreviews: LinkPreview[] = [];
+  private previewsLoaded = false;
   showReportModal = false;
   showVisibilityModal = false;
   showVisibilityDropdown = false;
@@ -493,9 +481,6 @@ export class PostCardComponent implements OnChanges, OnInit {
   showTranslation = false;
   translating = false;
   translatedContent: TranslationResult | null = null;
-
-  // Link Preview
-  linkPreview: LinkPreview | null = null;
 
   // Guardian Modal für Kommentare
   showGuardianModal = false;
@@ -818,21 +803,6 @@ export class PostCardComponent implements OnChanges, OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(result);
   }
 
-  private loadLinkPreview(): void {
-    const content = this.post?.content || '';
-    const urlMatch = content.match(/(https?:\/\/[^\s]+)/);
-    if (!urlMatch) return;
-
-    this.linkPreviewService.getPreview(urlMatch[0]).subscribe({
-      next: (preview) => {
-        if (preview && (preview.title || preview.description)) {
-          this.linkPreview = preview;
-        }
-      },
-      error: () => {} // silently ignore preview failures
-    });
-  }
-
   handleContentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (target.classList.contains('hashtag')) {
@@ -855,13 +825,11 @@ export class PostCardComponent implements OnChanges, OnInit {
 
     // Maximal 3 Previews laden
     const previewUrls = urls.slice(0, 3);
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     for (const url of previewUrls) {
-      this.http.get<LinkPreview>(`/api/admin/link-preview?url=${encodeURIComponent(url)}`, { headers }).subscribe({
+      this.linkPreviewService.getPreview(url).subscribe({
         next: (preview) => {
-          if (preview && preview.title) {
+          if (preview && (preview.title || preview.description)) {
             this.linkPreviews = [...this.linkPreviews, preview];
           }
         },
