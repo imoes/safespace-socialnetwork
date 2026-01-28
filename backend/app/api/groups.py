@@ -465,11 +465,9 @@ async def upload_group_profile_picture(
         )
 
     # Upload file using media service (use group_id as folder)
-    media_service = MediaService()
-
     try:
         # Use a special folder for group images
-        upload_result = await media_service.upload_file(f"group_{group_id}", file)
+        upload_result = await MediaService.upload_file_to_folder(f"group_{group_id}", file)
         profile_picture_url = f"/api/media/group_{group_id}/{upload_result['path']}"
 
         # Get old profile picture to delete
@@ -492,7 +490,7 @@ async def upload_group_profile_picture(
         if old_picture:
             old_path = old_picture.replace(f"/api/media/group_{group_id}/", "")
             try:
-                await media_service.delete_file(f"group_{group_id}", old_path)
+                await MediaService.delete_file_from_folder(f"group_{group_id}", old_path)
             except:
                 pass  # Ignore if old file doesn't exist
 
@@ -527,10 +525,9 @@ async def delete_group_profile_picture(
 
         if old_picture:
             # Delete from storage
-            media_service = MediaService()
             old_path = old_picture.replace(f"/api/media/group_{group_id}/", "")
             try:
-                await media_service.delete_file(f"group_{group_id}", old_path)
+                await MediaService.delete_file_from_folder(f"group_{group_id}", old_path)
             except:
                 pass
 
