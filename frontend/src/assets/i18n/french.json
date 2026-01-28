@@ -13,7 +13,8 @@
     "privacyPolicy": "Politique de confidentialité",
     "impressum": "Mentions légales",
     "info": "Info",
-    "groups": "Groupes"
+    "groups": "Groupes",
+    "terms": "Conditions d'utilisation"
   },
   "feed": {
     "title": "Mon Feed",
@@ -355,7 +356,11 @@
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "registrationFailed": "Échec de l'inscription. Veuillez réessayer."
     },
-    "success": "Inscription réussie! Redirection..."
+    "success": "Inscription réussie! Redirection...",
+    "agbAccept": "J'accepte les",
+    "agbLink": "conditions d'utilisation",
+    "agbAnd": "et la",
+    "privacyLink": "politique de confidentialité"
   },
   "common": {
     "loading": "Chargement...",

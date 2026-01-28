@@ -13,7 +13,8 @@
     "privacyPolicy": "Privacy Policy",
     "impressum": "Legal Notice",
     "info": "Info",
-    "groups": "Groups"
+    "groups": "Groups",
+    "terms": "Terms of Service"
   },
   "feed": {
     "title": "My Feed",
@@ -257,7 +258,11 @@
       "passwordMismatch": "Passwords do not match",
       "registrationFailed": "Registration failed. Please try again."
     },
-    "success": "Registration successful! Redirecting..."
+    "success": "Registration successful! Redirecting...",
+    "agbAccept": "I accept the",
+    "agbLink": "Terms of Service",
+    "agbAnd": "and the",
+    "privacyLink": "Privacy Policy"
   },
   "passwordReset": {
     "title": "Reset Password",

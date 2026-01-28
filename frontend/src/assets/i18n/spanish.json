@@ -13,7 +13,8 @@
     "privacyPolicy": "Política de Privacidad",
     "impressum": "Aviso Legal",
     "info": "Info",
-    "groups": "Grupos"
+    "groups": "Grupos",
+    "terms": "Condiciones de uso"
   },
   "feed": {
     "title": "Mi Feed",
@@ -355,7 +356,11 @@
       "passwordMismatch": "Las contraseñas no coinciden",
       "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo."
     },
-    "success": "¡Registro exitoso! Redirigiendo..."
+    "success": "¡Registro exitoso! Redirigiendo...",
+    "agbAccept": "Acepto las",
+    "agbLink": "condiciones de uso",
+    "agbAnd": "y la",
+    "privacyLink": "política de privacidad"
   },
   "common": {
     "loading": "Cargando...",
