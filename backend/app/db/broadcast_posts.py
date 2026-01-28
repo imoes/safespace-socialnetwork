@@ -79,7 +79,7 @@ async def create_broadcast_post(author_uid: int, content: str, visibility: str =
             "is_broadcast": True,
             "likes_count": 0,
             "comments_count": 0,
-            "user_has_liked": False,
+            "is_liked_by_user": False,
             "comments": []
         }
 
@@ -99,7 +99,7 @@ async def get_broadcast_posts(limit: int = 25, offset: int = 0, current_user_uid
                 u.profile_picture,
                 COALESCE(likes.count, 0) as likes_count,
                 COALESCE(comments.count, 0) as comments_count,
-                CASE WHEN user_likes.user_uid IS NOT NULL THEN TRUE ELSE FALSE END as user_has_liked
+                CASE WHEN user_likes.user_uid IS NOT NULL THEN TRUE ELSE FALSE END as is_liked_by_user
             FROM broadcast_posts bp
             JOIN users u ON bp.author_uid = u.uid
             LEFT JOIN (
@@ -130,7 +130,7 @@ async def get_broadcast_posts(limit: int = 25, offset: int = 0, current_user_uid
                 "profile_picture": row["profile_picture"],
                 "likes_count": row["likes_count"],
                 "comments_count": row["comments_count"],
-                "user_has_liked": row["user_has_liked"],
+                "is_liked_by_user": row["is_liked_by_user"],
                 "is_broadcast": True,
                 "comments": []
             })
@@ -192,7 +192,7 @@ async def add_broadcast_comment(post_id: int, user_uid: int, content: str) -> di
             "content": row["content"],
             "created_at": row["created_at"].isoformat() if row["created_at"] else None,
             "likes_count": 0,
-            "user_has_liked": False
+            "is_liked_by_user": False
         }
 
 
@@ -209,7 +209,7 @@ async def get_broadcast_comments(post_id: int, current_user_uid: Optional[int] =
                 u.username,
                 u.profile_picture,
                 COALESCE(likes.count, 0) as likes_count,
-                CASE WHEN user_likes.user_uid IS NOT NULL THEN TRUE ELSE FALSE END as user_has_liked
+                CASE WHEN user_likes.user_uid IS NOT NULL THEN TRUE ELSE FALSE END as is_liked_by_user
             FROM broadcast_post_comments c
             JOIN users u ON c.user_uid = u.uid
             LEFT JOIN (
@@ -233,7 +233,7 @@ async def get_broadcast_comments(post_id: int, current_user_uid: Optional[int] =
                 "content": row["content"],
                 "created_at": row["created_at"].isoformat() if row["created_at"] else None,
                 "likes_count": row["likes_count"],
-                "user_has_liked": row["user_has_liked"]
+                "is_liked_by_user": row["is_liked_by_user"]
             })
 
         return comments

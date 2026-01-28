@@ -604,6 +604,7 @@ async def get_group_posts(
         author_data = profile_map.get(post["author_uid"], {"username": "Unknown", "profile_picture": None})
         likes_count = await group_db.get_likes_count(post["post_id"])
         comments_count = await group_db.get_comments_count(post["post_id"])
+        is_liked = await group_db.is_liked_by_user(post["post_id"], uid)
 
         enriched.append({
             **post,
@@ -611,7 +612,8 @@ async def get_group_posts(
             "author_profile_picture": author_data.get("profile_picture"),
             "group_id": group_id,
             "likes_count": likes_count,
-            "comments_count": comments_count
+            "comments_count": comments_count,
+            "is_liked_by_user": is_liked
         })
 
     return {"posts": enriched, "is_member": is_member}
