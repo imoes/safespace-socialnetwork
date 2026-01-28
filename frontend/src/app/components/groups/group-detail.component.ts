@@ -22,7 +22,25 @@ import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
             <a routerLink="/groups" class="back-link">← {{ 'common.back' | translate }}</a>
           </div>
           <div class="group-header-content">
-            <div class="group-icon-large">{{ group()!.name.charAt(0).toUpperCase() }}</div>
+            <div class="group-avatar-container">
+              @if (group()!.profile_picture) {
+                <img [src]="group()!.profile_picture" class="group-avatar-img" [alt]="group()!.name" />
+              } @else {
+                <div class="group-icon-large">{{ group()!.name.charAt(0).toUpperCase() }}</div>
+              }
+              @if (isGroupAdmin()) {
+                <button class="avatar-edit-btn" (click)="profilePictureInput.click()" [title]="'groups.changeProfilePicture' | translate">
+                  <span class="edit-icon">+</span>
+                </button>
+                <input
+                  #profilePictureInput
+                  type="file"
+                  accept="image/*"
+                  (change)="onProfilePictureSelected($event)"
+                  style="display: none"
+                />
+              }
+            </div>
             <div class="group-header-info">
               <h1>{{ group()!.name }}</h1>
               @if (group()!.description) {
@@ -283,11 +301,42 @@ import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
     .back-link:hover { text-decoration: underline; }
 
     .group-header-content { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
+    .group-avatar-container {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .group-avatar-img {
+      width: 72px; height: 72px; border-radius: 16px;
+      object-fit: cover;
+    }
     .group-icon-large {
       width: 72px; height: 72px; border-radius: 16px;
       background: linear-gradient(135deg, #1877f2, #42b72a);
       color: white; display: flex; align-items: center; justify-content: center;
       font-size: 32px; font-weight: bold; flex-shrink: 0;
+    }
+    .avatar-edit-btn {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #1877f2;
+      border: 2px solid white;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.2s;
+    }
+    .avatar-edit-btn:hover {
+      background: #166fe5;
+    }
+    .edit-icon {
+      line-height: 1;
     }
     .group-header-info h1 { font-size: 24px; margin: 0; color: #1a1a2e; }
     .group-description { color: #65676b; margin: 4px 0 0; font-size: 14px; }
@@ -708,5 +757,34 @@ export class GroupDetailComponent implements OnInit {
     if (diffHrs < 24) return `${diffHrs}h`;
     if (diffDays < 7) return `${diffDays}d`;
     return date.toLocaleDateString();
+  }
+
+  onProfilePictureSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const groupId = this.group()?.group_id;
+    if (!groupId) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Only image files are allowed');
+      return;
+    }
+
+    // Upload the file
+    this.groupsService.uploadProfilePicture(groupId, file).subscribe({
+      next: (res) => {
+        this.group.update(g => g ? { ...g, profile_picture: res.profile_picture } : g);
+      },
+      error: (err) => {
+        console.error('Error uploading profile picture:', err);
+        alert('Failed to upload profile picture');
+      }
+    });
+
+    // Reset input
+    input.value = '';
   }
 }

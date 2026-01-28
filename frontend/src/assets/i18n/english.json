@@ -466,6 +466,7 @@
     "pendingRequests": "Pending Requests",
     "noPendingRequests": "No pending requests",
     "approve": "Approve",
-    "reject": "Reject"
+    "reject": "Reject",
+    "changeProfilePicture": "Change profile picture"
   }
 }

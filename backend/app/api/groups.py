@@ -1,6 +1,6 @@
 """API-Routen für Gruppen"""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from pydantic import BaseModel
 from typing import Optional
 
@@ -8,6 +8,7 @@ from app.services.auth_service import get_current_user
 from app.db.postgres import PostgresDB, get_username_map, get_user_profile_data_map
 from app.db.sqlite_group_posts import GroupPostsDB
 from app.db.notifications import create_notification
+from app.services.media_service import MediaService
 
 router = APIRouter(prefix="/groups", tags=["groups"])
 
@@ -441,6 +442,106 @@ async def update_group_settings(
         await conn.commit()
 
     return {"message": "Settings updated", "join_mode": data.join_mode}
+
+
+@router.post("/{group_id}/profile-picture")
+async def upload_group_profile_picture(
+    group_id: int,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt ein Gruppenprofilbild hoch. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can change the group profile picture")
+
+    # Validate file type (nur Bilder erlaubt)
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only image files are allowed"
+        )
+
+    # Upload file using media service (use group_id as folder)
+    media_service = MediaService()
+
+    try:
+        # Use a special folder for group images
+        upload_result = await media_service.upload_file(f"group_{group_id}", file)
+        profile_picture_url = f"/api/media/group_{group_id}/{upload_result['path']}"
+
+        # Get old profile picture to delete
+        async with PostgresDB.connection() as conn:
+            result = await conn.execute(
+                "SELECT profile_picture FROM groups WHERE group_id = %s",
+                (group_id,)
+            )
+            group = await result.fetchone()
+            old_picture = group["profile_picture"] if group else None
+
+            # Update profile picture in database
+            await conn.execute(
+                "UPDATE groups SET profile_picture = %s WHERE group_id = %s",
+                (profile_picture_url, group_id)
+            )
+            await conn.commit()
+
+        # Delete old profile picture if exists
+        if old_picture:
+            old_path = old_picture.replace(f"/api/media/group_{group_id}/", "")
+            try:
+                await media_service.delete_file(f"group_{group_id}", old_path)
+            except:
+                pass  # Ignore if old file doesn't exist
+
+        return {"profile_picture": profile_picture_url}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload image: {str(e)}"
+        )
+
+
+@router.delete("/{group_id}/profile-picture")
+async def delete_group_profile_picture(
+    group_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Löscht das Gruppenprofilbild. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can delete the group profile picture")
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT profile_picture FROM groups WHERE group_id = %s",
+            (group_id,)
+        )
+        group = await result.fetchone()
+        old_picture = group["profile_picture"] if group else None
+
+        if old_picture:
+            # Delete from storage
+            media_service = MediaService()
+            old_path = old_picture.replace(f"/api/media/group_{group_id}/", "")
+            try:
+                await media_service.delete_file(f"group_{group_id}", old_path)
+            except:
+                pass
+
+        # Update database
+        await conn.execute(
+            "UPDATE groups SET profile_picture = NULL WHERE group_id = %s",
+            (group_id,)
+        )
+        await conn.commit()
+
+    return {"message": "Profile picture deleted"}
 
 
 @router.put("/{group_id}/members/{user_uid}/role")

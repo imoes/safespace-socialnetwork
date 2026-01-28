@@ -7,6 +7,7 @@ export interface Group {
   name: string;
   description?: string;
   join_mode?: string;
+  profile_picture?: string;
   created_by: number;
   created_at: string;
   member_count?: number;
@@ -148,5 +149,18 @@ export class GroupsService {
 
   updateGroupSettings(groupId: number, joinMode: string): Observable<any> {
     return this.http.put(`${this.API_URL}/${groupId}/settings`, { join_mode: joinMode });
+  }
+
+  uploadProfilePicture(groupId: number, file: File): Observable<{ profile_picture: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ profile_picture: string }>(
+      `${this.API_URL}/${groupId}/profile-picture`,
+      formData
+    );
+  }
+
+  deleteProfilePicture(groupId: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}/${groupId}/profile-picture`);
   }
 }
