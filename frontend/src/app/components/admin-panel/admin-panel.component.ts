@@ -88,6 +88,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
   private i18n = inject(I18nService);
+  // Email template WYSIWYG editor support
 
   // Tabs
   activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings' | 'email-templates'>('welcome');
