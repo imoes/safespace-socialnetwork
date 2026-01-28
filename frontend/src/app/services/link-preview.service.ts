@@ -8,6 +8,7 @@ export interface LinkPreview {
   title: string | null;
   description: string | null;
   image: string | null;
+  site_name?: string;
   domain: string;
 }
 
