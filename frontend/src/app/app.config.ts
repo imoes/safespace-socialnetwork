@@ -30,10 +30,14 @@ import { ImpressumComponent } from './components/impressum/impressum.component';
 import { InfoComponent } from './components/info/info.component';
 import { GroupsComponent } from './components/groups/groups.component';
 import { GroupDetailComponent } from './components/groups/group-detail.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard] },
   { path: 'admin-panel', component: AdminPanelComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },

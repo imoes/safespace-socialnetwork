@@ -17,6 +17,7 @@ from app.api.notifications import router as notifications_router
 from app.safespace.api import router as safespace_router
 from app.api.groups import router as groups_router
 from app.api.link_preview import router as link_preview_router
+from app.api.password_reset import router as password_reset_router
 
 
 @asynccontextmanager
@@ -58,6 +59,14 @@ async def lifespan(app: FastAPI):
         print("✅ Site settings table initialized")
     except Exception as e:
         print(f"⚠️ Failed to initialize site settings table: {e}")
+
+    # Password Reset Tokens Tabelle erstellen
+    try:
+        from app.api.password_reset import init_password_reset_table
+        await init_password_reset_table()
+        print("✅ Password reset tokens table initialized")
+    except Exception as e:
+        print(f"⚠️ Failed to initialize password reset table: {e}")
 
     # Kafka Producer initialisieren (optional, falls verfügbar)
     try:
@@ -124,6 +133,7 @@ app.include_router(notifications_router, prefix="/api")
 app.include_router(safespace_router, prefix="/api")
 app.include_router(groups_router, prefix="/api")
 app.include_router(link_preview_router, prefix="/api")
+app.include_router(password_reset_router, prefix="/api")
 
 
 @app.get("/")

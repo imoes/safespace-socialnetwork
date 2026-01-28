@@ -229,6 +229,7 @@
     "subtitle": "Connect with friends",
     "username": "Username",
     "password": "Password",
+    "forgotPassword": "Forgot password?",
     "loginButton": "Login",
     "noAccount": "Don't have an account?",
     "register": "Register now",
@@ -243,6 +244,8 @@
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "birthday": "Birthday",
+    "optional": "optional",
     "registerButton": "Register",
     "hasAccount": "Already have an account?",
     "login": "Login here",
@@ -253,6 +256,25 @@
       "registrationFailed": "Registration failed. Please try again."
     },
     "success": "Registration successful! Redirecting..."
+  },
+  "passwordReset": {
+    "title": "Reset Password",
+    "subtitle": "Enter your email address to receive a reset link",
+    "email": "Email address",
+    "sendLink": "Send reset link",
+    "backToLogin": "Back to login",
+    "success": "If an account with this email exists, a reset link has been sent.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "resetButton": "Change password",
+    "resetSuccess": "Password changed successfully! You can now log in.",
+    "invalidToken": "Invalid or expired reset link. Please request a new one.",
+    "errors": {
+      "emailRequired": "Please enter your email address.",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long.",
+      "resetFailed": "Password reset failed. Please try again."
+    }
   },
   "friends": {
     "title": "Friends",

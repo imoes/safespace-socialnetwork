@@ -83,7 +83,7 @@ export class AuthService {
     );
   }
 
-  register(username: string, email: string, password: string, firstName?: string, lastName?: string): Observable<AuthResponse> {
+  register(username: string, email: string, password: string, firstName?: string, lastName?: string, birthday?: string): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
 
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, {
@@ -91,7 +91,8 @@ export class AuthService {
       email,
       password,
       first_name: firstName,
-      last_name: lastName
+      last_name: lastName,
+      birthday: birthday || null
     }).pipe(
       tap(response => {
         this.setToken(response.access_token);

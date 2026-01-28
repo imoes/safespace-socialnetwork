@@ -229,6 +229,7 @@
     "subtitle": "Verbinde dich mit Freunden",
     "username": "Benutzername",
     "password": "Passwort",
+    "forgotPassword": "Passwort vergessen?",
     "loginButton": "Anmelden",
     "noAccount": "Noch kein Konto?",
     "register": "Jetzt registrieren",
@@ -243,6 +244,8 @@
     "email": "E-Mail",
     "password": "Passwort",
     "confirmPassword": "Passwort bestätigen",
+    "birthday": "Geburtsdatum",
+    "optional": "optional",
     "registerButton": "Registrieren",
     "hasAccount": "Bereits ein Konto?",
     "login": "Hier anmelden",
@@ -253,6 +256,25 @@
       "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuche es erneut."
     },
     "success": "Registrierung erfolgreich! Weiterleitung..."
+  },
+  "passwordReset": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "Gib deine E-Mail-Adresse ein, um einen Reset-Link zu erhalten",
+    "email": "E-Mail-Adresse",
+    "sendLink": "Reset-Link senden",
+    "backToLogin": "Zurück zum Login",
+    "success": "Wenn ein Konto mit dieser E-Mail existiert, wurde ein Reset-Link gesendet.",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "resetButton": "Passwort ändern",
+    "resetSuccess": "Passwort erfolgreich geändert! Du kannst dich jetzt anmelden.",
+    "invalidToken": "Ungültiger oder abgelaufener Reset-Link. Bitte fordere einen neuen an.",
+    "errors": {
+      "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+      "resetFailed": "Passwort zurücksetzen fehlgeschlagen. Bitte versuche es erneut."
+    }
   },
   "friends": {
     "title": "Freunde",
