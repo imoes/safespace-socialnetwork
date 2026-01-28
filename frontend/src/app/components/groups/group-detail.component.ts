@@ -5,11 +5,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GroupsService, Group, GroupMember, GroupPost, GroupComment } from '../../services/groups.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
 
 @Component({
   selector: 'app-group-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, AutoEmojiDirective],
   template: `
     <div class="group-detail-container">
       @if (loading()) {
@@ -105,6 +106,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 [placeholder]="'groups.postPlaceholder' | translate"
                 class="post-textarea"
                 rows="3"
+                autoEmoji
               ></textarea>
               <div class="post-actions">
                 <select [(ngModel)]="newPostVisibility" class="visibility-select">
@@ -178,6 +180,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                         class="comment-input"
                         [(ngModel)]="commentTexts[post.post_id]"
                         (keydown.enter)="addComment(post)"
+                        autoEmoji
                       />
                       <button class="btn btn-sm" (click)="addComment(post)">{{ 'post.send' | translate }}</button>
                     </div>

@@ -9,11 +9,12 @@ import { TranslationService, TranslationResult } from '../../services/translatio
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
+import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, AutoEmojiDirective],
   template: `
     <div class="post-card">
       <div class="post-header">
@@ -133,7 +134,7 @@ import { LinkPreviewService, LinkPreview } from '../../services/link-preview.ser
       @if (showComments) {
         <div class="comments-section">
           <div class="comment-input">
-            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" />
+            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" autoEmoji />
             <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">{{ 'post.send' | translate }}</button>
           </div>
 
