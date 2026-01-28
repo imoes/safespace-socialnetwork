@@ -345,14 +345,6 @@
             [(ngModel)]="siteSettingsForm.site_url"
             placeholder="https://deine-domain.de"
             />
-          <label for="site-title">Seitentitel</label>
-          <input
-            id="site-title"
-            type="text"
-            [(ngModel)]="siteTitleForm"
-            placeholder="z.B. SocialNet"
-            maxlength="50">
-          <p class="field-hint">Dieser Titel wird oben links in der Navigation und als Browser-Tab-Titel angezeigt.</p>
         </div>
 
         <div class="button-group">
@@ -360,7 +352,28 @@
             class="btn btn-primary"
             (click)="saveSiteSettings()"
             [disabled]="loading()">
-            {{ loading() ? '⏳ Speichern...' : '💾 Speichern' }}
+            {{ loading() ? '⏳ Speichern...' : '💾 URL speichern' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-group">
+          <label for="site-title">Seitentitel</label>
+          <p class="field-description">
+            Dieser Titel wird oben links in der Navigation und als Browser-Tab-Titel angezeigt.
+          </p>
+          <input
+            id="site-title"
+            type="text"
+            [(ngModel)]="siteTitleForm"
+            placeholder="z.B. SocialNet"
+            maxlength="50" />
+        </div>
+
+        <div class="button-group">
+          <button
+            class="btn btn-primary"
             (click)="saveSiteTitle()"
             [disabled]="loading()">
             {{ loading() ? '⏳ Speichern...' : '💾 Titel speichern' }}

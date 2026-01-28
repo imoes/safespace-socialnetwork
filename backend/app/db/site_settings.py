@@ -49,3 +49,8 @@ async def get_all_site_settings() -> dict:
 async def get_site_url() -> str:
     """Holt die Site-URL Einstellung"""
     return await get_site_setting("site_url", "http://localhost:4200")
+
+
+async def get_site_title() -> str:
+    """Holt den Site-Titel"""
+    return await get_site_setting("site_title", "SocialNet")
