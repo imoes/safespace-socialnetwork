@@ -12,6 +12,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, PostCardComponent, TranslatePipe],
   template: `
+    <!-- Scroll to top button (under navbar) -->
+    @if (showScrollTop) {
+      <button class="scroll-top-btn" (click)="scrollToTopAndRefresh()">
+        ↑ {{ 'feed.scrollToTop' | translate }}
+      </button>
+    }
+
     <div class="my-posts-container">
       <div class="page-header">
         <h1>📝 {{ 'myPosts.title' | translate }}</h1>
@@ -210,6 +217,42 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         box-shadow: 0 0 0 8px rgba(24, 119, 242, 0.3);
       }
     }
+
+    .scroll-top-btn {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .scroll-top-btn:hover {
+      background: #166fe5;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
   `]
 })
 export class MyPostsComponent implements OnInit, OnDestroy {
@@ -226,6 +269,7 @@ export class MyPostsComponent implements OnInit, OnDestroy {
   private readonly limit = 15;
   highlightedPostId = signal<number | null>(null);
   private pendingHighlightId: number | null = null;
+  showScrollTop = false;
 
   ngOnInit(): void {
     this.loadCurrentUser();
@@ -262,6 +306,9 @@ export class MyPostsComponent implements OnInit, OnDestroy {
 
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
+    // Show scroll-top button when scrolled down more than 300px
+    this.showScrollTop = window.scrollY > 300;
+
     // Prüfe ob User fast am Ende der Seite ist
     const scrollPosition = window.innerHeight + window.scrollY;
     const pageHeight = document.documentElement.scrollHeight;
@@ -270,6 +317,14 @@ export class MyPostsComponent implements OnInit, OnDestroy {
     if (scrollPosition >= pageHeight - threshold && this.hasMore && !this.loading) {
       this.loadMore();
     }
+  }
+
+  scrollToTopAndRefresh(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.posts = [];
+    this.offset = 0;
+    this.hasMore = true;
+    this.loadPosts();
   }
 
   private loadCurrentUser(): void {
