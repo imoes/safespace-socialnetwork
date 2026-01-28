@@ -8,16 +8,17 @@ import { VideoEditorComponent } from '../video-editor/video-editor.component';
 import { HttpClient } from '@angular/common/http';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, FormsModule, VideoEditorComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, VideoEditorComponent, TranslatePipe, AutoEmojiDirective],
   template: `
     <div class="create-post">
       <div class="post-header">
         <div class="avatar">{{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}</div>
-        <textarea [(ngModel)]="content" [placeholder]="'feed.createPost' | translate" rows="3" [disabled]="isSubmitting()"></textarea>
+        <textarea [(ngModel)]="content" [placeholder]="'feed.createPost' | translate" rows="3" [disabled]="isSubmitting()" autoEmoji></textarea>
       </div>
 
       @if (selectedFiles().length > 0) {
