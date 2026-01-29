@@ -5,7 +5,10 @@ from pydantic import BaseModel
 from typing import Optional
 import psutil
 import time
+import httpx
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
+import re
 
 from app.services.auth_service import get_current_user
 from app.db.moderation import (
@@ -21,6 +24,10 @@ from app.db.welcome_message import (
 )
 from app.db.broadcast_posts import create_broadcast_post, get_broadcast_posts, delete_broadcast_post
 from app.db.postgres import PostgresDB
+from app.db.site_settings import get_site_setting, set_site_setting, get_all_site_settings
+from app.db.email_templates import (
+    get_all_templates, get_template, save_template, get_notification_types
+)
 
 router = APIRouter(prefix="/admin", tags=["Admin & Moderation"])
 
@@ -60,6 +67,17 @@ class WelcomeMessageRequest(BaseModel):
 class BroadcastPostRequest(BaseModel):
     content: str
     visibility: str = "public"
+
+
+class SiteSettingsRequest(BaseModel):
+    site_url: str
+
+
+class EmailTemplateRequest(BaseModel):
+    notification_type: str
+    language: str
+    subject: str
+    body: str
 
 
 async def require_moderator(current_user: dict = Depends(get_current_user)) -> dict:
@@ -346,3 +364,203 @@ async def get_system_status(moderator: dict = Depends(require_moderator)):
             "total_reports": total_reports
         }
     }
+
+
+# === Site Settings Endpoints ===
+
+@router.get("/site-settings")
+async def get_site_settings(admin: dict = Depends(require_admin)):
+    """Holt alle Site-Einstellungen"""
+    all_settings = await get_all_site_settings()
+    return {
+        "site_url": all_settings.get("site_url", "http://localhost:4200"),
+        "site_title": all_settings.get("site_title", "SocialNet")
+    }
+
+
+@router.put("/site-settings")
+async def update_site_settings(request: SiteSettingsRequest, admin: dict = Depends(require_admin)):
+    """Aktualisiert die Site-Einstellungen"""
+    # Site URL bereinigen (trailing slash entfernen)
+    site_url = request.site_url.rstrip("/")
+    await set_site_setting("site_url", site_url)
+    return {"message": "Einstellungen gespeichert", "site_url": site_url}
+
+
+class SiteTitleRequest(BaseModel):
+    site_title: str
+
+
+@router.put("/site-settings/title")
+async def update_site_title(request: SiteTitleRequest, admin: dict = Depends(require_admin)):
+    """Aktualisiert den Site-Titel"""
+    site_title = request.site_title.strip()
+    if not site_title:
+        raise HTTPException(status_code=400, detail="Titel darf nicht leer sein")
+    await set_site_setting("site_title", site_title)
+    return {"message": "Titel gespeichert", "site_title": site_title}
+
+
+# === Link Preview Endpoint ===
+
+@router.get("/link-preview", dependencies=[])
+async def get_link_preview(url: str, current_user: dict = Depends(get_current_user)):
+    """Holt OpenGraph-Metadaten fuer eine URL (Link-Vorschau)"""
+    # URL validieren
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https"):
+            raise HTTPException(status_code=400, detail="Nur HTTP/HTTPS URLs erlaubt")
+        if not parsed.netloc:
+            raise HTTPException(status_code=400, detail="Ungueltige URL")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Ungueltige URL")
+
+    try:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=5.0) as client:
+            response = await client.get(url, headers={
+                "User-Agent": "Mozilla/5.0 (compatible; SafeSpaceBot/1.0)"
+            })
+            response.raise_for_status()
+            html = response.text[:50000]  # Max 50KB parsen
+
+        # OpenGraph Tags extrahieren
+        og_data = _extract_og_tags(html, url)
+        return og_data
+
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=408, detail="Timeout beim Laden der URL")
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=502, detail=f"Fehler beim Laden: {e.response.status_code}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail="Fehler beim Laden der URL")
+
+
+def _extract_og_tags(html: str, url: str) -> dict:
+    """Extrahiert OpenGraph-Tags aus HTML"""
+    import html as html_module
+
+    def get_meta(property_name: str) -> str:
+        # Suche nach og: und twitter: meta tags
+        patterns = [
+            rf'<meta[^>]*property=["\']og:{property_name}["\'][^>]*content=["\']([^"\']*)["\']',
+            rf'<meta[^>]*content=["\']([^"\']*)["\'][^>]*property=["\']og:{property_name}["\']',
+            rf'<meta[^>]*name=["\']twitter:{property_name}["\'][^>]*content=["\']([^"\']*)["\']',
+            rf'<meta[^>]*content=["\']([^"\']*)["\'][^>]*name=["\']twitter:{property_name}["\']',
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, html, re.IGNORECASE)
+            if match:
+                return html_module.unescape(match.group(1))
+        return ""
+
+    # Fallback: <title> Tag
+    title = get_meta("title")
+    if not title:
+        title_match = re.search(r'<title[^>]*>([^<]+)</title>', html, re.IGNORECASE)
+        if title_match:
+            title = html_module.unescape(title_match.group(1).strip())
+
+    description = get_meta("description")
+    if not description:
+        # Fallback: meta description
+        desc_match = re.search(
+            r'<meta[^>]*name=["\']description["\'][^>]*content=["\']([^"\']*)["\']',
+            html, re.IGNORECASE
+        )
+        if desc_match:
+            description = html_module.unescape(desc_match.group(1))
+
+    image = get_meta("image")
+    site_name = get_meta("site_name")
+
+    parsed = urlparse(url)
+    domain = parsed.netloc
+
+    # Bild-URL zu absoluter URL machen
+    if image and not image.startswith("http"):
+        if image.startswith("//"):
+            image = f"{parsed.scheme}:{image}"
+        elif image.startswith("/"):
+            image = f"{parsed.scheme}://{parsed.netloc}{image}"
+
+    return {
+        "url": url,
+        "title": title or domain,
+        "description": description[:300] if description else "",
+        "image": image,
+        "site_name": site_name or domain,
+        "domain": domain
+    }
+
+
+# === Email Template Endpoints ===
+
+@router.get("/email-templates")
+async def get_email_templates(admin: dict = Depends(require_admin)):
+    """Gibt alle E-Mail-Templates zurück"""
+    templates = await get_all_templates()
+    types = await get_notification_types()
+    return {"templates": templates, "notification_types": types}
+
+
+@router.put("/email-templates")
+async def update_email_template(request: EmailTemplateRequest, admin: dict = Depends(require_admin)):
+    """Speichert ein E-Mail-Template"""
+    template = await save_template(
+        notification_type=request.notification_type,
+        language=request.language,
+        subject=request.subject,
+        body=request.body
+    )
+    return {"template": template}
+
+
+@router.post("/email-templates/translate")
+async def translate_email_template(
+    request: EmailTemplateRequest,
+    admin: dict = Depends(require_admin)
+):
+    """Übersetzt ein E-Mail-Template in alle unterstützten Sprachen"""
+    from app.services.translation_service import TranslationService
+
+    target_languages = ["de", "en", "es", "fr", "it", "ar"]
+    results = {}
+
+    for lang in target_languages:
+        if lang == request.language:
+            await save_template(request.notification_type, lang, request.subject, request.body)
+            results[lang] = {"subject": request.subject, "body": request.body}
+            continue
+
+        try:
+            subject_result = await TranslationService.translate_text(
+                text=request.subject, target_lang=lang, source_lang=request.language
+            )
+            translated_subject = subject_result.get("translated_text", request.subject)
+
+            body = request.body
+            placeholders = ["{{username}}", "{{actor}}", "{{post_content}}", "{{comment_content}}",
+                          "{{action_button}}", "{{birthday_age}}"]
+            markers = {}
+            for i, ph in enumerate(placeholders):
+                marker = f"PLACEHOLDER{i}MARKER"
+                markers[marker] = ph
+                body = body.replace(ph, marker)
+
+            body_result = await TranslationService.translate_text(
+                text=body, target_lang=lang, source_lang=request.language
+            )
+            translated_body = body_result.get("translated_text", body)
+
+            for marker, ph in markers.items():
+                translated_body = translated_body.replace(marker, ph)
+
+            await save_template(request.notification_type, lang, translated_subject, translated_body)
+            results[lang] = {"subject": translated_subject, "body": translated_body}
+
+        except Exception as e:
+            print(f"Failed to translate to {lang}: {e}")
+            results[lang] = {"error": str(e)}
+
+    return {"translations": results}

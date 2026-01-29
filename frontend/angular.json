@@ -17,7 +17,19 @@
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico"],
+            "assets": [
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
+              },
+              {
+                "glob": "{worker.js,const.js,errors.js}",
+                "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+                "output": "/assets/ffmpeg"
+              }
+            ],
             "styles": [],
             "scripts": []
           },

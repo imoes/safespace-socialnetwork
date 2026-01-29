@@ -452,7 +452,7 @@ import { CommonModule } from '@angular/common';
       color: #1c1e21;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .info-content {
         padding: 24px 16px;
       }

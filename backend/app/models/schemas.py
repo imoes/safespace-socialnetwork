@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from enum import Enum
 
@@ -36,6 +36,7 @@ class UserCreate(BaseModel):
     password: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    birthday: Optional[date] = None
 
 
 class UserLogin(BaseModel):
@@ -70,6 +71,8 @@ class UserProfile(UserPublic):
     profile_picture: str | None = None
     first_name: str | None = None
     last_name: str | None = None
+    preferred_language: str | None = None
+    birthday: date | None = None
 
 
 class UserWithStats(UserPublic):
@@ -104,6 +107,7 @@ class PostResponse(BaseModel):
     comments_count: int = 0
     is_flagged: bool = False
     is_own_post: bool = False
+    is_liked_by_user: bool = False
 
 
 class FeedResponse(BaseModel):

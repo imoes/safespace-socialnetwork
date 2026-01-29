@@ -13,6 +13,7 @@ export interface Post {
   created_at: string;
   likes_count: number;
   comments_count: number;
+  is_liked_by_user?: boolean;
   recipient_uid?: number;
   recipient_username?: string;
 }
@@ -110,7 +111,7 @@ export class FeedService implements OnDestroy {
 
     const params = new HttpParams()
       .set('offset', currentPosts.length.toString())
-      .set('limit', '25');
+      .set('limit', '15');
 
     this.http.get<FeedResponse>(this.API_URL, { params }).subscribe({
       next: (response) => {
@@ -207,9 +208,9 @@ export class FeedService implements OnDestroy {
     return this.http.post(`${this.API_URL}/${authorUid}/${postId}/like`, {}).pipe(
       tap(() => {
         this.postsSignal.update(posts =>
-          posts.map(p => 
+          posts.map(p =>
             p.post_id === postId && p.author_uid === authorUid
-              ? { ...p, likes_count: p.likes_count + 1 }
+              ? { ...p, likes_count: p.likes_count + 1, is_liked_by_user: true }
               : p
           )
         );
@@ -226,7 +227,7 @@ export class FeedService implements OnDestroy {
         this.postsSignal.update(posts =>
           posts.map(p =>
             p.post_id === postId && p.author_uid === authorUid
-              ? { ...p, likes_count: Math.max(0, p.likes_count - 1) }
+              ? { ...p, likes_count: Math.max(0, p.likes_count - 1), is_liked_by_user: false }
               : p
           )
         );
@@ -312,7 +313,7 @@ export class FeedService implements OnDestroy {
   private fetchFeed(forceRefresh: boolean): Observable<FeedResponse> {
     const params = new HttpParams()
       .set('refresh', forceRefresh.toString())
-      .set('limit', '50');
+      .set('limit', '15');
 
     return this.http.get<FeedResponse>(this.API_URL, { params });
   }

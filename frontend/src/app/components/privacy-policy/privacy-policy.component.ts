@@ -15,10 +15,10 @@ import { CommonModule } from '@angular/common';
           <h2>1. Verantwortlicher</h2>
           <p>
             Verantwortlich für die Datenverarbeitung auf dieser Website ist:<br><br>
-            <strong>[Ihr Name/Firmenname]</strong><br>
-            [Adresse]<br>
-            E-Mail: [E-Mail]<br>
-            Telefon: [Telefon]
+            <strong>Thomas Kluge</strong><br>
+            Ringstrasse 26<br>
+            82110 Germering<br>
+            E-Mail: thomas&#64;kluge-online.de
           </p>
         </section>
 
@@ -93,7 +93,7 @@ import { CommonModule } from '@angular/common';
             <li><strong>Widerspruch</strong> (Art. 21 DSGVO): Widerspruchsrecht gegen die Verarbeitung</li>
             <li><strong>Widerruf der Einwilligung</strong> (Art. 7 DSGVO): E-Mail-Benachrichtigungen können jederzeit deaktiviert werden</li>
           </ul>
-          <p>Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter: <strong>[E-Mail]</strong></p>
+          <p>Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter: <strong>thomas&#64;kluge-online.de</strong></p>
         </section>
 
         <section>
@@ -102,8 +102,9 @@ import { CommonModule } from '@angular/common';
             Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung Ihrer personenbezogenen Daten durch uns zu beschweren.
           </p>
           <p>
-            Zuständige Behörde in Deutschland:<br>
-            <a href="https://www.bfdi.bund.de/" target="_blank" rel="noopener">Der Bundesbeauftragte für den Datenschutz und die Informationsfreiheit</a>
+            Zuständige Aufsichtsbehörde:<br>
+            <a href="https://www.lda.bayern.de/" target="_blank" rel="noopener">Bayerisches Landesamt für Datenschutzaufsicht (BayLDA)</a><br>
+            Promenade 18, 91522 Ansbach
           </p>
         </section>
 
@@ -165,17 +166,11 @@ import { CommonModule } from '@angular/common';
             Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:
           </p>
           <p>
-            E-Mail: <strong>[E-Mail]</strong><br>
-            Post: <strong>[Adresse]</strong>
+            E-Mail: <strong>thomas&#64;kluge-online.de</strong><br>
+            Post: <strong>Thomas Kluge, Ringstrasse 26, 82110 Germering</strong>
           </p>
         </section>
 
-        <div class="disclaimer">
-          <p>
-            <strong>Hinweis:</strong> Diese Datenschutzerklärung ist eine Vorlage und muss vor produktivem Einsatz an Ihre spezifischen Gegebenheiten angepasst werden.
-            Wir empfehlen dringend, einen Fachanwalt für IT-Recht oder einen Datenschutzbeauftragten zu konsultieren.
-          </p>
-        </div>
       </div>
     </div>
   `,
@@ -256,21 +251,7 @@ import { CommonModule } from '@angular/common';
       color: #1c1e21;
     }
 
-    .disclaimer {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 32px;
-    }
-
-    .disclaimer p {
-      margin: 0;
-      color: #856404;
-      font-size: 14px;
-    }
-
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .legal-content {
         padding: 24px 16px;
       }

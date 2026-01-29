@@ -17,6 +17,8 @@ export class I18nService {
   private translations = signal<any>({});
   private currentLangCode = signal<string>('en');
   private availableLanguagesSignal = signal<Language[]>([]);
+  private initialized = false;
+  private initPromise: Promise<void> | null = null;
 
   public readonly currentLanguage = computed(() => {
     const code = this.currentLangCode();
@@ -26,13 +28,27 @@ export class I18nService {
 
   public readonly languages = computed(() => this.availableLanguagesSignal());
 
+  public readonly isLoaded = computed(() => Object.keys(this.translations()).length > 0);
+
   constructor(private http: HttpClient) {
-    this.loadAvailableLanguages();
+    // Don't auto-init in constructor - use initialize() for APP_INITIALIZER
   }
 
   /**
-   * Lädt verfügbare Sprachen aus dem Dateisystem
+   * Initialize the i18n service - called by APP_INITIALIZER
+   * Ensures translations are loaded before app starts
    */
+  public initialize(): Promise<void> {
+    if (this.initialized) {
+      return Promise.resolve();
+    }
+    if (this.initPromise) {
+      return this.initPromise;
+    }
+    this.initPromise = this.loadAvailableLanguages();
+    return this.initPromise;
+  }
+
   private async loadAvailableLanguages(): Promise<void> {
     try {
       const languages = await firstValueFrom(
@@ -40,13 +56,11 @@ export class I18nService {
       );
 
       this.availableLanguagesSignal.set(languages);
-      console.log('✅ Loaded available languages:', languages.length);
 
-      // Nach dem Laden der Sprachen initialisieren wir die Benutzersprache
       await this.initLanguage();
     } catch (error) {
       console.error('Failed to load available languages:', error);
-      // Fallback auf Englisch wenn Manifest nicht geladen werden kann
+      // Fallback to English if manifest can't be loaded
       this.availableLanguagesSignal.set([
         { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧', file: 'english' }
       ]);
@@ -57,7 +71,6 @@ export class I18nService {
   private async initLanguage(): Promise<void> {
     const availableLanguages = this.availableLanguagesSignal();
 
-    // Warte bis Sprachen geladen sind
     if (availableLanguages.length === 0) {
       return;
     }
@@ -72,7 +85,7 @@ export class I18nService {
       langCode = savedLang;
     } else {
       // Detect browser language
-      const browserLang = navigator.language.split('-')[0]; // e.g., "en-US" -> "en"
+      const browserLang = navigator.language.split('-')[0];
       const supportedLang = availableLanguages.find(l => l.code === browserLang);
       if (supportedLang) {
         langCode = browserLang;
@@ -80,14 +93,20 @@ export class I18nService {
     }
 
     await this.setLanguage(langCode);
+    this.initialized = true;
   }
 
   public async setLanguage(code: string): Promise<void> {
     const availableLanguages = this.availableLanguagesSignal();
+
+    if (availableLanguages.length === 0) {
+      throw new Error('I18n service not initialized');
+    }
+
     const language = availableLanguages.find(l => l.code === code);
     if (!language) {
-      console.error(`Language ${code} not found`);
-      return;
+      console.error(`Language '${code}' not found in available languages`);
+      throw new Error(`Language ${code} not available`);
     }
 
     try {
@@ -113,6 +132,11 @@ export class I18nService {
   public t(key: string, params?: Record<string, any>): string {
     const keys = key.split('.');
     let value: any = this.translations();
+
+    // If translations aren't loaded yet, return key silently
+    if (!this.initialized || Object.keys(value).length === 0) {
+      return key;
+    }
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {

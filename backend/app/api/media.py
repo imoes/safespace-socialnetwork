@@ -30,20 +30,21 @@ async def upload_media(
     )
 
 
-@router.get("/{uid}/{media_type}/{filename}")
+@router.get("/{user_folder}/{media_type}/{filename}")
 async def get_media(
-    uid: int,
+    user_folder: str,
     media_type: str,
     filename: str
 ):
     """
     Gibt eine Media-Datei zurück.
     Öffentlicher Endpoint - Zugriffskontrolle über Post-Visibility.
+    user_folder kann eine User-ID (z.B. "123") oder ein Ordnername (z.B. "group_1") sein.
     """
-    
+
     # Pfad zusammenbauen
     relative_path = f"{media_type}/{filename}"
-    filepath = MediaService.get_file_path(uid, relative_path)
+    filepath = MediaService.get_file_path_by_folder(user_folder, relative_path)
     
     if not filepath:
         raise HTTPException(

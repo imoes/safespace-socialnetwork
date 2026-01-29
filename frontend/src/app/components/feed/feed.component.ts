@@ -1,16 +1,25 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FeedService, Post } from '../../services/feed.service';
 import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../post-card/post-card.component';
 import { CreatePostComponent } from '../create-post/create-post.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent],
+  imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent, TranslatePipe],
   template: `
+    <!-- Scroll to top button (under navbar) -->
+    @if (showScrollTop) {
+      <button class="scroll-top-btn" (click)="refresh()">
+        ↑ {{ 'feed.scrollToTop' | translate }}
+      </button>
+    }
+
     <div class="feed-container">
       <!-- Create Post -->
       <app-create-post (postCreated)="onPostCreated($event)" />
@@ -19,7 +28,7 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       @if (feedService.isLoading()) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade Feed...</p>
+          <p>{{ 'feed.loading' | translate }}</p>
         </div>
       }
 
@@ -27,7 +36,7 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       @if (feedService.error()) {
         <div class="error">
           <p>{{ feedService.error() }}</p>
-          <button (click)="refresh()">Erneut versuchen</button>
+          <button (click)="refresh()">{{ 'feed.retry' | translate }}</button>
         </div>
       }
 
@@ -41,8 +50,8 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       <!-- Posts -->
       <div class="posts">
         @for (post of feedService.posts(); track post.post_id) {
-          <app-post-card 
-            [post]="post" 
+          <app-post-card
+            [post]="post"
             [currentUid]="authService.currentUser()?.uid"
             (like)="onLike($event)"
             (unlike)="onUnlike($event)"
@@ -51,22 +60,23 @@ import { CreatePostComponent } from '../create-post/create-post.component';
         } @empty {
           @if (!feedService.isLoading()) {
             <div class="empty-feed">
-              <p>Noch keine Posts vorhanden.</p>
-              <p>Füge Freunde hinzu oder erstelle deinen ersten Post!</p>
+              <p>{{ 'feed.empty' | translate }}</p>
+              <p>{{ 'feed.emptyHint' | translate }}</p>
             </div>
           }
         }
       </div>
 
-      <!-- Load more -->
-      @if (feedService.hasMore()) {
-        <button class="load-more" (click)="loadMore()" [disabled]="feedService.isLoading()">
-          📜 Frühere Posts laden
-        </button>
+      <!-- Loading more indicator -->
+      @if (feedService.isLoading() && feedService.posts().length > 0) {
+        <div class="loading-more">
+          <div class="spinner-small"></div>
+          <p>{{ 'feed.loadingMore' | translate }}</p>
+        </div>
       }
 
       <!-- Refresh button -->
-      <button class="refresh-btn" (click)="refresh()" title="Feed aktualisieren">
+      <button class="refresh-btn" (click)="refresh()" [title]="'common.refresh' | translate">
         ↻
       </button>
     </div>
@@ -141,22 +151,22 @@ import { CreatePostComponent } from '../create-post/create-post.component';
       color: #666;
     }
 
-    .load-more {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: #1877f2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
+    .loading-more {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #666;
+      gap: 10px;
     }
 
-    .load-more:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    .spinner-small {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1877f2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
     .refresh-btn {
@@ -177,21 +187,110 @@ import { CreatePostComponent } from '../create-post/create-post.component';
     .refresh-btn:hover {
       background: #166fe5;
     }
+
+    .scroll-top-btn {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .scroll-top-btn:hover {
+      background: #166fe5;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .feed-container { padding: 12px 8px; }
+      .posts { gap: 12px; }
+    }
   `]
 })
 export class FeedComponent implements OnInit, OnDestroy {
   feedService = inject(FeedService);
   authService = inject(AuthService);
+  router = inject(Router);
+  private hasRedirected = false;
+  showScrollTop = false;
+
+  constructor() {
+    // Reaktiv auf User-Rolle reagieren
+    effect(() => {
+      const user = this.authService.currentUser();
+
+      // Nur wenn User geladen ist
+      if (user && !this.hasRedirected) {
+        // Admins auf Admin-Panel weiterleiten
+        if (this.authService.isAdmin()) {
+          this.hasRedirected = true;
+          setTimeout(() => this.router.navigate(['/admin-panel']), 0);
+          return;
+        }
+
+        // Moderatoren auf Moderation-Seite weiterleiten
+        if (this.authService.isModerator()) {
+          this.hasRedirected = true;
+          setTimeout(() => this.router.navigate(['/admin']), 0);
+          return;
+        }
+
+        // Normale User: Feed laden
+        if (!this.hasRedirected) {
+          setTimeout(() => this.feedService.startAutoRefresh(), 0);
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.feedService.startAutoRefresh();
+    // Wird vom effect übernommen
   }
 
   ngOnDestroy(): void {
     this.feedService.stopAutoRefresh();
   }
 
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    // Show scroll-top button when scrolled down more than 300px
+    this.showScrollTop = window.scrollY > 300;
+
+    // Prüfe ob User fast am Ende der Seite ist
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    const threshold = 300; // 300px vor Ende
+
+    if (scrollPosition >= pageHeight - threshold) {
+      this.loadMore();
+    }
+  }
+
   refresh(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.feedService.loadFeed(true);
   }
 
@@ -212,8 +311,6 @@ export class FeedComponent implements OnInit, OnDestroy {
   }
 
   onDelete(post: Post): void {
-    if (confirm('Post wirklich löschen?')) {
-      this.feedService.deletePost(post.post_id).subscribe();
-    }
+    this.feedService.deletePost(post.post_id).subscribe();
   }
 }

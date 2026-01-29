@@ -22,11 +22,16 @@ THUMBNAIL_SIZE = (300, 300)
 
 class MediaService:
     """Service für Media-Upload und -Verwaltung"""
-    
+
     @classmethod
     def get_user_media_dir(cls, uid: int) -> Path:
         """Gibt das Media-Verzeichnis eines Users zurück"""
         return settings.user_data_base / str(uid) / "media"
+
+    @classmethod
+    def get_folder_media_dir(cls, folder: str) -> Path:
+        """Gibt das Media-Verzeichnis für einen beliebigen Ordner zurück (z.B. group_1)"""
+        return settings.user_data_base / folder / "media"
     
     @classmethod
     def get_media_type(cls, content_type: str) -> str | None:
@@ -104,7 +109,53 @@ class MediaService:
             "media_type": media_type,
             "thumbnail_path": relative_thumb
         }
-    
+
+    @classmethod
+    async def upload_file_to_folder(cls, folder: str, file: UploadFile) -> dict:
+        """
+        Lädt eine Datei in einen beliebigen Ordner hoch (z.B. group_1).
+        """
+        # Validierung
+        media_type = cls.get_media_type(file.content_type)
+        if not media_type:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File type {file.content_type} not allowed"
+            )
+
+        # Dateigröße prüfen
+        contents = await file.read()
+        if len(contents) > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File too large. Max size: {MAX_FILE_SIZE // (1024*1024)} MB"
+            )
+
+        # Unique ID generieren
+        media_id = str(uuid.uuid4())
+        extension = Path(file.filename).suffix.lower() or cls._get_extension(file.content_type)
+
+        # Verzeichnis erstellen
+        media_dir = cls.get_folder_media_dir(folder) / f"{media_type}s"
+        media_dir.mkdir(parents=True, exist_ok=True)
+
+        # Datei speichern
+        filename = f"{media_id}{extension}"
+        filepath = media_dir / filename
+
+        async with aiofiles.open(filepath, "wb") as f:
+            await f.write(contents)
+
+        # Relativer Pfad für DB
+        relative_path = f"{media_type}s/{filename}"
+
+        return {
+            "media_id": media_id,
+            "path": relative_path,
+            "media_type": media_type,
+            "thumbnail_path": None
+        }
+
     @classmethod
     async def _get_video_duration(cls, filepath: Path) -> float | None:
         """Ermittelt die Dauer eines Videos in Sekunden mit ffprobe"""
@@ -174,16 +225,26 @@ class MediaService:
     async def delete_file(cls, uid: int, relative_path: str) -> bool:
         """Löscht eine Media-Datei"""
         filepath = cls.get_user_media_dir(uid) / relative_path
-        
+
         if filepath.exists():
             filepath.unlink()
-            
+
             # Thumbnail auch löschen falls vorhanden
             media_id = filepath.stem
             thumb_path = cls.get_user_media_dir(uid) / "thumbnails" / f"{media_id}_thumb.jpg"
             if thumb_path.exists():
                 thumb_path.unlink()
-            
+
+            return True
+        return False
+
+    @classmethod
+    async def delete_file_from_folder(cls, folder: str, relative_path: str) -> bool:
+        """Löscht eine Media-Datei aus einem beliebigen Ordner"""
+        filepath = cls.get_folder_media_dir(folder) / relative_path
+
+        if filepath.exists():
+            filepath.unlink()
             return True
         return False
     
@@ -191,6 +252,14 @@ class MediaService:
     def get_file_path(cls, uid: int, relative_path: str) -> Path | None:
         """Gibt den absoluten Pfad einer Media-Datei zurück"""
         filepath = cls.get_user_media_dir(uid) / relative_path
+        if filepath.exists():
+            return filepath
+        return None
+
+    @classmethod
+    def get_file_path_by_folder(cls, folder: str, relative_path: str) -> Path | None:
+        """Gibt den absoluten Pfad einer Media-Datei für einen beliebigen Ordner zurück"""
+        filepath = cls.get_folder_media_dir(folder) / relative_path
         if filepath.exists():
             return filepath
         return None

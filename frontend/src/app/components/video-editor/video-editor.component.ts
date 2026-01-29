@@ -2,7 +2,7 @@ import { Component, signal, computed, Output, EventEmitter, inject } from '@angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
+import { fetchFile } from '@ffmpeg/util';
 
 interface VideoInfo {
   duration: number;
@@ -43,11 +43,16 @@ export class VideoEditorComponent {
   errorMessage = signal<string | null>(null);
 
   // Codec selection
-  selectedCodec = signal<'h264' | 'h265'>('h264');
+  selectedCodec = signal<'h264' | 'copy'>('copy');
 
   // Computed
   duration = computed(() => this.videoInfo()?.duration || 0);
   trimmedDuration = computed(() => this.trimEnd() - this.trimStart());
+  isTrimOnly = computed(() => {
+    const info = this.videoInfo();
+    if (!info) return false;
+    return this.trimStart() > 0 || this.trimEnd() < info.duration;
+  });
   canProcess = computed(() => {
     const trimmed = this.trimmedDuration();
     return trimmed > 0 && trimmed <= 300; // Max 5 Minuten
@@ -68,8 +73,8 @@ export class VideoEditorComponent {
     const url = URL.createObjectURL(file);
     this.videoUrl.set(url);
 
-    // Lade Video-Metadaten
-    await this.loadVideoMetadata(file, url);
+    // Lade Video-Metadaten (separate URL to avoid revoking the preview)
+    await this.loadVideoMetadata(file);
 
     this.showEditor.set(true);
 
@@ -79,10 +84,11 @@ export class VideoEditorComponent {
     }
   }
 
-  private async loadVideoMetadata(file: File, url: string): Promise<void> {
+  private async loadVideoMetadata(file: File): Promise<void> {
     return new Promise((resolve) => {
       const video = document.createElement('video');
       video.preload = 'metadata';
+      const metadataUrl = URL.createObjectURL(file);
 
       video.onloadedmetadata = () => {
         const duration = video.duration;
@@ -103,11 +109,11 @@ export class VideoEditorComponent {
         this.trimStart.set(0);
         this.trimEnd.set(Math.min(duration, 300)); // Max 5 Min
 
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(metadataUrl);
         resolve();
       };
 
-      video.src = url;
+      video.src = metadataUrl;
     });
   }
 
@@ -123,14 +129,18 @@ export class VideoEditorComponent {
         this.processingProgress.set(Math.round(progress * 100));
       });
 
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+      // Serve the ESM worker from /assets/ffmpeg/ (copied via angular.json assets).
+      // The worker must be a real URL (not blob) so native import() works inside it.
+      // The ESM worker uses native import() to load ffmpeg-core, unlike the UMD
+      // bundle which uses webpack's require() that can't resolve URLs.
+      const coreBaseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
       await this.ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+        coreURL: `${coreBaseURL}/ffmpeg-core.js`,
+        wasmURL: `${coreBaseURL}/ffmpeg-core.wasm`,
+        classWorkerURL: '/assets/ffmpeg/worker.js',
       });
 
       this.ffmpegLoaded = true;
-      console.log('✅ FFmpeg loaded');
     } catch (error) {
       console.error('Failed to load FFmpeg:', error);
       this.errorMessage.set('FFmpeg konnte nicht geladen werden. Bitte versuche es später erneut.');
@@ -158,23 +168,41 @@ export class VideoEditorComponent {
       // Schreibe Input-Datei
       await this.ffmpeg!.writeFile(inputName, await fetchFile(file));
 
-      // FFmpeg-Kommando erstellen
-      const codec = this.selectedCodec() === 'h264' ? 'libx264' : 'libx265';
       const start = this.trimStart();
       const duration = this.trimmedDuration();
+      const useCopy = this.selectedCodec() === 'copy';
 
-      const args = [
-        '-i', inputName,
-        '-ss', start.toString(),
-        '-t', duration.toString(),
-        '-c:v', codec,
-        '-preset', 'medium',
-        '-crf', '23',
-        '-c:a', 'aac',
-        '-b:a', '128k',
-        '-movflags', '+faststart',
-        outputName
-      ];
+      let args: string[];
+
+      if (useCopy) {
+        // Stream-Copy: kein Re-Encoding, extrem schnell
+        args = [
+          '-ss', start.toString(),
+          '-i', inputName,
+          '-t', duration.toString(),
+          '-c', 'copy',
+          '-movflags', '+faststart',
+          outputName
+        ];
+      } else {
+        // H.264 Re-Encoding mit Optimierungen für WASM-Performance
+        const info = this.videoInfo();
+        const needsScale = info && info.height > 720;
+
+        args = [
+          '-ss', start.toString(),
+          '-i', inputName,
+          '-t', duration.toString(),
+          '-c:v', 'libx264',
+          '-preset', 'ultrafast',
+          '-crf', '28',
+          ...(needsScale ? ['-vf', 'scale=-2:720'] : []),
+          '-c:a', 'aac',
+          '-b:a', '128k',
+          '-movflags', '+faststart',
+          outputName
+        ];
+      }
 
       console.log('FFmpeg args:', args);
       await this.ffmpeg!.exec(args);

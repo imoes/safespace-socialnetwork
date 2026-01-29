@@ -33,14 +33,19 @@ async def get_moderation_status():
 @router.post("/check")
 async def check_content(
     content: str,
+    language: str = "de",
     current_user: dict = Depends(get_current_user)
 ):
     """
     Prüft Content auf Hassrede OHNE zu speichern.
     Kann vom Frontend genutzt werden um Content VOR dem Posten zu prüfen.
+
+    Args:
+        content: Der zu prüfende Inhalt
+        language: Sprache für die Moderation (de, en, es, fr, it, ar)
     """
     from app.safespace.models import PostMessage
-    
+
     # Temporäre PostMessage erstellen
     temp_post = PostMessage(
         post_id=0,  # Temporär
@@ -50,9 +55,9 @@ async def check_content(
         visibility="public",  # Temporär, für Content-Check nicht relevant
         created_at=datetime.utcnow()
     )
-    
-    # Moderieren
-    result = await DeepSeekModerator.moderate_post(temp_post)
+
+    # Moderieren mit Sprache
+    result = await DeepSeekModerator.moderate_post(temp_post, language)
     
     return {
         "is_hate_speech": result.is_hate_speech,
@@ -69,12 +74,17 @@ async def check_content(
 @router.post("/suggest-revision")
 async def suggest_revision(
     content: str,
+    language: str = "de",
     current_user: dict = Depends(get_current_user)
 ):
     """
     Generiert einen Verbesserungsvorschlag für problematischen Content.
+
+    Args:
+        content: Der zu verbessernde Inhalt
+        language: Sprache für den Vorschlag (de, en, es, fr, it, ar)
     """
-    suggestion = await DeepSeekModerator.suggest_improvement(content)
+    suggestion = await DeepSeekModerator.suggest_improvement(content, language)
 
     return {
         "original": content,

@@ -1,32 +1,41 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../../services/feed.service';
 import { PostCardComponent } from '../post-card/post-card.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-public-feed',
   standalone: true,
-  imports: [CommonModule, PostCardComponent],
+  imports: [CommonModule, PostCardComponent, TranslatePipe],
   template: `
+    <!-- Scroll to top button (under navbar) -->
+    @if (showScrollTop) {
+      <button class="scroll-top-btn" (click)="refresh()">
+        ↑ {{ 'feed.scrollToTop' | translate }}
+      </button>
+    }
+
     <div class="public-feed-container">
       <div class="page-header">
-        <h1>🌍 Öffentliche Posts</h1>
-        <p class="subtitle">Entdecke öffentliche Beiträge aus der Community</p>
+        <h1>🌍 {{ 'publicFeed.title' | translate }}</h1>
+        <p class="subtitle">{{ 'publicFeed.subtitle' | translate }}</p>
       </div>
 
       @if (loading && posts.length === 0) {
         <div class="loading">
           <div class="spinner"></div>
-          <p>Lade öffentliche Posts...</p>
+          <p>{{ 'publicFeed.loading' | translate }}</p>
         </div>
       }
 
       @if (!loading && posts.length === 0) {
         <div class="empty-state">
           <div class="empty-icon">📭</div>
-          <h2>Keine öffentlichen Posts</h2>
-          <p>Es sind noch keine öffentlichen Posts vorhanden.</p>
+          <h2>{{ 'publicFeed.noPosts' | translate }}</h2>
+          <p>{{ 'publicFeed.noPostsDesc' | translate }}</p>
         </div>
       }
 
@@ -42,20 +51,22 @@ import { PostCardComponent } from '../post-card/post-card.component';
         }
       </div>
 
-      @if (hasMore && !loading) {
-        <div class="load-more">
-          <button class="btn-load-more" (click)="loadMore()">
-            Weitere 25 Posts laden
-          </button>
-          <p class="posts-count">{{ posts.length }} von {{ total }} Posts angezeigt</p>
-        </div>
-      }
-
       @if (loading && posts.length > 0) {
         <div class="loading-more">
           <div class="spinner"></div>
+          <p>{{ 'publicFeed.loadingMore' | translate }}</p>
         </div>
       }
+
+      @if (!loading && !hasMore && posts.length > 0) {
+        <div class="end-message">
+          <p>{{ 'publicFeed.allSeen' | translate }}</p>
+        </div>
+      }
+
+      <button class="refresh-btn" (click)="refresh()" [title]="'common.refresh' | translate">
+        ↻
+      </button>
     </div>
   `,
   styles: [`
@@ -139,34 +150,6 @@ import { PostCardComponent } from '../post-card/post-card.component';
       gap: 0;
     }
 
-    .load-more {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .btn-load-more {
-      padding: 12px 32px;
-      background: #1877f2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-bottom: 8px;
-    }
-
-    .btn-load-more:hover {
-      background: #166fe5;
-    }
-
-    .posts-count {
-      margin: 0;
-      color: #65676b;
-      font-size: 13px;
-    }
-
     .loading-more {
       text-align: center;
       padding: 20px;
@@ -176,23 +159,147 @@ import { PostCardComponent } from '../post-card/post-card.component';
       width: 32px;
       height: 32px;
       border-width: 3px;
+      margin: 0 auto 8px;
+    }
+
+    .loading-more p {
+      color: #65676b;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .end-message {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .end-message p {
+      color: #65676b;
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .refresh-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #1877f2;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .refresh-btn:hover {
+      background: #166fe5;
+    }
+
+    .scroll-top-btn {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .scroll-top-btn:hover {
+      background: #166fe5;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
     }
   `]
 })
-export class PublicFeedComponent implements OnInit {
+export class PublicFeedComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
+  private i18n = inject(I18nService);
 
   posts: Post[] = [];
   loading = false;
   hasMore = true;
   total = 0;
   currentUid?: number;
+  showScrollTop = false;
   private offset = 0;
-  private readonly limit = 25;
+  private readonly limit = 15;
+  private readonly REFRESH_INTERVAL = 30000;
+  private refreshTimer: any;
 
   ngOnInit(): void {
     this.loadCurrentUser();
     this.loadPosts();
+    this.startAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoRefresh();
+  }
+
+  private startAutoRefresh(): void {
+    this.refreshTimer = setInterval(() => {
+      this.silentRefresh();
+    }, this.REFRESH_INTERVAL);
+  }
+
+  private stopAutoRefresh(): void {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  private silentRefresh(): void {
+    this.http.get<{ posts: Post[], total: number, has_more: boolean }>(
+      `/api/public-feed?limit=${this.limit}&offset=0`
+    ).subscribe({
+      next: (response) => {
+        this.posts = response.posts;
+        this.total = response.total;
+        this.hasMore = response.has_more;
+        this.offset = 0;
+      }
+    });
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll(): void {
+    // Show scroll-top button when scrolled down more than 300px
+    this.showScrollTop = window.scrollY > 300;
+
+    // Prüfe ob User fast am Ende der Seite ist
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    const threshold = 300; // 300px vor Ende
+
+    if (scrollPosition >= pageHeight - threshold && this.hasMore && !this.loading) {
+      this.loadMore();
+    }
   }
 
   private loadCurrentUser(): void {
@@ -217,7 +324,7 @@ export class PublicFeedComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Fehler beim Laden der öffentlichen Posts:', err);
+        console.error('Error loading public posts:', err);
         this.loading = false;
       }
     });
@@ -229,25 +336,39 @@ export class PublicFeedComponent implements OnInit {
   }
 
   likePost(post: Post): void {
-    this.http.post(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
-      next: () => {
-        post.likes_count++;
+    this.http.post<{liked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`, {}).subscribe({
+      next: (response) => {
+        if (response.liked) {
+          post.likes_count++;
+        }
+        post.is_liked_by_user = true;
       },
       error: () => {
-        alert('Fehler beim Liken');
+        alert(this.i18n.t('errors.like'));
       }
     });
   }
 
   unlikePost(post: Post): void {
-    this.http.delete(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
-      next: () => {
-        post.likes_count = Math.max(0, post.likes_count - 1);
+    this.http.delete<{unliked: boolean}>(`/api/feed/${post.author_uid}/${post.post_id}/like`).subscribe({
+      next: (response) => {
+        if (response.unliked) {
+          post.likes_count = Math.max(0, post.likes_count - 1);
+        }
+        post.is_liked_by_user = false;
       },
       error: () => {
-        alert('Fehler beim Unlike');
+        alert(this.i18n.t('errors.unlike'));
       }
     });
+  }
+
+  refresh(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.posts = [];
+    this.offset = 0;
+    this.hasMore = true;
+    this.loadPosts();
   }
 
   deletePost(post: Post): void {
@@ -256,7 +377,7 @@ export class PublicFeedComponent implements OnInit {
         this.posts = this.posts.filter(p => p.post_id !== post.post_id);
       },
       error: () => {
-        alert('Fehler beim Löschen');
+        alert(this.i18n.t('errors.delete'));
       }
     });
   }

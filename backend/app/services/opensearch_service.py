@@ -246,16 +246,16 @@ class OpenSearchService:
 
         return [hit['_source'] for hit in response['hits']['hits']]
 
-    async def get_trending_hashtags(self, limit: int = 20) -> List[Dict[str, Any]]:
+    async def get_trending_hashtags(self, limit: int = 20, hours: int = 24) -> List[Dict[str, Any]]:
         """
-        Gets trending hashtags based on usage count in the last 24 hours.
+        Gets trending hashtags based on usage count in the last N hours.
         Returns list of hashtags with their counts.
         """
         await self.ensure_index()
 
-        # Calculate timestamp for 24 hours ago
+        # Calculate timestamp for N hours ago
         from datetime import datetime, timedelta
-        twenty_four_hours_ago = datetime.utcnow() - timedelta(hours=24)
+        twenty_four_hours_ago = datetime.utcnow() - timedelta(hours=hours)
 
         query = {
             "size": 0,
@@ -290,6 +290,54 @@ class OpenSearchService:
             }
             for bucket in buckets
         ]
+
+    async def autocomplete_hashtags(self, prefix: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Autocomplete hashtags based on prefix search.
+        Returns hashtags that start with the given prefix, sorted by usage count.
+        """
+        await self.ensure_index()
+
+        # Use prefix query with aggregation
+        query = {
+            "size": 0,
+            "query": {
+                "prefix": {
+                    "hashtags": {
+                        "value": prefix.lower()
+                    }
+                }
+            },
+            "aggs": {
+                "hashtags": {
+                    "terms": {
+                        "field": "hashtags",
+                        "size": limit * 2,  # Get more to filter
+                        "order": {"_count": "desc"}
+                    }
+                }
+            }
+        }
+
+        response = self.client.search(
+            index=self.index_name,
+            body=query
+        )
+
+        buckets = response['aggregations']['hashtags']['buckets']
+
+        # Filter to only include hashtags that start with prefix
+        results = []
+        for bucket in buckets:
+            if bucket['key'].startswith(prefix.lower()):
+                results.append({
+                    "hashtag": bucket['key'],
+                    "count": bucket['doc_count']
+                })
+                if len(results) >= limit:
+                    break
+
+        return results
 
     async def search_posts(
         self,

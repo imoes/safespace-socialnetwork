@@ -1,19 +1,21 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
+import { ScreenTimeService, ScreenTimeSettings } from '../../services/screen-time.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="settings-container">
       <div class="settings-card">
-        <h2>⚙️ Benutzereinstellungen</h2>
+        <h2>⚙️ {{ 'settings.title' | translate }}</h2>
 
         @if (successMessage()) {
           <div class="alert alert-success">{{ successMessage() }}</div>
@@ -36,7 +38,7 @@ import { I18nService } from '../../services/i18n.service';
           </div>
           <div class="profile-picture-actions">
             <label class="btn btn-upload" for="profilePictureInput">
-              📷 Profilbild hochladen
+              📷 {{ 'settings.uploadPicture' | translate }}
             </label>
             <input
               type="file"
@@ -46,7 +48,7 @@ import { I18nService } from '../../services/i18n.service';
               style="display: none;"
             />
             @if (uploadingProfilePicture()) {
-              <div class="upload-progress">Wird hochgeladen...</div>
+              <div class="upload-progress">{{ 'settings.uploading' | translate }}</div>
             }
           </div>
         </div>
@@ -56,45 +58,45 @@ import { I18nService } from '../../services/i18n.service';
         <form (ngSubmit)="saveSettings()">
           <!-- Benutzername (nicht änderbar) -->
           <div class="form-group">
-            <label>Benutzername</label>
+            <label>{{ 'settings.username' | translate }}</label>
             <input
               type="text"
               [value]="authService.currentUser()?.username"
               disabled
               class="form-control"
             />
-            <small class="form-text">Der Benutzername kann nicht geändert werden</small>
+            <small class="form-text">{{ 'settings.usernameCannotChange' | translate }}</small>
           </div>
 
           <!-- Vorname -->
           <div class="form-group">
-            <label for="firstName">Vorname</label>
+            <label for="firstName">{{ 'settings.firstName' | translate }}</label>
             <input
               id="firstName"
               type="text"
               [(ngModel)]="firstName"
               name="firstName"
               class="form-control"
-              placeholder="Dein Vorname"
+              [placeholder]="'settings.firstNamePlaceholder' | translate"
             />
           </div>
 
           <!-- Nachname -->
           <div class="form-group">
-            <label for="lastName">Nachname</label>
+            <label for="lastName">{{ 'settings.lastName' | translate }}</label>
             <input
               id="lastName"
               type="text"
               [(ngModel)]="lastName"
               name="lastName"
               class="form-control"
-              placeholder="Dein Nachname"
+              [placeholder]="'settings.lastNamePlaceholder' | translate"
             />
           </div>
 
           <!-- E-Mail -->
           <div class="form-group">
-            <label for="email">E-Mail-Adresse</label>
+            <label for="email">{{ 'settings.email' | translate }}</label>
             <input
               id="email"
               type="email"
@@ -105,22 +107,34 @@ import { I18nService } from '../../services/i18n.service';
             />
           </div>
 
+          <!-- Geburtstag -->
+          <div class="form-group">
+            <label for="birthday">🎂 {{ 'settings.birthday' | translate }}</label>
+            <input
+              id="birthday"
+              type="date"
+              [(ngModel)]="birthday"
+              name="birthday"
+              class="form-control"
+            />
+          </div>
+
           <!-- Bio -->
           <div class="form-group">
-            <label for="bio">Über mich</label>
+            <label for="bio">{{ 'settings.bio' | translate }}</label>
             <textarea
               id="bio"
               [(ngModel)]="bio"
               name="bio"
               rows="4"
               class="form-control"
-              placeholder="Erzähle etwas über dich..."
+              [placeholder]="'settings.bioPlaceholder' | translate"
             ></textarea>
           </div>
 
           <!-- Sprache / Language -->
           <div class="form-group">
-            <label for="language">🌐 Sprache / Language</label>
+            <label for="language">🌐 {{ 'settings.language' | translate }}</label>
             <select
               id="language"
               [(ngModel)]="selectedLanguage"
@@ -133,28 +147,116 @@ import { I18nService } from '../../services/i18n.service';
                 </option>
               }
             </select>
-            <small class="form-text">Wähle deine bevorzugte Sprache / Choose your preferred language</small>
+            <small class="form-text">{{ 'settings.languageHelp' | translate }}</small>
+          </div>
+
+          <!-- E-Mail-Benachrichtigungen -->
+          <div class="section-divider">
+            <h3>📧 {{ 'settings.emailNotifications' | translate }}</h3>
+          </div>
+
+          <div class="notification-prefs">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.post_liked" name="notif_post_liked" />
+              <span>{{ 'settings.notifPostLiked' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.post_commented" name="notif_post_commented" />
+              <span>{{ 'settings.notifPostCommented' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.comment_liked" name="notif_comment_liked" />
+              <span>{{ 'settings.notifCommentLiked' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.birthday" name="notif_birthday" />
+              <span>{{ 'settings.notifBirthday' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.group_post" name="notif_group_post" />
+              <span>{{ 'settings.notifGroupPost' | translate }}</span>
+            </label>
+          </div>
+
+          <!-- Screen Time / Mental Health -->
+          <div class="section-divider">
+            <h3>{{ 'settings.screenTimeTitle' | translate }}</h3>
+          </div>
+
+          <div class="screen-time-section">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="screenTimeEnabled" name="screen_time_enabled" />
+              <span>{{ 'settings.screenTimeEnabled' | translate }}</span>
+            </label>
+
+            @if (screenTimeEnabled) {
+              <div class="form-group" style="margin-top: 16px;">
+                <label for="dailyLimit">{{ 'settings.screenTimeDailyLimit' | translate }}</label>
+                <div class="range-group">
+                  <input
+                    id="dailyLimit"
+                    type="range"
+                    [(ngModel)]="screenTimeDailyLimit"
+                    name="daily_limit"
+                    min="15"
+                    max="480"
+                    step="15"
+                    class="form-range"
+                  />
+                  <span class="range-value">{{ screenTimeDailyLimit }} {{ 'settings.screenTimeMinutes' | translate }}</span>
+                </div>
+              </div>
+
+              <label class="checkbox-label" style="margin-top: 16px;">
+                <input type="checkbox" [(ngModel)]="screenTimeReminderEnabled" name="screen_time_reminder_enabled" />
+                <span>{{ 'settings.screenTimeReminderEnabled' | translate }}</span>
+              </label>
+
+              @if (screenTimeReminderEnabled) {
+                <div class="form-group" style="margin-top: 16px;">
+                  <label for="reminderInterval">{{ 'settings.screenTimeReminderInterval' | translate }}</label>
+                  <div class="range-group">
+                    <input
+                      id="reminderInterval"
+                      type="range"
+                      [(ngModel)]="screenTimeReminderInterval"
+                      name="reminder_interval"
+                      min="10"
+                      max="120"
+                      step="5"
+                      class="form-range"
+                    />
+                    <span class="range-value">{{ screenTimeReminderInterval }} {{ 'settings.screenTimeMinutes' | translate }}</span>
+                  </div>
+                </div>
+              }
+
+              <div class="screen-time-info">
+                <span class="info-icon">&#9432;</span>
+                {{ 'settings.screenTimeInfo' | translate }}
+              </div>
+            }
           </div>
 
           <!-- Passwort ändern -->
           <div class="section-divider">
-            <h3>Passwort ändern</h3>
+            <h3>{{ 'settings.passwordSection' | translate }}</h3>
           </div>
 
           <div class="form-group">
-            <label for="currentPassword">Aktuelles Passwort</label>
+            <label for="currentPassword">{{ 'settings.currentPassword' | translate }}</label>
             <input
               id="currentPassword"
               type="password"
               [(ngModel)]="currentPassword"
               name="currentPassword"
               class="form-control"
-              placeholder="Nur ausfüllen wenn Passwort geändert werden soll"
+              [placeholder]="'settings.currentPasswordPlaceholder' | translate"
             />
           </div>
 
           <div class="form-group">
-            <label for="newPassword">Neues Passwort</label>
+            <label for="newPassword">{{ 'settings.newPassword' | translate }}</label>
             <input
               id="newPassword"
               type="password"
@@ -166,7 +268,7 @@ import { I18nService } from '../../services/i18n.service';
           </div>
 
           <div class="form-group">
-            <label for="confirmPassword">Passwort bestätigen</label>
+            <label for="confirmPassword">{{ 'settings.confirmPassword' | translate }}</label>
             <input
               id="confirmPassword"
               type="password"
@@ -180,31 +282,41 @@ import { I18nService } from '../../services/i18n.service';
           <!-- Buttons -->
           <div class="button-group">
             <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
-              {{ isSaving() ? 'Speichern...' : 'Änderungen speichern' }}
+              {{ (isSaving() ? 'settings.saving' : 'settings.save') | translate }}
             </button>
             <button type="button" class="btn btn-secondary" (click)="goBack()">
-              Abbrechen
+              {{ 'settings.cancel' | translate }}
             </button>
           </div>
         </form>
 
+        <!-- DSGVO: Datenexport -->
+        <div class="data-export-section">
+          <div class="section-divider">
+            <h3>{{ 'settings.dataExportTitle' | translate }}</h3>
+          </div>
+          <p class="export-desc">{{ 'settings.dataExportDesc' | translate }}</p>
+          <button type="button" class="btn btn-export" (click)="exportData()" [disabled]="isExporting()">
+            {{ (isExporting() ? 'settings.dataExporting' : 'settings.dataExportButton') | translate }}
+          </button>
+        </div>
+
         <!-- Gefahrenzone: Konto löschen -->
         <div class="danger-zone">
           <div class="section-divider">
-            <h3>⚠️ Gefahrenzone</h3>
+            <h3>⚠️ {{ 'settings.dangerZone' | translate }}</h3>
           </div>
           <div class="danger-box">
-            <h4>Konto löschen</h4>
-            <p>Wenn du dein Konto löschst, werden alle deine Daten permanent gelöscht:</p>
+            <h4>{{ 'settings.deleteAccount' | translate }}</h4>
+            <p>{{ 'settings.deleteAccountDesc' | translate }}</p>
             <ul>
-              <li>Alle deine Posts und Kommentare</li>
-              <li>Alle hochgeladenen Medien (Bilder, Videos)</li>
-              <li>Alle Freundschaften und Anfragen</li>
-              <li>Dein Benutzerprofil und alle persönlichen Daten</li>
+              @for (item of i18n.tArray('settings.deleteAccountList'); track $index) {
+                <li>{{ item }}</li>
+              }
             </ul>
-            <p class="danger-warning"><strong>Diese Aktion kann nicht rückgängig gemacht werden!</strong></p>
+            <p class="danger-warning"><strong>{{ 'settings.deleteAccountWarning' | translate }}</strong></p>
             <button type="button" class="btn btn-danger" (click)="deleteAccount()">
-              🗑️ Konto permanent löschen
+              🗑️ {{ 'settings.deleteAccountButton' | translate }}
             </button>
           </div>
         </div>
@@ -400,6 +512,39 @@ import { I18nService } from '../../services/i18n.service';
       background: #e4e6e9;
     }
 
+    /* Datenexport */
+    .data-export-section {
+      margin-top: 48px;
+    }
+
+    .export-desc {
+      color: #65676b;
+      font-size: 14px;
+      margin: 8px 0 16px 0;
+      line-height: 1.5;
+    }
+
+    .btn-export {
+      padding: 10px 24px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-export:hover:not(:disabled) {
+      background: #1b5e20;
+    }
+
+    .btn-export:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     /* Gefahrenzone */
     .danger-zone {
       margin-top: 48px;
@@ -448,6 +593,115 @@ import { I18nService } from '../../services/i18n.service';
     .btn-danger:hover:not(:disabled) {
       background: #c82333;
     }
+
+    .notification-prefs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 10px 12px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .checkbox-label:hover {
+      background: #f0f0f0;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #1877f2;
+      cursor: pointer;
+    }
+
+    .checkbox-label span {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Screen Time */
+    .screen-time-section {
+      margin-bottom: 8px;
+    }
+
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .form-range {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #e4e6e9;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .form-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1877f2;
+      cursor: pointer;
+    }
+
+    .form-range::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1877f2;
+      cursor: pointer;
+      border: none;
+    }
+
+    .range-value {
+      min-width: 80px;
+      text-align: right;
+      font-weight: 600;
+      color: #1877f2;
+      font-size: 14px;
+    }
+
+    .screen-time-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #e8f4fd;
+      border-radius: 8px;
+      color: #1565c0;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 16px;
+    }
+
+    .info-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    @media (max-width: 1024px) {
+      .settings-container { margin: 16px auto; padding: 12px; }
+      .settings-card { padding: 20px 16px; }
+      h2 { font-size: 20px; }
+      .profile-picture-section { flex-direction: column; text-align: center; gap: 16px; }
+      .button-group { flex-direction: column; }
+      .btn { width: 100%; text-align: center; }
+    }
   `]
 })
 export class SettingsComponent implements OnInit {
@@ -455,37 +709,99 @@ export class SettingsComponent implements OnInit {
   http = inject(HttpClient);
   router = inject(Router);
   i18n = inject(I18nService);
+  screenTimeService = inject(ScreenTimeService);
 
   email = '';
   bio = '';
   firstName = '';
   lastName = '';
+  birthday = '';
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
   selectedLanguage = 'en';
+  originalLanguage = 'en';
+
+  notifPrefs = {
+    post_liked: true,
+    post_commented: true,
+    comment_liked: true,
+    birthday: true,
+    group_post: true
+  };
+
+  screenTimeEnabled = true;
+  screenTimeDailyLimit = 120;
+  screenTimeReminderEnabled = true;
+  screenTimeReminderInterval = 30;
 
   isSaving = signal(false);
+  isExporting = signal(false);
   successMessage = signal('');
   errorMessage = signal('');
   uploadingProfilePicture = signal(false);
 
+  constructor() {
+    // Watch for user changes and update form when user loads
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user) {
+        this.email = user.email;
+        this.bio = user.bio || '';
+        this.firstName = user.first_name || '';
+        this.lastName = user.last_name || '';
+        this.birthday = user.birthday || '';
+      }
+    });
+  }
+
   ngOnInit(): void {
-    const user = this.authService.currentUser();
-    if (user) {
-      this.email = user.email;
-      this.bio = user.bio || '';
-      this.firstName = user.first_name || '';
-      this.lastName = user.last_name || '';
+    // Load current language and store original
+    const currentLang = this.i18n.currentLanguage();
+    if (currentLang) {
+      this.selectedLanguage = currentLang.code;
+      this.originalLanguage = this.selectedLanguage;
+    } else {
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      this.selectedLanguage = savedLang;
+      this.originalLanguage = savedLang;
     }
 
-    // Load current language
-    this.selectedLanguage = this.i18n.currentLanguage().code;
+    this.loadNotificationPreferences();
+    this.loadScreenTimeSettings();
+  }
+
+  loadNotificationPreferences(): void {
+    this.http.get<any>('/api/users/me/notification-preferences').subscribe({
+      next: (prefs) => {
+        this.notifPrefs = {
+          post_liked: prefs.post_liked ?? true,
+          post_commented: prefs.post_commented ?? true,
+          comment_liked: prefs.comment_liked ?? true,
+          birthday: prefs.birthday ?? true,
+          group_post: prefs.group_post ?? true
+        };
+      },
+      error: () => {}
+    });
+  }
+
+  loadScreenTimeSettings(): void {
+    this.http.get<{ settings: any }>('/api/users/me/screen-time-settings').subscribe({
+      next: (response) => {
+        const s = response.settings;
+        this.screenTimeEnabled = s.enabled ?? true;
+        this.screenTimeDailyLimit = s.daily_limit_minutes ?? 120;
+        this.screenTimeReminderEnabled = s.reminder_enabled ?? true;
+        this.screenTimeReminderInterval = s.reminder_interval_minutes ?? 30;
+      },
+      error: () => {}
+    });
   }
 
   onLanguageChange(): void {
-    this.i18n.setLanguage(this.selectedLanguage);
-    this.successMessage.set('Language changed successfully! / Sprache erfolgreich geändert!');
+    // Just update the selection, don't apply yet
+    // Language will be applied when user clicks "Save Settings"
   }
 
   saveSettings(): void {
@@ -494,21 +810,21 @@ export class SettingsComponent implements OnInit {
 
     // Validierung
     if (!this.email) {
-      this.errorMessage.set('E-Mail-Adresse ist erforderlich');
+      this.errorMessage.set(this.i18n.t('errors.emailRequired'));
       return;
     }
 
     if (this.currentPassword) {
       if (!this.newPassword) {
-        this.errorMessage.set('Bitte geben Sie ein neues Passwort ein');
+        this.errorMessage.set(this.i18n.t('errors.enterNewPassword'));
         return;
       }
       if (this.newPassword !== this.confirmPassword) {
-        this.errorMessage.set('Die Passwörter stimmen nicht überein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMismatch'));
         return;
       }
       if (this.newPassword.length < 6) {
-        this.errorMessage.set('Das Passwort muss mindestens 6 Zeichen lang sein');
+        this.errorMessage.set(this.i18n.t('errors.passwordMinLength'));
         return;
       }
     }
@@ -519,7 +835,9 @@ export class SettingsComponent implements OnInit {
       email: this.email,
       bio: this.bio,
       first_name: this.firstName,
-      last_name: this.lastName
+      last_name: this.lastName,
+      preferred_language: this.selectedLanguage,
+      birthday: this.birthday || null
     };
 
     if (this.currentPassword && this.newPassword) {
@@ -527,28 +845,49 @@ export class SettingsComponent implements OnInit {
       updateData.new_password = this.newPassword;
     }
 
+    // Save notification preferences in parallel
+    this.http.put('/api/users/me/notification-preferences', this.notifPrefs).subscribe();
+
+    // Save screen time settings in parallel
+    const screenTimeSettings: ScreenTimeSettings = {
+      enabled: this.screenTimeEnabled,
+      daily_limit_minutes: this.screenTimeDailyLimit,
+      reminder_enabled: this.screenTimeReminderEnabled,
+      reminder_interval_minutes: this.screenTimeReminderInterval
+    };
+    this.screenTimeService.saveSettings(screenTimeSettings);
+
     this.http.put('/api/users/me', updateData).subscribe({
       next: () => {
-        this.successMessage.set('Einstellungen erfolgreich gespeichert!');
-        this.isSaving.set(false);
+        if (this.selectedLanguage !== this.originalLanguage) {
+          this.i18n.setLanguage(this.selectedLanguage).then(() => {
+            this.originalLanguage = this.selectedLanguage;
+            this.successMessage.set(this.i18n.t('settings.success'));
+            this.isSaving.set(false);
+            this.authService.loadCurrentUser();
+          }).catch(() => {
+            this.errorMessage.set('Failed to change language');
+            this.isSaving.set(false);
+          });
+        } else {
+          this.successMessage.set(this.i18n.t('settings.success'));
+          this.isSaving.set(false);
 
-        // Passwortfelder leeren
-        this.currentPassword = '';
-        this.newPassword = '';
-        this.confirmPassword = '';
+          // Clear password fields
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
 
-        // User-Daten neu laden, um aktualisierte Werte anzuzeigen
-        this.authService.loadCurrentUser();
-
-        // User neu laden
-        this.authService.loadCurrentUser();
+          // Reload user data to reflect updates
+          this.authService.loadCurrentUser();
+        }
       },
       error: (error) => {
         this.isSaving.set(false);
         if (error.status === 401) {
-          this.errorMessage.set('Aktuelles Passwort ist falsch');
+          this.errorMessage.set(this.i18n.t('errors.wrongPassword'));
         } else {
-          this.errorMessage.set(error.error?.detail || 'Fehler beim Speichern der Einstellungen');
+          this.errorMessage.set(error.error?.detail || this.i18n.t('errors.saveSettings'));
         }
       }
     });
@@ -558,14 +897,33 @@ export class SettingsComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  exportData(): void {
+    this.isExporting.set(true);
+    this.http.get('/api/users/me/data-export').subscribe({
+      next: (data) => {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `safespace-data-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.isExporting.set(false);
+      },
+      error: () => {
+        this.isExporting.set(false);
+        this.errorMessage.set(this.i18n.t('errors.dataExport'));
+      }
+    });
+  }
+
   deleteAccount(): void {
-    const confirmText = 'Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!';
-    if (!confirm(confirmText)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm1'))) {
       return;
     }
 
-    const doubleConfirm = 'Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?';
-    if (!confirm(doubleConfirm)) {
+    if (!confirm(this.i18n.t('settings.deleteConfirm2'))) {
       return;
     }
 
@@ -574,14 +932,13 @@ export class SettingsComponent implements OnInit {
 
     this.http.delete('/api/users/me/account').subscribe({
       next: () => {
-        alert('Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.');
-        // Logout und zur Login-Seite
+        alert(this.i18n.t('settings.deleteSuccess'));
         this.authService.logout();
         this.router.navigate(['/login']);
       },
       error: (error) => {
         this.isSaving.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Kontos');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.deleteAccount'));
       }
     });
   }
@@ -594,13 +951,13 @@ export class SettingsComponent implements OnInit {
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      this.errorMessage.set('Das Bild ist zu groß. Maximal 10MB erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.imageTooLarge'));
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.errorMessage.set('Nur Bilddateien sind erlaubt.');
+      this.errorMessage.set(this.i18n.t('errors.onlyImages'));
       return;
     }
 
@@ -614,7 +971,7 @@ export class SettingsComponent implements OnInit {
     this.http.post('/api/users/me/profile-picture', formData).subscribe({
       next: (response: any) => {
         this.uploadingProfilePicture.set(false);
-        this.successMessage.set('Profilbild erfolgreich hochgeladen!');
+        this.successMessage.set(this.i18n.t('settings.success'));
 
         // Reload current user to update profile picture
         this.authService.loadCurrentUser();
@@ -624,7 +981,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (error) => {
         this.uploadingProfilePicture.set(false);
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Hochladen des Profilbilds');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('errors.uploadPicture'));
         input.value = '';
       }
     });

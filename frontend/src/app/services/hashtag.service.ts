@@ -32,17 +32,30 @@ export class HashtagService {
   /**
    * Get trending hashtags
    */
-  getTrendingHashtags(limit: number = 20): Observable<HashtagStat[]> {
-    return this.http.get<HashtagStat[]>(`${this.API_URL}/trending?limit=${limit}`);
+  getTrendingHashtags(limit: number = 20, hours: number = 24): Observable<HashtagStat[]> {
+    return this.http.get<HashtagStat[]>(`${this.API_URL}/trending?limit=${limit}&hours=${hours}`);
+  }
+
+  /**
+   * Autocomplete hashtags by prefix
+   */
+  autocompleteHashtags(query: string, limit: number = 10): Observable<HashtagStat[]> {
+    if (query.length < 2) {
+      return new Observable(observer => {
+        observer.next([]);
+        observer.complete();
+      });
+    }
+    return this.http.get<HashtagStat[]>(`${this.API_URL}/autocomplete?q=${encodeURIComponent(query)}&limit=${limit}`);
   }
 
   /**
    * Search for posts by hashtag with pagination
    */
-  searchByHashtag(hashtag: string, limit: number = 50, offset: number = 0): Observable<{posts: HashtagPost[], has_more: boolean}> {
+  searchByHashtag(hashtag: string, limit: number = 50, offset: number = 0): Observable<{posts: HashtagPost[], has_more: boolean, total: number}> {
     // Remove # if present
     const cleanHashtag = hashtag.startsWith('#') ? hashtag.substring(1) : hashtag;
-    return this.http.get<{posts: HashtagPost[], has_more: boolean}>(
+    return this.http.get<{posts: HashtagPost[], has_more: boolean, total: number}>(
       `${this.API_URL}/search/${encodeURIComponent(cleanHashtag)}?limit=${limit}&offset=${offset}`
     );
   }

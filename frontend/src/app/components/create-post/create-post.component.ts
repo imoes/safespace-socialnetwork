@@ -6,16 +6,22 @@ import { AuthService } from '../../services/auth.service';
 import { SafeSpaceService, ModerationCheckResult } from '../../services/safespace.service';
 import { VideoEditorComponent } from '../video-editor/video-editor.component';
 import { HttpClient } from '@angular/common/http';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
+import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, FormsModule, VideoEditorComponent],
+  imports: [CommonModule, FormsModule, VideoEditorComponent, TranslatePipe, AutoEmojiDirective],
   template: `
     <div class="create-post">
       <div class="post-header">
         <div class="avatar">{{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}</div>
-        <textarea [(ngModel)]="content" placeholder="Was denkst du gerade?" rows="3" [disabled]="isSubmitting()"></textarea>
+        <textarea [(ngModel)]="content" [placeholder]="'feed.createPost' | translate" rows="3" [disabled]="isSubmitting()" (input)="onContentInput()" autoEmoji></textarea>
       </div>
 
       @if (selectedFiles().length > 0) {
@@ -26,19 +32,40 @@ import { HttpClient } from '@angular/common/http';
         </div>
       }
 
+      @if (linkPreviews().length > 0) {
+        <div class="link-previews">
+          @for (preview of linkPreviews(); track preview.url) {
+            <a [href]="preview.url" target="_blank" rel="noopener noreferrer" class="link-preview-card">
+              @if (preview.image) {
+                <div class="link-preview-image">
+                  <img [src]="preview.image" [alt]="preview.title" (error)="onPreviewImageError($event)" />
+                </div>
+              }
+              <div class="link-preview-info">
+                <span class="link-preview-site">{{ preview.site_name || preview.domain }}</span>
+                <span class="link-preview-title">{{ preview.title }}</span>
+                @if (preview.description) {
+                  <span class="link-preview-desc">{{ preview.description }}</span>
+                }
+              </div>
+            </a>
+          }
+        </div>
+      }
+
       <div class="post-footer">
         <label class="media-btn">📷<input type="file" accept="image/*" multiple (change)="onFileSelect($event)" hidden /></label>
         <label class="media-btn">🎥<input #videoInput type="file" accept="video/*" (change)="onVideoSelect($event)" hidden /></label>
         <select [(ngModel)]="visibility">
-          <option value="public">🌍 Öffentlich</option>
-          <option value="friends">👥 Alle Freunde</option>
-          <option value="close_friends">💚 Enge Freunde</option>
-          <option value="family">👨‍👩‍👧‍👦 Familie</option>
-          <option value="private">🔒 Nur ich</option>
+          <option value="public">🌍 {{ 'visibility.public' | translate }}</option>
+          <option value="friends">👥 {{ 'visibility.friends' | translate }}</option>
+          <option value="close_friends">💚 {{ 'visibility.closeFriends' | translate }}</option>
+          <option value="family">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</option>
+          <option value="private">🔒 {{ 'visibility.private' | translate }}</option>
         </select>
 
         <button class="post-btn" (click)="submitPost()" [disabled]="!canPost() || isSubmitting()">
-          {{ isSubmitting() ? '...' : 'Posten' }}
+          {{ isSubmitting() ? '...' : ('feed.postButton' | translate) }}
         </button>
       </div>
     </div>
@@ -49,18 +76,18 @@ import { HttpClient } from '@angular/common/http';
         <div class="guardian-modal" (click)="$event.stopPropagation()">
           <div class="guardian-header">
             <span class="guardian-icon">🛡️</span>
-            <h2>Guardian - AI-gestützte Inhaltsmoderation</h2>
+            <h2>{{ 'guardian.title' | translate }}</h2>
           </div>
 
           @if (guardianResult) {
             <div class="guardian-content">
               <div class="explanation-box">
-                <h3>Warum wurde dieser Inhalt markiert?</h3>
+                <h3>{{ 'guardian.whyFlagged' | translate }}</h3>
                 <p>{{ guardianResult.explanation }}</p>
 
                 @if (guardianResult.categories && guardianResult.categories.length > 0) {
                   <div class="categories">
-                    <strong>Kategorien:</strong>
+                    <strong>{{ 'guardian.categories' | translate }}</strong>
                     @for (cat of guardianResult.categories; track cat) {
                       <span class="category-tag">{{ getCategoryLabel(cat) }}</span>
                     }
@@ -68,9 +95,16 @@ import { HttpClient } from '@angular/common/http';
                 }
               </div>
 
+              @if (guardianResult.revision_explanation) {
+                <div class="revision-explanation-box">
+                  <h3>{{ 'guardian.whyAlternative' | translate }}</h3>
+                  <p>{{ guardianResult.revision_explanation }}</p>
+                </div>
+              }
+
               <div class="alternatives-section">
-                <h3>Alternative Formulierungen</h3>
-                <p class="alternatives-hint">Wähle eine der folgenden Alternativen oder formuliere deinen Inhalt selbst um:</p>
+                <h3>{{ 'guardian.alternatives' | translate }}</h3>
+                <p class="alternatives-hint">{{ 'guardian.alternativesHint' | translate }}</p>
 
                 @for (alt of getAlternatives(); track alt; let i = $index) {
                   <button class="alternative-btn" (click)="useAlternative(alt)">
@@ -80,26 +114,25 @@ import { HttpClient } from '@angular/common/http';
                 }
 
                 <div class="custom-alternative">
-                  <label>Oder schreibe eine eigene Formulierung:</label>
-                  <textarea [(ngModel)]="customContent" rows="3" placeholder="Deine eigene Formulierung..."></textarea>
+                  <label>{{ 'guardian.customLabel' | translate }}</label>
+                  <textarea [(ngModel)]="customContent" rows="3" [placeholder]="'guardian.customPlaceholder' | translate"></textarea>
                   <button class="use-custom-btn" (click)="useCustomContent()" [disabled]="!customContent.trim()">
-                    Eigene Formulierung verwenden
+                    {{ 'guardian.useCustom' | translate }}
                   </button>
                 </div>
               </div>
 
               <div class="guardian-actions">
                 <button class="dispute-btn" (click)="disputeModeration()">
-                  ⚖️ Widerspruch einlegen
+                  {{ 'guardian.dispute' | translate }}
                 </button>
                 <button class="cancel-btn" (click)="closeGuardianModal()">
-                  Abbrechen
+                  {{ 'guardian.cancel' | translate }}
                 </button>
               </div>
 
               <div class="guardian-disclaimer">
-                ⚠️ <strong>Hinweis:</strong> KI-Systeme können Fehler machen. Alle Vorschläge sind ohne Gewähr.
-                Bei Unklarheiten kannst du Widerspruch einlegen.
+                {{ 'guardian.disclaimer' | translate }}
               </div>
             </div>
           }
@@ -126,6 +159,17 @@ import { HttpClient } from '@angular/common/http';
     .post-btn { margin-left: auto; background: #1877f2; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .post-btn:disabled { background: #ccc; }
 
+    /* Link Preview */
+    .link-previews { margin-top: 12px; }
+    .link-preview-card { display: flex; flex-direction: column; border: 1px solid #e4e6e9; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: box-shadow 0.2s; cursor: pointer; margin-bottom: 8px; }
+    .link-preview-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .link-preview-image { width: 100%; max-height: 200px; overflow: hidden; background: #f0f2f5; }
+    .link-preview-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .link-preview-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .link-preview-site { font-size: 12px; color: #65676b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .link-preview-title { font-size: 15px; font-weight: 600; color: #050505; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .link-preview-desc { font-size: 13px; color: #65676b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
     /* Guardian Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .guardian-modal { background: white; border-radius: 16px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
@@ -139,6 +183,10 @@ import { HttpClient } from '@angular/common/http';
     .explanation-box p { margin: 0 0 12px; color: #856404; line-height: 1.6; }
     .categories { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .category-tag { background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+    .revision-explanation-box { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+    .revision-explanation-box h3 { margin: 0 0 12px; font-size: 18px; color: #0c5460; }
+    .revision-explanation-box p { margin: 0; color: #0c5460; line-height: 1.6; }
 
     .alternatives-section h3 { margin: 0 0 8px; font-size: 18px; }
     .alternatives-hint { color: #666; font-size: 14px; margin-bottom: 16px; }
@@ -161,6 +209,15 @@ import { HttpClient } from '@angular/common/http';
 
     .guardian-disclaimer { background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; color: #856404; }
     .guardian-disclaimer strong { font-weight: 600; }
+
+    @media (max-width: 1024px) {
+      .create-post { padding: 12px; }
+      .post-footer { flex-wrap: wrap; }
+      .post-btn { width: 100%; margin-left: 0; }
+      select { flex: 1; }
+      .guardian-modal { width: 95%; max-width: none; }
+      .guardian-content { padding: 16px; }
+    }
   `]
 })
 export class CreatePostComponent {
@@ -171,15 +228,27 @@ export class CreatePostComponent {
   authService = inject(AuthService);
   safeSpace = inject(SafeSpaceService);
   http = inject(HttpClient);
+  i18n = inject(I18nService);
+  linkPreviewService = inject(LinkPreviewService);
 
   content = '';
   visibility = 'friends';
   selectedFiles = signal<File[]>([]);
   isSubmitting = signal(false);
+  linkPreviews = signal<LinkPreview[]>([]);
+  private contentInput$ = new Subject<string>();
+  private loadedPreviewUrls = new Set<string>();
 
   showGuardianModal = false;
   guardianResult: ModerationCheckResult | null = null;
   customContent = '';
+
+  constructor() {
+    this.contentInput$.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(text => this.detectAndLoadPreviews(text));
+  }
 
   canPost(): boolean {
     return this.content.trim().length > 0 || this.selectedFiles().length > 0;
@@ -260,9 +329,58 @@ export class CreatePostComponent {
         this.content = '';
         this.selectedFiles.set([]);
         this.isSubmitting.set(false);
+        this.linkPreviews.set([]);
+        this.loadedPreviewUrls.clear();
       },
-      error: () => { this.isSubmitting.set(false); alert('Fehler beim Posten!'); }
+      error: () => { this.isSubmitting.set(false); alert(this.i18n.t('errors.posting')); }
     });
+  }
+
+  onContentInput(): void {
+    this.contentInput$.next(this.content);
+  }
+
+  private extractUrls(text: string): string[] {
+    const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
+    const matches = text.match(urlRegex) || [];
+    return [...new Set(matches)];
+  }
+
+  private detectAndLoadPreviews(text: string): void {
+    const urls = this.extractUrls(text);
+    if (urls.length === 0) {
+      this.linkPreviews.set([]);
+      this.loadedPreviewUrls.clear();
+      return;
+    }
+
+    // Remove previews for URLs no longer in text
+    const currentUrls = new Set(urls);
+    const existing = this.linkPreviews().filter(p => currentUrls.has(p.url));
+    this.linkPreviews.set(existing);
+    for (const u of [...this.loadedPreviewUrls]) {
+      if (!currentUrls.has(u)) this.loadedPreviewUrls.delete(u);
+    }
+
+    // Load new URLs (max 3 total)
+    for (const url of urls.slice(0, 3)) {
+      if (this.loadedPreviewUrls.has(url)) continue;
+      this.loadedPreviewUrls.add(url);
+      this.linkPreviewService.getPreview(url).subscribe({
+        next: (preview) => {
+          if (preview && (preview.title || preview.description)) {
+            this.linkPreviews.update(prev => [...prev, preview]);
+          }
+        }
+      });
+    }
+  }
+
+  onPreviewImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.parentElement) {
+      img.parentElement.style.display = 'none';
+    }
   }
 
   getAlternatives(): string[] {
@@ -296,14 +414,14 @@ export class CreatePostComponent {
 
     this.http.post('/api/safespace/dispute', {
       content: this.content,
-      reason: 'User hat Widerspruch gegen die Moderation eingelegt'
+      reason: 'User dispute against moderation'
     }).subscribe({
       next: () => {
-        alert('Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.');
+        alert(this.i18n.t('errors.disputeSuccess'));
         this.closeGuardianModal();
       },
       error: () => {
-        alert('Fehler beim Einreichen des Widerspruchs.');
+        alert(this.i18n.t('errors.disputeSubmit'));
       }
     });
   }
@@ -315,18 +433,19 @@ export class CreatePostComponent {
   }
 
   getCategoryLabel(category: string): string {
-    const labels: Record<string, string> = {
-      racism: 'Rassismus',
-      sexism: 'Sexismus',
-      homophobia: 'Homophobie',
-      religious_hate: 'Religiöse Hetze',
-      disability_hate: 'Ableismus',
-      xenophobia: 'Fremdenfeindlichkeit',
-      general_hate: 'Hassrede',
-      threat: 'Drohung',
-      harassment: 'Belästigung',
-      none: 'Keine'
+    const keyMap: Record<string, string> = {
+      racism: 'categories.racism',
+      sexism: 'categories.sexism',
+      homophobia: 'categories.homophobia',
+      religious_hate: 'categories.religiousHate',
+      disability_hate: 'categories.disabilityHate',
+      xenophobia: 'categories.xenophobia',
+      general_hate: 'categories.generalHate',
+      threat: 'categories.threat',
+      harassment: 'categories.harassment',
+      none: 'categories.none'
     };
-    return labels[category] || category;
+    const key = keyMap[category];
+    return key ? this.i18n.t(key) : category;
   }
 }

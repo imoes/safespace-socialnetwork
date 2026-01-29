@@ -2,16 +2,18 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationsService, Notification } from '../../services/notifications.service';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-notifications-dropdown',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="notifications-container">
       <button class="notifications-button" (click)="toggleDropdown()">
-        🔔 Benachrichtigungen
+        🔔 {{ 'notifications.title' | translate }}
         @if (notificationsService.unreadCount() > 0) {
           <span class="notification-badge">{{ notificationsService.unreadCount() }}</span>
         }
@@ -21,17 +23,17 @@ import { interval } from 'rxjs';
         <div class="dropdown-overlay" (click)="closeDropdown()"></div>
         <div class="dropdown-menu">
           <div class="dropdown-header">
-            <h3>Benachrichtigungen</h3>
+            <h3>{{ 'notifications.title' | translate }}</h3>
             @if (notificationsService.unreadCount() > 0) {
-              <button class="mark-all-read" (click)="markAllAsRead()">Alle als gelesen</button>
+              <button class="mark-all-read" (click)="markAllAsRead()">{{ 'notifications.markAllRead' | translate }}</button>
             }
           </div>
 
           <div class="notifications-list">
             @if (notificationsService.isLoading()) {
-              <div class="loading">Lade Benachrichtigungen...</div>
+              <div class="loading">{{ 'notifications.loading' | translate }}</div>
             } @else if (notificationsService.notifications().length === 0) {
-              <div class="no-notifications">Keine Benachrichtigungen</div>
+              <div class="no-notifications">{{ 'notifications.noNotifications' | translate }}</div>
             } @else {
               @for (notification of notificationsService.notifications(); track notification.notification_id) {
                 <div
@@ -48,7 +50,7 @@ import { interval } from 'rxjs';
                   </div>
                   <div class="notification-content">
                     <div class="notification-message">
-                      {{ notificationsService.getNotificationMessage(notification) }}
+                      {{ getNotificationMessage(notification) }}
                     </div>
                     <div class="notification-time">{{ formatTime(notification.created_at) }}</div>
                   </div>
@@ -221,11 +223,26 @@ import { interval } from 'rxjs';
       border-radius: 50%;
       flex-shrink: 0;
     }
+
+    @media (max-width: 1024px) {
+      .dropdown-menu {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 16px 16px 0 0;
+        margin-top: 0;
+      }
+    }
   `]
 })
 export class NotificationsDropdownComponent implements OnInit {
   notificationsService = inject(NotificationsService);
   private router = inject(Router);
+  private i18n = inject(I18nService);
 
   showDropdown = signal(false);
 
@@ -284,7 +301,9 @@ export class NotificationsDropdownComponent implements OnInit {
     this.closeDropdown();
 
     // Navigate based on notification type
-    if (notification.post_id && notification.post_author_uid) {
+    if (notification.type === 'group_join_request' && notification.group_id) {
+      this.router.navigate(['/groups', notification.group_id]);
+    } else if (notification.post_id && notification.post_author_uid) {
       this.router.navigate(['/my-posts'], {
         queryParams: { highlight: notification.post_id }
       });
@@ -300,15 +319,36 @@ export class NotificationsDropdownComponent implements OnInit {
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 1) {
-      return 'Gerade eben';
+      return this.i18n.t('notifications.justNow');
     } else if (diffMins < 60) {
-      return `vor ${diffMins} Min.`;
+      return this.i18n.t('notifications.minutesAgo', { count: diffMins });
     } else if (diffHours < 24) {
-      return `vor ${diffHours} Std.`;
+      return this.i18n.t('notifications.hoursAgo', { count: diffHours });
     } else if (diffDays < 7) {
-      return `vor ${diffDays} Tag${diffDays > 1 ? 'en' : ''}`;
+      return this.i18n.t('notifications.daysAgo', { count: diffDays });
     } else {
-      return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      // Use locale from current language
+      const langCode = this.i18n.currentLanguage()?.code || 'en';
+      const locale = langCode === 'ar' ? 'ar-SA' : `${langCode}-${langCode.toUpperCase()}`;
+      return date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+  }
+
+  getNotificationMessage(notification: Notification): string {
+    const username = notification.actor_username;
+    switch (notification.type) {
+      case 'post_liked':
+        return this.i18n.t('notifications.postLiked', { username });
+      case 'post_commented':
+        return this.i18n.t('notifications.postCommented', { username });
+      case 'comment_liked':
+        return this.i18n.t('notifications.commentLiked', { username });
+      case 'group_join_request':
+        return this.i18n.t('notifications.groupJoinRequest', { username, groupName: notification.group_name || '' });
+      case 'birthday':
+        return this.i18n.t('notifications.birthday', { username, age: notification.comment_id?.toString() || '?' });
+      default:
+        return this.i18n.t('notifications.newNotification');
     }
   }
 }

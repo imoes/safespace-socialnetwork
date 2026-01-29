@@ -1,28 +1,35 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { UserService, UserSearchResult } from './services/user.service';
+import { I18nService } from './services/i18n.service';
+import { TranslatePipe } from './pipes/translate.pipe';
 import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
 import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval } from 'rxjs';
+import { ScreenTimeModalComponent } from './components/screen-time-modal/screen-time-modal.component';
+import { CookieConsentComponent } from './components/cookie-consent/cookie-consent.component';
+import { ScreenTimeService } from './services/screen-time.service';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval, filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, ScreenTimeModalComponent, CookieConsentComponent, TranslatePipe],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
-        <a routerLink="/" class="logo">SocialNet</a>
+        <a routerLink="/" class="logo">{{ siteTitle() }}</a>
+        <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="donate-link" title="{{ 'nav.donate' | translate }}">❤️ {{ 'nav.donate' | translate }}</a>
 
-        <div class="search-container">
+        <div class="search-container desktop-only">
           <input
             type="text"
             class="search-input"
-            placeholder="🔍 Benutzer suchen..."
+            [placeholder]="'🔍 ' + ('nav.searchPlaceholder' | translate)"
             [(ngModel)]="searchQuery"
             (input)="onSearchInput()"
             (focus)="onSearchFocus()"
@@ -47,7 +54,7 @@ import { HttpClient } from '@angular/common/http';
                     <div class="search-username">
                       {{ user.username }}
                       @if (user.is_friend) {
-                        <span class="friend-badge">✓ Freund</span>
+                        <span class="friend-badge">✓ {{ 'friends.title' | translate }}</span>
                       }
                     </div>
                     @if (user.bio) {
@@ -61,32 +68,43 @@ import { HttpClient } from '@angular/common/http';
           @if (showSearchResults() && searchQuery.length >= 2 && searchResults().length === 0) {
             <div class="search-overlay" (click)="closeSearch()"></div>
             <div class="search-results">
-              <div class="no-results">Keine Benutzer gefunden</div>
+              <div class="no-results">{{ 'common.noResults' | translate }}</div>
             </div>
           }
         </div>
 
-        <div class="nav-right">
-          <!-- Social Features nur für normale User -->
+        <!-- Desktop navigation -->
+        <div class="nav-right desktop-only">
           @if (!authService.isModerator() && !authService.isAdmin()) {
-            <a routerLink="/" class="nav-link">🏠 Feed</a>
-            <a routerLink="/my-posts" class="nav-link">📝 Meine Posts</a>
-            <a routerLink="/public-feed" class="nav-link">🌍 Öffentlich</a>
-            <a routerLink="/hashtags" class="nav-link">🏷️ Hashtags</a>
+            <a routerLink="/" class="nav-link">🏠 {{ 'nav.feed' | translate }}</a>
+            <a routerLink="/my-posts" class="nav-link">📝 {{ 'nav.myPosts' | translate }}</a>
+            <a routerLink="/public-feed" class="nav-link">🌍 {{ 'nav.public' | translate }}</a>
+            <a routerLink="/hashtags" class="nav-link">🏷️ {{ 'nav.hashtags' | translate }}</a>
             <a routerLink="/friends" class="nav-link nav-link-with-badge">
-              👫 Freunde
+              👫 {{ 'nav.friends' | translate }}
               @if (pendingRequestsCount() > 0) {
                 <span class="notification-badge">{{ pendingRequestsCount() }}</span>
               }
             </a>
+            <a routerLink="/groups" class="nav-link">👥 {{ 'nav.groups' | translate }}</a>
           }
           <app-notifications-dropdown />
           @if (authService.isModerator()) {
-            <a routerLink="/admin" class="nav-link">🛡️ Moderation</a>
+            <a routerLink="/admin" class="nav-link nav-link-with-badge">
+              🛡️ {{ 'nav.moderation' | translate }}
+              @if (openReportsCount() > 0) {
+                <span class="notification-badge">{{ openReportsCount() }}</span>
+              }
+            </a>
           }
           @if (authService.isAdmin()) {
-            <a routerLink="/admin-panel" class="nav-link">👑 Admin</a>
-            <a routerLink="/users" class="nav-link">👥 Benutzer</a>
+            <a routerLink="/admin-panel" class="nav-link nav-link-with-badge">
+              👑 Admin
+              @if (openReportsCount() > 0) {
+                <span class="notification-badge">{{ openReportsCount() }}</span>
+              }
+            </a>
+            <a routerLink="/users" class="nav-link">👥 {{ 'nav.users' | translate }}</a>
           }
 
           <div class="user-menu">
@@ -99,37 +117,149 @@ import { HttpClient } from '@angular/common/http';
               <div class="dropdown-overlay" (click)="closeDropdown()"></div>
               <div class="dropdown-menu">
                 <a routerLink="/settings" class="dropdown-item" (click)="closeDropdown()">
-                  ⚙️ Einstellungen
+                  ⚙️ {{ 'nav.settings' | translate }}
                 </a>
                 <div class="dropdown-divider"></div>
                 <a routerLink="/info" class="dropdown-item" (click)="closeDropdown()">
-                  ℹ️ Info
+                  ℹ️ {{ 'nav.info' | translate }}
                 </a>
                 <a routerLink="/privacy-policy" class="dropdown-item" (click)="closeDropdown()">
-                  📜 Datenschutzerklärung
+                  📜 {{ 'nav.privacyPolicy' | translate }}
                 </a>
                 <a routerLink="/impressum" class="dropdown-item" (click)="closeDropdown()">
-                  ⚖️ Impressum
+                  ⚖️ {{ 'nav.impressum' | translate }}
+                </a>
+                <a routerLink="/terms" class="dropdown-item" (click)="closeDropdown()">
+                  📋 {{ 'nav.terms' | translate }}
+                </a>
+                <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="dropdown-item" (click)="closeDropdown()">
+                  ❤️ {{ 'nav.donate' | translate }}
                 </a>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">
-                  🚪 Abmelden
+                  🚪 {{ 'nav.logout' | translate }}
                 </button>
               </div>
             }
           </div>
         </div>
+
+        <!-- Mobile: notifications + hamburger -->
+        <div class="mobile-nav-buttons mobile-only">
+          <app-notifications-dropdown />
+          <button class="hamburger-btn" (click)="toggleMobileMenu()" [attr.aria-label]="'Menu'">
+            <span class="hamburger-line" [class.open]="showMobileMenu()"></span>
+            <span class="hamburger-line" [class.open]="showMobileMenu()"></span>
+            <span class="hamburger-line" [class.open]="showMobileMenu()"></span>
+          </button>
+        </div>
       </nav>
+
+      <!-- Mobile menu overlay -->
+      @if (showMobileMenu()) {
+        <div class="mobile-menu-overlay" (click)="closeMobileMenu()"></div>
+        <div class="mobile-menu" [class.open]="showMobileMenu()">
+          <!-- Mobile search -->
+          <div class="mobile-search-container">
+            <input
+              type="text"
+              class="search-input mobile-search-input"
+              [placeholder]="'🔍 ' + ('nav.searchPlaceholder' | translate)"
+              [(ngModel)]="mobileSearchQuery"
+              (input)="onMobileSearchInput()"
+              (keydown)="onMobileSearchKeydown($event)"
+            />
+            @if (mobileSearchResults().length > 0) {
+              <div class="mobile-search-results">
+                @for (user of mobileSearchResults(); track user.uid) {
+                  <div class="search-result-item" (click)="goToProfileMobile(user.uid)">
+                    @if (user.profile_picture) {
+                      <img [src]="user.profile_picture" class="search-avatar search-avatar-img" [alt]="user.username" />
+                    } @else {
+                      <div class="search-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+                    }
+                    <div class="search-user-info">
+                      <div class="search-username">{{ user.username }}</div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mobile-menu-user">
+            <div class="mobile-user-avatar">{{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}</div>
+            <div class="mobile-user-name">{{ authService.currentUser()?.username }}</div>
+          </div>
+
+          <div class="mobile-menu-section">
+            @if (!authService.isModerator() && !authService.isAdmin()) {
+              <a routerLink="/" class="mobile-menu-item" (click)="closeMobileMenu()">🏠 {{ 'nav.feed' | translate }}</a>
+              <a routerLink="/my-posts" class="mobile-menu-item" (click)="closeMobileMenu()">📝 {{ 'nav.myPosts' | translate }}</a>
+              <a routerLink="/public-feed" class="mobile-menu-item" (click)="closeMobileMenu()">🌍 {{ 'nav.public' | translate }}</a>
+              <a routerLink="/hashtags" class="mobile-menu-item" (click)="closeMobileMenu()">🏷️ {{ 'nav.hashtags' | translate }}</a>
+              <a routerLink="/friends" class="mobile-menu-item" (click)="closeMobileMenu()">
+                👫 {{ 'nav.friends' | translate }}
+                @if (pendingRequestsCount() > 0) {
+                  <span class="mobile-badge">{{ pendingRequestsCount() }}</span>
+                }
+              </a>
+              <a routerLink="/groups" class="mobile-menu-item" (click)="closeMobileMenu()">👥 {{ 'nav.groups' | translate }}</a>
+            }
+            @if (authService.isModerator()) {
+              <a routerLink="/admin" class="mobile-menu-item" (click)="closeMobileMenu()">
+                🛡️ {{ 'nav.moderation' | translate }}
+                @if (openReportsCount() > 0) {
+                  <span class="mobile-badge">{{ openReportsCount() }}</span>
+                }
+              </a>
+            }
+            @if (authService.isAdmin()) {
+              <a routerLink="/admin-panel" class="mobile-menu-item" (click)="closeMobileMenu()">
+                👑 Admin
+                @if (openReportsCount() > 0) {
+                  <span class="mobile-badge">{{ openReportsCount() }}</span>
+                }
+              </a>
+              <a routerLink="/users" class="mobile-menu-item" (click)="closeMobileMenu()">👥 {{ 'nav.users' | translate }}</a>
+            }
+          </div>
+
+          <div class="mobile-menu-divider"></div>
+
+          <div class="mobile-menu-section">
+            <div class="mobile-section-title">{{ 'nav.settings' | translate }}</div>
+            <a routerLink="/settings" class="mobile-menu-item" (click)="closeMobileMenu()">⚙️ {{ 'nav.settings' | translate }}</a>
+            <a routerLink="/info" class="mobile-menu-item" (click)="closeMobileMenu()">ℹ️ {{ 'nav.info' | translate }}</a>
+            <a routerLink="/privacy-policy" class="mobile-menu-item" (click)="closeMobileMenu()">📜 {{ 'nav.privacyPolicy' | translate }}</a>
+            <a routerLink="/impressum" class="mobile-menu-item" (click)="closeMobileMenu()">⚖️ {{ 'nav.impressum' | translate }}</a>
+            <a routerLink="/terms" class="mobile-menu-item" (click)="closeMobileMenu()">📋 {{ 'nav.terms' | translate }}</a>
+            <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="mobile-menu-item" (click)="closeMobileMenu()">❤️ {{ 'nav.donate' | translate }}</a>
+          </div>
+
+          <div class="mobile-menu-divider"></div>
+
+          <div class="mobile-menu-section">
+            <button class="mobile-menu-item mobile-logout" (click)="mobileLogout()">🚪 {{ 'nav.logout' | translate }}</button>
+          </div>
+        </div>
+      }
     }
     <router-outlet />
     <app-welcome-modal />
+    <app-screen-time-modal />
+    <app-cookie-consent />
   `,
   styles: [`
+    /* === Navbar base === */
     .navbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; gap: 24px; }
     .logo { font-size: 24px; font-weight: bold; color: #1877f2; text-decoration: none; flex-shrink: 0; }
+    .donate-link { font-size: 14px; color: #e74c3c; text-decoration: none; flex-shrink: 0; font-weight: 500; padding: 4px 10px; border: 1px solid #e74c3c; border-radius: 16px; transition: all 0.2s; }
+    .donate-link:hover { background: #e74c3c; color: white; }
 
+    /* === Search === */
     .search-container { position: relative; flex: 1; max-width: 500px; }
-    .search-input { width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; outline: none; }
+    .search-input { width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; outline: none; box-sizing: border-box; }
     .search-input:focus { border-color: #1877f2; }
     .search-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; }
     .search-results { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 400px; overflow-y: auto; z-index: 1000; }
@@ -143,8 +273,9 @@ import { HttpClient } from '@angular/common/http';
     .search-bio { font-size: 12px; color: #65676b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .no-results { padding: 16px; text-align: center; color: #65676b; font-size: 14px; }
 
+    /* === Desktop nav === */
     .nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
-    .nav-link { color: #666; text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: background 0.2s; }
+    .nav-link { color: #666; text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: background 0.2s; white-space: nowrap; }
     .nav-link:hover { background: #f0f2f5; }
     .nav-link-with-badge { position: relative; display: inline-block; }
     .notification-badge {
@@ -197,7 +328,7 @@ import { HttpClient } from '@angular/common/http';
       background: white;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      min-width: 200px;
+      min-width: 240px;
       padding: 8px 0;
       z-index: 1000;
     }
@@ -225,6 +356,187 @@ import { HttpClient } from '@angular/common/http';
     .logout-item {
       color: #e74c3c;
     }
+
+    /* === Mobile hamburger button === */
+    .mobile-nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hamburger-btn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      background: #f0f2f5;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 8px;
+      transition: background 0.2s;
+    }
+    .hamburger-btn:hover { background: #e4e6e9; }
+
+    .hamburger-line {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #333;
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger-line.open:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger-line.open:nth-child(2) { opacity: 0; }
+    .hamburger-line.open:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* === Mobile menu overlay === */
+    .mobile-menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* === Mobile slide-in menu === */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 300px;
+      max-width: 85vw;
+      height: 100vh;
+      background: white;
+      z-index: 300;
+      overflow-y: auto;
+      padding: 20px 0;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* === Mobile search === */
+    .mobile-search-container {
+      padding: 0 16px 12px;
+    }
+    .mobile-search-input {
+      width: 100%;
+      font-size: 15px;
+    }
+    .mobile-search-results {
+      margin-top: 4px;
+      border: 1px solid #e4e6e9;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    /* === Mobile menu content === */
+    .mobile-menu-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px 16px;
+      border-bottom: 1px solid #e4e6e9;
+      margin-bottom: 8px;
+    }
+    .mobile-user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1877f2, #42b72a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .mobile-user-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: #1c1e21;
+    }
+
+    .mobile-menu-section {
+      padding: 4px 0;
+    }
+    .mobile-section-title {
+      padding: 8px 20px 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #65676b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mobile-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 20px;
+      color: #1c1e21;
+      text-decoration: none;
+      font-size: 15px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: left;
+    }
+    .mobile-menu-item:hover, .mobile-menu-item:active { background: #f0f2f5; }
+
+    .mobile-badge {
+      background: #e74c3c;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: auto;
+    }
+
+    .mobile-menu-divider {
+      height: 1px;
+      background: #e4e6e9;
+      margin: 8px 16px;
+    }
+
+    .mobile-logout {
+      color: #e74c3c;
+      font-weight: 500;
+    }
+
+    /* === Responsive visibility === */
+    .mobile-only { display: none; }
+
+    @media (max-width: 1024px) {
+      .desktop-only { display: none !important; }
+      .mobile-only { display: flex !important; }
+
+      .navbar {
+        padding: 10px 16px;
+        gap: 12px;
+      }
+      .logo { font-size: 20px; }
+    }
   `]
 })
 export class AppComponent implements OnInit {
@@ -232,17 +544,27 @@ export class AppComponent implements OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private titleService = inject(Title);
+  private screenTimeService = inject(ScreenTimeService);
 
   showDropdown = signal(false);
   showSearchResults = signal(false);
   searchResults = signal<UserSearchResult[]>([]);
   selectedIndex = signal(-1);
   pendingRequestsCount = signal(0);
+  openReportsCount = signal(0);
+  siteTitle = signal('SocialNet');
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
+  // Mobile menu
+  showMobileMenu = signal(false);
+  mobileSearchQuery = '';
+  mobileSearchResults = signal<UserSearchResult[]>([]);
+  private mobileSearchSubject = new Subject<string>();
+
   constructor() {
-    // Debounced search
+    // Debounced search (desktop)
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -256,33 +578,86 @@ export class AppComponent implements OnInit {
       this.searchResults.set(results);
     });
 
+    // Debounced search (mobile)
+    this.mobileSearchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (query.length >= 2) {
+          return this.userService.searchUsers(query);
+        }
+        return of([]);
+      })
+    ).subscribe(results => {
+      this.mobileSearchResults.set(results);
+    });
+
+    // Close mobile menu on navigation
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.closeMobileMenu();
+    });
+
     // Watch for authentication changes and load pending requests
     effect(() => {
       if (this.authService.isAuthenticated()) {
-        console.log('User authenticated, loading pending requests...');
         this.loadPendingRequestsCount();
+        this.screenTimeService.loadSettings();
+
+        // Reports für Admins und Moderatoren laden
+        if (this.authService.isAdmin() || this.authService.isModerator()) {
+          this.loadOpenReportsCount();
+        }
       }
     });
   }
 
   ngOnInit(): void {
+    this.loadSiteTitle();
+
     // Refresh pending requests count every 30 seconds
     interval(30000).subscribe(() => {
       if (this.authService.isAuthenticated()) {
         this.loadPendingRequestsCount();
+
+        // Reports für Admins und Moderatoren laden
+        if (this.authService.isAdmin() || this.authService.isModerator()) {
+          this.loadOpenReportsCount();
+        }
       }
+    });
+  }
+
+  private loadSiteTitle(): void {
+    this.http.get<{ site_title: string }>('/api/site-settings/title').subscribe({
+      next: (response) => {
+        if (response.site_title) {
+          this.siteTitle.set(response.site_title);
+          this.titleService.setTitle(response.site_title);
+        }
+      },
+      error: () => {}
     });
   }
 
   private loadPendingRequestsCount(): void {
     this.http.get<{ requests: any[] }>('/api/friends/requests').subscribe({
       next: (response) => {
-        console.log('Pending friend requests:', response.requests.length);
         this.pendingRequestsCount.set(response.requests.length);
       },
-      error: (err) => {
-        console.error('Error loading pending requests:', err);
-      }
+      error: () => {}
+    });
+  }
+
+  private loadOpenReportsCount(): void {
+    this.http.get<{ reports: any[] }>('/api/admin/reports', {
+      params: { limit: '1000' }
+    }).subscribe({
+      next: (response) => {
+        this.openReportsCount.set(response.reports.length);
+      },
+      error: () => {}
     });
   }
 
@@ -350,5 +725,47 @@ export class AppComponent implements OnInit {
     this.searchQuery = '';
     this.searchResults.set([]);
     this.router.navigate(['/profile', uid]);
+  }
+
+  // === Mobile menu methods ===
+
+  toggleMobileMenu(): void {
+    this.showMobileMenu.update(v => !v);
+    if (!this.showMobileMenu()) {
+      this.resetMobileSearch();
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.showMobileMenu.set(false);
+    this.resetMobileSearch();
+  }
+
+  mobileLogout(): void {
+    this.closeMobileMenu();
+    this.authService.logout();
+  }
+
+  onMobileSearchInput(): void {
+    this.mobileSearchSubject.next(this.mobileSearchQuery);
+    if (this.mobileSearchQuery.length < 2) {
+      this.mobileSearchResults.set([]);
+    }
+  }
+
+  onMobileSearchKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      this.resetMobileSearch();
+    }
+  }
+
+  goToProfileMobile(uid: number): void {
+    this.closeMobileMenu();
+    this.router.navigate(['/profile', uid]);
+  }
+
+  private resetMobileSearch(): void {
+    this.mobileSearchQuery = '';
+    this.mobileSearchResults.set([]);
   }
 }

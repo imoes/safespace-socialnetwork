@@ -324,6 +324,16 @@ class UserPostsDB:
             )
             row = await cursor.fetchone()
             return row[0] if row else 0
+
+    async def is_liked_by_user(self, post_id: int, user_uid: int) -> bool:
+        """Prüft ob User den Post geliked hat"""
+        async with aiosqlite.connect(self.db_path) as db:
+            cursor = await db.execute(
+                "SELECT 1 FROM likes WHERE post_id = ? AND user_uid = ? LIMIT 1",
+                (post_id, user_uid)
+            )
+            row = await cursor.fetchone()
+            return row is not None
     
     async def add_comment(self, post_id: int, user_uid: int, content: str) -> dict:
         """Fügt einen Kommentar hinzu"""

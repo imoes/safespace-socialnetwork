@@ -3,16 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HashtagService, HashtagStat } from '../../services/hashtag.service';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-hashtags',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
     <div class="hashtags-container">
       <div class="header">
-        <h2>🏷️ Hashtags</h2>
-        <p class="subtitle">Entdecke beliebte Themen und suche nach Hashtags</p>
+        <h2>🏷️ {{ 'hashtags.title' | translate }}</h2>
+        <p class="subtitle">{{ 'hashtags.subtitle' | translate }}</p>
       </div>
 
       <!-- Tabs -->
@@ -21,7 +24,7 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
           class="tab"
           [class.active]="activeTab() === 'search'"
           (click)="activeTab.set('search')">
-          🔍 Suche
+          🔍 {{ 'common.search' | translate }}
         </button>
         <button
           class="tab"
@@ -34,27 +37,83 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
       <!-- Search Tab -->
       @if (activeTab() === 'search') {
         <div class="search-section">
-          <div class="search-box">
+          <div class="search-box-container">
             <input
               type="text"
               [(ngModel)]="searchQuery"
-              (keydown.enter)="searchHashtag()"
-              placeholder="#hashtag suchen..."
+              (input)="onSearchInput()"
+              (focus)="onSearchFocus()"
+              (keydown)="onSearchKeydown($event)"
+              [placeholder]="'🔍 ' + ('common.search' | translate) + '...'"
               class="search-input"
             />
-            <button class="search-btn" (click)="searchHashtag()">
-              Suchen
-            </button>
+
+            @if (showSuggestions() && suggestions().length > 0) {
+              <div class="search-overlay" (click)="closeSuggestions()"></div>
+              <div class="suggestions-dropdown">
+                @for (suggestion of suggestions(); track suggestion.hashtag; let i = $index) {
+                  <div
+                    class="suggestion-item"
+                    [class.selected]="selectedIndex() === i"
+                    (click)="selectHashtag(suggestion.hashtag)"
+                    (mouseenter)="selectedIndex.set(i)">
+                    <div class="suggestion-hashtag">#{{ suggestion.hashtag }}</div>
+                    <div class="suggestion-count">{{ suggestion.count }} {{ 'common.posts' | translate }}</div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (showSuggestions() && searchQuery.length >= 2 && suggestions().length === 0 && !loading()) {
+              <div class="search-overlay" (click)="closeSuggestions()"></div>
+              <div class="suggestions-dropdown">
+                <div class="no-results">{{ 'hashtags.noHashtags' | translate }}</div>
+              </div>
+            }
           </div>
-          <p class="search-hint">💡 Tipp: Ein Hashtag beginnt mit # und enthält nur Buchstaben</p>
+          <p class="search-hint">💡 {{ 'hashtags.enterHint' | translate }}</p>
+
+          @if (searchResultsList().length > 0) {
+            <div class="search-results-list">
+              <h3>{{ 'hashtags.searchResults' | translate }}</h3>
+              <div class="trending-list">
+                @for (stat of searchResultsList(); track stat.hashtag; let i = $index) {
+                  <div class="trending-item" (click)="goToHashtag(stat.hashtag)">
+                    <div class="rank">{{ i + 1 }}</div>
+                    <div class="hashtag-info">
+                      <div class="hashtag-name">#{{ stat.hashtag }}</div>
+                      <div class="hashtag-count">{{ stat.count }} {{ 'common.posts' | translate }}</div>
+                    </div>
+                    <div class="arrow">→</div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (searchExecuted() && searchResultsList().length === 0 && !loading()) {
+            <div class="search-results-list">
+              <p class="empty-state">{{ 'hashtags.noHashtags' | translate }}</p>
+            </div>
+          }
         </div>
       }
 
       <!-- Trending Tab -->
       @if (activeTab() === 'trending') {
         <div class="trending-section">
+          <div class="trending-header">
+            <p class="trending-info">{{ 'hashtags.trendingInfo' | translate }}</p>
+            <div class="time-range-select">
+              <label>{{ 'hashtags.timeRange' | translate }}:</label>
+              <select [(ngModel)]="trendingHours" (change)="onTimeRangeChange()">
+                <option [value]="6">{{ 'hashtags.last6Hours' | translate }}</option>
+                <option [value]="24">{{ 'hashtags.last24Hours' | translate }}</option>
+              </select>
+            </div>
+          </div>
           @if (loading()) {
-            <div class="loading">Lade Top Hashtags...</div>
+            <div class="loading">{{ 'common.loading' | translate }}</div>
           } @else if (trending().length > 0) {
             <div class="trending-list">
               @for (stat of trending(); track stat.hashtag; let i = $index) {
@@ -62,7 +121,7 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
                   <div class="rank">{{ i + 1 }}</div>
                   <div class="hashtag-info">
                     <div class="hashtag-name">#{{ stat.hashtag }}</div>
-                    <div class="hashtag-count">{{ stat.count }} Posts</div>
+                    <div class="hashtag-count">{{ stat.count }} {{ 'common.posts' | translate }}</div>
                   </div>
                   <div class="arrow">→</div>
                 </div>
@@ -70,7 +129,7 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
             </div>
           } @else {
             <div class="empty-state">
-              Keine Hashtags gefunden
+              {{ 'hashtags.noHashtags' | translate }}
             </div>
           }
         </div>
@@ -135,15 +194,14 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .search-box {
-      display: flex;
-      gap: 12px;
+    .search-box-container {
+      position: relative;
       margin-bottom: 12px;
     }
 
     .search-input {
-      flex: 1;
-      padding: 12px 16px;
+      width: 100%;
+      padding: 14px 16px;
       border: 2px solid #e4e6e9;
       border-radius: 8px;
       font-size: 16px;
@@ -155,19 +213,59 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
       border-color: #1877f2;
     }
 
-    .search-btn {
-      padding: 12px 32px;
-      background: #1877f2;
-      color: white;
-      border: none;
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+    }
+
+    .suggestions-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 8px;
+      background: white;
       border-radius: 8px;
-      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .suggestion-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
       cursor: pointer;
       transition: background 0.2s;
     }
 
-    .search-btn:hover {
-      background: #166fe5;
+    .suggestion-item:hover,
+    .suggestion-item.selected {
+      background: #f0f2f5;
+    }
+
+    .suggestion-hashtag {
+      font-weight: 600;
+      font-size: 16px;
+      color: #1877f2;
+    }
+
+    .suggestion-count {
+      font-size: 13px;
+      color: #65676b;
+    }
+
+    .no-results {
+      padding: 16px;
+      text-align: center;
+      color: #65676b;
+      font-size: 14px;
     }
 
     .search-hint {
@@ -238,16 +336,96 @@ import { HashtagService, HashtagStat } from '../../services/hashtag.service';
       font-size: 24px;
       color: #65676b;
     }
+
+    .trending-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .trending-info {
+      color: #65676b;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .time-range-select {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-range-select label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .time-range-select select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .time-range-select select:focus {
+      border-color: #1877f2;
+    }
+
+    .search-results-list {
+      margin-top: 24px;
+    }
+
+    .search-results-list h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
   `]
 })
 export class HashtagsComponent implements OnInit {
   private hashtagService = inject(HashtagService);
   private router = inject(Router);
+  private i18n = inject(I18nService);
 
   activeTab = signal<'search' | 'trending'>('trending');
   searchQuery = '';
+  trendingHours = 24;
   trending = signal<HashtagStat[]>([]);
+  suggestions = signal<HashtagStat[]>([]);
+  searchResultsList = signal<HashtagStat[]>([]);
+  searchExecuted = signal(false);
+  showSuggestions = signal(false);
+  selectedIndex = signal(-1);
   loading = signal(false);
+
+  private searchSubject = new Subject<string>();
+
+  constructor() {
+    // Debounced autocomplete search
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (query.length >= 2) {
+          // Remove # if present
+          const cleanQuery = query.startsWith('#') ? query.substring(1) : query;
+          return this.hashtagService.autocompleteHashtags(cleanQuery, 10);
+        }
+        return of([]);
+      })
+    ).subscribe(results => {
+      this.suggestions.set(results);
+    });
+  }
 
   ngOnInit(): void {
     this.loadTrending();
@@ -255,34 +433,97 @@ export class HashtagsComponent implements OnInit {
 
   loadTrending(): void {
     this.loading.set(true);
-    this.hashtagService.getTrendingHashtags(10).subscribe({
+    this.hashtagService.getTrendingHashtags(10, this.trendingHours).subscribe({
       next: (stats) => {
         this.trending.set(stats);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Fehler beim Laden der Trending Hashtags:', err);
+        console.error('Error loading trending hashtags:', err);
         this.loading.set(false);
       }
     });
   }
 
-  searchHashtag(): void {
-    let query = this.searchQuery.trim();
-    if (!query) return;
+  onTimeRangeChange(): void {
+    this.trendingHours = Number(this.trendingHours);
+    this.loadTrending();
+  }
 
-    // Remove # if present
-    if (query.startsWith('#')) {
-      query = query.substring(1);
+  onSearchInput(): void {
+    this.searchSubject.next(this.searchQuery);
+    this.selectedIndex.set(-1);
+    // Show suggestions if query is long enough
+    if (this.searchQuery.length >= 2) {
+      this.showSuggestions.set(true);
+    } else {
+      this.showSuggestions.set(false);
     }
+  }
 
-    // Validate: only letters
-    if (!/^[a-zA-ZäöüÄÖÜß]+$/.test(query)) {
-      alert('Ein Hashtag darf nur Buchstaben enthalten!');
+  onSearchFocus(): void {
+    if (this.searchQuery.length >= 2) {
+      this.showSuggestions.set(true);
+      this.searchSubject.next(this.searchQuery);
+    }
+  }
+
+  onSearchKeydown(event: KeyboardEvent): void {
+    const results = this.suggestions();
+
+    if (event.key === 'Escape') {
+      this.closeSuggestions();
       return;
     }
 
-    this.goToHashtag(query);
+    if (results.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.selectedIndex.update(i => (i + 1) % results.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.selectedIndex.update(i => (i - 1 + results.length) % results.length);
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const index = this.selectedIndex();
+      if (index >= 0 && index < results.length) {
+        this.selectHashtag(results[index].hashtag);
+      } else {
+        this.executeSearch();
+      }
+    }
+  }
+
+  executeSearch(): void {
+    const query = this.searchQuery.trim();
+    if (query.length < 2) return;
+    const cleanQuery = query.startsWith('#') ? query.substring(1) : query;
+    this.closeSuggestions();
+    this.loading.set(true);
+    this.searchExecuted.set(true);
+    this.hashtagService.autocompleteHashtags(cleanQuery, 50).subscribe({
+      next: (results) => {
+        this.searchResultsList.set(results);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.searchResultsList.set([]);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  closeSuggestions(): void {
+    this.showSuggestions.set(false);
+    this.selectedIndex.set(-1);
+  }
+
+  selectHashtag(hashtag: string): void {
+    this.closeSuggestions();
+    this.searchQuery = '';
+    this.suggestions.set([]);
+    this.goToHashtag(hashtag);
   }
 
   goToHashtag(hashtag: string): void {
