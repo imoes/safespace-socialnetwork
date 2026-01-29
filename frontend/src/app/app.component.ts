@@ -23,6 +23,7 @@ import { Title } from '@angular/platform-browser';
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
         <a routerLink="/" class="logo">{{ siteTitle() }}</a>
+        <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="donate-link" title="{{ 'nav.donate' | translate }}">❤️ {{ 'nav.donate' | translate }}</a>
 
         <div class="search-container desktop-only">
           <input
@@ -131,6 +132,9 @@ import { Title } from '@angular/platform-browser';
                 <a routerLink="/terms" class="dropdown-item" (click)="closeDropdown()">
                   📋 {{ 'nav.terms' | translate }}
                 </a>
+                <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="dropdown-item" (click)="closeDropdown()">
+                  ❤️ {{ 'nav.donate' | translate }}
+                </a>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">
                   🚪 {{ 'nav.logout' | translate }}
@@ -230,6 +234,7 @@ import { Title } from '@angular/platform-browser';
             <a routerLink="/privacy-policy" class="mobile-menu-item" (click)="closeMobileMenu()">📜 {{ 'nav.privacyPolicy' | translate }}</a>
             <a routerLink="/impressum" class="mobile-menu-item" (click)="closeMobileMenu()">⚖️ {{ 'nav.impressum' | translate }}</a>
             <a routerLink="/terms" class="mobile-menu-item" (click)="closeMobileMenu()">📋 {{ 'nav.terms' | translate }}</a>
+            <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="mobile-menu-item" (click)="closeMobileMenu()">❤️ {{ 'nav.donate' | translate }}</a>
           </div>
 
           <div class="mobile-menu-divider"></div>
@@ -249,6 +254,8 @@ import { Title } from '@angular/platform-browser';
     /* === Navbar base === */
     .navbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; gap: 24px; }
     .logo { font-size: 24px; font-weight: bold; color: #1877f2; text-decoration: none; flex-shrink: 0; }
+    .donate-link { font-size: 14px; color: #e74c3c; text-decoration: none; flex-shrink: 0; font-weight: 500; padding: 4px 10px; border: 1px solid #e74c3c; border-radius: 16px; transition: all 0.2s; }
+    .donate-link:hover { background: #e74c3c; color: white; }
 
     /* === Search === */
     .search-container { position: relative; flex: 1; max-width: 500px; }
