@@ -18,8 +18,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         <form (ngSubmit)="login()">
-          <input type="text" [(ngModel)]="username" name="username" [placeholder]="'login.username' | translate" required />
-          <input type="password" [(ngModel)]="password" name="password" [placeholder]="'login.password' | translate" required />
+          <input type="text" [(ngModel)]="username" name="username" autocomplete="username" [placeholder]="'login.username' | translate" required />
+          <input type="password" [(ngModel)]="password" name="password" autocomplete="current-password" [placeholder]="'login.password' | translate" required />
           <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('login.loginButton' | translate) }}</button>
         </form>
         <p class="forgot-password"><a routerLink="/forgot-password">{{ 'login.forgotPassword' | translate }}</a></p>
