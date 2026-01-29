@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 interface WelcomeMessage {
   id: number;
@@ -16,14 +17,20 @@ interface WelcomeMessage {
   templateUrl: './welcome-modal.component.html',
   styleUrls: ['./welcome-modal.component.css']
 })
-export class WelcomeModalComponent implements OnInit {
+export class WelcomeModalComponent {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   showModal = signal(false);
   message = signal<WelcomeMessage | null>(null);
 
-  async ngOnInit(): Promise<void> {
-    await this.checkWelcomeMessage();
+  constructor() {
+    // Reagiert auf Login/Register — prüft Welcome-Message sobald User authentifiziert ist
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.checkWelcomeMessage();
+      }
+    });
   }
 
   private async checkWelcomeMessage(): Promise<void> {
