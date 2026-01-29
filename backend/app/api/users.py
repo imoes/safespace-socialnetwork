@@ -1074,7 +1074,7 @@ async def delete_account(
 
         # Reports löschen
         await conn.execute(
-            "DELETE FROM user_reports WHERE reporter_uid = %s OR reported_uid = %s",
+            "DELETE FROM user_reports WHERE reporter_uid = %s OR author_uid = %s",
             (user_uid, user_uid)
         )
 
