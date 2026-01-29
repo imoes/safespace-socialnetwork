@@ -16,6 +16,42 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <p class="subtitle">{{ 'groups.subtitle' | translate }}</p>
       </div>
 
+      <!-- Search Groups -->
+      <div class="section">
+        <h2>{{ 'groups.searchGroups' | translate }}</h2>
+        <div class="search-bar">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            [placeholder]="'groups.searchPlaceholder' | translate"
+            class="input search-input"
+            (input)="onSearchInput()"
+          />
+        </div>
+        @if (loadingSearch()) {
+          <p class="loading">{{ 'common.loading' | translate }}</p>
+        } @else if (searchQuery.length >= 2 && searchResults().length === 0) {
+          <p class="empty">{{ 'common.noResults' | translate }}</p>
+        } @else if (searchResults().length > 0) {
+          <div class="groups-grid">
+            @for (group of searchResults(); track group.group_id) {
+              <div class="group-card" (click)="goToGroup(group.group_id)">
+                <div class="group-icon">{{ group.name.charAt(0).toUpperCase() }}</div>
+                <div class="group-info">
+                  <div class="group-name">{{ group.name }}</div>
+                  @if (group.description) {
+                    <div class="group-desc">{{ group.description }}</div>
+                  }
+                  <div class="group-meta">
+                    {{ group.member_count }} {{ 'groups.members' | translate }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       <!-- Create Group -->
       <div class="create-group-card">
         <h3>{{ 'groups.createGroup' | translate }}</h3>
@@ -75,42 +111,6 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                         {{ group.my_role === 'owner' ? ('groups.owner' | translate) : group.my_role === 'admin' ? ('groups.admin' | translate) : ('groups.member' | translate) }}
                       </span>
                     }
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Search Groups -->
-      <div class="section">
-        <h2>{{ 'groups.searchGroups' | translate }}</h2>
-        <div class="search-bar">
-          <input
-            type="text"
-            [(ngModel)]="searchQuery"
-            [placeholder]="'groups.searchPlaceholder' | translate"
-            class="input search-input"
-            (input)="onSearchInput()"
-          />
-        </div>
-        @if (loadingSearch()) {
-          <p class="loading">{{ 'common.loading' | translate }}</p>
-        } @else if (searchQuery.length >= 2 && searchResults().length === 0) {
-          <p class="empty">{{ 'common.noResults' | translate }}</p>
-        } @else if (searchResults().length > 0) {
-          <div class="groups-grid">
-            @for (group of searchResults(); track group.group_id) {
-              <div class="group-card" (click)="goToGroup(group.group_id)">
-                <div class="group-icon">{{ group.name.charAt(0).toUpperCase() }}</div>
-                <div class="group-info">
-                  <div class="group-name">{{ group.name }}</div>
-                  @if (group.description) {
-                    <div class="group-desc">{{ group.description }}</div>
-                  }
-                  <div class="group-meta">
-                    {{ group.member_count }} {{ 'groups.members' | translate }}
                   </div>
                 </div>
               </div>

@@ -32,8 +32,8 @@ export class HashtagService {
   /**
    * Get trending hashtags
    */
-  getTrendingHashtags(limit: number = 20): Observable<HashtagStat[]> {
-    return this.http.get<HashtagStat[]>(`${this.API_URL}/trending?limit=${limit}`);
+  getTrendingHashtags(limit: number = 20, hours: number = 24): Observable<HashtagStat[]> {
+    return this.http.get<HashtagStat[]>(`${this.API_URL}/trending?limit=${limit}&hours=${hours}`);
   }
 
   /**

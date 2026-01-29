@@ -28,7 +28,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           </div>
           <input type="password" [(ngModel)]="password" name="password" [placeholder]="'register.password' | translate" required minlength="6" />
           <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" [placeholder]="'register.confirmPassword' | translate" required />
-          <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="agbAccepted" name="agbAccepted" />
+            <span>{{ 'register.agbAccept' | translate }} <a routerLink="/terms" target="_blank">{{ 'register.agbLink' | translate }}</a> {{ 'register.agbAnd' | translate }} <a routerLink="/privacy-policy" target="_blank">{{ 'register.privacyLink' | translate }}</a>.</span>
+          </label>
+          <button type="submit" [disabled]="isLoading || !agbAccepted">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
         </form>
         <p class="link">{{ 'register.hasAccount' | translate }} <a routerLink="/login">{{ 'register.login' | translate }}</a></p>
       </div>
@@ -49,7 +53,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .birthday-field .optional { color: #888; font-size: 12px; }
     .birthday-field input { padding: 12px 14px; }
     button { padding: 14px; background: #42b72a; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    button:disabled { background: #ccc; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #555; line-height: 1.4; }
+    .checkbox-label input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; }
+    .checkbox-label a { color: #1877f2; text-decoration: none; }
+    .checkbox-label a:hover { text-decoration: underline; }
     .link { text-align: center; margin-top: 20px; }
     .link a { color: #1877f2; text-decoration: none; }
 
@@ -71,6 +79,7 @@ export class RegisterComponent {
   birthday = '';
   password = '';
   confirmPassword = '';
+  agbAccepted = false;
   error = '';
   success = '';
   isLoading = false;

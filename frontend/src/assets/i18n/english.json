@@ -13,7 +13,8 @@
     "privacyPolicy": "Privacy Policy",
     "impressum": "Legal Notice",
     "info": "Info",
-    "groups": "Groups"
+    "groups": "Groups",
+    "terms": "Terms of Service"
   },
   "feed": {
     "title": "My Feed",
@@ -257,7 +258,11 @@
       "passwordMismatch": "Passwords do not match",
       "registrationFailed": "Registration failed. Please try again."
     },
-    "success": "Registration successful! Redirecting..."
+    "success": "Registration successful! Redirecting...",
+    "agbAccept": "I accept the",
+    "agbLink": "Terms of Service",
+    "agbAnd": "and the",
+    "privacyLink": "Privacy Policy"
   },
   "passwordReset": {
     "title": "Reset Password",
@@ -357,7 +362,13 @@
     "subtitle": "Discover popular topics",
     "postsCount": "{{count}} posts",
     "noHashtags": "No trending hashtags",
-    "viewPosts": "View Posts"
+    "viewPosts": "View Posts",
+    "trendingInfo": "The most popular hashtags based on post count in the selected time range.",
+    "timeRange": "Time range",
+    "last6Hours": "Last 6 hours",
+    "last24Hours": "Last 24 hours",
+    "enterHint": "Press Enter to search for hashtags",
+    "searchResults": "Search Results"
   },
   "admin": {
     "title": "Admin Panel",

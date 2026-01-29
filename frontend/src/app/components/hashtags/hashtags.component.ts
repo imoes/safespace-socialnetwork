@@ -71,13 +71,47 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               </div>
             }
           </div>
-          <p class="search-hint">💡 {{ 'friendsPage.minChars' | translate }}</p>
+          <p class="search-hint">💡 {{ 'hashtags.enterHint' | translate }}</p>
+
+          @if (searchResultsList().length > 0) {
+            <div class="search-results-list">
+              <h3>{{ 'hashtags.searchResults' | translate }}</h3>
+              <div class="trending-list">
+                @for (stat of searchResultsList(); track stat.hashtag; let i = $index) {
+                  <div class="trending-item" (click)="goToHashtag(stat.hashtag)">
+                    <div class="rank">{{ i + 1 }}</div>
+                    <div class="hashtag-info">
+                      <div class="hashtag-name">#{{ stat.hashtag }}</div>
+                      <div class="hashtag-count">{{ stat.count }} {{ 'common.posts' | translate }}</div>
+                    </div>
+                    <div class="arrow">→</div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (searchExecuted() && searchResultsList().length === 0 && !loading()) {
+            <div class="search-results-list">
+              <p class="empty-state">{{ 'hashtags.noHashtags' | translate }}</p>
+            </div>
+          }
         </div>
       }
 
       <!-- Trending Tab -->
       @if (activeTab() === 'trending') {
         <div class="trending-section">
+          <div class="trending-header">
+            <p class="trending-info">{{ 'hashtags.trendingInfo' | translate }}</p>
+            <div class="time-range-select">
+              <label>{{ 'hashtags.timeRange' | translate }}:</label>
+              <select [(ngModel)]="trendingHours" (change)="onTimeRangeChange()">
+                <option [value]="6">{{ 'hashtags.last6Hours' | translate }}</option>
+                <option [value]="24">{{ 'hashtags.last24Hours' | translate }}</option>
+              </select>
+            </div>
+          </div>
           @if (loading()) {
             <div class="loading">{{ 'common.loading' | translate }}</div>
           } @else if (trending().length > 0) {
@@ -302,6 +336,59 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       font-size: 24px;
       color: #65676b;
     }
+
+    .trending-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .trending-info {
+      color: #65676b;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .time-range-select {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-range-select label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .time-range-select select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .time-range-select select:focus {
+      border-color: #1877f2;
+    }
+
+    .search-results-list {
+      margin-top: 24px;
+    }
+
+    .search-results-list h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
   `]
 })
 export class HashtagsComponent implements OnInit {
@@ -311,8 +398,11 @@ export class HashtagsComponent implements OnInit {
 
   activeTab = signal<'search' | 'trending'>('trending');
   searchQuery = '';
+  trendingHours = 24;
   trending = signal<HashtagStat[]>([]);
   suggestions = signal<HashtagStat[]>([]);
+  searchResultsList = signal<HashtagStat[]>([]);
+  searchExecuted = signal(false);
   showSuggestions = signal(false);
   selectedIndex = signal(-1);
   loading = signal(false);
@@ -343,7 +433,7 @@ export class HashtagsComponent implements OnInit {
 
   loadTrending(): void {
     this.loading.set(true);
-    this.hashtagService.getTrendingHashtags(10).subscribe({
+    this.hashtagService.getTrendingHashtags(10, this.trendingHours).subscribe({
       next: (stats) => {
         this.trending.set(stats);
         this.loading.set(false);
@@ -353,6 +443,11 @@ export class HashtagsComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onTimeRangeChange(): void {
+    this.trendingHours = Number(this.trendingHours);
+    this.loadTrending();
   }
 
   onSearchInput(): void {
@@ -394,8 +489,29 @@ export class HashtagsComponent implements OnInit {
       const index = this.selectedIndex();
       if (index >= 0 && index < results.length) {
         this.selectHashtag(results[index].hashtag);
+      } else {
+        this.executeSearch();
       }
     }
+  }
+
+  executeSearch(): void {
+    const query = this.searchQuery.trim();
+    if (query.length < 2) return;
+    const cleanQuery = query.startsWith('#') ? query.substring(1) : query;
+    this.closeSuggestions();
+    this.loading.set(true);
+    this.searchExecuted.set(true);
+    this.hashtagService.autocompleteHashtags(cleanQuery, 50).subscribe({
+      next: (results) => {
+        this.searchResultsList.set(results);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.searchResultsList.set([]);
+        this.loading.set(false);
+      }
+    });
   }
 
   closeSuggestions(): void {

@@ -13,7 +13,8 @@
     "privacyPolicy": "Politique de confidentialité",
     "impressum": "Mentions légales",
     "info": "Info",
-    "groups": "Groupes"
+    "groups": "Groupes",
+    "terms": "Conditions d'utilisation"
   },
   "feed": {
     "title": "Mon Feed",
@@ -325,7 +326,13 @@
     "subtitle": "Découvrez les sujets populaires",
     "postsCount": "{{count}} posts",
     "noHashtags": "Pas de hashtags tendances",
-    "viewPosts": "Voir les posts"
+    "viewPosts": "Voir les posts",
+    "trendingInfo": "Les hashtags les plus populaires basés sur le nombre de posts dans la période sélectionnée.",
+    "timeRange": "Période",
+    "last6Hours": "6 dernières heures",
+    "last24Hours": "24 dernières heures",
+    "enterHint": "Appuyez sur Entrée pour rechercher des hashtags",
+    "searchResults": "Résultats de recherche"
   },
   "login": {
     "title": "Connexion",
@@ -355,7 +362,11 @@
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "registrationFailed": "Échec de l'inscription. Veuillez réessayer."
     },
-    "success": "Inscription réussie! Redirection..."
+    "success": "Inscription réussie! Redirection...",
+    "agbAccept": "J'accepte les",
+    "agbLink": "conditions d'utilisation",
+    "agbAnd": "et la",
+    "privacyLink": "politique de confidentialité"
   },
   "common": {
     "loading": "Chargement...",

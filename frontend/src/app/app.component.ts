@@ -128,6 +128,9 @@ import { Title } from '@angular/platform-browser';
                 <a routerLink="/impressum" class="dropdown-item" (click)="closeDropdown()">
                   ⚖️ {{ 'nav.impressum' | translate }}
                 </a>
+                <a routerLink="/terms" class="dropdown-item" (click)="closeDropdown()">
+                  📋 {{ 'nav.terms' | translate }}
+                </a>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">
                   🚪 {{ 'nav.logout' | translate }}
@@ -226,6 +229,7 @@ import { Title } from '@angular/platform-browser';
             <a routerLink="/info" class="mobile-menu-item" (click)="closeMobileMenu()">ℹ️ {{ 'nav.info' | translate }}</a>
             <a routerLink="/privacy-policy" class="mobile-menu-item" (click)="closeMobileMenu()">📜 {{ 'nav.privacyPolicy' | translate }}</a>
             <a routerLink="/impressum" class="mobile-menu-item" (click)="closeMobileMenu()">⚖️ {{ 'nav.impressum' | translate }}</a>
+            <a routerLink="/terms" class="mobile-menu-item" (click)="closeMobileMenu()">📋 {{ 'nav.terms' | translate }}</a>
           </div>
 
           <div class="mobile-menu-divider"></div>

@@ -1,62 +1,41 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-impressum',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="legal-container">
       <div class="legal-content">
         <h1>⚖️ Impressum</h1>
-        <p class="subtitle">Angaben gemäß § 5 TMG (Telemediengesetz)</p>
+        <p class="subtitle">Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</p>
 
         <section>
-          <h2>Verantwortlich für den Inhalt</h2>
+          <h2>Betreiber</h2>
           <p>
-            <strong>[Ihr Name/Firmenname]</strong><br>
-            [Straße und Hausnummer]<br>
-            [PLZ und Ort]<br>
-            [Land]
+            <strong>Thomas Kluge</strong><br>
+            Ringstrasse 26<br>
+            82110 Germering<br>
+            Deutschland
           </p>
         </section>
 
         <section>
           <h2>Kontakt</h2>
           <p>
-            <strong>E-Mail:</strong> [ihre-email&#64;example.com]<br>
-            <strong>Telefon:</strong> [+49 123 456789]<br>
+            <strong>E-Mail:</strong> thomas&#64;kluge-online.de<br>
             <strong>Website:</strong> <a href="https://github.com/imoes/safespace-socialnetwork" target="_blank" rel="noopener">github.com/imoes/safespace-socialnetwork</a>
           </p>
         </section>
 
-        <section class="optional-section">
-          <h2>Registereintrag</h2>
-          <p>
-            <em>(Falls zutreffend - nur für Unternehmen)</em>
-          </p>
-          <p>
-            <strong>Handelsregister:</strong> [z.B. HRB 12345]<br>
-            <strong>Registergericht:</strong> [z.B. Amtsgericht München]
-          </p>
-        </section>
-
-        <section class="optional-section">
-          <h2>Umsatzsteuer-ID</h2>
-          <p>
-            <em>(Falls zutreffend - bei gewerblicher Tätigkeit)</em>
-          </p>
-          <p>
-            Umsatzsteuer-Identifikationsnummer gemäß §27a UStG:<br>
-            <strong>[DE123456789]</strong>
-          </p>
-        </section>
-
         <section>
-          <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+          <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
           <p>
-            <strong>[Ihr Name]</strong><br>
-            [Adresse wie oben]
+            <strong>Thomas Kluge</strong><br>
+            Ringstrasse 26<br>
+            82110 Germering
           </p>
         </section>
 
@@ -85,8 +64,8 @@ import { CommonModule } from '@angular/common';
         <section>
           <h2>Haftung für Inhalte</h2>
           <p>
-            Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.
-            Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen
+            Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.
+            Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen
             oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
           </p>
           <p>
@@ -133,14 +112,6 @@ import { CommonModule } from '@angular/common';
             Weitere Informationen finden Sie auf unserer <a routerLink="/info">Info-Seite</a>.
           </p>
         </section>
-
-        <div class="disclaimer">
-          <p>
-            <strong>Wichtiger Hinweis:</strong> Dies ist eine Vorlage und muss vor produktivem Einsatz mit Ihren tatsächlichen Daten ausgefüllt werden.
-            Die mit <em>(Falls zutreffend)</em> gekennzeichneten Abschnitte können entfernt werden, wenn sie nicht zutreffen.
-            Wir empfehlen dringend, einen Rechtsanwalt zu konsultieren.
-          </p>
-        </div>
       </div>
     </div>
   `,
@@ -174,12 +145,6 @@ import { CommonModule } from '@angular/common';
       margin-bottom: 32px;
     }
 
-    .optional-section {
-      opacity: 0.7;
-      border-left: 3px solid #ffc107;
-      padding-left: 16px;
-    }
-
     h2 {
       color: #1c1e21;
       font-size: 24px;
@@ -207,25 +172,6 @@ import { CommonModule } from '@angular/common';
     strong {
       font-weight: 600;
       color: #1c1e21;
-    }
-
-    em {
-      color: #65676b;
-      font-size: 14px;
-    }
-
-    .disclaimer {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 32px;
-    }
-
-    .disclaimer p {
-      margin: 0;
-      color: #856404;
-      font-size: 14px;
     }
 
     @media (max-width: 1024px) {

@@ -13,7 +13,8 @@
     "privacyPolicy": "Política de Privacidad",
     "impressum": "Aviso Legal",
     "info": "Info",
-    "groups": "Grupos"
+    "groups": "Grupos",
+    "terms": "Condiciones de uso"
   },
   "feed": {
     "title": "Mi Feed",
@@ -325,7 +326,13 @@
     "subtitle": "Descubre temas populares",
     "postsCount": "{{count}} posts",
     "noHashtags": "No hay hashtags en tendencia",
-    "viewPosts": "Ver posts"
+    "viewPosts": "Ver posts",
+    "trendingInfo": "Los hashtags más populares según la cantidad de publicaciones en el período seleccionado.",
+    "timeRange": "Período",
+    "last6Hours": "Últimas 6 horas",
+    "last24Hours": "Últimas 24 horas",
+    "enterHint": "Presiona Enter para buscar hashtags",
+    "searchResults": "Resultados de búsqueda"
   },
   "login": {
     "title": "Iniciar sesión",
@@ -355,7 +362,11 @@
       "passwordMismatch": "Las contraseñas no coinciden",
       "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo."
     },
-    "success": "¡Registro exitoso! Redirigiendo..."
+    "success": "¡Registro exitoso! Redirigiendo...",
+    "agbAccept": "Acepto las",
+    "agbLink": "condiciones de uso",
+    "agbAnd": "y la",
+    "privacyLink": "política de privacidad"
   },
   "common": {
     "loading": "Cargando...",
