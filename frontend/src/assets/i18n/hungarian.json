@@ -454,7 +454,8 @@
     "newNotification": "Új értesítés",
     "groupPost": "{{username}} bejegyzést írt a(z) {{group}} csoportba",
     "birthday": "🎂 {{username}} ma ünnepli a születésnapját, {{age}} éves lett!",
-    "groupJoinRequest": "👥 {{username}} csatlakozni szeretne a(z) \"{{groupName}}\" csoporthoz"
+    "groupJoinRequest": "👥 {{username}} csatlakozni szeretne a(z) \"{{groupName}}\" csoporthoz",
+    "welcome": "Üdvözlünk a SafeSpace-en! Örülünk, hogy itt vagy."
   },
   "screenTime": {
     "breakTitle": "Ideje szünetet tartani!",

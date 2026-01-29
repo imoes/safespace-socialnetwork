@@ -454,7 +454,8 @@
     "newNotification": "Naujas pranešimas",
     "groupPost": "{{username}} paskelbė grupėje {{group}}",
     "birthday": "🎂 {{username}} šiandien švenčia gimtadienį ir jam jau {{age}} metų!",
-    "groupJoinRequest": "👥 {{username}} nori prisijungti prie grupės \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} nori prisijungti prie grupės \"{{groupName}}\"",
+    "welcome": "Sveiki atvykę į SafeSpace! Džiaugiamės, kad esate čia."
   },
   "screenTime": {
     "breakTitle": "Laikas pertraukai!",

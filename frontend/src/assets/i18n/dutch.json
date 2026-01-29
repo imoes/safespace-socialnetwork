@@ -454,7 +454,8 @@
     "newNotification": "Nieuwe melding",
     "groupPost": "{{username}} heeft een bericht geplaatst in groep {{group}}",
     "birthday": "🎂 {{username}} is vandaag jarig en is nu {{age}} jaar oud!",
-    "groupJoinRequest": "👥 {{username}} wil lid worden van de groep \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} wil lid worden van de groep \"{{groupName}}\"",
+    "welcome": "Welkom bij SafeSpace! Fijn dat je er bent."
   },
   "screenTime": {
     "breakTitle": "Tijd voor een pauze!",

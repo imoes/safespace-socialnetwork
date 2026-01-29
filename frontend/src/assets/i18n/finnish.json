@@ -454,7 +454,8 @@
     "newNotification": "Uusi ilmoitus",
     "groupPost": "{{username}} julkaisi ryhmässä {{group}}",
     "birthday": "🎂 {{username}} viettää tänään syntymäpäivää ja täyttää {{age}} vuotta!",
-    "groupJoinRequest": "👥 {{username}} haluaa liittyä ryhmään \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} haluaa liittyä ryhmään \"{{groupName}}\"",
+    "welcome": "Tervetuloa SafeSpaceen! Mukavaa, että olet täällä."
   },
   "screenTime": {
     "breakTitle": "Aika pitää tauko!",

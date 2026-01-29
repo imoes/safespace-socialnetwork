@@ -347,6 +347,8 @@ export class NotificationsDropdownComponent implements OnInit {
         return this.i18n.t('notifications.groupJoinRequest', { username, groupName: notification.group_name || '' });
       case 'birthday':
         return this.i18n.t('notifications.birthday', { username, age: notification.comment_id?.toString() || '?' });
+      case 'welcome':
+        return this.i18n.t('notifications.welcome');
       default:
         return this.i18n.t('notifications.newNotification');
     }

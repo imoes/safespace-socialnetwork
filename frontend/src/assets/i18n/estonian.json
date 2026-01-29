@@ -454,7 +454,8 @@
     "newNotification": "Uus teavitus",
     "groupPost": "{{username}} postitas grupis {{group}}",
     "birthday": "🎂 {{username}} tähistab täna sünnipäeva ja on nüüd {{age}}-aastane!",
-    "groupJoinRequest": "👥 {{username}} soovib liituda grupiga \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} soovib liituda grupiga \"{{groupName}}\"",
+    "welcome": "Tere tulemast SafeSpace'i! Meil on hea meel, et oled siin."
   },
   "screenTime": {
     "breakTitle": "Aeg paus teha!",
