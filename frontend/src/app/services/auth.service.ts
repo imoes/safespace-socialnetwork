@@ -168,7 +168,12 @@ export class AuthService {
       }),
       catchError((error) => {
         console.error('Failed to load user:', error);
-        this.logout();
+        // Clear token and state but do NOT navigate - the auth guard handles
+        // redirects for protected routes. Navigating here would kick users
+        // off public pages like /register when an old token is invalid.
+        localStorage.removeItem(this.TOKEN_KEY);
+        this.currentUserSignal.set(null);
+        this.isLoadingSignal.set(false);
         return of(null);
       })
     ).subscribe();
