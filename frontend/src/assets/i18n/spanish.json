@@ -326,7 +326,13 @@
     "subtitle": "Descubre temas populares",
     "postsCount": "{{count}} posts",
     "noHashtags": "No hay hashtags en tendencia",
-    "viewPosts": "Ver posts"
+    "viewPosts": "Ver posts",
+    "trendingInfo": "Los hashtags más populares según la cantidad de publicaciones en el período seleccionado.",
+    "timeRange": "Período",
+    "last6Hours": "Últimas 6 horas",
+    "last24Hours": "Últimas 24 horas",
+    "enterHint": "Presiona Enter para buscar hashtags",
+    "searchResults": "Resultados de búsqueda"
   },
   "login": {
     "title": "Iniciar sesión",

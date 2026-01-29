@@ -326,7 +326,13 @@
     "subtitle": "Scopri argomenti popolari",
     "postsCount": "{{count}} post",
     "noHashtags": "Nessun hashtag di tendenza",
-    "viewPosts": "Vedi post"
+    "viewPosts": "Vedi post",
+    "trendingInfo": "Gli hashtag più popolari in base al numero di post nel periodo selezionato.",
+    "timeRange": "Periodo",
+    "last6Hours": "Ultime 6 ore",
+    "last24Hours": "Ultime 24 ore",
+    "enterHint": "Premi Invio per cercare hashtag",
+    "searchResults": "Risultati della ricerca"
   },
   "login": {
     "title": "Accedi",

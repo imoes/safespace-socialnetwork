@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -13,7 +14,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   template: `
     <div class="login-container">
       <div class="login-card">
-        <h1>SocialNet</h1>
+        <h1>{{ siteTitle() }}</h1>
         <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         <form (ngSubmit)="login()">
@@ -49,14 +50,23 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     }
   `]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
   private i18n = inject(I18nService);
+  siteTitle = signal('SocialNet');
   username = '';
   password = '';
   error = '';
   isLoading = false;
+
+  ngOnInit(): void {
+    this.http.get<{ site_title: string }>('/api/site-settings/title').subscribe({
+      next: (res) => { if (res.site_title) this.siteTitle.set(res.site_title); },
+      error: () => {}
+    });
+  }
 
   login(): void {
     this.isLoading = true;

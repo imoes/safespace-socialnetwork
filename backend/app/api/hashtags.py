@@ -34,15 +34,19 @@ class HashtagPost(BaseModel):
 @router.get("/trending", response_model=List[HashtagStat])
 async def get_trending_hashtags(
     limit: int = 20,
+    hours: int = 24,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Get trending hashtags based on usage count.
     Returns top hashtags sorted by post count.
+    Supports hours parameter (default 24, also accepts 6).
     """
+    if hours not in (6, 24):
+        hours = 24
     try:
         opensearch = get_opensearch_service()
-        hashtags = await opensearch.get_trending_hashtags(limit=limit)
+        hashtags = await opensearch.get_trending_hashtags(limit=limit, hours=hours)
         return [HashtagStat(**ht) for ht in hashtags]
     except Exception as e:
         raise HTTPException(

@@ -362,7 +362,13 @@
     "subtitle": "Entdecke beliebte Themen",
     "postsCount": "{{count}} Posts",
     "noHashtags": "Keine Trending Hashtags",
-    "viewPosts": "Posts ansehen"
+    "viewPosts": "Posts ansehen",
+    "trendingInfo": "Die beliebtesten Hashtags basierend auf der Anzahl der Posts im gewählten Zeitraum.",
+    "timeRange": "Zeitraum",
+    "last6Hours": "Letzte 6 Stunden",
+    "last24Hours": "Letzte 24 Stunden",
+    "enterHint": "Drücke Enter um nach Hashtags zu suchen",
+    "searchResults": "Suchergebnisse"
   },
   "admin": {
     "title": "Admin-Panel",
