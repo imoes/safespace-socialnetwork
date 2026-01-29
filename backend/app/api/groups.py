@@ -1,6 +1,6 @@
 """API-Routen für Gruppen"""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from pydantic import BaseModel
 from typing import Optional
 
@@ -8,6 +8,7 @@ from app.services.auth_service import get_current_user
 from app.db.postgres import PostgresDB, get_username_map, get_user_profile_data_map
 from app.db.sqlite_group_posts import GroupPostsDB
 from app.db.notifications import create_notification
+from app.services.media_service import MediaService
 
 router = APIRouter(prefix="/groups", tags=["groups"])
 
@@ -274,7 +275,34 @@ async def join_group(group_id: int, current_user: dict = Depends(get_current_use
         )
         await conn.commit()
 
+    # Send notifications to admins/owners when join request is pending
     if member_status == "pending":
+        # Get all admins and owners of the group
+        async with PostgresDB.connection() as conn:
+            admins_result = await conn.execute(
+                """
+                SELECT user_uid FROM group_members
+                WHERE group_id = %s AND role IN ('admin', 'owner') AND status = 'active'
+                """,
+                (group_id,)
+            )
+            admins = await admins_result.fetchall()
+
+        group_name = group.get("name", "")
+
+        # Send notification to each admin/owner
+        for admin in admins:
+            try:
+                await create_notification(
+                    user_uid=admin["user_uid"],
+                    actor_uid=uid,
+                    notification_type="group_join_request",
+                    group_id=group_id,
+                    group_name=group_name
+                )
+            except Exception as e:
+                print(f"Error creating group join request notification: {e}")
+
         return {"message": "Join request sent", "status": "pending"}
     return {"message": "Joined group", "status": "active"}
 
@@ -443,6 +471,103 @@ async def update_group_settings(
     return {"message": "Settings updated", "join_mode": data.join_mode}
 
 
+@router.post("/{group_id}/profile-picture")
+async def upload_group_profile_picture(
+    group_id: int,
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Lädt ein Gruppenprofilbild hoch. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can change the group profile picture")
+
+    # Validate file type (nur Bilder erlaubt)
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only image files are allowed"
+        )
+
+    # Upload file using media service (use group_id as folder)
+    try:
+        # Use a special folder for group images
+        upload_result = await MediaService.upload_file_to_folder(f"group_{group_id}", file)
+        profile_picture_url = f"/api/media/group_{group_id}/{upload_result['path']}"
+
+        # Get old profile picture to delete
+        async with PostgresDB.connection() as conn:
+            result = await conn.execute(
+                "SELECT profile_picture FROM groups WHERE group_id = %s",
+                (group_id,)
+            )
+            group = await result.fetchone()
+            old_picture = group["profile_picture"] if group else None
+
+            # Update profile picture in database
+            await conn.execute(
+                "UPDATE groups SET profile_picture = %s WHERE group_id = %s",
+                (profile_picture_url, group_id)
+            )
+            await conn.commit()
+
+        # Delete old profile picture if exists
+        if old_picture:
+            old_path = old_picture.replace(f"/api/media/group_{group_id}/", "")
+            try:
+                await MediaService.delete_file_from_folder(f"group_{group_id}", old_path)
+            except:
+                pass  # Ignore if old file doesn't exist
+
+        return {"profile_picture": profile_picture_url}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload image: {str(e)}"
+        )
+
+
+@router.delete("/{group_id}/profile-picture")
+async def delete_group_profile_picture(
+    group_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Löscht das Gruppenprofilbild. Nur Admins/Owner."""
+    await _get_group_or_404(group_id)
+    uid = current_user["uid"]
+
+    if not await _is_admin(group_id, uid):
+        raise HTTPException(status_code=403, detail="Only admins can delete the group profile picture")
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT profile_picture FROM groups WHERE group_id = %s",
+            (group_id,)
+        )
+        group = await result.fetchone()
+        old_picture = group["profile_picture"] if group else None
+
+        if old_picture:
+            # Delete from storage
+            old_path = old_picture.replace(f"/api/media/group_{group_id}/", "")
+            try:
+                await MediaService.delete_file_from_folder(f"group_{group_id}", old_path)
+            except:
+                pass
+
+        # Update database
+        await conn.execute(
+            "UPDATE groups SET profile_picture = NULL WHERE group_id = %s",
+            (group_id,)
+        )
+        await conn.commit()
+
+    return {"message": "Profile picture deleted"}
+
+
 @router.put("/{group_id}/members/{user_uid}/role")
 async def update_member_role(
     group_id: int,
@@ -604,6 +729,7 @@ async def get_group_posts(
         author_data = profile_map.get(post["author_uid"], {"username": "Unknown", "profile_picture": None})
         likes_count = await group_db.get_likes_count(post["post_id"])
         comments_count = await group_db.get_comments_count(post["post_id"])
+        is_liked = await group_db.is_liked_by_user(post["post_id"], uid)
 
         enriched.append({
             **post,
@@ -611,7 +737,8 @@ async def get_group_posts(
             "author_profile_picture": author_data.get("profile_picture"),
             "group_id": group_id,
             "likes_count": likes_count,
-            "comments_count": comments_count
+            "comments_count": comments_count,
+            "is_liked_by_user": is_liked
         })
 
     return {"posts": enriched, "is_member": is_member}

@@ -8,22 +8,47 @@ import { VideoEditorComponent } from '../video-editor/video-editor.component';
 import { HttpClient } from '@angular/common/http';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
+import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, FormsModule, VideoEditorComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, VideoEditorComponent, TranslatePipe, AutoEmojiDirective],
   template: `
     <div class="create-post">
       <div class="post-header">
         <div class="avatar">{{ authService.currentUser()?.username?.charAt(0)?.toUpperCase() }}</div>
-        <textarea [(ngModel)]="content" [placeholder]="'feed.createPost' | translate" rows="3" [disabled]="isSubmitting()"></textarea>
+        <textarea [(ngModel)]="content" [placeholder]="'feed.createPost' | translate" rows="3" [disabled]="isSubmitting()" (input)="onContentInput()" autoEmoji></textarea>
       </div>
 
       @if (selectedFiles().length > 0) {
         <div class="file-preview">
           @for (file of selectedFiles(); track file.name) {
             <div class="preview-item">{{ file.name }} <button (click)="removeFile(file)">×</button></div>
+          }
+        </div>
+      }
+
+      @if (linkPreviews().length > 0) {
+        <div class="link-previews">
+          @for (preview of linkPreviews(); track preview.url) {
+            <a [href]="preview.url" target="_blank" rel="noopener noreferrer" class="link-preview-card">
+              @if (preview.image) {
+                <div class="link-preview-image">
+                  <img [src]="preview.image" [alt]="preview.title" (error)="onPreviewImageError($event)" />
+                </div>
+              }
+              <div class="link-preview-info">
+                <span class="link-preview-site">{{ preview.site_name || preview.domain }}</span>
+                <span class="link-preview-title">{{ preview.title }}</span>
+                @if (preview.description) {
+                  <span class="link-preview-desc">{{ preview.description }}</span>
+                }
+              </div>
+            </a>
           }
         </div>
       }
@@ -134,6 +159,17 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .post-btn { margin-left: auto; background: #1877f2; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .post-btn:disabled { background: #ccc; }
 
+    /* Link Preview */
+    .link-previews { margin-top: 12px; }
+    .link-preview-card { display: flex; flex-direction: column; border: 1px solid #e4e6e9; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: box-shadow 0.2s; cursor: pointer; margin-bottom: 8px; }
+    .link-preview-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .link-preview-image { width: 100%; max-height: 200px; overflow: hidden; background: #f0f2f5; }
+    .link-preview-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .link-preview-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .link-preview-site { font-size: 12px; color: #65676b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .link-preview-title { font-size: 15px; font-weight: 600; color: #050505; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .link-preview-desc { font-size: 13px; color: #65676b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
     /* Guardian Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .guardian-modal { background: white; border-radius: 16px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
@@ -193,15 +229,26 @@ export class CreatePostComponent {
   safeSpace = inject(SafeSpaceService);
   http = inject(HttpClient);
   i18n = inject(I18nService);
+  linkPreviewService = inject(LinkPreviewService);
 
   content = '';
   visibility = 'friends';
   selectedFiles = signal<File[]>([]);
   isSubmitting = signal(false);
+  linkPreviews = signal<LinkPreview[]>([]);
+  private contentInput$ = new Subject<string>();
+  private loadedPreviewUrls = new Set<string>();
 
   showGuardianModal = false;
   guardianResult: ModerationCheckResult | null = null;
   customContent = '';
+
+  constructor() {
+    this.contentInput$.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(text => this.detectAndLoadPreviews(text));
+  }
 
   canPost(): boolean {
     return this.content.trim().length > 0 || this.selectedFiles().length > 0;
@@ -282,9 +329,58 @@ export class CreatePostComponent {
         this.content = '';
         this.selectedFiles.set([]);
         this.isSubmitting.set(false);
+        this.linkPreviews.set([]);
+        this.loadedPreviewUrls.clear();
       },
       error: () => { this.isSubmitting.set(false); alert(this.i18n.t('errors.posting')); }
     });
+  }
+
+  onContentInput(): void {
+    this.contentInput$.next(this.content);
+  }
+
+  private extractUrls(text: string): string[] {
+    const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
+    const matches = text.match(urlRegex) || [];
+    return [...new Set(matches)];
+  }
+
+  private detectAndLoadPreviews(text: string): void {
+    const urls = this.extractUrls(text);
+    if (urls.length === 0) {
+      this.linkPreviews.set([]);
+      this.loadedPreviewUrls.clear();
+      return;
+    }
+
+    // Remove previews for URLs no longer in text
+    const currentUrls = new Set(urls);
+    const existing = this.linkPreviews().filter(p => currentUrls.has(p.url));
+    this.linkPreviews.set(existing);
+    for (const u of [...this.loadedPreviewUrls]) {
+      if (!currentUrls.has(u)) this.loadedPreviewUrls.delete(u);
+    }
+
+    // Load new URLs (max 3 total)
+    for (const url of urls.slice(0, 3)) {
+      if (this.loadedPreviewUrls.has(url)) continue;
+      this.loadedPreviewUrls.add(url);
+      this.linkPreviewService.getPreview(url).subscribe({
+        next: (preview) => {
+          if (preview && (preview.title || preview.description)) {
+            this.linkPreviews.update(prev => [...prev, preview]);
+          }
+        }
+      });
+    }
+  }
+
+  onPreviewImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.parentElement) {
+      img.parentElement.style.display = 'none';
+    }
   }
 
   getAlternatives(): string[] {

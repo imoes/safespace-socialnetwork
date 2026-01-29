@@ -27,7 +27,7 @@
       class="tab"
       [class.active]="activeTab() === 'settings'"
       (click)="setActiveTab('settings')">
-      ⚙️ Seiteneinstellungen
+      ⚙️ Einstellungen
     </button>
     <button
       class="tab"
@@ -330,24 +330,51 @@
     </div>
   }
 
-  <!-- Site Settings Tab -->
+  <!-- Settings Tab -->
   @if (activeTab() === 'settings') {
     <div class="tab-content">
-      <h2>⚙️ Seiteneinstellungen</h2>
+      <h2>⚙️ Site-Einstellungen</h2>
       <p class="description">
-        Hier kannst du den Titel der Seite ändern. Der Titel wird in der Navbar und im Browser-Tab angezeigt.
+        Hier kannst du grundlegende Einstellungen fuer die Plattform konfigurieren.
       </p>
 
       <div class="form-card">
         <div class="form-group">
+          <label for="site-url">Site-URL</label>
+          <p class="field-description">
+            Die oeffentliche URL deiner SafeSpace-Instanz. Wird in E-Mail-Benachrichtigungen
+            und Action-Buttons verwendet.
+          </p>
+          <input
+            id="site-url"
+            type="url"
+            [(ngModel)]="siteSettingsForm.site_url"
+            placeholder="https://deine-domain.de"
+            />
+        </div>
+
+        <div class="button-group">
+          <button
+            class="btn btn-primary"
+            (click)="saveSiteSettings()"
+            [disabled]="loading()">
+            {{ loading() ? '⏳ Speichern...' : '💾 URL speichern' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-group">
           <label for="site-title">Seitentitel</label>
+          <p class="field-description">
+            Dieser Titel wird oben links in der Navigation und als Browser-Tab-Titel angezeigt.
+          </p>
           <input
             id="site-title"
             type="text"
             [(ngModel)]="siteTitleForm"
             placeholder="z.B. SocialNet"
-            maxlength="50">
-          <p class="field-hint">Dieser Titel wird oben links in der Navigation und als Browser-Tab-Titel angezeigt.</p>
+            maxlength="50" />
         </div>
 
         <div class="button-group">

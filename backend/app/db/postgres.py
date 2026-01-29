@@ -100,6 +100,11 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{}'::jsonb
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS screen_time_settings JSONB DEFAULT '{}'::jsonb
+            """)
+
             # Friendships mit Beziehungstyp
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (
@@ -202,6 +207,12 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS join_mode VARCHAR(20) DEFAULT 'open'
             """)
 
+            # Migration: add profile_picture column if missing
+            await conn.execute("""
+                ALTER TABLE groups
+                ADD COLUMN IF NOT EXISTS profile_picture TEXT
+            """)
+
             # Group Members
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS group_members (
@@ -250,6 +261,13 @@ class PostgresDB:
                 ON group_posts(group_id, created_at DESC)
             """)
 
+            # Notifications table (created in notifications.py, but migration here)
+            # Migration: add group_id column for group-related notifications
+            await conn.execute("""
+                ALTER TABLE notifications
+                ADD COLUMN IF NOT EXISTS group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE
+            """)
+
             await conn.commit()
 
 
@@ -294,15 +312,15 @@ async def get_user_by_username_or_email(identifier: str) -> dict | None:
         return await result.fetchone()
 
 
-async def create_user(username: str, email: str, password_hash: str, first_name: str = None, last_name: str = None) -> dict:
+async def create_user(username: str, email: str, password_hash: str, first_name: str = None, last_name: str = None, birthday: str = None) -> dict:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            INSERT INTO users (username, email, password_hash, role, first_name, last_name)
-            VALUES (%s, %s, %s, 'user', %s, %s)
+            INSERT INTO users (username, email, password_hash, role, first_name, last_name, birthday)
+            VALUES (%s, %s, %s, 'user', %s, %s, %s)
             RETURNING uid, username, email, role, created_at
             """,
-            (username, email, password_hash, first_name, last_name)
+            (username, email, password_hash, first_name, last_name, birthday)
         )
         await conn.commit()
         return await result.fetchone()

@@ -13,7 +13,9 @@
     "privacyPolicy": "Privacy Policy",
     "impressum": "Legal Notice",
     "info": "Info",
-    "groups": "Groups"
+    "groups": "Groups",
+    "terms": "Terms of Service",
+    "donate": "Donate"
   },
   "feed": {
     "title": "My Feed",
@@ -37,7 +39,8 @@
     "retry": "Try again",
     "empty": "No posts yet.",
     "emptyHint": "Add friends or create your first post!",
-    "loadingMore": "Loading more posts..."
+    "loadingMore": "Loading more posts...",
+    "scrollToTop": "Back to top & refresh"
   },
   "post": {
     "like": "Like",
@@ -137,7 +140,8 @@
     "createPost": "Error creating post. Please try again.",
     "disputeSubmit": "Error submitting objection.",
     "disputeSuccess": "Your objection has been forwarded for review by a moderator.",
-    "sendComment": "Error sending comment"
+    "sendComment": "Error sending comment",
+    "dataExport": "Error exporting data"
   },
   "myPosts": {
     "title": "My Posts",
@@ -229,6 +233,7 @@
     "subtitle": "Connect with friends",
     "username": "Username",
     "password": "Password",
+    "forgotPassword": "Forgot password?",
     "loginButton": "Login",
     "noAccount": "Don't have an account?",
     "register": "Register now",
@@ -243,6 +248,8 @@
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "birthday": "Birthday",
+    "optional": "optional",
     "registerButton": "Register",
     "hasAccount": "Already have an account?",
     "login": "Login here",
@@ -252,7 +259,30 @@
       "passwordMismatch": "Passwords do not match",
       "registrationFailed": "Registration failed. Please try again."
     },
-    "success": "Registration successful! Redirecting..."
+    "success": "Registration successful! Redirecting...",
+    "agbAccept": "I accept the",
+    "agbLink": "Terms of Service",
+    "agbAnd": "and the",
+    "privacyLink": "Privacy Policy"
+  },
+  "passwordReset": {
+    "title": "Reset Password",
+    "subtitle": "Enter your email address to receive a reset link",
+    "email": "Email address",
+    "sendLink": "Send reset link",
+    "backToLogin": "Back to login",
+    "success": "If an account with this email exists, a reset link has been sent.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "resetButton": "Change password",
+    "resetSuccess": "Password changed successfully! You can now log in.",
+    "invalidToken": "Invalid or expired reset link. Please request a new one.",
+    "errors": {
+      "emailRequired": "Please enter your email address.",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long.",
+      "resetFailed": "Password reset failed. Please try again."
+    }
   },
   "friends": {
     "title": "Friends",
@@ -315,14 +345,31 @@
     "deleteAccountButton": "Permanently Delete Account",
     "deleteConfirm1": "Are you absolutely sure? This action CANNOT be undone!",
     "deleteConfirm2": "Last warning: ALL your data will be permanently deleted. Do you really want to continue?",
-    "deleteSuccess": "Your account has been successfully deleted. You will now be logged out."
+    "deleteSuccess": "Your account has been successfully deleted. You will now be logged out.",
+    "screenTimeTitle": "Screen Time & Well-being",
+    "screenTimeEnabled": "Enable screen time monitoring",
+    "screenTimeDailyLimit": "Daily usage limit",
+    "screenTimeReminderEnabled": "Enable break reminders",
+    "screenTimeReminderInterval": "Break reminder every",
+    "screenTimeMinutes": "minutes",
+    "screenTimeInfo": "When you reach your daily limit, you'll receive a friendly reminder. The break reminder appears regularly during usage to encourage mindful breaks.",
+    "dataExportTitle": "Data Export (GDPR Art. 20)",
+    "dataExportDesc": "Download all your stored data as a JSON file. This includes your profile, posts, friendships, groups, and settings.",
+    "dataExportButton": "Export My Data",
+    "dataExporting": "Exporting..."
   },
   "hashtags": {
     "title": "Trending Hashtags",
     "subtitle": "Discover popular topics",
     "postsCount": "{{count}} posts",
     "noHashtags": "No trending hashtags",
-    "viewPosts": "View Posts"
+    "viewPosts": "View Posts",
+    "trendingInfo": "The most popular hashtags based on post count in the selected time range.",
+    "timeRange": "Time range",
+    "last6Hours": "Last 6 hours",
+    "last24Hours": "Last 24 hours",
+    "enterHint": "Press Enter to search for hashtags",
+    "searchResults": "Search Results"
   },
   "admin": {
     "title": "Admin Panel",
@@ -406,7 +453,29 @@
     "commentLiked": "{{username}} liked your comment",
     "newNotification": "New notification",
     "groupPost": "{{username}} posted in group {{group}}",
-    "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!"
+    "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
+    "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\""
+  },
+  "screenTime": {
+    "breakTitle": "Time for a Break!",
+    "breakMessage": "You've been online for a while. How about a short break?",
+    "breakTip1": "Stand up and stretch",
+    "breakTip2": "Drink a glass of water",
+    "breakTip3": "Look out the window for a moment",
+    "dismissBreak": "Got it, thanks!",
+    "limitTitle": "Daily Limit Reached",
+    "limitMessage": "You've reached your daily usage limit of {{minutes}} minutes.",
+    "limitHint": "You can adjust your limit in the settings.",
+    "dismissLimit": "OK, got it",
+    "goToSettings": "Open Settings"
+  },
+  "cookie": {
+    "title": "Cookie Notice",
+    "message": "This website uses only technically necessary cookies for authentication (login session). No tracking, analytics, or advertising cookies are used.",
+    "essential": "auth_token: JWT token for login session (valid for 24 hours)",
+    "noTracking": "We do not use any tracking or analytics.",
+    "accept": "Got it",
+    "moreInfo": "Privacy Policy"
   },
   "groups": {
     "title": "Groups",
@@ -443,6 +512,7 @@
     "pendingRequests": "Pending Requests",
     "noPendingRequests": "No pending requests",
     "approve": "Approve",
-    "reject": "Reject"
+    "reject": "Reject",
+    "changeProfilePicture": "Change profile picture"
   }
 }

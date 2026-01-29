@@ -40,5 +40,152 @@
     "nativeName": "العربية",
     "flag": "🇸🇦",
     "file": "arabic"
+  },
+  {
+    "code": "bg",
+    "name": "Bulgarian",
+    "nativeName": "Български",
+    "flag": "🇧🇬",
+    "file": "bulgarian"
+  },
+  {
+    "code": "hr",
+    "name": "Croatian",
+    "nativeName": "Hrvatski",
+    "flag": "🇭🇷",
+    "file": "croatian"
+  },
+  {
+    "code": "cs",
+    "name": "Czech",
+    "nativeName": "Čeština",
+    "flag": "🇨🇿",
+    "file": "czech"
+  },
+  {
+    "code": "da",
+    "name": "Danish",
+    "nativeName": "Dansk",
+    "flag": "🇩🇰",
+    "file": "danish"
+  },
+  {
+    "code": "nl",
+    "name": "Dutch",
+    "nativeName": "Nederlands",
+    "flag": "🇳🇱",
+    "file": "dutch"
+  },
+  {
+    "code": "et",
+    "name": "Estonian",
+    "nativeName": "Eesti",
+    "flag": "🇪🇪",
+    "file": "estonian"
+  },
+  {
+    "code": "fi",
+    "name": "Finnish",
+    "nativeName": "Suomi",
+    "flag": "🇫🇮",
+    "file": "finnish"
+  },
+  {
+    "code": "el",
+    "name": "Greek",
+    "nativeName": "Ελληνικά",
+    "flag": "🇬🇷",
+    "file": "greek"
+  },
+  {
+    "code": "hu",
+    "name": "Hungarian",
+    "nativeName": "Magyar",
+    "flag": "🇭🇺",
+    "file": "hungarian"
+  },
+  {
+    "code": "ga",
+    "name": "Irish",
+    "nativeName": "Gaeilge",
+    "flag": "🇮🇪",
+    "file": "irish"
+  },
+  {
+    "code": "lv",
+    "name": "Latvian",
+    "nativeName": "Latviešu",
+    "flag": "🇱🇻",
+    "file": "latvian"
+  },
+  {
+    "code": "lt",
+    "name": "Lithuanian",
+    "nativeName": "Lietuvių",
+    "flag": "🇱🇹",
+    "file": "lithuanian"
+  },
+  {
+    "code": "mt",
+    "name": "Maltese",
+    "nativeName": "Malti",
+    "flag": "🇲🇹",
+    "file": "maltese"
+  },
+  {
+    "code": "pl",
+    "name": "Polish",
+    "nativeName": "Polski",
+    "flag": "🇵🇱",
+    "file": "polish"
+  },
+  {
+    "code": "pt",
+    "name": "Portuguese",
+    "nativeName": "Português",
+    "flag": "🇵🇹",
+    "file": "portuguese"
+  },
+  {
+    "code": "ro",
+    "name": "Romanian",
+    "nativeName": "Română",
+    "flag": "🇷🇴",
+    "file": "romanian"
+  },
+  {
+    "code": "sk",
+    "name": "Slovak",
+    "nativeName": "Slovenčina",
+    "flag": "🇸🇰",
+    "file": "slovak"
+  },
+  {
+    "code": "sl",
+    "name": "Slovenian",
+    "nativeName": "Slovenščina",
+    "flag": "🇸🇮",
+    "file": "slovenian"
+  },
+  {
+    "code": "sv",
+    "name": "Swedish",
+    "nativeName": "Svenska",
+    "flag": "🇸🇪",
+    "file": "swedish"
+  },
+  {
+    "code": "hi",
+    "name": "Hindi",
+    "nativeName": "हिन्दी",
+    "flag": "🇮🇳",
+    "file": "hindi"
+  },
+  {
+    "code": "zh",
+    "name": "Chinese",
+    "nativeName": "中文",
+    "flag": "🇨🇳",
+    "file": "chinese"
   }
 ]

@@ -36,6 +36,18 @@ class NotificationPreferencesRequest(BaseModel):
     group_post: bool = True
 
 
+class ScreenTimeSettingsRequest(BaseModel):
+    enabled: bool = True
+    daily_limit_minutes: int = 120
+    reminder_enabled: bool = True
+    reminder_interval_minutes: int = 30
+
+
+class ScreenTimeUsageRequest(BaseModel):
+    date: str
+    minutes: float
+
+
 class PersonalPostRequest(BaseModel):
     content: str
     visibility: str = "public"  # Persönliche Posts sind standardmäßig öffentlich
@@ -161,6 +173,87 @@ async def update_notification_preferences(
         await conn.commit()
 
     return {"preferences": prefs_dict}
+
+
+@router.get("/me/screen-time-settings")
+async def get_screen_time_settings(current_user: dict = Depends(get_current_user)):
+    """Gibt die Screen-Time-Einstellungen zurück"""
+    import json
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT screen_time_settings FROM users WHERE uid = %s",
+            (current_user["uid"],)
+        )
+        row = await result.fetchone()
+
+    settings = row["screen_time_settings"] if row and row.get("screen_time_settings") else {}
+
+    defaults = {
+        "enabled": True,
+        "daily_limit_minutes": 120,
+        "reminder_enabled": True,
+        "reminder_interval_minutes": 30
+    }
+
+    merged = {**defaults, **settings}
+    return {"settings": merged}
+
+
+@router.put("/me/screen-time-settings")
+async def update_screen_time_settings(
+    settings_data: ScreenTimeSettingsRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Aktualisiert die Screen-Time-Einstellungen"""
+    import json
+
+    settings_dict = settings_data.model_dump()
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET screen_time_settings = %s WHERE uid = %s",
+            (json.dumps(settings_dict), current_user["uid"])
+        )
+        await conn.commit()
+
+    return {"settings": settings_dict}
+
+
+@router.post("/me/screen-time-usage")
+async def save_screen_time_usage(
+    usage_data: ScreenTimeUsageRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Speichert die tägliche Nutzungszeit (wird beim Logout aufgerufen)"""
+    import json
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT screen_time_settings FROM users WHERE uid = %s",
+            (current_user["uid"],)
+        )
+        row = await result.fetchone()
+
+    current_settings = row["screen_time_settings"] if row and row.get("screen_time_settings") else {}
+
+    usage_log = current_settings.get("usage_log", {})
+    usage_log[usage_data.date] = round(usage_data.minutes, 1)
+
+    # Nur die letzten 30 Tage behalten
+    sorted_dates = sorted(usage_log.keys(), reverse=True)[:30]
+    usage_log = {d: usage_log[d] for d in sorted_dates}
+
+    current_settings["usage_log"] = usage_log
+
+    async with PostgresDB.connection() as conn:
+        await conn.execute(
+            "UPDATE users SET screen_time_settings = %s WHERE uid = %s",
+            (json.dumps(current_settings), current_user["uid"])
+        )
+        await conn.commit()
+
+    return {"saved": True}
 
 
 @router.post("/me/profile-picture")
@@ -828,6 +921,116 @@ async def delete_user_by_admin(
     return {"message": f"User {user_uid} wurde vollständig gelöscht"}
 
 
+@router.get("/me/data-export")
+async def export_user_data(current_user: dict = Depends(get_current_user)):
+    """
+    DSGVO Art. 20 - Datenübertragbarkeit.
+    Exportiert alle Benutzerdaten in maschinenlesbarem JSON-Format.
+    """
+    import json
+    from app.db.sqlite_posts import UserPostsDB
+    from app.config import settings
+
+    user_uid = current_user["uid"]
+
+    # 1. Profildaten aus PostgreSQL
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """SELECT uid, username, email, role, bio, created_at,
+                      first_name, last_name, preferred_language, birthday,
+                      notification_preferences, screen_time_settings, posts_count
+               FROM users WHERE uid = %s""",
+            (user_uid,)
+        )
+        user_row = await result.fetchone()
+
+        # 2. Freundschaften
+        result = await conn.execute(
+            """SELECT f.friend_id, u.username, f.relation_type, f.status, f.created_at
+               FROM friendships f
+               JOIN users u ON u.uid = f.friend_id
+               WHERE f.user_id = %s AND f.status = 'accepted'
+               UNION
+               SELECT f.user_id, u.username, f.relation_type, f.status, f.created_at
+               FROM friendships f
+               JOIN users u ON u.uid = f.user_id
+               WHERE f.friend_id = %s AND f.status = 'accepted'""",
+            (user_uid, user_uid)
+        )
+        friendships = await result.fetchall()
+
+        # 3. Gruppen-Mitgliedschaften
+        result = await conn.execute(
+            """SELECT g.group_id, g.name, gm.role, gm.joined_at
+               FROM group_members gm
+               JOIN groups g ON g.group_id = gm.group_id
+               WHERE gm.user_uid = %s AND gm.status = 'active'""",
+            (user_uid,)
+        )
+        groups = await result.fetchall()
+
+        # 4. Benachrichtigungs-Einstellungen
+        notif_prefs = user_row["notification_preferences"] if user_row and user_row.get("notification_preferences") else {}
+        screen_time = user_row["screen_time_settings"] if user_row and user_row.get("screen_time_settings") else {}
+
+    # 5. Posts aus SQLite
+    posts_data = []
+    posts_db = UserPostsDB(user_uid)
+    if posts_db.db_path.exists():
+        posts = await posts_db.get_posts(include_deleted=False, limit=10000)
+        for post in posts:
+            posts_data.append({
+                "post_id": post.get("post_id"),
+                "content": post.get("content"),
+                "visibility": post.get("visibility"),
+                "created_at": post.get("created_at"),
+                "media_paths": json.loads(post["media_paths"]) if post.get("media_paths") else [],
+            })
+
+    # Export zusammenstellen
+    export_data = {
+        "export_info": {
+            "format": "DSGVO Art. 20 - Datenübertragbarkeit",
+            "exported_at": str(date.today()),
+            "user_uid": user_uid
+        },
+        "profile": {
+            "username": user_row["username"] if user_row else None,
+            "email": user_row["email"] if user_row else None,
+            "first_name": user_row["first_name"] if user_row else None,
+            "last_name": user_row["last_name"] if user_row else None,
+            "bio": user_row["bio"] if user_row else None,
+            "birthday": str(user_row["birthday"]) if user_row and user_row.get("birthday") else None,
+            "preferred_language": user_row["preferred_language"] if user_row else None,
+            "member_since": str(user_row["created_at"]) if user_row else None,
+            "posts_count": user_row["posts_count"] if user_row else 0,
+        },
+        "settings": {
+            "notification_preferences": notif_prefs,
+            "screen_time_settings": screen_time,
+        },
+        "friendships": [
+            {
+                "friend_username": f["username"],
+                "relation_type": f["relation_type"],
+                "since": str(f["created_at"]),
+            }
+            for f in friendships
+        ],
+        "groups": [
+            {
+                "group_name": g["name"],
+                "role": g["role"],
+                "joined_at": str(g["joined_at"]),
+            }
+            for g in groups
+        ],
+        "posts": posts_data,
+    }
+
+    return export_data
+
+
 @router.delete("/me/account")
 async def delete_account(
     current_user: dict = Depends(get_current_user)
@@ -875,11 +1078,33 @@ async def delete_account(
             (user_uid, user_uid)
         )
 
-        # Moderation Disputes löschen (falls Tabelle existiert)
+        # Moderation Disputes löschen
         try:
             await conn.execute(
                 "DELETE FROM moderation_disputes WHERE user_uid = %s",
                 (user_uid,)
+            )
+        except:
+            pass
+
+        # Moderation Log anonymisieren (DSGVO: Audit-Trail bleibt, aber ohne Personenbezug)
+        try:
+            await conn.execute(
+                "UPDATE moderation_log SET moderator_uid = NULL WHERE moderator_uid = %s",
+                (user_uid,)
+            )
+            await conn.execute(
+                "UPDATE moderation_log SET target_uid = NULL WHERE target_uid = %s",
+                (user_uid,)
+            )
+        except:
+            pass
+
+        # Notifications löschen
+        try:
+            await conn.execute(
+                "DELETE FROM notifications WHERE user_uid = %s OR actor_uid = %s",
+                (user_uid, user_uid)
             )
         except:
             pass

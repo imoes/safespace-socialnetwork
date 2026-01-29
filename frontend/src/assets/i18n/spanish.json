@@ -13,7 +13,9 @@
     "privacyPolicy": "Política de Privacidad",
     "impressum": "Aviso Legal",
     "info": "Info",
-    "groups": "Grupos"
+    "groups": "Grupos",
+    "terms": "Condiciones de uso",
+    "donate": "Donar"
   },
   "feed": {
     "title": "Mi Feed",
@@ -137,7 +139,8 @@
     "createPost": "Error al crear la publicación. Por favor, inténtalo de nuevo.",
     "disputeSubmit": "Error al enviar la objeción.",
     "disputeSuccess": "Tu objeción ha sido enviada para revisión por un moderador.",
-    "sendComment": "Error al enviar el comentario"
+    "sendComment": "Error al enviar el comentario",
+    "dataExport": "Error al exportar los datos"
   },
   "myPosts": {
     "title": "Mis Posts",
@@ -285,14 +288,52 @@
     "deleteAccountButton": "Eliminar cuenta permanentemente",
     "deleteConfirm1": "¿Estás completamente seguro? ¡Esta acción NO se puede deshacer!",
     "deleteConfirm2": "Última advertencia: TODOS tus datos serán eliminados permanentemente. ¿Realmente deseas continuar?",
-    "deleteSuccess": "Tu cuenta ha sido eliminada exitosamente. Ahora se cerrará tu sesión."
+    "deleteSuccess": "Tu cuenta ha sido eliminada exitosamente. Ahora se cerrará tu sesión.",
+    "screenTimeTitle": "Tiempo de Pantalla y Bienestar",
+    "screenTimeEnabled": "Activar monitoreo de tiempo de pantalla",
+    "screenTimeDailyLimit": "Límite de uso diario",
+    "screenTimeReminderEnabled": "Activar recordatorios de pausa",
+    "screenTimeReminderInterval": "Recordatorio de pausa cada",
+    "screenTimeMinutes": "minutos",
+    "screenTimeInfo": "Cuando alcances tu límite diario, recibirás un recordatorio amigable. El recordatorio de pausa aparece regularmente durante el uso para animarte a tomar descansos conscientes.",
+    "dataExportTitle": "Exportación de datos (RGPD Art. 20)",
+    "dataExportDesc": "Descarga todos tus datos almacenados como archivo JSON. Esto incluye tu perfil, publicaciones, amistades, grupos y configuraciones.",
+    "dataExportButton": "Exportar mis datos",
+    "dataExporting": "Exportando..."
+  },
+  "screenTime": {
+    "breakTitle": "¡Hora de un descanso!",
+    "breakMessage": "Llevas un rato en línea. ¿Qué tal un breve descanso?",
+    "breakTip1": "Levántate y estírate",
+    "breakTip2": "Bebe un vaso de agua",
+    "breakTip3": "Mira por la ventana un momento",
+    "dismissBreak": "¡Entendido, gracias!",
+    "limitTitle": "Límite diario alcanzado",
+    "limitMessage": "Has alcanzado tu límite diario de uso de {{minutes}} minutos.",
+    "limitHint": "Puedes ajustar tu límite en la configuración.",
+    "dismissLimit": "OK, entendido",
+    "goToSettings": "Abrir configuración"
+  },
+  "cookie": {
+    "title": "Aviso de cookies",
+    "message": "Este sitio web utiliza únicamente cookies técnicamente necesarias para la autenticación (sesión de inicio). No se utilizan cookies de seguimiento, análisis ni publicidad.",
+    "essential": "auth_token: Token JWT para la sesión de inicio (válido 24 horas)",
+    "noTracking": "No utilizamos ningún tipo de seguimiento ni análisis.",
+    "accept": "Entendido",
+    "moreInfo": "Política de privacidad"
   },
   "hashtags": {
     "title": "Hashtags Tendencia",
     "subtitle": "Descubre temas populares",
     "postsCount": "{{count}} posts",
     "noHashtags": "No hay hashtags en tendencia",
-    "viewPosts": "Ver posts"
+    "viewPosts": "Ver posts",
+    "trendingInfo": "Los hashtags más populares según la cantidad de publicaciones en el período seleccionado.",
+    "timeRange": "Período",
+    "last6Hours": "Últimas 6 horas",
+    "last24Hours": "Últimas 24 horas",
+    "enterHint": "Presiona Enter para buscar hashtags",
+    "searchResults": "Resultados de búsqueda"
   },
   "login": {
     "title": "Iniciar sesión",
@@ -322,7 +363,11 @@
       "passwordMismatch": "Las contraseñas no coinciden",
       "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo."
     },
-    "success": "¡Registro exitoso! Redirigiendo..."
+    "success": "¡Registro exitoso! Redirigiendo...",
+    "agbAccept": "Acepto las",
+    "agbLink": "condiciones de uso",
+    "agbAnd": "y la",
+    "privacyLink": "política de privacidad"
   },
   "common": {
     "loading": "Cargando...",
@@ -352,7 +397,8 @@
     "commentLiked": "{{username}} le dio me gusta a tu comentario",
     "newNotification": "Nueva notificación",
     "groupPost": "{{username}} publicó en el grupo {{group}}",
-    "birthday": "🎂 ¡{{username}} cumple años hoy y ahora tiene {{age}} años!"
+    "birthday": "🎂 ¡{{username}} cumple años hoy y ahora tiene {{age}} años!",
+    "groupJoinRequest": "👥 {{username}} quiere unirse al grupo \"{{groupName}}\""
   },
   "groups": {
     "title": "Grupos",

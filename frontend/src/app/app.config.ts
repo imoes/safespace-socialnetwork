@@ -27,13 +27,18 @@ import { MyPostsComponent } from './components/my-posts/my-posts.component';
 import { PublicFeedComponent } from './components/public-feed/public-feed.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { ImpressumComponent } from './components/impressum/impressum.component';
+import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
 import { InfoComponent } from './components/info/info.component';
 import { GroupsComponent } from './components/groups/groups.component';
 import { GroupDetailComponent } from './components/groups/group-detail.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard] },
   { path: 'admin-panel', component: AdminPanelComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
@@ -46,8 +51,9 @@ export const routes: Routes = [
   { path: 'hashtag/:hashtag', component: HashtagDetailComponent, canActivate: [authGuard] },
   { path: 'groups', component: GroupsComponent, canActivate: [authGuard] },
   { path: 'groups/:id', component: GroupDetailComponent, canActivate: [authGuard] },
-  { path: 'privacy-policy', component: PrivacyPolicyComponent, canActivate: [authGuard] },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'impressum', component: ImpressumComponent, canActivate: [authGuard] },
+  { path: 'terms', component: TermsOfServiceComponent },
   { path: 'info', component: InfoComponent, canActivate: [authGuard] },
   { path: '', component: FeedComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }

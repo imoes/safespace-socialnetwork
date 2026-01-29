@@ -8,6 +8,9 @@ import { I18nService } from './services/i18n.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 import { WelcomeModalComponent } from './components/welcome-modal/welcome-modal.component';
 import { NotificationsDropdownComponent } from './components/notifications-dropdown/notifications-dropdown.component';
+import { ScreenTimeModalComponent } from './components/screen-time-modal/screen-time-modal.component';
+import { CookieConsentComponent } from './components/cookie-consent/cookie-consent.component';
+import { ScreenTimeService } from './services/screen-time.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval, filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
@@ -15,11 +18,12 @@ import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, TranslatePipe],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, WelcomeModalComponent, NotificationsDropdownComponent, ScreenTimeModalComponent, CookieConsentComponent, TranslatePipe],
   template: `
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
         <a routerLink="/" class="logo">{{ siteTitle() }}</a>
+        <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="donate-link" title="{{ 'nav.donate' | translate }}">❤️ {{ 'nav.donate' | translate }}</a>
 
         <div class="search-container desktop-only">
           <input
@@ -125,6 +129,12 @@ import { Title } from '@angular/platform-browser';
                 <a routerLink="/impressum" class="dropdown-item" (click)="closeDropdown()">
                   ⚖️ {{ 'nav.impressum' | translate }}
                 </a>
+                <a routerLink="/terms" class="dropdown-item" (click)="closeDropdown()">
+                  📋 {{ 'nav.terms' | translate }}
+                </a>
+                <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="dropdown-item" (click)="closeDropdown()">
+                  ❤️ {{ 'nav.donate' | translate }}
+                </a>
                 <div class="dropdown-divider"></div>
                 <button class="dropdown-item logout-item" (click)="logout()">
                   🚪 {{ 'nav.logout' | translate }}
@@ -223,6 +233,8 @@ import { Title } from '@angular/platform-browser';
             <a routerLink="/info" class="mobile-menu-item" (click)="closeMobileMenu()">ℹ️ {{ 'nav.info' | translate }}</a>
             <a routerLink="/privacy-policy" class="mobile-menu-item" (click)="closeMobileMenu()">📜 {{ 'nav.privacyPolicy' | translate }}</a>
             <a routerLink="/impressum" class="mobile-menu-item" (click)="closeMobileMenu()">⚖️ {{ 'nav.impressum' | translate }}</a>
+            <a routerLink="/terms" class="mobile-menu-item" (click)="closeMobileMenu()">📋 {{ 'nav.terms' | translate }}</a>
+            <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="mobile-menu-item" (click)="closeMobileMenu()">❤️ {{ 'nav.donate' | translate }}</a>
           </div>
 
           <div class="mobile-menu-divider"></div>
@@ -235,11 +247,15 @@ import { Title } from '@angular/platform-browser';
     }
     <router-outlet />
     <app-welcome-modal />
+    <app-screen-time-modal />
+    <app-cookie-consent />
   `,
   styles: [`
     /* === Navbar base === */
     .navbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; gap: 24px; }
     .logo { font-size: 24px; font-weight: bold; color: #1877f2; text-decoration: none; flex-shrink: 0; }
+    .donate-link { font-size: 14px; color: #e74c3c; text-decoration: none; flex-shrink: 0; font-weight: 500; padding: 4px 10px; border: 1px solid #e74c3c; border-radius: 16px; transition: all 0.2s; }
+    .donate-link:hover { background: #e74c3c; color: white; }
 
     /* === Search === */
     .search-container { position: relative; flex: 1; max-width: 500px; }
@@ -529,6 +545,7 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private titleService = inject(Title);
+  private screenTimeService = inject(ScreenTimeService);
 
   showDropdown = signal(false);
   showSearchResults = signal(false);
@@ -586,6 +603,7 @@ export class AppComponent implements OnInit {
     effect(() => {
       if (this.authService.isAuthenticated()) {
         this.loadPendingRequestsCount();
+        this.screenTimeService.loadSettings();
 
         // Reports für Admins und Moderatoren laden
         if (this.authService.isAdmin() || this.authService.isModerator()) {

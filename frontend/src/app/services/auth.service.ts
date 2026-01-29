@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, of } from 'rxjs';
 import { I18nService } from './i18n.service';
+import { ScreenTimeService } from './screen-time.service';
 
 export interface User {
   uid: number;
@@ -44,6 +45,7 @@ export class AuthService {
   });
 
   private i18n = inject(I18nService);
+  private screenTime = inject(ScreenTimeService);
 
   constructor(
     private http: HttpClient,
@@ -83,7 +85,7 @@ export class AuthService {
     );
   }
 
-  register(username: string, email: string, password: string, firstName?: string, lastName?: string): Observable<AuthResponse> {
+  register(username: string, email: string, password: string, firstName?: string, lastName?: string, birthday?: string): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
 
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, {
@@ -91,7 +93,8 @@ export class AuthService {
       email,
       password,
       first_name: firstName,
-      last_name: lastName
+      last_name: lastName,
+      birthday: birthday || null
     }).pipe(
       tap(response => {
         this.setToken(response.access_token);
@@ -105,6 +108,10 @@ export class AuthService {
   }
 
   logout(): void {
+    // Persist screen time usage to backend before logout
+    this.screenTime.persistUsageToBackend();
+    this.screenTime.destroy();
+
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem('preferredLanguage');
     this.currentUserSignal.set(null);
@@ -161,7 +168,12 @@ export class AuthService {
       }),
       catchError((error) => {
         console.error('Failed to load user:', error);
-        this.logout();
+        // Clear token and state but do NOT navigate - the auth guard handles
+        // redirects for protected routes. Navigating here would kick users
+        // off public pages like /register when an old token is invalid.
+        localStorage.removeItem(this.TOKEN_KEY);
+        this.currentUserSignal.set(null);
+        this.isLoadingSignal.set(false);
         return of(null);
       })
     ).subscribe();

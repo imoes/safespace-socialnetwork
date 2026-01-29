@@ -22,9 +22,17 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           <input type="text" [(ngModel)]="firstName" name="firstName" [placeholder]="'settings.firstName' | translate" />
           <input type="text" [(ngModel)]="lastName" name="lastName" [placeholder]="'settings.lastName' | translate" />
           <input type="email" [(ngModel)]="email" name="email" [placeholder]="'register.email' | translate" required />
+          <div class="birthday-field">
+            <label>{{ 'register.birthday' | translate }} <span class="optional">({{ 'register.optional' | translate }})</span></label>
+            <input type="date" [(ngModel)]="birthday" name="birthday" />
+          </div>
           <input type="password" [(ngModel)]="password" name="password" [placeholder]="'register.password' | translate" required minlength="6" />
           <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" [placeholder]="'register.confirmPassword' | translate" required />
-          <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="agbAccepted" name="agbAccepted" />
+            <span>{{ 'register.agbAccept' | translate }} <a routerLink="/terms" target="_blank">{{ 'register.agbLink' | translate }}</a> {{ 'register.agbAnd' | translate }} <a routerLink="/privacy-policy" target="_blank">{{ 'register.privacyLink' | translate }}</a>.</span>
+          </label>
+          <button type="submit" [disabled]="isLoading || !agbAccepted">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
         </form>
         <p class="link">{{ 'register.hasAccount' | translate }} <a routerLink="/login">{{ 'register.login' | translate }}</a></p>
       </div>
@@ -40,8 +48,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     form { display: flex; flex-direction: column; gap: 14px; }
     input { padding: 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
     input:focus { outline: none; border-color: #1877f2; }
+    .birthday-field { display: flex; flex-direction: column; gap: 4px; }
+    .birthday-field label { font-size: 14px; color: #333; }
+    .birthday-field .optional { color: #888; font-size: 12px; }
+    .birthday-field input { padding: 12px 14px; }
     button { padding: 14px; background: #42b72a; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    button:disabled { background: #ccc; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #555; line-height: 1.4; }
+    .checkbox-label input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; }
+    .checkbox-label a { color: #1877f2; text-decoration: none; }
+    .checkbox-label a:hover { text-decoration: underline; }
     .link { text-align: center; margin-top: 20px; }
     .link a { color: #1877f2; text-decoration: none; }
 
@@ -60,8 +76,10 @@ export class RegisterComponent {
   firstName = '';
   lastName = '';
   email = '';
+  birthday = '';
   password = '';
   confirmPassword = '';
+  agbAccepted = false;
   error = '';
   success = '';
   isLoading = false;
@@ -77,7 +95,7 @@ export class RegisterComponent {
     this.isLoading = true;
     this.error = '';
 
-    this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName).subscribe({
+    this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName, this.birthday || undefined).subscribe({
       next: () => {
         console.log('✅ Registration erfolgreich, Token gespeichert!');
         this.success = this.i18n.t('register.success');

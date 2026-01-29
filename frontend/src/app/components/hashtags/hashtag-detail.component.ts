@@ -12,6 +12,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, PostCardComponent, TranslatePipe],
   template: `
+    <!-- Scroll to top button (under navbar) -->
+    @if (showScrollTop) {
+      <button class="scroll-top-btn" (click)="refresh()">
+        ↑ {{ 'feed.scrollToTop' | translate }}
+      </button>
+    }
+
     <div class="hashtag-detail-container">
       <div class="header">
         <button class="back-btn" (click)="goBack()">← {{ 'common.back' | translate }}</button>
@@ -147,6 +154,42 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .refresh-btn:hover {
       background: #166fe5;
     }
+
+    .scroll-top-btn {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .scroll-top-btn:hover {
+      background: #166fe5;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
   `]
 })
 export class HashtagDetailComponent implements OnInit, OnDestroy {
@@ -162,6 +205,7 @@ export class HashtagDetailComponent implements OnInit, OnDestroy {
   loadingTop = signal(false);
   loadingBottom = signal(false);
   hasMore = signal(true);
+  showScrollTop = false;
 
   private readonly LIMIT = 15;
   private currentOffset = 0;
@@ -228,6 +272,9 @@ export class HashtagDetailComponent implements OnInit, OnDestroy {
 
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
+    // Show scroll-top button when scrolled down more than 300px
+    this.showScrollTop = window.scrollY > 300;
+
     if (this.isLoadingMore) return;
 
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;

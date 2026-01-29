@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,11 +8,15 @@ import { ReportService } from '../../services/report.service';
 import { TranslationService, TranslationResult } from '../../services/translation.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
+import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, AutoEmojiDirective],
   template: `
     <div class="post-card">
       <div class="post-header">
@@ -55,6 +59,27 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         } @else {
           <div class="post-content" [innerHTML]="getContentWithHashtags()" (click)="handleContentClick($event)"></div>
         }
+      }
+
+      @if (linkPreviews.length > 0) {
+        <div class="link-previews">
+          @for (preview of linkPreviews; track preview.url) {
+            <a [href]="preview.url" target="_blank" rel="noopener noreferrer" class="link-preview-card">
+              @if (preview.image) {
+                <div class="link-preview-image">
+                  <img [src]="preview.image" [alt]="preview.title" (error)="onPreviewImageError($event)" />
+                </div>
+              }
+              <div class="link-preview-info">
+                <span class="link-preview-site">{{ preview.site_name || preview.domain }}</span>
+                <span class="link-preview-title">{{ preview.title }}</span>
+                @if (preview.description) {
+                  <span class="link-preview-desc">{{ preview.description }}</span>
+                }
+              </div>
+            </a>
+          }
+        </div>
       }
 
       @if (post.media_urls.length > 0) {
@@ -111,9 +136,29 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       @if (showComments) {
         <div class="comments-section">
           <div class="comment-input">
-            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" />
+            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" (input)="onCommentInput()" autoEmoji />
             <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">{{ 'post.send' | translate }}</button>
           </div>
+          @if (commentLinkPreviews.length > 0) {
+            <div class="comment-link-previews">
+              @for (preview of commentLinkPreviews; track preview.url) {
+                <a [href]="preview.url" target="_blank" rel="noopener noreferrer" class="link-preview-card comment-preview-card">
+                  @if (preview.image) {
+                    <div class="link-preview-image comment-preview-image">
+                      <img [src]="preview.image" [alt]="preview.title" (error)="onPreviewImageError($event)" />
+                    </div>
+                  }
+                  <div class="link-preview-info">
+                    <span class="link-preview-site">{{ preview.site_name || preview.domain }}</span>
+                    <span class="link-preview-title">{{ preview.title }}</span>
+                    @if (preview.description) {
+                      <span class="link-preview-desc">{{ preview.description }}</span>
+                    }
+                  </div>
+                </a>
+              }
+            </div>
+          }
 
           @if (loadingComments) {
             <div class="loading">{{ 'post.loadingComments' | translate }}</div>
@@ -288,6 +333,22 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .post-content p { margin: 0; line-height: 1.5; white-space: pre-wrap; }
     .post-content ::ng-deep .hashtag { color: #1877f2; cursor: pointer; font-weight: 500; text-decoration: none; }
     .post-content ::ng-deep .hashtag:hover { text-decoration: underline; }
+    .post-content ::ng-deep .auto-link { color: #1877f2; text-decoration: none; word-break: break-all; }
+    .post-content ::ng-deep .auto-link:hover { text-decoration: underline; }
+
+    /* Link Preview */
+    .link-previews { padding: 0 16px 12px; }
+    .link-preview-card { display: flex; flex-direction: column; border: 1px solid #e4e6e9; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: box-shadow 0.2s; cursor: pointer; }
+    .link-preview-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .link-preview-image { width: 100%; max-height: 250px; overflow: hidden; background: #f0f2f5; }
+    .link-preview-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .link-preview-info { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .link-preview-site { font-size: 12px; color: #65676b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .link-preview-title { font-size: 15px; font-weight: 600; color: #050505; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .link-preview-desc { font-size: 13px; color: #65676b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .comment-link-previews { padding: 8px 0; }
+    .comment-preview-card { margin-bottom: 8px; }
+    .comment-preview-image { max-height: 150px; }
     .post-content.translation { background: #f0f8ff; border-left: 3px solid #1877f2; padding: 12px 16px; margin: 0 16px 12px; border-radius: 6px; }
     .translation-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: #65676b; }
     .translation-badge { font-size: 14px; }
@@ -409,7 +470,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     }
   `]
 })
-export class PostCardComponent implements OnChanges {
+export class PostCardComponent implements OnChanges, OnInit, OnDestroy {
   @Input() post!: Post;
   @Input() currentUid?: number;
   @Input() expandComments: boolean = false;
@@ -423,9 +484,12 @@ export class PostCardComponent implements OnChanges {
   private sanitizer = inject(DomSanitizer);
   translationService = inject(TranslationService);
   private i18n = inject(I18nService);
+  private linkPreviewService = inject(LinkPreviewService);
 
   isLiked: boolean = false;
   private isLikedInitialized = false;
+  linkPreviews: LinkPreview[] = [];
+  private previewsLoaded = false;
   showReportModal = false;
   showVisibilityModal = false;
   showVisibilityDropdown = false;
@@ -444,12 +508,35 @@ export class PostCardComponent implements OnChanges {
   translating = false;
   translatedContent: TranslationResult | null = null;
 
+  // Comment link previews
+  commentLinkPreviews: LinkPreview[] = [];
+  private commentInput$ = new Subject<string>();
+  private commentPreviewUrls = new Set<string>();
+  private destroy$ = new Subject<void>();
+
   // Guardian Modal für Kommentare
   showGuardianModal = false;
   guardianResult: any = null;
   customContent = '';
   originalCommentContent = '';
   isSubmittingComment = false;
+
+  constructor() {
+    this.commentInput$.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(text => this.detectCommentLinkPreviews(text));
+  }
+
+  ngOnInit(): void {
+    this.loadLinkPreviews();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.commentInput$.complete();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['post'] && this.post) {
@@ -690,6 +777,8 @@ export class PostCardComponent implements OnChanges {
         this.comments.push(comment);
         this.post.comments_count++;
         this.newComment = '';
+        this.commentLinkPreviews = [];
+        this.commentPreviewUrls.clear();
       },
       error: (error) => {
         const errorDetail = error.error?.detail || error.error;
@@ -727,12 +816,68 @@ export class PostCardComponent implements OnChanges {
     }
   }
 
+  onCommentInput(): void {
+    this.commentInput$.next(this.newComment);
+  }
+
+  private detectCommentLinkPreviews(text: string): void {
+    const urls = this.extractUrls(text);
+    if (urls.length === 0) {
+      this.commentLinkPreviews = [];
+      this.commentPreviewUrls.clear();
+      return;
+    }
+
+    const currentUrls = new Set(urls);
+    this.commentLinkPreviews = this.commentLinkPreviews.filter(p => currentUrls.has(p.url));
+    for (const u of [...this.commentPreviewUrls]) {
+      if (!currentUrls.has(u)) this.commentPreviewUrls.delete(u);
+    }
+
+    for (const url of urls.slice(0, 3)) {
+      if (this.commentPreviewUrls.has(url)) continue;
+      this.commentPreviewUrls.add(url);
+      this.linkPreviewService.getPreview(url).subscribe({
+        next: (preview) => {
+          if (preview && (preview.title || preview.description)) {
+            this.commentLinkPreviews = [...this.commentLinkPreviews, preview];
+          }
+        }
+      });
+    }
+  }
+
+  private extractUrls(text: string): string[] {
+    const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
+    const matches = text.match(urlRegex) || [];
+    // Deduplizieren
+    return [...new Set(matches)];
+  }
+
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   getContentWithHashtags(): SafeHtml {
-    // Parse content and make hashtags clickable
     const content = this.post.content || '';
-    // Match hashtags: # followed by letters only (no numbers)
+    // Erst HTML-Entities escapen
+    let escaped = this.escapeHtml(content);
+
+    // URLs erkennen und durch Links ersetzen
+    const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
+    escaped = escaped.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="auto-link">$1</a>');
+
+    // Hashtags erkennen (aber nicht innerhalb von Links)
     const hashtagRegex = /#([a-zA-ZäöüÄÖÜß]+)/g;
-    const result = '<p>' + content.replace(hashtagRegex, '<span class="hashtag" data-hashtag="$1">#$1</span>') + '</p>';
+    escaped = escaped.replace(hashtagRegex, (match, tag) => {
+      return `<span class="hashtag" data-hashtag="${tag}">#${tag}</span>`;
+    });
+
+    const result = '<p>' + escaped + '</p>';
     return this.sanitizer.bypassSecurityTrustHtml(result);
   }
 
@@ -745,6 +890,39 @@ export class PostCardComponent implements OnChanges {
       if (hashtag) {
         this.router.navigate(['/hashtag', hashtag]);
       }
+    }
+    // Auto-links oeffnen sich via target="_blank" von alleine
+  }
+
+  loadLinkPreviews(): void {
+    if (this.previewsLoaded) return;
+    this.previewsLoaded = true;
+
+    const urls = this.extractUrls(this.post.content || '');
+    if (urls.length === 0) return;
+
+    // Maximal 3 Previews laden
+    const previewUrls = urls.slice(0, 3);
+
+    for (const url of previewUrls) {
+      this.linkPreviewService.getPreview(url).subscribe({
+        next: (preview) => {
+          if (preview && (preview.title || preview.description)) {
+            this.linkPreviews = [...this.linkPreviews, preview];
+          }
+        },
+        error: () => {
+          // Vorschau konnte nicht geladen werden - ignorieren
+        }
+      });
+    }
+  }
+
+  onPreviewImageError(event: Event): void {
+    // Bild konnte nicht geladen werden - Element verstecken
+    const img = event.target as HTMLImageElement;
+    if (img.parentElement) {
+      img.parentElement.style.display = 'none';
     }
   }
 

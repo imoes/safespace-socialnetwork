@@ -13,6 +13,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, FormsModule, PostCardComponent, CreatePostComponent, TranslatePipe],
   template: `
+    <!-- Scroll to top button (under navbar) -->
+    @if (showScrollTop) {
+      <button class="scroll-top-btn" (click)="refresh()">
+        ↑ {{ 'feed.scrollToTop' | translate }}
+      </button>
+    }
+
     <div class="feed-container">
       <!-- Create Post -->
       <app-create-post (postCreated)="onPostCreated($event)" />
@@ -181,6 +188,42 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background: #166fe5;
     }
 
+    .scroll-top-btn {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .scroll-top-btn:hover {
+      background: #166fe5;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
     @media (max-width: 1024px) {
       .feed-container { padding: 12px 8px; }
       .posts { gap: 12px; }
@@ -192,6 +235,7 @@ export class FeedComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   router = inject(Router);
   private hasRedirected = false;
+  showScrollTop = false;
 
   constructor() {
     // Reaktiv auf User-Rolle reagieren
@@ -232,6 +276,9 @@ export class FeedComponent implements OnInit, OnDestroy {
 
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
+    // Show scroll-top button when scrolled down more than 300px
+    this.showScrollTop = window.scrollY > 300;
+
     // Prüfe ob User fast am Ende der Seite ist
     const scrollPosition = window.innerHeight + window.scrollY;
     const pageHeight = document.documentElement.scrollHeight;

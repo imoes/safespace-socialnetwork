@@ -13,7 +13,9 @@
     "privacyPolicy": "Datenschutzerklärung",
     "impressum": "Impressum",
     "info": "Info",
-    "groups": "Gruppen"
+    "groups": "Gruppen",
+    "terms": "Nutzungsbedingungen",
+    "donate": "Spenden"
   },
   "feed": {
     "title": "Mein Feed",
@@ -37,7 +39,8 @@
     "retry": "Erneut versuchen",
     "empty": "Noch keine Posts vorhanden.",
     "emptyHint": "Füge Freunde hinzu oder erstelle deinen ersten Post!",
-    "loadingMore": "Lade weitere Posts..."
+    "loadingMore": "Lade weitere Posts...",
+    "scrollToTop": "Nach oben & aktualisieren"
   },
   "post": {
     "like": "Gefällt mir",
@@ -137,7 +140,8 @@
     "createPost": "Fehler beim Erstellen des Posts. Bitte versuche es erneut.",
     "disputeSubmit": "Fehler beim Einreichen des Widerspruchs.",
     "disputeSuccess": "Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.",
-    "sendComment": "Fehler beim Senden des Kommentars"
+    "sendComment": "Fehler beim Senden des Kommentars",
+    "dataExport": "Fehler beim Exportieren der Daten"
   },
   "myPosts": {
     "title": "Meine Posts",
@@ -229,6 +233,7 @@
     "subtitle": "Verbinde dich mit Freunden",
     "username": "Benutzername",
     "password": "Passwort",
+    "forgotPassword": "Passwort vergessen?",
     "loginButton": "Anmelden",
     "noAccount": "Noch kein Konto?",
     "register": "Jetzt registrieren",
@@ -243,6 +248,8 @@
     "email": "E-Mail",
     "password": "Passwort",
     "confirmPassword": "Passwort bestätigen",
+    "birthday": "Geburtsdatum",
+    "optional": "optional",
     "registerButton": "Registrieren",
     "hasAccount": "Bereits ein Konto?",
     "login": "Hier anmelden",
@@ -252,7 +259,30 @@
       "passwordMismatch": "Passwörter stimmen nicht überein",
       "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuche es erneut."
     },
-    "success": "Registrierung erfolgreich! Weiterleitung..."
+    "success": "Registrierung erfolgreich! Weiterleitung...",
+    "agbAccept": "Ich akzeptiere die",
+    "agbLink": "Nutzungsbedingungen",
+    "agbAnd": "und die",
+    "privacyLink": "Datenschutzerklärung"
+  },
+  "passwordReset": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "Gib deine E-Mail-Adresse ein, um einen Reset-Link zu erhalten",
+    "email": "E-Mail-Adresse",
+    "sendLink": "Reset-Link senden",
+    "backToLogin": "Zurück zum Login",
+    "success": "Wenn ein Konto mit dieser E-Mail existiert, wurde ein Reset-Link gesendet.",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "resetButton": "Passwort ändern",
+    "resetSuccess": "Passwort erfolgreich geändert! Du kannst dich jetzt anmelden.",
+    "invalidToken": "Ungültiger oder abgelaufener Reset-Link. Bitte fordere einen neuen an.",
+    "errors": {
+      "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+      "resetFailed": "Passwort zurücksetzen fehlgeschlagen. Bitte versuche es erneut."
+    }
   },
   "friends": {
     "title": "Freunde",
@@ -315,14 +345,31 @@
     "deleteAccountButton": "Konto permanent löschen",
     "deleteConfirm1": "Bist du dir absolut sicher? Diese Aktion kann NICHT rückgängig gemacht werden!",
     "deleteConfirm2": "Letzte Warnung: ALLE deine Daten werden permanent gelöscht. Möchtest du wirklich fortfahren?",
-    "deleteSuccess": "Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet."
+    "deleteSuccess": "Dein Konto wurde erfolgreich gelöscht. Du wirst jetzt abgemeldet.",
+    "screenTimeTitle": "Bildschirmzeit & Wohlbefinden",
+    "screenTimeEnabled": "Bildschirmzeit-Monitoring aktivieren",
+    "screenTimeDailyLimit": "Tägliches Nutzungslimit",
+    "screenTimeReminderEnabled": "Pause-Erinnerung aktivieren",
+    "screenTimeReminderInterval": "Pause-Erinnerung alle",
+    "screenTimeMinutes": "Minuten",
+    "screenTimeInfo": "Wenn du dein tägliches Limit erreichst, erhältst du eine freundliche Erinnerung. Die Pause-Erinnerung erscheint regelmäßig während der Nutzung, damit du bewusst Pausen machst.",
+    "dataExportTitle": "Datenexport (DSGVO Art. 20)",
+    "dataExportDesc": "Lade alle deine gespeicherten Daten als JSON-Datei herunter. Dies umfasst dein Profil, Posts, Freundschaften, Gruppen und Einstellungen.",
+    "dataExportButton": "Meine Daten exportieren",
+    "dataExporting": "Exportiere..."
   },
   "hashtags": {
     "title": "Trending Hashtags",
     "subtitle": "Entdecke beliebte Themen",
     "postsCount": "{{count}} Posts",
     "noHashtags": "Keine Trending Hashtags",
-    "viewPosts": "Posts ansehen"
+    "viewPosts": "Posts ansehen",
+    "trendingInfo": "Die beliebtesten Hashtags basierend auf der Anzahl der Posts im gewählten Zeitraum.",
+    "timeRange": "Zeitraum",
+    "last6Hours": "Letzte 6 Stunden",
+    "last24Hours": "Letzte 24 Stunden",
+    "enterHint": "Drücke Enter um nach Hashtags zu suchen",
+    "searchResults": "Suchergebnisse"
   },
   "admin": {
     "title": "Admin-Panel",
@@ -406,7 +453,29 @@
     "commentLiked": "{{username}} hat deinen Kommentar geliked",
     "newNotification": "Neue Benachrichtigung",
     "groupPost": "{{username}} hat in der Gruppe {{group}} gepostet",
-    "birthday": "🎂 {{username}} hat heute Geburtstag und ist jetzt {{age}} Jahre alt!"
+    "birthday": "🎂 {{username}} hat heute Geburtstag und ist jetzt {{age}} Jahre alt!",
+    "groupJoinRequest": "👥 {{username}} möchte der Gruppe \"{{groupName}}\" beitreten"
+  },
+  "screenTime": {
+    "breakTitle": "Zeit für eine Pause!",
+    "breakMessage": "Du bist schon eine Weile online. Wie wäre es mit einer kurzen Pause?",
+    "breakTip1": "Steh auf und strecke dich",
+    "breakTip2": "Trink ein Glas Wasser",
+    "breakTip3": "Schau kurz aus dem Fenster",
+    "dismissBreak": "Verstanden, danke!",
+    "limitTitle": "Tageslimit erreicht",
+    "limitMessage": "Du hast dein tägliches Nutzungslimit von {{minutes}} Minuten erreicht.",
+    "limitHint": "Du kannst dein Limit in den Einstellungen anpassen.",
+    "dismissLimit": "OK, verstanden",
+    "goToSettings": "Einstellungen öffnen"
+  },
+  "cookie": {
+    "title": "Cookie-Hinweis",
+    "message": "Diese Website verwendet ausschließlich technisch notwendige Cookies für die Authentifizierung (Login-Session). Es werden keine Tracking-, Analyse- oder Werbe-Cookies eingesetzt.",
+    "essential": "auth_token: JWT-Token für die Login-Session (Gültigkeit: 24 Stunden)",
+    "noTracking": "Wir verwenden keinerlei Tracking oder Analytics.",
+    "accept": "Verstanden",
+    "moreInfo": "Datenschutzerklärung"
   },
   "groups": {
     "title": "Gruppen",
@@ -443,6 +512,7 @@
     "pendingRequests": "Offene Anfragen",
     "noPendingRequests": "Keine offenen Anfragen",
     "approve": "Genehmigen",
-    "reject": "Ablehnen"
+    "reject": "Ablehnen",
+    "changeProfilePicture": "Profilbild ändern"
   }
 }

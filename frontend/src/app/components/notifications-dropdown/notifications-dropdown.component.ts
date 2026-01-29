@@ -301,7 +301,9 @@ export class NotificationsDropdownComponent implements OnInit {
     this.closeDropdown();
 
     // Navigate based on notification type
-    if (notification.post_id && notification.post_author_uid) {
+    if (notification.type === 'group_join_request' && notification.group_id) {
+      this.router.navigate(['/groups', notification.group_id]);
+    } else if (notification.post_id && notification.post_author_uid) {
       this.router.navigate(['/my-posts'], {
         queryParams: { highlight: notification.post_id }
       });
@@ -341,6 +343,8 @@ export class NotificationsDropdownComponent implements OnInit {
         return this.i18n.t('notifications.postCommented', { username });
       case 'comment_liked':
         return this.i18n.t('notifications.commentLiked', { username });
+      case 'group_join_request':
+        return this.i18n.t('notifications.groupJoinRequest', { username, groupName: notification.group_name || '' });
       case 'birthday':
         return this.i18n.t('notifications.birthday', { username, age: notification.comment_id?.toString() || '?' });
       default:

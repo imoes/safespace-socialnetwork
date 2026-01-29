@@ -112,6 +112,10 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   autoRefreshInterval: any = null;
 
   // Site Settings
+  siteSettingsForm = {
+    site_url: ''
+  };
+  siteSettingsLoaded = false;
   siteTitle = signal('SocialNet');
   siteTitleForm = '';
 
@@ -320,6 +324,9 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       this.stopAutoRefresh();
     }
 
+    if (tab === 'settings' && !this.siteSettingsLoaded) {
+      this.loadSiteSettings();
+    }
     if (tab === 'email-templates') {
       this.loadEmailTemplates();
     }
@@ -480,12 +487,15 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       const response: any = await this.http.get('/api/admin/site-settings', { headers }).toPromise();
+      this.siteSettingsForm.site_url = response.site_url || '';
       if (response?.site_title) {
         this.siteTitle.set(response.site_title);
         this.siteTitleForm = response.site_title;
       }
+      this.siteSettingsLoaded = true;
     } catch (err) {
       console.error('Error loading site settings:', err);
+      this.error.set('Fehler beim Laden der Einstellungen');
     }
   }
 
@@ -508,6 +518,31 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       this.success.set('Seitentitel erfolgreich gespeichert!');
     } catch (err) {
       this.error.set('Fehler beim Speichern des Titels');
+      console.error(err);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async saveSiteSettings(): Promise<void> {
+    if (!this.siteSettingsForm.site_url.trim()) {
+      this.error.set('Site-URL ist erforderlich');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response: any = await this.http.put('/api/admin/site-settings', this.siteSettingsForm, { headers }).toPromise();
+      this.siteSettingsForm.site_url = response.site_url;
+      this.success.set('Einstellungen gespeichert!');
+    } catch (err) {
+      this.error.set('Fehler beim Speichern der Einstellungen');
       console.error(err);
     } finally {
       this.loading.set(false);

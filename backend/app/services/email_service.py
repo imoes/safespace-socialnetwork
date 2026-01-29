@@ -5,6 +5,7 @@ from typing import Optional
 from datetime import datetime
 
 from app.config import settings
+from app.db.site_settings import get_site_url
 
 
 class EmailService:
@@ -90,32 +91,26 @@ class EmailService:
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
         birthday_age: Optional[int] = None,
-        user_language: str = "de"
+        user_language: str = "de",
+        group_id: Optional[int] = None,
+        group_name: Optional[str] = None
     ) -> bool:
         """
         Sendet eine Benachrichtigungs-E-Mail.
         Verwendet gespeicherte Templates falls vorhanden, sonst Standard-Templates.
         """
-        # Versuche gespeichertes Template zu laden
-        template = None
+        # Site URL aus Einstellungen laden
         try:
-            from app.db.email_templates import get_template
-            template = await get_template(notification_type, user_language)
-            if not template:
-                template = await get_template(notification_type, "de")
+            site_url = await get_site_url()
         except Exception:
-            pass
+            site_url = "http://localhost:4200"
 
-        if template:
-            subject, html_content, text_content = cls._build_from_template(
-                template, to_username, actor_username,
-                post_id, post_content, comment_content, birthday_age
-            )
-        else:
-            subject, html_content, text_content = cls._build_notification_email(
-                to_username, actor_username, notification_type, post_id,
-                comment_id, post_content, comment_content, birthday_age
-            )
+        # Betreff und Nachricht basierend auf Typ
+        subject, html_content, text_content = cls._build_notification_email(
+            to_username, actor_username, notification_type, post_id, comment_id, site_url,
+            post_content=post_content, comment_content=comment_content, birthday_age=birthday_age,
+            group_id=group_id, group_name=group_name
+        )
 
         return await cls.send_email(
             to_email=to_email,
@@ -133,13 +128,14 @@ class EmailService:
         post_id: Optional[int],
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
-        birthday_age: Optional[int] = None
+        birthday_age: Optional[int] = None,
+        site_url: str = "http://localhost:4200"
     ) -> tuple[str, str, str]:
         """Erstellt E-Mail aus gespeichertem Template mit Platzhalter-Ersetzung."""
         import html as html_module
         import re
 
-        post_link = f"http://localhost:3000/my-posts?highlight={post_id}" if post_id else ""
+        post_link = f"{site_url}/my-posts?highlight={post_id}" if post_id else ""
 
         # Post-Inhalt Block
         post_content_html = ""
@@ -194,9 +190,12 @@ class EmailService:
         notification_type: str,
         post_id: Optional[int],
         comment_id: Optional[int],
+        site_url: str = "http://localhost:4200",
         post_content: Optional[str] = None,
         comment_content: Optional[str] = None,
-        birthday_age: Optional[int] = None
+        birthday_age: Optional[int] = None,
+        group_id: Optional[int] = None,
+        group_name: Optional[str] = None
     ) -> tuple[str, str, str]:
         """
         Erstellt Betreff und Inhalt für Benachrichtigungs-E-Mails.
@@ -204,7 +203,8 @@ class EmailService:
         Returns:
             (subject, html_content, text_content)
         """
-        post_link = f"http://localhost:3000/my-posts?highlight={post_id}" if post_id else ""
+        # Post-Link (wenn verfügbar) - verwendet konfigurierte Site-URL
+        post_link = f"{site_url}/my-posts?highlight={post_id}" if post_id else ""
 
         # Post-Inhalt HTML-Block (wird bei post_liked, post_commented, comment_liked verwendet)
         post_content_html = ""
@@ -318,6 +318,31 @@ Dein SocialNet Team
                 <p><strong>{actor_username}</strong> hat heute Geburtstag!</p>
                 {age_html}
                 <p>Gratuliere jetzt auf SocialNet!</p>"""
+            )
+
+        elif notification_type == "group_join_request":
+            group_link = f"{site_url}/groups/{group_id}" if group_id else ""
+            group_display_name = group_name or "einer Gruppe"
+            subject = f"👥 {actor_username} möchte deiner Gruppe beitreten!"
+            text = f"""
+Hallo {to_username},
+
+{actor_username} möchte der Gruppe "{group_display_name}" beitreten.
+
+Bitte überprüfe die Anfrage und entscheide, ob du sie annehmen oder ablehnen möchtest.
+
+{f"Gruppe ansehen: {group_link}" if group_link else ""}
+
+Viele Grüße,
+Dein SocialNet Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "👥 Neue Beitrittsanfrage",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p><strong>{actor_username}</strong> möchte der Gruppe <strong>"{group_display_name}"</strong> beitreten.</p>
+                <p>Bitte überprüfe die Anfrage und entscheide, ob du sie annehmen oder ablehnen möchtest.</p>
+                {"<a href='" + group_link + "' class='button'>Anfrage überprüfen</a>" if group_link else ""}"""
             )
 
         else:

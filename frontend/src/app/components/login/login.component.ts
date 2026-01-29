@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -13,7 +14,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   template: `
     <div class="login-container">
       <div class="login-card">
-        <h1>SocialNet</h1>
+        <h1>{{ siteTitle() }}</h1>
         <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         <form (ngSubmit)="login()">
@@ -21,6 +22,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           <input type="password" [(ngModel)]="password" name="password" [placeholder]="'login.password' | translate" required />
           <button type="submit" [disabled]="isLoading">{{ isLoading ? '...' : ('login.loginButton' | translate) }}</button>
         </form>
+        <p class="forgot-password"><a routerLink="/forgot-password">{{ 'login.forgotPassword' | translate }}</a></p>
         <p class="link">{{ 'login.noAccount' | translate }} <a routerLink="/register">{{ 'login.register' | translate }}</a></p>
       </div>
     </div>
@@ -36,7 +38,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     input:focus { outline: none; border-color: #1877f2; }
     button { padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     button:disabled { background: #ccc; }
-    .link { text-align: center; margin-top: 20px; }
+    .forgot-password { text-align: center; margin-top: 16px; font-size: 13px; }
+    .forgot-password a { color: #1877f2; text-decoration: none; }
+    .forgot-password a:hover { text-decoration: underline; }
+    .link { text-align: center; margin-top: 12px; }
     .link a { color: #1877f2; text-decoration: none; }
 
     @media (max-width: 1024px) {
@@ -45,14 +50,23 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     }
   `]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
   private i18n = inject(I18nService);
+  siteTitle = signal('SocialNet');
   username = '';
   password = '';
   error = '';
   isLoading = false;
+
+  ngOnInit(): void {
+    this.http.get<{ site_title: string }>('/api/site-settings/title').subscribe({
+      next: (res) => { if (res.site_title) this.siteTitle.set(res.site_title); },
+      error: () => {}
+    });
+  }
 
   login(): void {
     this.isLoading = true;
