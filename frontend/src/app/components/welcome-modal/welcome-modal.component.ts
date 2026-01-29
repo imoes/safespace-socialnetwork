@@ -2,6 +2,7 @@ import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 interface WelcomeMessage {
   id: number;
@@ -25,12 +26,11 @@ export class WelcomeModalComponent {
   message = signal<WelcomeMessage | null>(null);
 
   constructor() {
-    // Reagiert auf Login/Register — prüft Welcome-Message sobald User authentifiziert ist
     effect(() => {
       if (this.authService.isAuthenticated()) {
         this.checkWelcomeMessage();
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   private async checkWelcomeMessage(): Promise<void> {
@@ -39,7 +39,9 @@ export class WelcomeModalComponent {
       if (!token) return;
 
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      const response: any = await this.http.get('/api/welcome/message', { headers }).toPromise();
+      const response: any = await firstValueFrom(
+        this.http.get('/api/welcome/message', { headers })
+      );
 
       if (response.should_show && response.message) {
         this.message.set(response.message);
@@ -54,7 +56,9 @@ export class WelcomeModalComponent {
     try {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      await this.http.post('/api/welcome/message/seen', {}, { headers }).toPromise();
+      await firstValueFrom(
+        this.http.post('/api/welcome/message/seen', {}, { headers })
+      );
     } catch (err) {
       console.error('Error marking message as seen:', err);
     }
