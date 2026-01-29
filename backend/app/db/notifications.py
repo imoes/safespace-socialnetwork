@@ -53,9 +53,11 @@ async def create_notification(
     - 'group_post': Jemand hat in deiner Gruppe gepostet
     - 'group_join_request': Jemand möchte deiner Gruppe beitreten
     - 'birthday': Ein Freund hat heute Geburtstag
+    - 'welcome': Willkommens-Benachrichtigung für neue User
     """
     # Erstelle keine Benachrichtigung wenn User sich selbst liked/kommentiert
-    if user_uid == actor_uid:
+    # (Ausnahme: welcome-Benachrichtigung)
+    if user_uid == actor_uid and notification_type != "welcome":
         return None
 
     async with PostgresDB.connection() as conn:
