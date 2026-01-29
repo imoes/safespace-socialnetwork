@@ -12,6 +12,7 @@ from app.services.auth_service import (
 )
 from app.config import settings
 from app.db.postgres import get_user_by_username, get_user_by_email, PostgresDB
+from app.db.notifications import create_notification
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -53,6 +54,13 @@ async def register(user_data: UserCreate):
             (datetime.utcnow(), user["uid"])
         )
         await conn.commit()
+
+    # Willkommens-Benachrichtigung erstellen
+    await create_notification(
+        user_uid=user["uid"],
+        actor_uid=user["uid"],
+        notification_type="welcome"
+    )
 
     # JWT Token erstellen (wie beim Login)
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
