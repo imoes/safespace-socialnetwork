@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,6 +10,8 @@ import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
 import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-post-card',
@@ -134,9 +136,29 @@ import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
       @if (showComments) {
         <div class="comments-section">
           <div class="comment-input">
-            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" autoEmoji />
+            <input type="text" [(ngModel)]="newComment" [placeholder]="'post.commentPlaceholder' | translate" (keyup.enter)="addComment()" (input)="onCommentInput()" autoEmoji />
             <button class="btn-submit-comment" (click)="addComment()" [disabled]="!newComment.trim()">{{ 'post.send' | translate }}</button>
           </div>
+          @if (commentLinkPreviews.length > 0) {
+            <div class="comment-link-previews">
+              @for (preview of commentLinkPreviews; track preview.url) {
+                <a [href]="preview.url" target="_blank" rel="noopener noreferrer" class="link-preview-card comment-preview-card">
+                  @if (preview.image) {
+                    <div class="link-preview-image comment-preview-image">
+                      <img [src]="preview.image" [alt]="preview.title" (error)="onPreviewImageError($event)" />
+                    </div>
+                  }
+                  <div class="link-preview-info">
+                    <span class="link-preview-site">{{ preview.site_name || preview.domain }}</span>
+                    <span class="link-preview-title">{{ preview.title }}</span>
+                    @if (preview.description) {
+                      <span class="link-preview-desc">{{ preview.description }}</span>
+                    }
+                  </div>
+                </a>
+              }
+            </div>
+          }
 
           @if (loadingComments) {
             <div class="loading">{{ 'post.loadingComments' | translate }}</div>
@@ -324,6 +346,9 @@ import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
     .link-preview-site { font-size: 12px; color: #65676b; text-transform: uppercase; letter-spacing: 0.5px; }
     .link-preview-title { font-size: 15px; font-weight: 600; color: #050505; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .link-preview-desc { font-size: 13px; color: #65676b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .comment-link-previews { padding: 8px 0; }
+    .comment-preview-card { margin-bottom: 8px; }
+    .comment-preview-image { max-height: 150px; }
     .post-content.translation { background: #f0f8ff; border-left: 3px solid #1877f2; padding: 12px 16px; margin: 0 16px 12px; border-radius: 6px; }
     .translation-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: #65676b; }
     .translation-badge { font-size: 14px; }
@@ -445,7 +470,7 @@ import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
     }
   `]
 })
-export class PostCardComponent implements OnChanges, OnInit {
+export class PostCardComponent implements OnChanges, OnInit, OnDestroy {
   @Input() post!: Post;
   @Input() currentUid?: number;
   @Input() expandComments: boolean = false;
@@ -483,6 +508,12 @@ export class PostCardComponent implements OnChanges, OnInit {
   translating = false;
   translatedContent: TranslationResult | null = null;
 
+  // Comment link previews
+  commentLinkPreviews: LinkPreview[] = [];
+  private commentInput$ = new Subject<string>();
+  private commentPreviewUrls = new Set<string>();
+  private destroy$ = new Subject<void>();
+
   // Guardian Modal für Kommentare
   showGuardianModal = false;
   guardianResult: any = null;
@@ -490,8 +521,21 @@ export class PostCardComponent implements OnChanges, OnInit {
   originalCommentContent = '';
   isSubmittingComment = false;
 
+  constructor() {
+    this.commentInput$.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(text => this.detectCommentLinkPreviews(text));
+  }
+
   ngOnInit(): void {
     this.loadLinkPreviews();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.commentInput$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -733,6 +777,8 @@ export class PostCardComponent implements OnChanges, OnInit {
         this.comments.push(comment);
         this.post.comments_count++;
         this.newComment = '';
+        this.commentLinkPreviews = [];
+        this.commentPreviewUrls.clear();
       },
       error: (error) => {
         const errorDetail = error.error?.detail || error.error;
@@ -766,6 +812,37 @@ export class PostCardComponent implements OnChanges, OnInit {
           comment.likes_count++;
         },
         error: () => alert(this.i18n.t('errors.commentLike'))
+      });
+    }
+  }
+
+  onCommentInput(): void {
+    this.commentInput$.next(this.newComment);
+  }
+
+  private detectCommentLinkPreviews(text: string): void {
+    const urls = this.extractUrls(text);
+    if (urls.length === 0) {
+      this.commentLinkPreviews = [];
+      this.commentPreviewUrls.clear();
+      return;
+    }
+
+    const currentUrls = new Set(urls);
+    this.commentLinkPreviews = this.commentLinkPreviews.filter(p => currentUrls.has(p.url));
+    for (const u of [...this.commentPreviewUrls]) {
+      if (!currentUrls.has(u)) this.commentPreviewUrls.delete(u);
+    }
+
+    for (const url of urls.slice(0, 3)) {
+      if (this.commentPreviewUrls.has(url)) continue;
+      this.commentPreviewUrls.add(url);
+      this.linkPreviewService.getPreview(url).subscribe({
+        next: (preview) => {
+          if (preview && (preview.title || preview.description)) {
+            this.commentLinkPreviews = [...this.commentLinkPreviews, preview];
+          }
+        }
       });
     }
   }
