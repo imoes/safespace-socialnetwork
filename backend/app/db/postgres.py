@@ -261,8 +261,27 @@ class PostgresDB:
                 ON group_posts(group_id, created_at DESC)
             """)
 
-            # Notifications table (created in notifications.py, but migration here)
-            # Migration: add group_id column for group-related notifications
+            # Notifications table
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS notifications (
+                    notification_id SERIAL PRIMARY KEY,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    actor_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    type VARCHAR(50) NOT NULL,
+                    post_id INTEGER,
+                    post_author_uid INTEGER,
+                    comment_id INTEGER,
+                    group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
+                    is_read BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_notifications_user
+                ON notifications(user_uid, is_read, created_at DESC)
+            """)
+
+            # Migration: add group_id column for existing databases without it
             await conn.execute("""
                 ALTER TABLE notifications
                 ADD COLUMN IF NOT EXISTS group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE
