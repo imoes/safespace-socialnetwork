@@ -29,7 +29,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         localStorage.removeItem('access_token');
-        router.navigate(['/login']);
+        // Only redirect to login if not already on a public page
+        const currentUrl = router.url;
+        const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/terms', '/privacy-policy'];
+        const isPublicPage = publicPaths.some(p => currentUrl.startsWith(p));
+        if (!isPublicPage) {
+          router.navigate(['/login']);
+        }
       }
       return throwError(() => error);
     })
