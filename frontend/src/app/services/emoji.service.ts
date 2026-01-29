@@ -135,6 +135,11 @@ export class EmojiService {
       if (start >= 0) {
         const substring = text.substring(start, cursorPosition);
         if (substring === pattern) {
+          // Don't convert emoticons that are part of a URL (e.g. http:// or https://)
+          const textBefore = text.substring(0, start);
+          if (/https?$/.test(textBefore)) {
+            continue;
+          }
           return {
             start,
             end: cursorPosition,
