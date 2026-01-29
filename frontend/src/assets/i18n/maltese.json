@@ -454,7 +454,8 @@
     "newNotification": "Notifika ġdida",
     "groupPost": "{{username}} ippubblika fil-grupp {{group}}",
     "birthday": "🎂 {{username}} għandu/ha l-għeluq snin illum u issa għandu/ha {{age}} sena!",
-    "groupJoinRequest": "👥 {{username}} irid/trid jingħaqad/tingħaqad mal-grupp \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} irid/trid jingħaqad/tingħaqad mal-grupp \"{{groupName}}\"",
+    "welcome": "Merħba f'SafeSpace! Ferħanin li inti hawn."
   },
   "screenTime": {
     "breakTitle": "Wasal il-Ħin għal Waqfa!",

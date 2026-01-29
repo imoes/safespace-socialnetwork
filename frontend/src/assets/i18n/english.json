@@ -454,7 +454,8 @@
     "newNotification": "New notification",
     "groupPost": "{{username}} posted in group {{group}}",
     "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
-    "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\"",
+    "welcome": "Welcome to SafeSpace! We're glad you're here."
   },
   "screenTime": {
     "breakTitle": "Time for a Break!",

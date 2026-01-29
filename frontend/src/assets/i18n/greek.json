@@ -454,7 +454,8 @@
     "newNotification": "Νέα ειδοποίηση",
     "groupPost": "Ο/Η {{username}} δημοσίευσε στην ομάδα {{group}}",
     "birthday": "🎂 Ο/Η {{username}} έχει γενέθλια σήμερα και γίνεται {{age}} ετών!",
-    "groupJoinRequest": "👥 Ο/Η {{username}} θέλει να συμμετάσχει στην ομάδα \"{{groupName}}\""
+    "groupJoinRequest": "👥 Ο/Η {{username}} θέλει να συμμετάσχει στην ομάδα \"{{groupName}}\"",
+    "welcome": "Καλώς ήρθατε στο SafeSpace! Χαιρόμαστε που είστε εδώ."
   },
   "screenTime": {
     "breakTitle": "Ώρα για Διάλειμμα!",

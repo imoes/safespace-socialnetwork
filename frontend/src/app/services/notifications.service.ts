@@ -144,6 +144,8 @@ export class NotificationsService {
         return this.i18n.t('notifications.birthday')
           .replace('{{username}}', notification.actor_username)
           .replace('{{age}}', notification.comment_id?.toString() || '?');
+      case 'welcome':
+        return this.i18n.t('notifications.welcome');
       default:
         return this.i18n.t('notifications.newNotification');
     }
