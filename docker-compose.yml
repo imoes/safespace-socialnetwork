@@ -240,8 +240,8 @@ services:
     image: certbot/certbot
     container_name: socialnet-certbot
     volumes:
-      - certbot_www:/var/www/certbot
-      - certbot_certs:/etc/letsencrypt
+      - /mnt/data/certbot_www:/var/www/certbot
+      - /mnt/data/certbot_certs:/etc/letsencrypt
     # Zertifikat initial erstellen:
     #   docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
     #     -d thesafespace.blog -d www.thesafespace.blog \
@@ -263,14 +263,14 @@ services:
       - kafka
 
 volumes:
-  postgres_data:
+#  postgres_data:
   redis_data:
-  opensearch_data:
+#  opensearch_data:
   kafka_data:
   zookeeper_data:
   zookeeper_log:
-  minio_data:
-  user_data:
-  group_data:
-  certbot_www:
-  certbot_certs:
+#  minio_data:
+#  user_data:
+#  group_data:
+#  certbot_www:
+#  certbot_certs:
