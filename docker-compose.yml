@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: socialnet
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /mnt/data/postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -50,7 +50,7 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - opensearch_data:/usr/share/opensearch/data
+      - /mnt/data/opensearch_data:/usr/share/opensearch/data
     ports:
       - "9200:9200"
       - "9600:9600"
@@ -106,7 +106,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
     volumes:
-      - minio_data:/data
+      - /mnt/data/minio_data:/data
     ports:
       - "9000:9000"   # API
       - "9001:9001"   # Console
@@ -157,8 +157,8 @@ services:
       SMTP_FROM_NAME: ${SMTP_FROM_NAME:-SocialNet}
       SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
     volumes:
-      - user_data:/data/users
-      - group_data:/data/groups
+      - /mnt/data/backend/user_data:/data/users
+      - /mnt/data/backend/group_data:/data/groups
       - ./backend/app:/app/app:ro
     ports:
       - "8000:8000"
@@ -225,8 +225,8 @@ services:
       - "993:993"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - certbot_www:/var/www/certbot:ro
-      - certbot_certs:/etc/letsencrypt:ro
+      - /mnt/data/certbot_www:/var/www/certbot:ro
+      - /mnt/data/certbot_certs:/etc/letsencrypt:ro
     depends_on:
       - frontend
       - backend
