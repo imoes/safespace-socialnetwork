@@ -454,7 +454,8 @@
     "newNotification": "Notificare nouă",
     "groupPost": "{{username}} a postat în grupul {{group}}",
     "birthday": "🎂 {{username}} are ziua de naștere astăzi și a împlinit {{age}} ani!",
-    "groupJoinRequest": "👥 {{username}} dorește să se alăture grupului \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} dorește să se alăture grupului \"{{groupName}}\"",
+    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici."
   },
   "screenTime": {
     "breakTitle": "E timpul pentru o pauză!",

@@ -398,7 +398,8 @@
     "newNotification": "Nouvelle notification",
     "groupPost": "{{username}} a publié dans le groupe {{group}}",
     "birthday": "🎂 {{username}} fête son anniversaire aujourd'hui et a maintenant {{age}} ans !",
-    "groupJoinRequest": "👥 {{username}} souhaite rejoindre le groupe \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} souhaite rejoindre le groupe \"{{groupName}}\"",
+    "welcome": "Bienvenue sur SafeSpace ! Nous sommes ravis de vous accueillir."
   },
   "groups": {
     "title": "Groupes",

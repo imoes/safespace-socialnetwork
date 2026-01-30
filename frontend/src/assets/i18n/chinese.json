@@ -454,7 +454,8 @@
     "newNotification": "新通知",
     "groupPost": "{{username}} 在群组 {{group}} 中发布了帖子",
     "birthday": "🎂 {{username}} 今天过生日，{{age}} 岁了！",
-    "groupJoinRequest": "👥 {{username}} 申请加入群组「{{groupName}}」"
+    "groupJoinRequest": "👥 {{username}} 申请加入群组「{{groupName}}」",
+    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。"
   },
   "screenTime": {
     "breakTitle": "该休息一下了！",

@@ -454,7 +454,8 @@
     "newNotification": "Nové oznámení",
     "groupPost": "{{username}} přidal(a) příspěvek ve skupině {{group}}",
     "birthday": "🎂 {{username}} má dnes narozeniny a je mu/jí {{age}} let!",
-    "groupJoinRequest": "👥 {{username}} chce vstoupit do skupiny \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} chce vstoupit do skupiny \"{{groupName}}\"",
+    "welcome": "Vítejte v SafeSpace! Jsme rádi, že jste tady."
   },
   "screenTime": {
     "breakTitle": "Čas na přestávku!",
