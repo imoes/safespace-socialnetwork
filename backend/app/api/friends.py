@@ -175,7 +175,7 @@ async def update_relationship(
     current_user: dict = Depends(get_current_user)
 ):
     """Setzt den Beziehungstyp zu einem Freund"""
-    if request.relationship not in ("family", "close_friend", "acquaintance"):
+    if request.relationship not in ("family", "close_friend", "friend", "acquaintance"):
         raise HTTPException(status_code=400, detail="Invalid relationship type")
     
     # Prüfen ob Freundschaft existiert
