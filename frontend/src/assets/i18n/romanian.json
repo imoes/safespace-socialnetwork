@@ -69,7 +69,11 @@
     "currentVisibility": "Vizibilitate curentă:",
     "disputePrompt": "Te rugăm să explici obiecția ta:",
     "disputeSuccess": "Obiecția ta a fost transmisă moderatorilor. Vei primi un răspuns în 48 de ore.",
-    "sendComment": "Trimite comentariu"
+    "sendComment": "Trimite comentariu",
+    "share": "Distribuie",
+    "shareWith": "Distribuie către...",
+    "noFriendsToShare": "Niciun prieten cu care să distribui",
+    "shareSuccess": "Post distribuit către {{username}}!"
   },
   "visibility": {
     "public": "Public",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Eroare la trimiterea obiecției.",
     "disputeSuccess": "Obiecția ta a fost transmisă pentru examinare de către un moderator.",
     "sendComment": "Eroare la trimiterea comentariului",
-    "dataExport": "Eroare la exportul datelor"
+    "dataExport": "Eroare la exportul datelor",
+    "sharePost": "Eroare la distribuirea postării"
   },
   "myPosts": {
     "title": "Postările mele",
@@ -226,7 +231,18 @@
     "roleUser": "Utilizator",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Ziua de naștere"
+    "birthday": "Ziua de naștere",
+    "friends": "Prieteni",
+    "loadingFriends": "Se încarcă prietenii...",
+    "noFriends": "Încă nu are prieteni",
+    "friendsCount": "Prieteni",
+    "showAllFriends": "Arată toți prietenii"
+  },
+  "friendsList": {
+    "back": "Înapoi",
+    "title": "Prieteni",
+    "accessDenied": "Acces interzis",
+    "accessDeniedHint": "Poți vedea doar lista de prieteni a propriilor tăi prieteni."
   },
   "login": {
     "title": "Autentificare",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Comentariu apreciat",
     "notifBirthday": "Zile de naștere",
     "notifGroupPost": "Postări în grup",
+    "notifFriendRequest": "Cereri de prietenie",
+    "notifFriendRequestAccepted": "Cereri de prietenie acceptate",
     "passwordSection": "Schimbă parola",
     "currentPassword": "Parola curentă",
     "currentPasswordPlaceholder": "Completează doar dacă dorești să schimbi parola",
@@ -479,7 +497,10 @@
     "groupPost": "{{username}} a postat în grupul {{group}}",
     "birthday": "🎂 {{username}} are ziua de naștere astăzi și a împlinit {{age}} ani!",
     "groupJoinRequest": "👥 {{username}} dorește să se alăture grupului \"{{groupName}}\"",
-    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici."
+    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici.",
+    "friendRequest": "👋 {{username}} ți-a trimis o cerere de prietenie",
+    "friendRequestAccepted": "🎉 {{username}} ți-a acceptat cererea de prietenie",
+    "postShared": "📨 {{username}} a distribuit o postare cu tine"
   },
   "screenTime": {
     "breakTitle": "E timpul pentru o pauză!",

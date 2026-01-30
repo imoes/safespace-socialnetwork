@@ -69,7 +69,11 @@
     "currentVisibility": "Infheictheacht reatha:",
     "disputePrompt": "Mínigh do chur i gcoinne le do thoil:",
     "disputeSuccess": "Cuireadh do chur i gcoinne ar aghaidh chuig na modhnóirí. Gheobhaidh tú freagra laistigh de 48 uair an chloig.",
-    "sendComment": "Seol trácht"
+    "sendComment": "Seol trácht",
+    "share": "Roinn",
+    "shareWith": "Roinn le...",
+    "noFriendsToShare": "Níl aon chairde le roinnt leo",
+    "shareSuccess": "Postáil roinnte le {{username}}!"
   },
   "visibility": {
     "public": "Poiblí",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Earráid ag cur isteach agóide.",
     "disputeSuccess": "Cuireadh d'agóid ar aghaidh le hathbhreithniú ag modhnóir.",
     "sendComment": "Earráid ag seoladh tráchta",
-    "dataExport": "Earráid ag easpórtáil sonraí"
+    "dataExport": "Earráid ag easpórtáil sonraí",
+    "sharePost": "Theip ar an bpostáil a roinnt"
   },
   "myPosts": {
     "title": "Mo Phostanna",
@@ -226,7 +231,18 @@
     "roleUser": "Úsáideoir",
     "roleModerator": "Modhnóir",
     "roleAdmin": "Riarthóir",
-    "birthday": "Lá Breithe"
+    "birthday": "Lá Breithe",
+    "friends": "Cairde",
+    "loadingFriends": "Cairde á lódáil...",
+    "noFriends": "Níl aon chairde fós",
+    "friendsCount": "Cairde",
+    "showAllFriends": "Taispeáin gach cara"
+  },
+  "friendsList": {
+    "back": "Ar ais",
+    "title": "Cairde",
+    "accessDenied": "Rochtain diúltaithe",
+    "accessDeniedHint": "Ní féidir leat ach liosta cairde do chairde féin a fheiceáil."
   },
   "login": {
     "title": "Logáil Isteach",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Taitin le trácht",
     "notifBirthday": "Laethanta Breithe",
     "notifGroupPost": "Postanna grúpa",
+    "notifFriendRequest": "Iarratais chairdis",
+    "notifFriendRequestAccepted": "Iarratais chairdis a glacadh",
     "passwordSection": "Athraigh Pasfhocal",
     "currentPassword": "Pasfhocal Reatha",
     "currentPasswordPlaceholder": "Ná líon isteach ach amháin má tá tú ag iarraidh do phasfhocal a athrú",
@@ -479,7 +497,10 @@
     "groupPost": "Phostáil {{username}} sa ghrúpa {{group}}",
     "birthday": "🎂 Tá lá breithe ag {{username}} inniu agus tá sé/sí {{age}} bliain d'aois anois!",
     "groupJoinRequest": "👥 Ba mhaith le {{username}} dul isteach sa ghrúpa \"{{groupName}}\"",
-    "welcome": "Fáilte go SafeSpace! Tá áthas orainn go bhfuil tú anseo."
+    "welcome": "Fáilte go SafeSpace! Tá áthas orainn go bhfuil tú anseo.",
+    "friendRequest": "👋 Sheol {{username}} iarratas cairdis chugat",
+    "friendRequestAccepted": "🎉 Ghlac {{username}} le d'iarratas cairdis",
+    "postShared": "📨 Roinn {{username}} postáil leat"
   },
   "screenTime": {
     "breakTitle": "Am do Shos!",

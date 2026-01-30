@@ -69,7 +69,11 @@
     "currentVisibility": "Praegune nähtavus:",
     "disputePrompt": "Palun selgita oma vastuväidet:",
     "disputeSuccess": "Sinu vastuväide on edastatud moderaatoritele. Saad vastuse 48 tunni jooksul.",
-    "sendComment": "Saada kommentaar"
+    "sendComment": "Saada kommentaar",
+    "share": "Jaga",
+    "shareWith": "Jaga...",
+    "noFriendsToShare": "Pole sõpru kellega jagada",
+    "shareSuccess": "Postitus jagatud {{username}}-ga!"
   },
   "visibility": {
     "public": "Avalik",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Viga vastuväite esitamisel.",
     "disputeSuccess": "Sinu vastuväide on edastatud moderaatorile ülevaatamiseks.",
     "sendComment": "Viga kommentaari saatmisel",
-    "dataExport": "Viga andmete eksportimisel"
+    "dataExport": "Viga andmete eksportimisel",
+    "sharePost": "Postituse jagamine ebaõnnestus"
   },
   "myPosts": {
     "title": "Minu postitused",
@@ -226,7 +231,18 @@
     "roleUser": "Kasutaja",
     "roleModerator": "Moderaator",
     "roleAdmin": "Administraator",
-    "birthday": "Sünnipäev"
+    "birthday": "Sünnipäev",
+    "friends": "Sõbrad",
+    "loadingFriends": "Sõprade laadimine...",
+    "noFriends": "Veel pole sõpru",
+    "friendsCount": "Sõpra",
+    "showAllFriends": "Näita kõiki sõpru"
+  },
+  "friendsList": {
+    "back": "Tagasi",
+    "title": "Sõbrad",
+    "accessDenied": "Juurdepääs keelatud",
+    "accessDeniedHint": "Saate vaadata ainult oma sõprade sõprade nimekirja."
   },
   "login": {
     "title": "Sisselogimine",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Kommentaarile meeldib",
     "notifBirthday": "Sünnipäevad",
     "notifGroupPost": "Grupi postitused",
+    "notifFriendRequest": "Sõbrakutsed",
+    "notifFriendRequestAccepted": "Vastuvõetud sõbrakutsed",
     "passwordSection": "Muuda parooli",
     "currentPassword": "Praegune parool",
     "currentPasswordPlaceholder": "Täida ainult siis, kui soovid parooli muuta",
@@ -479,7 +497,10 @@
     "groupPost": "{{username}} postitas grupis {{group}}",
     "birthday": "🎂 {{username}} tähistab täna sünnipäeva ja on nüüd {{age}}-aastane!",
     "groupJoinRequest": "👥 {{username}} soovib liituda grupiga \"{{groupName}}\"",
-    "welcome": "Tere tulemast SafeSpace'i! Meil on hea meel, et oled siin."
+    "welcome": "Tere tulemast SafeSpace'i! Meil on hea meel, et oled siin.",
+    "friendRequest": "👋 {{username}} saatis sulle sõbrakutse",
+    "friendRequestAccepted": "🎉 {{username}} võttis su sõbrakutse vastu",
+    "postShared": "📨 {{username}} jagas sinuga postitust"
   },
   "screenTime": {
     "breakTitle": "Aeg paus teha!",

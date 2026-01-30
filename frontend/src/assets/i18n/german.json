@@ -69,7 +69,11 @@
     "currentVisibility": "Aktuelle Sichtbarkeit:",
     "disputePrompt": "Bitte begründe deinen Widerspruch:",
     "disputeSuccess": "Dein Widerspruch wurde an die Moderatoren weitergeleitet. Du erhältst eine Rückmeldung innerhalb von 48 Stunden.",
-    "sendComment": "Kommentar senden"
+    "sendComment": "Kommentar senden",
+    "share": "Teilen",
+    "shareWith": "Teilen mit...",
+    "noFriendsToShare": "Keine Freunde zum Teilen",
+    "shareSuccess": "Post mit {{username}} geteilt!"
   },
   "visibility": {
     "public": "Öffentlich",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Fehler beim Einreichen des Widerspruchs.",
     "disputeSuccess": "Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.",
     "sendComment": "Fehler beim Senden des Kommentars",
-    "dataExport": "Fehler beim Exportieren der Daten"
+    "dataExport": "Fehler beim Exportieren der Daten",
+    "sharePost": "Post konnte nicht geteilt werden"
   },
   "myPosts": {
     "title": "Meine Posts",
@@ -226,7 +231,18 @@
     "roleUser": "Benutzer",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Geburtstag"
+    "birthday": "Geburtstag",
+    "friends": "Freunde",
+    "loadingFriends": "Freunde werden geladen...",
+    "noFriends": "Noch keine Freunde",
+    "friendsCount": "Freunde",
+    "showAllFriends": "Alle Freunde anzeigen"
+  },
+  "friendsList": {
+    "back": "Zurück",
+    "title": "Freunde",
+    "accessDenied": "Zugriff verweigert",
+    "accessDeniedHint": "Du kannst nur die Freundesliste deiner eigenen Freunde sehen."
   },
   "login": {
     "title": "Anmelden",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Kommentar geliked",
     "notifBirthday": "Geburtstage",
     "notifGroupPost": "Gruppen-Posts",
+    "notifFriendRequest": "Freundschaftsanfragen",
+    "notifFriendRequestAccepted": "Angenommene Freundschaftsanfragen",
     "passwordSection": "Passwort ändern",
     "currentPassword": "Aktuelles Passwort",
     "currentPasswordPlaceholder": "Nur ausfüllen wenn Passwort geändert werden soll",
@@ -555,7 +573,10 @@
     "groupPost": "{{username}} hat in der Gruppe {{group}} gepostet",
     "birthday": "🎂 {{username}} hat heute Geburtstag und ist jetzt {{age}} Jahre alt!",
     "groupJoinRequest": "👥 {{username}} möchte der Gruppe \"{{groupName}}\" beitreten",
-    "welcome": "Willkommen bei SafeSpace! Schön, dass du da bist."
+    "welcome": "Willkommen bei SafeSpace! Schön, dass du da bist.",
+    "friendRequest": "👋 {{username}} hat dir eine Freundschaftsanfrage gesendet",
+    "friendRequestAccepted": "🎉 {{username}} hat deine Freundschaftsanfrage angenommen",
+    "postShared": "📨 {{username}} hat einen Post mit dir geteilt"
   },
   "screenTime": {
     "breakTitle": "Zeit für eine Pause!",

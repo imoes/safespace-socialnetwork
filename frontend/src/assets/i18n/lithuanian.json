@@ -69,7 +69,11 @@
     "currentVisibility": "Dabartinis matomumas:",
     "disputePrompt": "Prašome paaiškinti savo prieštaravimą:",
     "disputeSuccess": "Jūsų prieštaravimas buvo persiųstas moderatoriams. Atsakymą gausite per 48 valandas.",
-    "sendComment": "Siųsti komentarą"
+    "sendComment": "Siųsti komentarą",
+    "share": "Dalintis",
+    "shareWith": "Dalintis su...",
+    "noFriendsToShare": "Nėra draugų su kuriais dalintis",
+    "shareSuccess": "Įrašas pasidalintas su {{username}}!"
   },
   "visibility": {
     "public": "Vieša",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Klaida pateikiant prieštaravimą.",
     "disputeSuccess": "Jūsų prieštaravimas buvo persiųstas moderatoriui peržiūrėti.",
     "sendComment": "Klaida siunčiant komentarą",
-    "dataExport": "Klaida eksportuojant duomenis"
+    "dataExport": "Klaida eksportuojant duomenis",
+    "sharePost": "Nepavyko pasidalinti įrašu"
   },
   "myPosts": {
     "title": "Mano įrašai",
@@ -226,7 +231,18 @@
     "roleUser": "Naudotojas",
     "roleModerator": "Moderatorius",
     "roleAdmin": "Administratorius",
-    "birthday": "Gimtadienis"
+    "birthday": "Gimtadienis",
+    "friends": "Draugai",
+    "loadingFriends": "Įkeliami draugai...",
+    "noFriends": "Dar nėra draugų",
+    "friendsCount": "Draugai",
+    "showAllFriends": "Rodyti visus draugus"
+  },
+  "friendsList": {
+    "back": "Atgal",
+    "title": "Draugai",
+    "accessDenied": "Prieiga uždrausta",
+    "accessDeniedHint": "Galite matyti tik savo draugų draugų sąrašą."
   },
   "login": {
     "title": "Prisijungimas",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Komentaras pamėgtas",
     "notifBirthday": "Gimtadieniai",
     "notifGroupPost": "Grupės įrašai",
+    "notifFriendRequest": "Draugystės užklausos",
+    "notifFriendRequestAccepted": "Priimtos draugystės užklausos",
     "passwordSection": "Keisti slaptažodį",
     "currentPassword": "Dabartinis slaptažodis",
     "currentPasswordPlaceholder": "Užpildykite tik jei norite pakeisti slaptažodį",
@@ -479,7 +497,10 @@
     "groupPost": "{{username}} paskelbė grupėje {{group}}",
     "birthday": "🎂 {{username}} šiandien švenčia gimtadienį ir jam jau {{age}} metų!",
     "groupJoinRequest": "👥 {{username}} nori prisijungti prie grupės \"{{groupName}}\"",
-    "welcome": "Sveiki atvykę į SafeSpace! Džiaugiamės, kad esate čia."
+    "welcome": "Sveiki atvykę į SafeSpace! Džiaugiamės, kad esate čia.",
+    "friendRequest": "👋 {{username}} atsiuntė tau draugystės užklausą",
+    "friendRequestAccepted": "🎉 {{username}} priėmė tavo draugystės užklausą",
+    "postShared": "📨 {{username}} pasidalino su tavimi įrašu"
   },
   "screenTime": {
     "breakTitle": "Laikas pertraukai!",

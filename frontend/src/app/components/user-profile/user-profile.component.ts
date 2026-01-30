@@ -2,7 +2,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { UserService, UserProfile } from '../../services/user.service';
+import { UserService, UserProfile, UserFriend } from '../../services/user.service';
+import { Router } from '@angular/router';
 import { FriendsService } from '../../services/friends.service';
 import { AuthService } from '../../services/auth.service';
 import { PostCardComponent } from '../post-card/post-card.component';
@@ -76,35 +77,71 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           </div>
         }
 
-        <div class="posts-section">
-          <h2 class="posts-title">
-            @if (isOwnProfile) {
-              {{ 'profile.yourPosts' | translate }}
-            } @else {
-              {{ getPostsByLabel() }}
-            }
-          </h2>
-
-          @if (loadingPosts) {
-            <div class="loading-posts">{{ 'profile.loadingPosts' | translate }}</div>
-          } @else if (posts().length === 0) {
-            <div class="no-posts">
-              @if (isOwnProfile) {
-                {{ 'profile.noOwnPosts' | translate }}
-              } @else if (isFriend) {
-                {{ 'profile.noUserPosts' | translate }}
-              } @else {
-                <div class="info-box">
-                  <h3>ℹ️ {{ 'profile.hint' | translate }}</h3>
-                  <p>{{ getNotFriendHint() }}</p>
-                </div>
-              }
-            </div>
-          } @else {
-            @for (post of posts(); track post.post_id) {
-              <app-post-card [post]="post" (like)="onLike(post)" (unlike)="onUnlike(post)" (delete)="onPostDeleted(post)"></app-post-card>
-            }
+        <div class="profile-content-layout">
+          <!-- Freunde Sidebar (nur für Freunde und eigenes Profil sichtbar) -->
+          @if (isOwnProfile || isFriend) {
+            <aside class="friends-sidebar">
+              <div class="friends-sidebar-card">
+                <h3 class="friends-sidebar-title">👥 {{ 'profile.friends' | translate }}</h3>
+                @if (loadingFriends) {
+                  <div class="friends-loading">{{ 'profile.loadingFriends' | translate }}</div>
+                } @else if (userFriends().length === 0) {
+                  <div class="friends-empty">{{ 'profile.noFriends' | translate }}</div>
+                } @else {
+                  <div class="friends-count">{{ userFriends().length }} {{ 'profile.friendsCount' | translate }}</div>
+                  <div class="friends-grid">
+                    @for (friend of userFriends().slice(0, 5); track friend.uid) {
+                      <div class="friend-item" (click)="goToProfile(friend.uid)">
+                        @if (friend.profile_picture) {
+                          <img [src]="friend.profile_picture" [alt]="friend.username" class="friend-avatar friend-avatar-img" />
+                        } @else {
+                          <div class="friend-avatar">{{ friend.username.charAt(0).toUpperCase() }}</div>
+                        }
+                        <span class="friend-name">{{ friend.username }}</span>
+                      </div>
+                    }
+                  </div>
+                  @if (userFriends().length > 5) {
+                    <div class="friends-show-more" (click)="goToFriendsList()">
+                      {{ 'profile.showAllFriends' | translate }}
+                    </div>
+                  }
+                }
+              </div>
+            </aside>
           }
+
+          <!-- Posts -->
+          <div class="posts-section">
+            <h2 class="posts-title">
+              @if (isOwnProfile) {
+                {{ 'profile.yourPosts' | translate }}
+              } @else {
+                {{ getPostsByLabel() }}
+              }
+            </h2>
+
+            @if (loadingPosts) {
+              <div class="loading-posts">{{ 'profile.loadingPosts' | translate }}</div>
+            } @else if (posts().length === 0) {
+              <div class="no-posts">
+                @if (isOwnProfile) {
+                  {{ 'profile.noOwnPosts' | translate }}
+                } @else if (isFriend) {
+                  {{ 'profile.noUserPosts' | translate }}
+                } @else {
+                  <div class="info-box">
+                    <h3>ℹ️ {{ 'profile.hint' | translate }}</h3>
+                    <p>{{ getNotFriendHint() }}</p>
+                  </div>
+                }
+              </div>
+            } @else {
+              @for (post of posts(); track post.post_id) {
+                <app-post-card [post]="post" (like)="onLike(post)" (unlike)="onUnlike(post)" (delete)="onPostDeleted(post)"></app-post-card>
+              }
+            }
+          </div>
         </div>
       } @else if (error) {
         <div class="error-box">
@@ -115,7 +152,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     </div>
   `,
   styles: [`
-    .profile-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .profile-container { max-width: 1100px; margin: 0 auto; padding: 20px; }
     .loading { text-align: center; padding: 40px; color: #65676b; }
 
     .profile-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 32px; margin-bottom: 20px; }
@@ -160,10 +197,36 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .btn-post:hover:not(:disabled) { background: #166fe5; }
     .btn-post:disabled { background: #ccc; cursor: not-allowed; }
 
-    .posts-section { margin-top: 20px; }
+    /* Two-column layout */
+    .profile-content-layout { display: flex; gap: 20px; align-items: flex-start; }
+
+    /* Friends Sidebar */
+    .friends-sidebar { width: 280px; flex-shrink: 0; position: sticky; top: 20px; }
+    .friends-sidebar-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; }
+    .friends-sidebar-title { margin: 0 0 12px; font-size: 18px; font-weight: 700; color: #050505; }
+    .friends-count { font-size: 13px; color: #65676b; margin-bottom: 12px; }
+    .friends-loading, .friends-empty { font-size: 14px; color: #65676b; text-align: center; padding: 16px 0; }
+    .friends-grid { display: flex; flex-direction: column; gap: 4px; }
+    .friend-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+    .friend-item:hover { background: #f0f2f5; }
+    .friend-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
+    .friend-avatar-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .friend-name { font-size: 14px; font-weight: 500; color: #050505; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .friends-show-more { text-align: center; padding: 10px 0 4px; font-size: 14px; font-weight: 600; color: #1877f2; cursor: pointer; transition: color 0.2s; }
+    .friends-show-more:hover { color: #166fe5; text-decoration: underline; }
+
+    /* Posts section fills remaining space */
+    .posts-section { flex: 1; min-width: 0; }
     .posts-title { font-size: 20px; font-weight: 700; color: #050505; margin-bottom: 16px; }
     .loading-posts { text-align: center; padding: 40px; color: #65676b; }
     .no-posts { text-align: center; padding: 40px; color: #65676b; }
+
+    @media (max-width: 1024px) {
+      .profile-content-layout { flex-direction: column; }
+      .friends-sidebar { width: 100%; position: static; }
+      .friends-grid { flex-direction: row; flex-wrap: wrap; }
+      .friend-item { width: calc(50% - 2px); }
+    }
   `]
 })
 export class UserProfileComponent implements OnInit {
@@ -173,6 +236,7 @@ export class UserProfileComponent implements OnInit {
   private authService = inject(AuthService);
   private http = inject(HttpClient);
   private i18n = inject(I18nService);
+  private router = inject(Router);
 
   profile: UserProfile | null = null;
   loading = true;
@@ -181,7 +245,9 @@ export class UserProfileComponent implements OnInit {
   isOwnProfile = false;
   isFriend = false;
   loadingPosts = true;
+  loadingFriends = true;
   posts = signal<Post[]>([]);
+  userFriends = signal<UserFriend[]>([]);
   personalPostContent = '';
   postingPersonalPost = false;
 
@@ -197,6 +263,7 @@ export class UserProfileComponent implements OnInit {
   loadProfile(uid: number): void {
     this.loading = true;
     this.loadingPosts = true;
+    this.loadingFriends = true;
     this.error = null;
 
     const currentUser = this.authService.currentUser();
@@ -208,13 +275,41 @@ export class UserProfileComponent implements OnInit {
         this.isFriend = profile.is_friend || false;
         this.loading = false;
         this.loadPosts(uid);
+        if (this.isOwnProfile || this.isFriend) {
+          this.loadUserFriends(uid);
+        } else {
+          this.loadingFriends = false;
+        }
       },
       error: (err) => {
         this.error = this.i18n.t('errors.loadProfile');
         this.loading = false;
         this.loadingPosts = false;
+        this.loadingFriends = false;
       }
     });
+  }
+
+  loadUserFriends(uid: number): void {
+    this.userService.getUserFriends(uid).subscribe({
+      next: (response) => {
+        this.userFriends.set(response.friends);
+        this.loadingFriends = false;
+      },
+      error: () => {
+        this.loadingFriends = false;
+      }
+    });
+  }
+
+  goToProfile(uid: number): void {
+    this.router.navigate(['/profile', uid]);
+  }
+
+  goToFriendsList(): void {
+    if (this.profile) {
+      this.router.navigate(['/profile', this.profile.uid, 'friends']);
+    }
   }
 
   loadPosts(uid: number): void {

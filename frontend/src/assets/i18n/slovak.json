@@ -69,7 +69,11 @@
     "currentVisibility": "Aktuálna viditeľnosť:",
     "disputePrompt": "Prosím, vysvetlite svoju námietku:",
     "disputeSuccess": "Vaša námietka bola postúpená moderátorom. Odpoveď dostanete do 48 hodín.",
-    "sendComment": "Odoslať komentár"
+    "sendComment": "Odoslať komentár",
+    "share": "Zdieľať",
+    "shareWith": "Zdieľať s...",
+    "noFriendsToShare": "Žiadni priatelia na zdieľanie",
+    "shareSuccess": "Príspevok zdieľaný s {{username}}!"
   },
   "visibility": {
     "public": "Verejné",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Chyba pri odosielaní námietky.",
     "disputeSuccess": "Vaša námietka bola postúpená na preskúmanie moderátorom.",
     "sendComment": "Chyba pri odosielaní komentára",
-    "dataExport": "Chyba pri exporte údajov"
+    "dataExport": "Chyba pri exporte údajov",
+    "sharePost": "Nepodarilo sa zdieľať príspevok"
   },
   "myPosts": {
     "title": "Moje príspevky",
@@ -226,7 +231,18 @@
     "roleUser": "Používateľ",
     "roleModerator": "Moderátor",
     "roleAdmin": "Administrátor",
-    "birthday": "Narodeniny"
+    "birthday": "Narodeniny",
+    "friends": "Priatelia",
+    "loadingFriends": "Načítanie priateľov...",
+    "noFriends": "Zatiaľ žiadni priatelia",
+    "friendsCount": "Priateľov",
+    "showAllFriends": "Zobraziť všetkých priateľov"
+  },
+  "friendsList": {
+    "back": "Späť",
+    "title": "Priatelia",
+    "accessDenied": "Prístup zamietnutý",
+    "accessDeniedHint": "Môžete zobraziť iba zoznam priateľov svojich vlastných priateľov."
   },
   "login": {
     "title": "Prihlásenie",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Niekto označil komentár ako Páči sa mi",
     "notifBirthday": "Narodeniny",
     "notifGroupPost": "Príspevky v skupinách",
+    "notifFriendRequest": "Žiadosti o priateľstvo",
+    "notifFriendRequestAccepted": "Prijaté žiadosti o priateľstvo",
     "passwordSection": "Zmena hesla",
     "currentPassword": "Aktuálne heslo",
     "currentPasswordPlaceholder": "Vyplňte len ak chcete zmeniť heslo",
@@ -479,7 +497,10 @@
     "groupPost": "{{username}} pridal príspevok do skupiny {{group}}",
     "birthday": "🎂 {{username}} má dnes narodeniny a má {{age}} rokov!",
     "groupJoinRequest": "👥 {{username}} chce vstúpiť do skupiny \"{{groupName}}\"",
-    "welcome": "Vitajte v SafeSpace! Sme radi, že ste tu."
+    "welcome": "Vitajte v SafeSpace! Sme radi, že ste tu.",
+    "friendRequest": "👋 {{username}} ti poslal(a) žiadosť o priateľstvo",
+    "friendRequestAccepted": "🎉 {{username}} prijal(a) tvoju žiadosť o priateľstvo",
+    "postShared": "📨 {{username}} s tebou zdieľal(a) príspevok"
   },
   "screenTime": {
     "breakTitle": "Čas na prestávku!",

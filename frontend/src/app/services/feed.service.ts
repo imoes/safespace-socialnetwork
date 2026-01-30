@@ -310,6 +310,13 @@ export class FeedService implements OnDestroy {
     );
   }
 
+  /**
+   * Teilt einen Post mit einem Freund
+   */
+  sharePost(authorUid: number, postId: number, friendUid: number): Observable<any> {
+    return this.http.post(`${this.API_URL}/${authorUid}/${postId}/share`, { friend_uid: friendUid });
+  }
+
   private fetchFeed(forceRefresh: boolean): Observable<FeedResponse> {
     const params = new HttpParams()
       .set('refresh', forceRefresh.toString())

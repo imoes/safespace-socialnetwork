@@ -11,6 +11,12 @@ export interface UserSearchResult {
   is_friend: boolean;
 }
 
+export interface UserFriend {
+  uid: number;
+  username: string;
+  profile_picture?: string;
+}
+
 export interface UserProfile {
   uid: number;
   username: string;
@@ -44,5 +50,12 @@ export class UserService {
    */
   getUserProfile(uid: number): Observable<UserProfile> {
     return this.http.get<UserProfile>(`${this.API_URL}/${uid}`);
+  }
+
+  /**
+   * Lädt die Freundesliste eines Benutzers
+   */
+  getUserFriends(uid: number): Observable<{ friends: UserFriend[] }> {
+    return this.http.get<{ friends: UserFriend[] }>(`${this.API_URL}/${uid}/friends`);
   }
 }

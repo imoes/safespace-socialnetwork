@@ -69,7 +69,11 @@
     "currentVisibility": "Visibilidade atual:",
     "disputePrompt": "Por favor, explique a sua objeção:",
     "disputeSuccess": "A sua objeção foi encaminhada para os moderadores. Receberá uma resposta dentro de 48 horas.",
-    "sendComment": "Enviar comentário"
+    "sendComment": "Enviar comentário",
+    "share": "Partilhar",
+    "shareWith": "Partilhar com...",
+    "noFriendsToShare": "Sem amigos para partilhar",
+    "shareSuccess": "Post partilhado com {{username}}!"
   },
   "visibility": {
     "public": "Público",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Erro ao submeter objeção.",
     "disputeSuccess": "A sua objeção foi encaminhada para análise por um moderador.",
     "sendComment": "Erro ao enviar comentário",
-    "dataExport": "Erro ao exportar dados"
+    "dataExport": "Erro ao exportar dados",
+    "sharePost": "Erro ao partilhar o post"
   },
   "myPosts": {
     "title": "As Minhas Publicações",
@@ -226,7 +231,18 @@
     "roleUser": "Utilizador",
     "roleModerator": "Moderador",
     "roleAdmin": "Administrador",
-    "birthday": "Aniversário"
+    "birthday": "Aniversário",
+    "friends": "Amigos",
+    "loadingFriends": "A carregar amigos...",
+    "noFriends": "Ainda sem amigos",
+    "friendsCount": "Amigos",
+    "showAllFriends": "Ver todos os amigos"
+  },
+  "friendsList": {
+    "back": "Voltar",
+    "title": "Amigos",
+    "accessDenied": "Acesso negado",
+    "accessDeniedHint": "Você só pode ver a lista de amigos dos seus próprios amigos."
   },
   "login": {
     "title": "Iniciar Sessão",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Gosto em comentário",
     "notifBirthday": "Aniversários",
     "notifGroupPost": "Publicações de grupo",
+    "notifFriendRequest": "Pedidos de amizade",
+    "notifFriendRequestAccepted": "Pedidos de amizade aceitos",
     "passwordSection": "Alterar Palavra-passe",
     "currentPassword": "Palavra-passe Atual",
     "currentPasswordPlaceholder": "Preencha apenas se desejar alterar a palavra-passe",
@@ -479,7 +497,10 @@
     "groupPost": "{{username}} publicou no grupo {{group}}",
     "birthday": "🎂 {{username}} faz anos hoje e tem agora {{age}} anos!",
     "groupJoinRequest": "👥 {{username}} quer juntar-se ao grupo \"{{groupName}}\"",
-    "welcome": "Bem-vindo/a ao SafeSpace! Estamos felizes por teres chegado."
+    "welcome": "Bem-vindo/a ao SafeSpace! Estamos felizes por teres chegado.",
+    "friendRequest": "👋 {{username}} enviou-te um pedido de amizade",
+    "friendRequestAccepted": "🎉 {{username}} aceitou o teu pedido de amizade",
+    "postShared": "📨 {{username}} partilhou um post contigo"
   },
   "screenTime": {
     "breakTitle": "Hora de Fazer uma Pausa!",

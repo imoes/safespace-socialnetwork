@@ -69,7 +69,11 @@
     "currentVisibility": "Trenutna vidnost:",
     "disputePrompt": "Prosimo, pojasnite svoj ugovor:",
     "disputeSuccess": "Vaš ugovor je bil posredovan moderatorjem. Odgovor boste prejeli v 48 urah.",
-    "sendComment": "Pošlji komentar"
+    "sendComment": "Pošlji komentar",
+    "share": "Deli",
+    "shareWith": "Deli z...",
+    "noFriendsToShare": "Ni prijateljev za deljenje",
+    "shareSuccess": "Objava deljena z {{username}}!"
   },
   "visibility": {
     "public": "Javno",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Napaka pri oddaji ugovora.",
     "disputeSuccess": "Vaš ugovor je bil posredovan v pregled moderatorju.",
     "sendComment": "Napaka pri pošiljanju komentarja",
-    "dataExport": "Napaka pri izvozu podatkov"
+    "dataExport": "Napaka pri izvozu podatkov",
+    "sharePost": "Napaka pri deljenju objave"
   },
   "myPosts": {
     "title": "Moje objave",
@@ -226,7 +231,18 @@
     "roleUser": "Uporabnik",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Rojstni dan"
+    "birthday": "Rojstni dan",
+    "friends": "Prijatelji",
+    "loadingFriends": "Nalaganje prijateljev...",
+    "noFriends": "Še ni prijateljev",
+    "friendsCount": "Prijateljev",
+    "showAllFriends": "Prikaži vse prijatelje"
+  },
+  "friendsList": {
+    "back": "Nazaj",
+    "title": "Prijatelji",
+    "accessDenied": "Dostop zavrnjen",
+    "accessDeniedHint": "Ogledate si lahko samo seznam prijateljev svojih prijateljev."
   },
   "login": {
     "title": "Prijava",
@@ -320,6 +336,8 @@
     "notifCommentLiked": "Komentar všečkan",
     "notifBirthday": "Rojstni dnevi",
     "notifGroupPost": "Objave v skupinah",
+    "notifFriendRequest": "Prošnje za prijateljstvo",
+    "notifFriendRequestAccepted": "Sprejete prošnje za prijateljstvo",
     "passwordSection": "Sprememba gesla",
     "currentPassword": "Trenutno geslo",
     "currentPasswordPlaceholder": "Izpolnite samo, če želite spremeniti geslo",
@@ -479,7 +497,10 @@
     "groupPost": "{{username}} je objavil/-a v skupini {{group}}",
     "birthday": "🎂 {{username}} ima danes rojstni dan in je zdaj star/-a {{age}} let!",
     "groupJoinRequest": "👥 {{username}} želi pridružiti skupini \"{{groupName}}\"",
-    "welcome": "Dobrodošli v SafeSpace! Veseli smo, da ste tukaj."
+    "welcome": "Dobrodošli v SafeSpace! Veseli smo, da ste tukaj.",
+    "friendRequest": "👋 {{username}} ti je poslal/a prošnjo za prijateljstvo",
+    "friendRequestAccepted": "🎉 {{username}} je sprejel/a tvojo prošnjo za prijateljstvo",
+    "postShared": "📨 {{username}} je delil/a objavo s tabo"
   },
   "screenTime": {
     "breakTitle": "Čas za odmor!",
