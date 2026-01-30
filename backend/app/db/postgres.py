@@ -315,7 +315,8 @@ class PostgresDB:
                     INSERT INTO welcome_messages (title, content, is_active)
                     VALUES (
                         'Welcome to SafeSpace!',
-                        'We''re glad you''re here! Discover your timeline, find friends, and share your thoughts. SafeSpace is your space — safe, respectful, and welcoming.'
+                        'We''re glad you''re here! Discover your timeline, find friends, and share your thoughts. SafeSpace is your space — safe, respectful, and welcoming.',
+                        TRUE
                     )
                 """)
 
