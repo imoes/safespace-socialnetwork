@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Nem elérhető",
     "deepseekLowBalance": "Figyelmeztetés: A DeepSeek egyenleg nagyon alacsony! Kérjük, töltse fel a moderálási szolgáltatás fenntartásához.",
     "deepseekLoading": "DeepSeek egyenleg betöltése...",
-    "deepseekError": "Hiba a DeepSeek egyenleg betöltésekor"
+    "deepseekError": "Hiba a DeepSeek egyenleg betöltésekor",
+    "emailSettings": "E-mail beállítások",
+    "emailSettingsDesc": "Jelenlegi SMTP-konfiguráció és teszt e-mail küldése.",
+    "emailEnabled": "Engedélyezve",
+    "emailDisabled": "Letiltva",
+    "emailUser": "Felhasználó",
+    "emailFrom": "Feladó címe",
+    "emailSender": "Feladó neve",
+    "testEmailLabel": "Teszt e-mail küldése",
+    "testEmailPlaceholder": "Adja meg az e-mail címet...",
+    "testEmailSend": "Teszt küldése",
+    "testEmailSent": "A teszt e-mail sikeresen elküldve.",
+    "testEmailFailed": "A teszt e-mailt nem sikerült elküldeni.",
+    "testEmailRequired": "Kérjük, adjon meg egy e-mail címet.",
+    "emailDisabledHint": "Az e-mail le van tiltva. Állítsa be a SAFESPACE_EMAIL_ENABLED=true értéket az e-mailek engedélyezéséhez.",
+    "loading": "Betöltés"
   },
   "welcome": {
     "understood": "Megértettem"

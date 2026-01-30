@@ -496,7 +496,22 @@
     "deepseekUnavailable": "Indisponible",
     "deepseekLowBalance": "Attention : Le solde DeepSeek est très bas ! Veuillez recharger pour maintenir le service de modération.",
     "deepseekLoading": "Chargement du solde DeepSeek...",
-    "deepseekError": "Erreur lors du chargement du solde DeepSeek"
+    "deepseekError": "Erreur lors du chargement du solde DeepSeek",
+    "emailSettings": "Paramètres e-mail",
+    "emailSettingsDesc": "Configuration SMTP actuelle et envoi d'un e-mail de test.",
+    "emailEnabled": "Activé",
+    "emailDisabled": "Désactivé",
+    "emailUser": "Utilisateur",
+    "emailFrom": "Adresse de l'expéditeur",
+    "emailSender": "Nom de l'expéditeur",
+    "testEmailLabel": "Envoyer un e-mail de test",
+    "testEmailPlaceholder": "Saisir l'adresse e-mail...",
+    "testEmailSend": "Envoyer le test",
+    "testEmailSent": "L'e-mail de test a été envoyé avec succès.",
+    "testEmailFailed": "L'e-mail de test n'a pas pu être envoyé.",
+    "testEmailRequired": "Veuillez saisir une adresse e-mail.",
+    "emailDisabledHint": "L'e-mail est désactivé. Définissez SAFESPACE_EMAIL_ENABLED=true pour activer les e-mails.",
+    "loading": "Chargement"
   },
   "welcome": {
     "understood": "Compris"

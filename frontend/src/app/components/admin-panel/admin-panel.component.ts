@@ -132,6 +132,11 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   siteTitle = signal('SafeSpace');
   siteTitleForm = '';
 
+  // Email Settings & Test
+  emailSettings = signal<any>(null);
+  testEmailAddress = '';
+  testEmailLoading = signal(false);
+
   // Email Templates
   emailTemplates = signal<any>({});
   notificationTypes = signal<string[]>([]);
@@ -352,8 +357,11 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       this.stopAutoRefresh();
     }
 
-    if (tab === 'settings' && !this.siteSettingsLoaded) {
-      this.loadSiteSettings();
+    if (tab === 'settings') {
+      if (!this.siteSettingsLoaded) {
+        this.loadSiteSettings();
+      }
+      this.loadEmailSettings();
     }
     if (tab === 'email-templates') {
       this.loadEmailTemplates();
@@ -505,6 +513,39 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   getTemplateLanguages(type: string): string[] {
     const templates = this.emailTemplates();
     return templates[type] ? Object.keys(templates[type]) : [];
+  }
+
+  // === Email Settings & Test ===
+
+  async loadEmailSettings(): Promise<void> {
+    try {
+      const response: any = await this.http.get('/api/admin/email-settings').toPromise();
+      this.emailSettings.set(response);
+    } catch (err) {
+      console.error('Error loading email settings:', err);
+    }
+  }
+
+  async sendTestEmail(): Promise<void> {
+    if (!this.testEmailAddress.trim()) {
+      this.error.set(this.i18n.t('admin.testEmailRequired'));
+      return;
+    }
+
+    this.testEmailLoading.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    try {
+      const response: any = await this.http.post('/api/admin/test-email', {
+        to_email: this.testEmailAddress.trim()
+      }).toPromise();
+      this.success.set(response.message || this.i18n.t('admin.testEmailSent'));
+    } catch (err: any) {
+      this.error.set(err.error?.detail || this.i18n.t('admin.testEmailFailed'));
+    } finally {
+      this.testEmailLoading.set(false);
+    }
   }
 
   // === Site Settings ===

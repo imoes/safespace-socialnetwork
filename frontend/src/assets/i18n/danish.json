@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Ikke tilgængelig",
     "deepseekLowBalance": "Advarsel: DeepSeek-saldoen er meget lav! Oplad venligst for at opretholde moderationstjenesten.",
     "deepseekLoading": "Indlæser DeepSeek-saldo...",
-    "deepseekError": "Fejl ved indlæsning af DeepSeek-saldo"
+    "deepseekError": "Fejl ved indlæsning af DeepSeek-saldo",
+    "emailSettings": "E-mail-indstillinger",
+    "emailSettingsDesc": "Aktuel SMTP-konfiguration og afsendelse af test-e-mail.",
+    "emailEnabled": "Aktiveret",
+    "emailDisabled": "Deaktiveret",
+    "emailUser": "Bruger",
+    "emailFrom": "Afsenderadresse",
+    "emailSender": "Afsendernavn",
+    "testEmailLabel": "Send test-e-mail",
+    "testEmailPlaceholder": "Indtast e-mailadresse...",
+    "testEmailSend": "Send test",
+    "testEmailSent": "Test-e-mailen blev sendt.",
+    "testEmailFailed": "Test-e-mailen kunne ikke sendes.",
+    "testEmailRequired": "Indtast venligst en e-mailadresse.",
+    "emailDisabledHint": "E-mail er deaktiveret. Indstil SAFESPACE_EMAIL_ENABLED=true for at aktivere e-mails.",
+    "loading": "Indlæser"
   },
   "welcome": {
     "understood": "Forstået"

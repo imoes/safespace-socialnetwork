@@ -496,7 +496,22 @@
     "deepseekUnavailable": "غير متاح",
     "deepseekLowBalance": "تحذير: رصيد DeepSeek منخفض جداً! يرجى الشحن للحفاظ على خدمة الإشراف.",
     "deepseekLoading": "جارٍ تحميل رصيد DeepSeek...",
-    "deepseekError": "خطأ في تحميل رصيد DeepSeek"
+    "deepseekError": "خطأ في تحميل رصيد DeepSeek",
+    "emailSettings": "إعدادات البريد الإلكتروني",
+    "emailSettingsDesc": "تكوين SMTP الحالي وإرسال بريد إلكتروني تجريبي.",
+    "emailEnabled": "مُفعّل",
+    "emailDisabled": "مُعطّل",
+    "emailUser": "المستخدم",
+    "emailFrom": "عنوان المرسل",
+    "emailSender": "اسم المرسل",
+    "testEmailLabel": "إرسال بريد إلكتروني تجريبي",
+    "testEmailPlaceholder": "أدخل عنوان البريد الإلكتروني...",
+    "testEmailSend": "إرسال اختبار",
+    "testEmailSent": "تم إرسال البريد الإلكتروني التجريبي بنجاح.",
+    "testEmailFailed": "تعذر إرسال البريد الإلكتروني التجريبي.",
+    "testEmailRequired": "يرجى إدخال عنوان بريد إلكتروني.",
+    "emailDisabledHint": "البريد الإلكتروني مُعطّل. قم بتعيين SAFESPACE_EMAIL_ENABLED=true لتفعيل البريد الإلكتروني.",
+    "loading": "جارٍ التحميل"
   },
   "welcome": {
     "understood": "مفهوم"

@@ -491,7 +491,22 @@
     "deepseekUnavailable": "Unavailable",
     "deepseekLowBalance": "Warning: DeepSeek balance is very low! Please top up to maintain the moderation service.",
     "deepseekLoading": "Loading DeepSeek balance...",
-    "deepseekError": "Error loading DeepSeek balance"
+    "deepseekError": "Error loading DeepSeek balance",
+    "emailSettings": "Email Settings",
+    "emailSettingsDesc": "Current SMTP configuration and send test email.",
+    "emailEnabled": "Enabled",
+    "emailDisabled": "Disabled",
+    "emailUser": "User",
+    "emailFrom": "Sender Address",
+    "emailSender": "Sender Name",
+    "testEmailLabel": "Send Test Email",
+    "testEmailPlaceholder": "Enter email address...",
+    "testEmailSend": "Send Test",
+    "testEmailSent": "Test email was sent successfully.",
+    "testEmailFailed": "Test email could not be sent.",
+    "testEmailRequired": "Please enter an email address.",
+    "emailDisabledHint": "Email is disabled. Set SAFESPACE_EMAIL_ENABLED=true to enable emails.",
+    "loading": "Loading"
   },
   "welcome": {
     "understood": "Understood"

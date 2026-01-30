@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Mhux disponibbli",
     "deepseekLowBalance": "Twissija: Il-bilanċ ta' DeepSeek huwa baxx ħafna! Jekk jogħġbok żid biex iżżomm is-servizz ta' moderazzjoni.",
     "deepseekLoading": "Qed jitgħabba l-bilanċ ta' DeepSeek...",
-    "deepseekError": "Żball fit-tagħbija tal-bilanċ ta' DeepSeek"
+    "deepseekError": "Żball fit-tagħbija tal-bilanċ ta' DeepSeek",
+    "emailSettings": "Settings tal-Email",
+    "emailSettingsDesc": "Konfigurazzjoni SMTP attwali u ibgħat email ta' prova.",
+    "emailEnabled": "Attivat",
+    "emailDisabled": "Diżattivat",
+    "emailUser": "Utent",
+    "emailFrom": "Indirizz tal-Mittent",
+    "emailSender": "Isem tal-Mittent",
+    "testEmailLabel": "Ibgħat Email ta' Prova",
+    "testEmailPlaceholder": "Daħħal indirizz tal-email...",
+    "testEmailSend": "Ibgħat Prova",
+    "testEmailSent": "L-email ta' prova ntbagħtet b'suċċess.",
+    "testEmailFailed": "L-email ta' prova ma setgħetx tintbagħat.",
+    "testEmailRequired": "Jekk jogħġbok daħħal indirizz tal-email.",
+    "emailDisabledHint": "L-email hija diżattivata. Issettja SAFESPACE_EMAIL_ENABLED=true biex tattiva l-emails.",
+    "loading": "Qed jitgħabba"
   },
   "welcome": {
     "understood": "Fhimt"

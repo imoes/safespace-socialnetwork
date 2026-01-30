@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Nav pieejams",
     "deepseekLowBalance": "Brīdinājums: DeepSeek atlikums ir ļoti zems! Lūdzu, papildiniet, lai uzturētu moderēšanas pakalpojumu.",
     "deepseekLoading": "Ielādē DeepSeek atlikumu...",
-    "deepseekError": "Kļūda ielādējot DeepSeek atlikumu"
+    "deepseekError": "Kļūda ielādējot DeepSeek atlikumu",
+    "emailSettings": "E-pasta iestatījumi",
+    "emailSettingsDesc": "Pašreizējā SMTP konfigurācija un testa e-pasta sūtīšana.",
+    "emailEnabled": "Iespējots",
+    "emailDisabled": "Atspējots",
+    "emailUser": "Lietotājs",
+    "emailFrom": "Sūtītāja adrese",
+    "emailSender": "Sūtītāja vārds",
+    "testEmailLabel": "Sūtīt testa e-pastu",
+    "testEmailPlaceholder": "Ievadiet e-pasta adresi...",
+    "testEmailSend": "Sūtīt testu",
+    "testEmailSent": "Testa e-pasts tika veiksmīgi nosūtīts.",
+    "testEmailFailed": "Testa e-pastu neizdevās nosūtīt.",
+    "testEmailRequired": "Lūdzu, ievadiet e-pasta adresi.",
+    "emailDisabledHint": "E-pasts ir atspējots. Iestatiet SAFESPACE_EMAIL_ENABLED=true, lai iespējotu e-pastu.",
+    "loading": "Ielādē"
   },
   "welcome": {
     "understood": "Sapratu"

@@ -491,7 +491,22 @@
     "deepseekUnavailable": "Nicht verfügbar",
     "deepseekLowBalance": "Achtung: Das DeepSeek-Guthaben ist sehr niedrig! Bitte laden Sie das Guthaben auf, um den Moderationsdienst aufrechtzuerhalten.",
     "deepseekLoading": "Lade DeepSeek-Guthaben...",
-    "deepseekError": "Fehler beim Laden des DeepSeek-Guthabens"
+    "deepseekError": "Fehler beim Laden des DeepSeek-Guthabens",
+    "emailSettings": "E-Mail-Einstellungen",
+    "emailSettingsDesc": "Aktuelle SMTP-Konfiguration und Test-E-Mail senden.",
+    "emailEnabled": "Aktiviert",
+    "emailDisabled": "Deaktiviert",
+    "emailUser": "Benutzer",
+    "emailFrom": "Absender-Adresse",
+    "emailSender": "Absender-Name",
+    "testEmailLabel": "Test-E-Mail senden",
+    "testEmailPlaceholder": "E-Mail-Adresse eingeben...",
+    "testEmailSend": "Test senden",
+    "testEmailSent": "Test-E-Mail wurde erfolgreich gesendet.",
+    "testEmailFailed": "Test-E-Mail konnte nicht gesendet werden.",
+    "testEmailRequired": "Bitte eine E-Mail-Adresse eingeben.",
+    "emailDisabledHint": "E-Mail ist deaktiviert. Setze SAFESPACE_EMAIL_ENABLED=true um E-Mails zu aktivieren.",
+    "loading": "Laden"
   },
   "welcome": {
     "understood": "Verstanden"
