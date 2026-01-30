@@ -231,7 +231,11 @@
     "roleUser": "Uporabnik",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Rojstni dan"
+    "birthday": "Rojstni dan",
+    "friends": "Prijatelji",
+    "loadingFriends": "Nalaganje prijateljev...",
+    "noFriends": "Še ni prijateljev",
+    "friendsCount": "Prijateljev"
   },
   "login": {
     "title": "Prijava",

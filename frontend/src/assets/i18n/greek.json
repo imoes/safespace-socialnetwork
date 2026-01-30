@@ -231,7 +231,11 @@
     "roleUser": "Χρήστης",
     "roleModerator": "Συντονιστής",
     "roleAdmin": "Διαχειριστής",
-    "birthday": "Γενέθλια"
+    "birthday": "Γενέθλια",
+    "friends": "Φίλοι",
+    "loadingFriends": "Φόρτωση φίλων...",
+    "noFriends": "Δεν υπάρχουν φίλοι ακόμα",
+    "friendsCount": "Φίλοι"
   },
   "login": {
     "title": "Σύνδεση",

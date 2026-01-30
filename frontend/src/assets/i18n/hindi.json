@@ -231,7 +231,11 @@
     "roleUser": "उपयोगकर्ता",
     "roleModerator": "मॉडरेटर",
     "roleAdmin": "प्रशासक",
-    "birthday": "जन्मदिन"
+    "birthday": "जन्मदिन",
+    "friends": "मित्र",
+    "loadingFriends": "मित्र लोड हो रहे हैं...",
+    "noFriends": "अभी तक कोई मित्र नहीं",
+    "friendsCount": "मित्र"
   },
   "login": {
     "title": "लॉगिन",

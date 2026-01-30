@@ -231,7 +231,11 @@
     "roleUser": "Felhasználó",
     "roleModerator": "Moderátor",
     "roleAdmin": "Adminisztrátor",
-    "birthday": "Születésnap"
+    "birthday": "Születésnap",
+    "friends": "Barátok",
+    "loadingFriends": "Barátok betöltése...",
+    "noFriends": "Még nincsenek barátok",
+    "friendsCount": "Barát"
   },
   "login": {
     "title": "Bejelentkezés",

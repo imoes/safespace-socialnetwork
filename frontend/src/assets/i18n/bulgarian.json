@@ -231,7 +231,11 @@
     "roleUser": "Потребител",
     "roleModerator": "Модератор",
     "roleAdmin": "Администратор",
-    "birthday": "Рожден ден"
+    "birthday": "Рожден ден",
+    "friends": "Приятели",
+    "loadingFriends": "Зареждане на приятели...",
+    "noFriends": "Все още няма приятели",
+    "friendsCount": "Приятели"
   },
   "login": {
     "title": "Вход",

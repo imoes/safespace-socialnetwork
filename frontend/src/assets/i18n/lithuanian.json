@@ -231,7 +231,11 @@
     "roleUser": "Naudotojas",
     "roleModerator": "Moderatorius",
     "roleAdmin": "Administratorius",
-    "birthday": "Gimtadienis"
+    "birthday": "Gimtadienis",
+    "friends": "Draugai",
+    "loadingFriends": "Įkeliami draugai...",
+    "noFriends": "Dar nėra draugų",
+    "friendsCount": "Draugai"
   },
   "login": {
     "title": "Prisijungimas",

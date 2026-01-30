@@ -231,7 +231,11 @@
     "roleUser": "Uživatel",
     "roleModerator": "Moderátor",
     "roleAdmin": "Administrátor",
-    "birthday": "Narozeniny"
+    "birthday": "Narozeniny",
+    "friends": "Přátelé",
+    "loadingFriends": "Načítání přátel...",
+    "noFriends": "Zatím žádní přátelé",
+    "friendsCount": "Přátel"
   },
   "login": {
     "title": "Přihlášení",

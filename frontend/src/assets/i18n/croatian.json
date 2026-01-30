@@ -231,7 +231,11 @@
     "roleUser": "Korisnik",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Rođendan"
+    "birthday": "Rođendan",
+    "friends": "Prijatelji",
+    "loadingFriends": "Učitavanje prijatelja...",
+    "noFriends": "Još nema prijatelja",
+    "friendsCount": "Prijatelja"
   },
   "login": {
     "title": "Prijava",

@@ -231,7 +231,11 @@
     "roleUser": "Bruger",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Fødselsdag"
+    "birthday": "Fødselsdag",
+    "friends": "Venner",
+    "loadingFriends": "Indlæser venner...",
+    "noFriends": "Ingen venner endnu",
+    "friendsCount": "Venner"
   },
   "login": {
     "title": "Log ind",

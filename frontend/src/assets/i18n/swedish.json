@@ -231,7 +231,11 @@
     "roleUser": "Användare",
     "roleModerator": "Moderator",
     "roleAdmin": "Administratör",
-    "birthday": "Födelsedag"
+    "birthday": "Födelsedag",
+    "friends": "Vänner",
+    "loadingFriends": "Laddar vänner...",
+    "noFriends": "Inga vänner ännu",
+    "friendsCount": "Vänner"
   },
   "login": {
     "title": "Logga in",

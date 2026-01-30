@@ -231,7 +231,11 @@
     "roleUser": "Utilizador",
     "roleModerator": "Moderador",
     "roleAdmin": "Administrador",
-    "birthday": "Aniversário"
+    "birthday": "Aniversário",
+    "friends": "Amigos",
+    "loadingFriends": "A carregar amigos...",
+    "noFriends": "Ainda sem amigos",
+    "friendsCount": "Amigos"
   },
   "login": {
     "title": "Iniciar Sessão",

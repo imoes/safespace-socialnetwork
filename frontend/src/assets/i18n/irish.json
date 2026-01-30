@@ -231,7 +231,11 @@
     "roleUser": "Úsáideoir",
     "roleModerator": "Modhnóir",
     "roleAdmin": "Riarthóir",
-    "birthday": "Lá Breithe"
+    "birthday": "Lá Breithe",
+    "friends": "Cairde",
+    "loadingFriends": "Cairde á lódáil...",
+    "noFriends": "Níl aon chairde fós",
+    "friendsCount": "Cairde"
   },
   "login": {
     "title": "Logáil Isteach",

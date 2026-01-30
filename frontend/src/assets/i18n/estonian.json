@@ -231,7 +231,11 @@
     "roleUser": "Kasutaja",
     "roleModerator": "Moderaator",
     "roleAdmin": "Administraator",
-    "birthday": "Sünnipäev"
+    "birthday": "Sünnipäev",
+    "friends": "Sõbrad",
+    "loadingFriends": "Sõprade laadimine...",
+    "noFriends": "Veel pole sõpru",
+    "friendsCount": "Sõpra"
   },
   "login": {
     "title": "Sisselogimine",

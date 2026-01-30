@@ -230,7 +230,11 @@
     "roleUser": "Utente",
     "roleModerator": "Moderatore",
     "roleAdmin": "Amministratore",
-    "birthday": "Compleanno"
+    "birthday": "Compleanno",
+    "friends": "Amici",
+    "loadingFriends": "Caricamento amici...",
+    "noFriends": "Ancora nessun amico",
+    "friendsCount": "Amici"
   },
   "friends": {
     "title": "Amici",

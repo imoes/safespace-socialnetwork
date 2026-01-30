@@ -231,7 +231,11 @@
     "roleUser": "Käyttäjä",
     "roleModerator": "Moderaattori",
     "roleAdmin": "Ylläpitäjä",
-    "birthday": "Syntymäpäivä"
+    "birthday": "Syntymäpäivä",
+    "friends": "Kaverit",
+    "loadingFriends": "Ladataan kavereita...",
+    "noFriends": "Ei vielä kavereita",
+    "friendsCount": "Kaveria"
   },
   "login": {
     "title": "Kirjaudu sisään",

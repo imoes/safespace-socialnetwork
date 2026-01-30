@@ -231,7 +231,11 @@
     "roleUser": "Lietotājs",
     "roleModerator": "Moderators",
     "roleAdmin": "Administrators",
-    "birthday": "Dzimšanas diena"
+    "birthday": "Dzimšanas diena",
+    "friends": "Draugi",
+    "loadingFriends": "Ielādē draugus...",
+    "noFriends": "Vēl nav draugu",
+    "friendsCount": "Draugi"
   },
   "login": {
     "title": "Pieteikšanās",

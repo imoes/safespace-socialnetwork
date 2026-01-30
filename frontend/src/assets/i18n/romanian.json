@@ -231,7 +231,11 @@
     "roleUser": "Utilizator",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Ziua de naștere"
+    "birthday": "Ziua de naștere",
+    "friends": "Prieteni",
+    "loadingFriends": "Se încarcă prietenii...",
+    "noFriends": "Încă nu are prieteni",
+    "friendsCount": "Prieteni"
   },
   "login": {
     "title": "Autentificare",

@@ -230,7 +230,11 @@
     "roleUser": "مستخدم",
     "roleModerator": "مشرف",
     "roleAdmin": "مدير",
-    "birthday": "تاريخ الميلاد"
+    "birthday": "تاريخ الميلاد",
+    "friends": "الأصدقاء",
+    "loadingFriends": "جارٍ تحميل الأصدقاء...",
+    "noFriends": "لا يوجد أصدقاء بعد",
+    "friendsCount": "أصدقاء"
   },
   "friends": {
     "title": "الأصدقاء",

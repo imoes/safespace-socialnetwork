@@ -231,7 +231,11 @@
     "roleUser": "Benutzer",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Geburtstag"
+    "birthday": "Geburtstag",
+    "friends": "Freunde",
+    "loadingFriends": "Freunde werden geladen...",
+    "noFriends": "Noch keine Freunde",
+    "friendsCount": "Freunde"
   },
   "login": {
     "title": "Anmelden",

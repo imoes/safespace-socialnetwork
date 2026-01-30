@@ -231,7 +231,11 @@
     "roleUser": "Utent",
     "roleModerator": "Moderatur",
     "roleAdmin": "Amministratur",
-    "birthday": "Għeluq snin"
+    "birthday": "Għeluq snin",
+    "friends": "Ħbieb",
+    "loadingFriends": "Jitgħabbew il-ħbieb...",
+    "noFriends": "Għad m'hemm l-ebda ħbieb",
+    "friendsCount": "Ħbieb"
   },
   "login": {
     "title": "Idħol",

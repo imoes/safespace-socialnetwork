@@ -231,7 +231,11 @@
     "roleUser": "Gebruiker",
     "roleModerator": "Moderator",
     "roleAdmin": "Beheerder",
-    "birthday": "Verjaardag"
+    "birthday": "Verjaardag",
+    "friends": "Vrienden",
+    "loadingFriends": "Vrienden laden...",
+    "noFriends": "Nog geen vrienden",
+    "friendsCount": "Vrienden"
   },
   "login": {
     "title": "Inloggen",
