@@ -19,6 +19,9 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
+              "src/robots.txt",
+              "src/sitemap.xml",
+              "src/manifest.webmanifest",
               {
                 "glob": "**/*",
                 "input": "src/assets",
@@ -72,7 +75,8 @@
             "proxyConfig": "proxy.conf.js",
             "allowedHosts": [
               "thesafespace.blog",
-              "www.thesafespace.blog"
+              "www.thesafespace.blog",
+              "test.thesafespace.blog"
             ]
           }
         }

@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
             <strong>Thomas Kluge</strong><br>
             Ringstrasse 26<br>
             82110 Germering<br>
-            E-Mail: thomas&#64;kluge-online.de
+            E-Mail: support&#64;thesafespace.blog
           </p>
         </section>
 
@@ -93,7 +93,7 @@ import { CommonModule } from '@angular/common';
             <li><strong>Widerspruch</strong> (Art. 21 DSGVO): Widerspruchsrecht gegen die Verarbeitung</li>
             <li><strong>Widerruf der Einwilligung</strong> (Art. 7 DSGVO): E-Mail-Benachrichtigungen können jederzeit deaktiviert werden</li>
           </ul>
-          <p>Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter: <strong>thomas&#64;kluge-online.de</strong></p>
+          <p>Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter: <strong>support&#64;thesafespace.blog</strong></p>
         </section>
 
         <section>
@@ -166,7 +166,7 @@ import { CommonModule } from '@angular/common';
             Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:
           </p>
           <p>
-            E-Mail: <strong>thomas&#64;kluge-online.de</strong><br>
+            E-Mail: <strong>support&#64;thesafespace.blog</strong><br>
             Post: <strong>Thomas Kluge, Ringstrasse 26, 82110 Germering</strong>
           </p>
         </section>

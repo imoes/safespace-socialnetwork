@@ -11,6 +11,7 @@ import { NotificationsDropdownComponent } from './components/notifications-dropd
 import { ScreenTimeModalComponent } from './components/screen-time-modal/screen-time-modal.component';
 import { CookieConsentComponent } from './components/cookie-consent/cookie-consent.component';
 import { ScreenTimeService } from './services/screen-time.service';
+import { SeoService } from './services/seo.service';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, interval, filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
@@ -546,6 +547,7 @@ export class AppComponent implements OnInit {
   private http = inject(HttpClient);
   private titleService = inject(Title);
   private screenTimeService = inject(ScreenTimeService);
+  private seoService = inject(SeoService);
 
   showDropdown = signal(false);
   showSearchResults = signal(false);
@@ -553,7 +555,7 @@ export class AppComponent implements OnInit {
   selectedIndex = signal(-1);
   pendingRequestsCount = signal(0);
   openReportsCount = signal(0);
-  siteTitle = signal('SocialNet');
+  siteTitle = signal('SafeSpace');
   searchQuery = '';
   private searchSubject = new Subject<string>();
 
@@ -614,6 +616,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.seoService.init();
     this.loadSiteTitle();
 
     // Refresh pending requests count every 30 seconds

@@ -243,7 +243,7 @@ Hallo {to_username},
 Sieh dir deinen Post an: {post_link}
 
 Viele Grüße,
-Dein SocialNet Team
+Dein SafeSpace Team
             """.strip()
 
             html = cls._wrap_email_html(
@@ -264,7 +264,7 @@ Hallo {to_username},
 Sieh dir den Kommentar an: {post_link}
 
 Viele Grüße,
-Dein SocialNet Team
+Dein SafeSpace Team
             """.strip()
 
             html = cls._wrap_email_html(
@@ -286,7 +286,7 @@ Hallo {to_username},
 {"Sieh dir den Post an: " + post_link if post_link else ""}
 
 Viele Grüße,
-Dein SocialNet Team
+Dein SafeSpace Team
             """.strip()
 
             html = cls._wrap_email_html(
@@ -305,10 +305,10 @@ Hallo {to_username},
 
 {actor_username} hat heute Geburtstag{age_text}!
 
-Gratuliere jetzt auf SocialNet!
+Gratuliere jetzt auf SafeSpace!
 
 Viele Grüße,
-Dein SocialNet Team
+Dein SafeSpace Team
             """.strip()
 
             age_html = f"<p style='font-size: 24px; text-align: center; margin: 16px 0;'>🎉 <strong>{birthday_age} Jahre</strong> 🎉</p>" if birthday_age else ""
@@ -317,7 +317,7 @@ Dein SocialNet Team
                 f"""<p>Hallo <strong>{to_username}</strong>,</p>
                 <p><strong>{actor_username}</strong> hat heute Geburtstag!</p>
                 {age_html}
-                <p>Gratuliere jetzt auf SocialNet!</p>"""
+                <p>Gratuliere jetzt auf SafeSpace!</p>"""
             )
 
         elif notification_type == "group_join_request":
@@ -334,7 +334,7 @@ Bitte überprüfe die Anfrage und entscheide, ob du sie annehmen oder ablehnen m
 {f"Gruppe ansehen: {group_link}" if group_link else ""}
 
 Viele Grüße,
-Dein SocialNet Team
+Dein SafeSpace Team
             """.strip()
 
             html = cls._wrap_email_html(
@@ -372,7 +372,7 @@ Dein SafeSpace Team
 
         else:
             subject = f"🔔 Neue Benachrichtigung von {actor_username}"
-            text = f"Hallo {to_username},\n\nDu hast eine neue Benachrichtigung erhalten.\n\nViele Grüße,\nDein SocialNet Team"
+            text = f"Hallo {to_username},\n\nDu hast eine neue Benachrichtigung erhalten.\n\nViele Grüße,\nDein SafeSpace Team"
             html = cls._wrap_email_html(
                 "🔔 Neue Benachrichtigung",
                 f"<p>Hallo <strong>{to_username}</strong>,</p><p>Du hast eine neue Benachrichtigung erhalten.</p>"
@@ -409,7 +409,7 @@ Dein SafeSpace Team
             </div>
             <div class="footer">
                 <p>Du erhältst diese E-Mail, weil du Benachrichtigungen aktiviert hast.</p>
-                <p>&copy; 2024 SocialNet - Dein sicherer Social Space</p>
+                <p>&copy; 2024 SafeSpace - Dein sicheres Social Network</p>
             </div>
         </div>
     </div>

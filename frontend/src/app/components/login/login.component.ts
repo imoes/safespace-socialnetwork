@@ -24,6 +24,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         </form>
         <p class="forgot-password"><a routerLink="/forgot-password">{{ 'login.forgotPassword' | translate }}</a></p>
         <p class="link">{{ 'login.noAccount' | translate }} <a routerLink="/register">{{ 'login.register' | translate }}</a></p>
+        <p class="impressum-link"><a routerLink="/impressum">{{ 'nav.impressum' | translate }}</a></p>
       </div>
     </div>
   `,
@@ -43,6 +44,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .forgot-password a:hover { text-decoration: underline; }
     .link { text-align: center; margin-top: 12px; }
     .link a { color: #1877f2; text-decoration: none; }
+    .impressum-link { text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; font-size: 13px; color: #999; }
+    .impressum-link a { color: #999; text-decoration: none; }
+    .impressum-link a:hover { color: #1877f2; text-decoration: underline; }
 
     @media (max-width: 1024px) {
       .login-container { padding: 16px; }
@@ -55,7 +59,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private i18n = inject(I18nService);
-  siteTitle = signal('SocialNet');
+  siteTitle = signal('SafeSpace');
   username = '';
   password = '';
   error = '';

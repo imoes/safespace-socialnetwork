@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService, Report } from '../../services/admin.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -16,19 +17,19 @@ import { AdminService, Report } from '../../services/admin.service';
         <div class="stats-grid">
           <div class="stat-card warning">
             <div class="stat-number">{{ stats.reports.pending_reports }}</div>
-            <div class="stat-label">Offene Reports</div>
+            <div class="stat-label">{{ i18n.t('moderatorDashboard.openReports') }}</div>
           </div>
           <div class="stat-card info">
             <div class="stat-number">{{ stats.reports.reviewing_reports }}</div>
-            <div class="stat-label">In Bearbeitung</div>
+            <div class="stat-label">{{ i18n.t('moderatorDashboard.inProgress') }}</div>
           </div>
           <div class="stat-card success">
             <div class="stat-number">{{ stats.reports.resolved_today }}</div>
-            <div class="stat-label">Heute gelöst</div>
+            <div class="stat-label">{{ i18n.t('moderatorDashboard.resolvedToday') }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-number">{{ stats.users.suspended_users }}</div>
-            <div class="stat-label">Suspendiert</div>
+            <div class="stat-label">{{ i18n.t('moderatorDashboard.suspended') }}</div>
           </div>
         </div>
       }
@@ -36,10 +37,10 @@ import { AdminService, Report } from '../../services/admin.service';
       <!-- Tabs -->
       <div class="tabs">
         <button [class.active]="activeTab === 'reports'" (click)="activeTab = 'reports'">
-          📋 Reports ({{ admin.reports().length }})
+          📋 {{ i18n.t('moderatorDashboard.reportsTab') }} ({{ admin.reports().length }})
         </button>
         <button [class.active]="activeTab === 'actions'" (click)="activeTab = 'actions'; loadActions()">
-          📝 Aktionen
+          📝 {{ i18n.t('moderatorDashboard.actionsTab') }}
         </button>
       </div>
 
@@ -55,13 +56,13 @@ import { AdminService, Report } from '../../services/admin.service';
               </div>
               
               <div class="report-meta">
-                <span>📝 Post von <strong>{{ report.author_username }}</strong></span>
-                <span>🚨 Gemeldet von <strong>{{ report.reporter_username }}</strong></span>
+                <span>📝 {{ i18n.t('moderatorDashboard.postBy') }} <strong>{{ report.author_username }}</strong></span>
+                <span>🚨 {{ i18n.t('moderatorDashboard.reportedBy') }} <strong>{{ report.reporter_username }}</strong></span>
                 <span>🕐 {{ report.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
               </div>
               
               <div class="report-reason">
-                <strong>Grund:</strong> {{ report.reason }}
+                <strong>{{ i18n.t('moderatorDashboard.reason') }}</strong> {{ report.reason }}
                 @if (report.description) {
                   <p>{{ report.description }}</p>
                 }
@@ -88,30 +89,30 @@ import { AdminService, Report } from '../../services/admin.service';
               <div class="report-actions">
                 @if (report.status === 'pending') {
                   <button class="btn-primary" (click)="assignToMe(report)">
-                    🙋 Übernehmen
+                    🙋 {{ i18n.t('moderatorDashboard.assignToMe') }}
                   </button>
                 } @else if (report.status === 'reviewing') {
                   <button class="btn-view" (click)="viewReport(report)">
-                    👁️ Details
+                    👁️ {{ i18n.t('moderatorDashboard.details') }}
                   </button>
                   <button class="btn-success" (click)="quickResolve(report, false, 'approve')">
                     ✅ OK
                   </button>
                   <button class="btn-warning" (click)="quickResolve(report, false, 'delete_post')">
-                    🗑️ Löschen
+                    🗑️ {{ i18n.t('moderatorDashboard.deletePost') }}
                   </button>
                   <button class="btn-danger" (click)="quickResolve(report, false, 'suspend')">
-                    ⛔ Sperren
+                    ⛔ {{ i18n.t('moderatorDashboard.suspendUser') }}
                   </button>
                   <button class="btn-secondary" (click)="quickResolve(report, true)">
-                    ❌ Abweisen
+                    ❌ {{ i18n.t('moderatorDashboard.dismiss') }}
                   </button>
                 }
               </div>
             </div>
           } @empty {
             <div class="empty-state">
-              <p>🎉 Keine offenen Reports!</p>
+              <p>🎉 {{ i18n.t('moderatorDashboard.noOpenReports') }}</p>
             </div>
           }
         </div>
@@ -123,7 +124,7 @@ import { AdminService, Report } from '../../services/admin.service';
           @for (action of admin.actions(); track action.action_id) {
             <div class="action-item">
               <span class="action-type" [class]="action.action_type">{{ getActionLabel(action.action_type) }}</span>
-              <span class="action-mod">von {{ action.moderator_username }}</span>
+              <span class="action-mod">{{ i18n.t('moderatorDashboard.by') }} {{ action.moderator_username }}</span>
               @if (action.target_user_uid) {
                 <span>→ User #{{ action.target_user_uid }}</span>
               }
@@ -144,20 +145,20 @@ import { AdminService, Report } from '../../services/admin.service';
             
             @if (selectedPostContent) {
               <div class="post-preview">
-                <strong>Post-Inhalt:</strong>
+                <strong>{{ i18n.t('moderatorDashboard.postContent') }}</strong>
                 <p>{{ selectedPostContent }}</p>
               </div>
             }
             
             <div class="resolve-form">
-              <label>Notiz zur Lösung:</label>
+              <label>{{ i18n.t('moderatorDashboard.resolutionNote') }}</label>
               <textarea [(ngModel)]="resolutionNote" rows="3"></textarea>
               
               <div class="modal-actions">
-                <button class="btn-success" (click)="resolveWithNote('approve')">✅ Genehmigen</button>
-                <button class="btn-warning" (click)="resolveWithNote('delete_post')">🗑️ Post löschen</button>
-                <button class="btn-danger" (click)="resolveWithNote('suspend')">⛔ User sperren</button>
-                <button class="btn-secondary" (click)="resolveWithNote(null, true)">❌ Abweisen</button>
+                <button class="btn-success" (click)="resolveWithNote('approve')">✅ {{ i18n.t('moderatorDashboard.approve') }}</button>
+                <button class="btn-warning" (click)="resolveWithNote('delete_post')">🗑️ {{ i18n.t('moderatorDashboard.deletePost') }}</button>
+                <button class="btn-danger" (click)="resolveWithNote('suspend')">⛔ {{ i18n.t('moderatorDashboard.suspendUser') }}</button>
+                <button class="btn-secondary" (click)="resolveWithNote(null, true)">❌ {{ i18n.t('moderatorDashboard.dismiss') }}</button>
               </div>
             </div>
             
@@ -240,7 +241,8 @@ import { AdminService, Report } from '../../services/admin.service';
 })
 export class AdminDashboardComponent implements OnInit {
   admin = inject(AdminService);
-  
+  i18n = inject(I18nService);
+
   activeTab = 'reports';
   selectedReport: Report | null = null;
   selectedPostContent: string | null = null;
@@ -265,13 +267,13 @@ export class AdminDashboardComponent implements OnInit {
     
     this.admin.getReportDetail(report.report_id).subscribe({
       next: (res) => {
-        this.selectedPostContent = res.post?.content || 'Post nicht gefunden';
+        this.selectedPostContent = res.post?.content || this.i18n.t('moderatorDashboard.postNotFound');
       }
     });
   }
 
   quickResolve(report: Report, dismiss: boolean, action?: string): void {
-    const note = dismiss ? 'Report abgewiesen' : `Aktion: ${action || 'genehmigt'}`;
+    const note = dismiss ? this.i18n.t('moderatorDashboard.reportDismissed') : `Aktion: ${action || this.i18n.t('moderatorDashboard.actionApproved')}`;
     this.admin.resolveReport(report.report_id, note, dismiss, action).subscribe();
   }
 
@@ -280,7 +282,7 @@ export class AdminDashboardComponent implements OnInit {
     
     this.admin.resolveReport(
       this.selectedReport.report_id,
-      this.resolutionNote || 'Keine Notiz',
+      this.resolutionNote || this.i18n.t('moderatorDashboard.noNote'),
       dismiss,
       action || undefined
     ).subscribe({
@@ -293,37 +295,37 @@ export class AdminDashboardComponent implements OnInit {
 
   getCategoryLabel(category: string): string {
     const labels: Record<string, string> = {
-      hate_speech: '🔴 Hassrede',
-      harassment: '🟠 Belästigung',
-      spam: '🟣 Spam',
-      inappropriate: '🟡 Unangemessen',
-      other: '⚪ Sonstiges'
+      hate_speech: '🔴 ' + this.i18n.t('moderatorDashboard.categoryHateSpeech'),
+      harassment: '🟠 ' + this.i18n.t('moderatorDashboard.categoryHarassment'),
+      spam: '🟣 ' + this.i18n.t('moderatorDashboard.categorySpam'),
+      inappropriate: '🟡 ' + this.i18n.t('moderatorDashboard.categoryInappropriate'),
+      other: '⚪ ' + this.i18n.t('moderatorDashboard.categoryOther')
     };
     return labels[category] || category;
   }
 
   getActionLabel(action: string): string {
     const labels: Record<string, string> = {
-      delete: '🗑️ Gelöscht',
-      approve: '✅ Genehmigt',
-      flag: '🚩 Markiert',
-      block: '🚫 Blockiert',
-      warn_user: '⚠️ Verwarnt',
-      suspend_user: '⛔ Suspendiert',
-      ban_user: '🔨 Gebannt',
-      dismiss_report: '❌ Abgewiesen'
+      delete: '🗑️ ' + this.i18n.t('moderatorDashboard.actionDeleted'),
+      approve: '✅ ' + this.i18n.t('moderatorDashboard.actionApprove'),
+      flag: '🚩 ' + this.i18n.t('moderatorDashboard.actionFlagged'),
+      block: '🚫 ' + this.i18n.t('moderatorDashboard.actionBlocked'),
+      warn_user: '⚠️ ' + this.i18n.t('moderatorDashboard.actionWarned'),
+      suspend_user: '⛔ ' + this.i18n.t('moderatorDashboard.actionSuspended'),
+      ban_user: '🔨 ' + this.i18n.t('moderatorDashboard.actionBanned'),
+      dismiss_report: '❌ ' + this.i18n.t('moderatorDashboard.actionDismissed')
     };
     return labels[action] || action;
   }
 
   getVisibilityLabel(visibility: string): string {
     const labels: Record<string, string> = {
-      public: '🌍 Öffentlich',
-      friends: '👋 Freunde',
-      acquaintance: '👋 Bekannte',
-      close_friend: '💚 Enge Freunde',
-      family: '👨‍👩‍👧 Familie',
-      private: '🔒 Privat'
+      public: '🌍 ' + this.i18n.t('moderatorDashboard.visibilityPublic'),
+      friends: '👋 ' + this.i18n.t('moderatorDashboard.visibilityFriends'),
+      acquaintance: '👋 ' + this.i18n.t('moderatorDashboard.visibilityAcquaintance'),
+      close_friend: '💚 ' + this.i18n.t('moderatorDashboard.visibilityCloseFriend'),
+      family: '👨‍👩‍👧 ' + this.i18n.t('moderatorDashboard.visibilityFamily'),
+      private: '🔒 ' + this.i18n.t('moderatorDashboard.visibilityPrivate')
     };
     return labels[visibility] || visibility;
   }

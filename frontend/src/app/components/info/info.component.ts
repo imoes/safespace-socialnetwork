@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
     <div class="info-container">
       <div class="info-content">
         <div class="header-section">
-          <h1>ℹ️ Über SocialNet</h1>
+          <h1>ℹ️ Über SafeSpace</h1>
           <p class="tagline">Ein sicheres und datenschutzfreundliches soziales Netzwerk</p>
         </div>
 
@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
           </div>
           <h2>Open Source Software</h2>
           <p>
-            SocialNet ist ein <strong>Open Source Projekt</strong> und steht der Community frei zur Verfügung.
+            SafeSpace ist ein <strong>Open Source Projekt</strong> und steht der Community frei zur Verfügung.
             Der gesamte Quellcode ist öffentlich einsehbar, kann überprüft und verbessert werden.
           </p>
           <p>
@@ -58,7 +58,7 @@ import { CommonModule } from '@angular/common';
           <h2>🐛 Mitmachen & Feedback</h2>
           <p>
             Wir freuen uns über <strong>Feedback, Verbesserungsvorschläge und Bug-Reports</strong>!
-            Ihre Beiträge helfen dabei, SocialNet kontinuierlich zu verbessern.
+            Ihre Beiträge helfen dabei, SafeSpace kontinuierlich zu verbessern.
           </p>
 
           <div class="feedback-box">
