@@ -343,13 +343,14 @@ async def search_users(
             WHERE (u.username ILIKE %s
               OR u.first_name ILIKE %s
               OR u.last_name ILIKE %s
-              OR CONCAT(u.first_name, ' ', u.last_name) ILIKE %s)
+              OR CONCAT(u.first_name, ' ', u.last_name) ILIKE %s
+              OR u.email ILIKE %s)
               AND u.uid != %s
               AND u.is_banned = FALSE
             ORDER BY is_friend DESC, u.username ASC
             LIMIT 20
             """,
-            (current_user["uid"], current_user["uid"], f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", current_user["uid"])
+            (current_user["uid"], current_user["uid"], f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", current_user["uid"])
         )
         rows = await result.fetchall()
 
@@ -386,6 +387,7 @@ async def get_users_list(
             SELECT
                 u.uid,
                 u.username,
+                u.email,
                 COALESCE(u.role, 'user') as role,
                 COALESCE(u.created_at, CURRENT_TIMESTAMP) as created_at,
                 COALESCE(u.is_banned, false) as is_banned,
@@ -395,7 +397,7 @@ async def get_users_list(
                 COALESCE(COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END), 0) as report_count
             FROM users u
             LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
-            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
+            GROUP BY u.uid, u.username, u.email, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
             ORDER BY u.created_at DESC
             """
         )
@@ -414,6 +416,7 @@ async def get_users_list(
             users_list.append({
                 "uid": row["uid"],
                 "username": row["username"],
+                "email": row["email"],
                 "role": row["role"],
                 "created_at": created_at,
                 "post_count": row["post_count"] or 0,

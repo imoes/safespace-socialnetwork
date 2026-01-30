@@ -648,7 +648,9 @@
     "deleteWarning": "WARNING: This action cannot be undone!\n\nYou are about to permanently delete {{username}} and ALL associated data:\n- All posts and media\n- All friendships\n- All reports\n- The entire user account\n\nDo you really want to PERMANENTLY delete {{username}}?",
     "deleteLastConfirm": "Final confirmation: Really delete {{username}}?",
     "successDeleted": "{{username}} was permanently deleted",
-    "errorDeleting": "Error deleting user"
+    "errorDeleting": "Error deleting user",
+    "searchPlaceholder": "Search users (name, email, ID)...",
+    "deleteSuccess": "{{username}} has been permanently deleted"
   },
   "videoEditor": {
     "selectVideoFile": "Please select a video file.",

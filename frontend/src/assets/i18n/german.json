@@ -648,7 +648,9 @@
     "deleteWarning": "WARNUNG: Diese Aktion kann nicht rückgängig gemacht werden!\n\nSie sind dabei, {{username}} und ALLE zugehörigen Daten permanent zu löschen:\n- Alle Posts und Medien\n- Alle Freundschaften\n- Alle Reports und Meldungen\n- Das gesamte Benutzerkonto\n\nMöchten Sie {{username}} wirklich PERMANENT löschen?",
     "deleteLastConfirm": "Letzte Bestätigung: {{username}} wirklich löschen?",
     "successDeleted": "{{username}} wurde permanent gelöscht",
-    "errorDeleting": "Fehler beim Löschen des Benutzers"
+    "errorDeleting": "Fehler beim Löschen des Benutzers",
+    "searchPlaceholder": "Benutzer suchen (Name, E-Mail, ID)...",
+    "deleteSuccess": "{{username}} wurde permanent gelöscht"
   },
   "videoEditor": {
     "selectVideoFile": "Bitte wähle eine Video-Datei aus.",

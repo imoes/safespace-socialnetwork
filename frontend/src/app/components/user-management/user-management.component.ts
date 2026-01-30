@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { I18nService } from '../../services/i18n.service';
 interface UserWithStats {
   uid: number;
   username: string;
+  email: string;
   role: 'user' | 'moderator' | 'admin';
   created_at: string;
   post_count: number;
@@ -58,11 +59,25 @@ interface UserWithStats {
         </div>
       </div>
 
+      <div class="search-bar">
+        <input
+          type="text"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          [placeholder]="i18n.t('userManagement.searchPlaceholder')"
+          class="search-input"
+        />
+        @if (searchQuery()) {
+          <span class="search-count">{{ filteredUsers().length }} / {{ users().length }}</span>
+        }
+      </div>
+
       <div class="users-table">
         <table>
           <thead>
             <tr>
               <th>{{ i18n.t('userManagement.tableUser') }}</th>
+              <th>E-Mail</th>
               <th>{{ i18n.t('userManagement.tableRole') }}</th>
               <th>{{ i18n.t('userManagement.tableRegistered') }}</th>
               <th>Posts</th>
@@ -72,7 +87,7 @@ interface UserWithStats {
             </tr>
           </thead>
           <tbody>
-            @for (user of users(); track user.uid) {
+            @for (user of filteredUsers(); track user.uid) {
               <tr [class.banned]="user.is_banned">
                 <td>
                   <div class="user-info">
@@ -80,6 +95,7 @@ interface UserWithStats {
                     <span class="uid">#{{ user.uid }}</span>
                   </div>
                 </td>
+                <td class="email-cell">{{ user.email }}</td>
                 <td>
                   <span class="role-badge" [class]="'role-' + user.role">
                     {{ getRoleLabel(user.role) }}
@@ -394,6 +410,44 @@ interface UserWithStats {
     .btn-delete:hover:not(:disabled) {
       background: #660000;
     }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      max-width: 400px;
+      padding: 10px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: #1877f2;
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+    }
+
+    .search-count {
+      font-size: 13px;
+      color: #666;
+      white-space: nowrap;
+    }
+
+    .email-cell {
+      font-size: 13px;
+      color: #555;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   `]
 })
 export class UserManagementComponent implements OnInit {
@@ -403,6 +457,16 @@ export class UserManagementComponent implements OnInit {
   router = inject(Router);
 
   users = signal<UserWithStats[]>([]);
+  searchQuery = signal('');
+  filteredUsers = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return this.users();
+    return this.users().filter(u =>
+      u.username.toLowerCase().includes(query) ||
+      u.email.toLowerCase().includes(query) ||
+      u.uid.toString().includes(query)
+    );
+  });
   loading = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
