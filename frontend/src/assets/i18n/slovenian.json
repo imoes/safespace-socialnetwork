@@ -255,7 +255,8 @@
     "register": "Registrirajte se zdaj",
     "errors": {
       "invalidCredentials": "Neveljavni podatki za prijavo",
-      "loginFailed": "Prijava ni uspela. Prosimo, poskusite znova."
+      "loginFailed": "Prijava ni uspela. Prosimo, poskusite znova.",
+      "emailNotVerified": "Vaš e-poštni naslov še ni potrjen. Preverite svojo mapo »Prejeto«."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Prosimo, potrdite svoj e-poštni naslov",
+    "verificationPendingHint": "Poslali smo vam e-pošto s potrditveno povezavo. Kliknite na povezavo, da aktivirate svoj račun.",
+    "resendVerification": "Ponovno pošlji potrditveno e-pošto",
+    "resendIn": "Ponovno pošlji čez",
     "registerButton": "Registracija",
     "hasAccount": "Že imate račun?",
     "login": "Prijavite se tukaj",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Preverjanje e-pošte...",
+    "confirmedTitle": "E-pošta potrjena",
+    "confirmedMessage": "Vaš e-poštni naslov je bil uspešno potrjen. Zdaj se lahko prijavite.",
+    "alreadyConfirmedTitle": "Že potrjeno",
+    "alreadyConfirmedMessage": "Vaš e-poštni naslov je že potrjen.",
+    "errorTitle": "Neveljavna povezava",
+    "errorMessage": "Ta potrditvena povezava je neveljavna ali je potekla.",
+    "backToLogin": "Nazaj na prijavo"
   },
   "passwordReset": {
     "title": "Ponastavitev gesla",

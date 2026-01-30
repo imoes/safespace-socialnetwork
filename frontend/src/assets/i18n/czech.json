@@ -255,7 +255,8 @@
     "register": "Zaregistrujte se",
     "errors": {
       "invalidCredentials": "Neplatné přihlašovací údaje",
-      "loginFailed": "Přihlášení se nezdařilo. Zkuste to prosím znovu."
+      "loginFailed": "Přihlášení se nezdařilo. Zkuste to prosím znovu.",
+      "emailNotVerified": "Vaše e-mailová adresa dosud nebyla ověřena. Zkontrolujte prosím svou schránku."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Ověřte prosím svou e-mailovou adresu",
+    "verificationPendingHint": "Poslali jsme vám e-mail s ověřovacím odkazem. Klikněte prosím na odkaz pro aktivaci vašeho účtu.",
+    "resendVerification": "Znovu odeslat ověřovací e-mail",
+    "resendIn": "Znovu odeslat za",
     "registerButton": "Zaregistrovat se",
     "hasAccount": "Již máte účet?",
     "login": "Přihlaste se zde",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Ověřování e-mailu...",
+    "confirmedTitle": "E-mail ověřen",
+    "confirmedMessage": "Vaše e-mailová adresa byla úspěšně ověřena. Nyní se můžete přihlásit.",
+    "alreadyConfirmedTitle": "Již ověřeno",
+    "alreadyConfirmedMessage": "Vaše e-mailová adresa již byla ověřena.",
+    "errorTitle": "Neplatný odkaz",
+    "errorMessage": "Tento ověřovací odkaz je neplatný nebo vypršel.",
+    "backToLogin": "Zpět na přihlášení"
   },
   "passwordReset": {
     "title": "Obnovit heslo",

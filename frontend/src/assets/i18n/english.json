@@ -255,7 +255,8 @@
     "register": "Register now",
     "errors": {
       "invalidCredentials": "Invalid credentials",
-      "loginFailed": "Login failed. Please try again."
+      "loginFailed": "Login failed. Please try again.",
+      "emailNotVerified": "Your email address has not been verified yet. Please check your inbox."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Please verify your email address",
+    "verificationPendingHint": "We have sent you an email with a verification link. Please click the link to activate your account.",
+    "resendVerification": "Resend verification email",
+    "resendIn": "Resend in",
     "registerButton": "Register",
     "hasAccount": "Already have an account?",
     "login": "Login here",
@@ -297,6 +302,16 @@
     "alreadyConfirmedMessage": "Parental consent has already been granted.",
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verifying email...",
+    "confirmedTitle": "Email verified",
+    "confirmedMessage": "Your email address has been successfully verified. You can now log in.",
+    "alreadyConfirmedTitle": "Already verified",
+    "alreadyConfirmedMessage": "Your email address has already been verified.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This verification link is invalid or has expired.",
     "backToLogin": "Back to login"
   },
   "passwordReset": {

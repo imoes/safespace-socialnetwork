@@ -255,7 +255,8 @@
     "register": "Zarejestruj się",
     "errors": {
       "invalidCredentials": "Nieprawidłowe dane logowania",
-      "loginFailed": "Logowanie nie powiodło się. Spróbuj ponownie."
+      "loginFailed": "Logowanie nie powiodło się. Spróbuj ponownie.",
+      "emailNotVerified": "Twój adres e-mail nie został jeszcze zweryfikowany. Sprawdź swoją skrzynkę odbiorczą."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Zweryfikuj swój adres e-mail",
+    "verificationPendingHint": "Wysłaliśmy Ci e-mail z linkiem weryfikacyjnym. Kliknij link, aby aktywować swoje konto.",
+    "resendVerification": "Wyślij ponownie e-mail weryfikacyjny",
+    "resendIn": "Wyślij ponownie za",
     "registerButton": "Zarejestruj się",
     "hasAccount": "Masz już konto?",
     "login": "Zaloguj się tutaj",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Weryfikacja e-maila...",
+    "confirmedTitle": "E-mail zweryfikowany",
+    "confirmedMessage": "Twój adres e-mail został pomyślnie zweryfikowany. Możesz się teraz zalogować.",
+    "alreadyConfirmedTitle": "Już zweryfikowany",
+    "alreadyConfirmedMessage": "Twój adres e-mail został już zweryfikowany.",
+    "errorTitle": "Nieprawidłowy link",
+    "errorMessage": "Ten link weryfikacyjny jest nieprawidłowy lub wygasł.",
+    "backToLogin": "Powrót do logowania"
   },
   "passwordReset": {
     "title": "Resetowanie hasła",

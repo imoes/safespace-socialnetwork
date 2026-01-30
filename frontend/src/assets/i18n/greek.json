@@ -255,7 +255,8 @@
     "register": "Εγγραφείτε τώρα",
     "errors": {
       "invalidCredentials": "Μη έγκυρα στοιχεία σύνδεσης",
-      "loginFailed": "Η σύνδεση απέτυχε. Παρακαλώ δοκιμάστε ξανά."
+      "loginFailed": "Η σύνδεση απέτυχε. Παρακαλώ δοκιμάστε ξανά.",
+      "emailNotVerified": "Η διεύθυνση email σας δεν έχει επαληθευτεί ακόμα. Ελέγξτε τα εισερχόμενά σας."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Παρακαλώ επαληθεύστε τη διεύθυνση email σας",
+    "verificationPendingHint": "Σας στείλαμε ένα email με σύνδεσμο επαλήθευσης. Κάντε κλικ στον σύνδεσμο για να ενεργοποιήσετε τον λογαριασμό σας.",
+    "resendVerification": "Επανάληψη αποστολής email επαλήθευσης",
+    "resendIn": "Επανάληψη αποστολής σε",
     "registerButton": "Εγγραφή",
     "hasAccount": "Έχετε ήδη λογαριασμό;",
     "login": "Συνδεθείτε εδώ",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Επαλήθευση email...",
+    "confirmedTitle": "Email επαληθεύτηκε",
+    "confirmedMessage": "Η διεύθυνση email σας επαληθεύτηκε επιτυχώς. Μπορείτε τώρα να συνδεθείτε.",
+    "alreadyConfirmedTitle": "Ήδη επαληθευμένο",
+    "alreadyConfirmedMessage": "Η διεύθυνση email σας έχει ήδη επαληθευτεί.",
+    "errorTitle": "Μη έγκυρος σύνδεσμος",
+    "errorMessage": "Αυτός ο σύνδεσμος επαλήθευσης δεν είναι έγκυρος ή έχει λήξει.",
+    "backToLogin": "Πίσω στη σύνδεση"
   },
   "passwordReset": {
     "title": "Επαναφορά Κωδικού",

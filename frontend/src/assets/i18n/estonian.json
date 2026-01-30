@@ -255,7 +255,8 @@
     "register": "Registreeru kohe",
     "errors": {
       "invalidCredentials": "Valed sisselogimisandmed",
-      "loginFailed": "Sisselogimine ebaõnnestus. Palun proovi uuesti."
+      "loginFailed": "Sisselogimine ebaõnnestus. Palun proovi uuesti.",
+      "emailNotVerified": "Teie e-posti aadress pole veel kinnitatud. Palun kontrollige oma postkasti."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Palun kinnitage oma e-posti aadress",
+    "verificationPendingHint": "Saatsime teile kinnituslingiga e-kirja. Palun klõpsake lingil, et oma konto aktiveerida.",
+    "resendVerification": "Saada kinnituskiri uuesti",
+    "resendIn": "Saada uuesti",
     "registerButton": "Registreeru",
     "hasAccount": "On juba konto olemas?",
     "login": "Logi sisse siin",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-posti kinnitamine...",
+    "confirmedTitle": "E-post kinnitatud",
+    "confirmedMessage": "Teie e-posti aadress on edukalt kinnitatud. Nüüd saate sisse logida.",
+    "alreadyConfirmedTitle": "Juba kinnitatud",
+    "alreadyConfirmedMessage": "Teie e-posti aadress on juba kinnitatud.",
+    "errorTitle": "Kehtetu link",
+    "errorMessage": "See kinnituslink on kehtetu või aegunud.",
+    "backToLogin": "Tagasi sisselogimisse"
   },
   "passwordReset": {
     "title": "Parooli lähtestamine",

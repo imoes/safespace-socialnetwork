@@ -115,6 +115,16 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS parental_consent_pending BOOLEAN DEFAULT FALSE
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(255)
+            """)
+
             # Elterliche Einwilligung
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS parental_consents (

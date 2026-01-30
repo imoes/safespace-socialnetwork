@@ -81,6 +81,8 @@ export class LoginComponent implements OnInit {
         const detail = err.error?.detail;
         if (detail === 'Parental consent pending') {
           this.error = this.i18n.t('register.errors.consentPending');
+        } else if (detail === 'Email not verified') {
+          this.error = this.i18n.t('login.errors.emailNotVerified');
         } else {
           this.error = detail || this.i18n.t('login.errors.loginFailed');
         }

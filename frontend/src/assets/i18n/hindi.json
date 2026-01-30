@@ -255,7 +255,8 @@
     "register": "अभी रजिस्टर करें",
     "errors": {
       "invalidCredentials": "अमान्य क्रेडेंशियल",
-      "loginFailed": "लॉगिन विफल। कृपया पुनः प्रयास करें।"
+      "loginFailed": "लॉगिन विफल। कृपया पुनः प्रयास करें।",
+      "emailNotVerified": "आपका ईमेल पता अभी तक सत्यापित नहीं हुआ है। कृपया अपना इनबॉक्स जाँचें।"
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "कृपया अपना ईमेल पता सत्यापित करें",
+    "verificationPendingHint": "हमने आपको एक सत्यापन लिंक वाला ईमेल भेजा है। अपना खाता सक्रिय करने के लिए कृपया लिंक पर क्लिक करें।",
+    "resendVerification": "सत्यापन ईमेल पुनः भेजें",
+    "resendIn": "पुनः भेजें",
     "registerButton": "रजिस्टर करें",
     "hasAccount": "पहले से खाता है?",
     "login": "यहां लॉगिन करें",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "ईमेल सत्यापित हो रहा है...",
+    "confirmedTitle": "ईमेल सत्यापित",
+    "confirmedMessage": "आपका ईमेल पता सफलतापूर्वक सत्यापित हो गया है। अब आप लॉगिन कर सकते हैं।",
+    "alreadyConfirmedTitle": "पहले से सत्यापित",
+    "alreadyConfirmedMessage": "आपका ईमेल पता पहले से सत्यापित है।",
+    "errorTitle": "अमान्य लिंक",
+    "errorMessage": "यह सत्यापन लिंक अमान्य है या समाप्त हो गया है।",
+    "backToLogin": "लॉगिन पर वापस जाएँ"
   },
   "passwordReset": {
     "title": "पासवर्ड रीसेट करें",

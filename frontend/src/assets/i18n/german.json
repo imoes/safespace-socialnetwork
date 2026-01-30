@@ -255,7 +255,8 @@
     "register": "Jetzt registrieren",
     "errors": {
       "invalidCredentials": "Ungültige Anmeldedaten",
-      "loginFailed": "Anmeldung fehlgeschlagen. Bitte versuche es erneut."
+      "loginFailed": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+      "emailNotVerified": "Deine E-Mail-Adresse wurde noch nicht bestätigt. Bitte überprüfe dein Postfach."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "Du musst mindestens 13 Jahre alt sein, um dich zu registrieren.",
     "consentPending": "Einwilligung ausstehend",
     "consentPendingHint": "Wir haben eine E-Mail an deine Eltern gesendet. Dein Account wird freigeschaltet, sobald die Einwilligung bestätigt wurde.",
+    "verificationPending": "Bitte bestätige deine E-Mail-Adresse",
+    "verificationPendingHint": "Wir haben dir eine E-Mail mit einem Bestätigungslink gesendet. Bitte klicke auf den Link, um deinen Account zu aktivieren.",
+    "resendVerification": "Bestätigungs-E-Mail erneut senden",
+    "resendIn": "Erneut senden in",
     "registerButton": "Registrieren",
     "hasAccount": "Bereits ein Konto?",
     "login": "Hier anmelden",
@@ -297,6 +302,16 @@
     "alreadyConfirmedMessage": "Die elterliche Einwilligung wurde bereits erteilt.",
     "errorTitle": "Ungültiger Link",
     "errorMessage": "Dieser Einwilligungslink ist ungültig oder abgelaufen.",
+    "backToLogin": "Zurück zum Login"
+  },
+  "emailVerification": {
+    "verifying": "E-Mail wird überprüft...",
+    "confirmedTitle": "E-Mail bestätigt",
+    "confirmedMessage": "Deine E-Mail-Adresse wurde erfolgreich bestätigt. Du kannst dich jetzt anmelden.",
+    "alreadyConfirmedTitle": "Bereits bestätigt",
+    "alreadyConfirmedMessage": "Deine E-Mail-Adresse wurde bereits bestätigt.",
+    "errorTitle": "Ungültiger Link",
+    "errorMessage": "Dieser Bestätigungslink ist ungültig oder abgelaufen.",
     "backToLogin": "Zurück zum Login"
   },
   "passwordReset": {

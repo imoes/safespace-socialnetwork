@@ -79,13 +79,29 @@ async def register(user_data: UserCreate):
         birthday=str(user_data.birthday)
     )
 
-    # is_minor Flag setzen
+    # is_minor Flag setzen + E-Mail-Verifizierungstoken generieren
+    email_verification_token = secrets.token_urlsafe(48)
     async with PostgresDB.connection() as conn:
         await conn.execute(
-            "UPDATE users SET last_login = %s, is_minor = %s WHERE uid = %s",
-            (datetime.utcnow(), is_minor, user["uid"])
+            "UPDATE users SET last_login = %s, is_minor = %s, email_verified = FALSE, email_verification_token = %s WHERE uid = %s",
+            (datetime.utcnow(), is_minor, email_verification_token, user["uid"])
         )
         await conn.commit()
+
+    # Verifizierungs-E-Mail senden
+    try:
+        from app.services.email_service import EmailService
+        from app.db.site_settings import get_site_url
+        site_url = await get_site_url()
+        verify_link = f"{site_url}/verify-email/{email_verification_token}"
+
+        await EmailService.send_email_verification(
+            to_email=user_data.email,
+            username=user_data.username,
+            verify_link=verify_link
+        )
+    except Exception as e:
+        print(f"Error sending verification email: {e}")
 
     # Bei 13-15: Eltern-Einwilligung anfordern, Account ist bis dahin gesperrt
     if age < 16 and user_data.parent_email:
@@ -166,6 +182,78 @@ async def verify_parental_consent(token: str):
     return {"message": "Parental consent confirmed", "confirmed": True}
 
 
+@router.get("/verify-email/{token}")
+async def verify_email(token: str):
+    """Bestätigt die E-Mail-Adresse über den Verifizierungslink"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT uid, email_verified FROM users WHERE email_verification_token = %s",
+            (token,)
+        )
+        row = await result.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="Invalid verification token")
+
+        if row["email_verified"]:
+            return {"message": "Email already verified", "already_verified": True}
+
+        await conn.execute(
+            "UPDATE users SET email_verified = TRUE, email_verification_token = NULL WHERE uid = %s",
+            (row["uid"],)
+        )
+        await conn.commit()
+
+    return {"message": "Email verified successfully", "verified": True}
+
+
+@router.post("/resend-verification")
+async def resend_verification_email(data: dict):
+    """Sendet die Verifizierungs-E-Mail erneut"""
+    email = data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT uid, username, email_verified, email_verification_token FROM users WHERE email = %s",
+            (email,)
+        )
+        row = await result.fetchone()
+
+        if not row:
+            # Nicht verraten ob E-Mail existiert
+            return {"message": "If the email exists, a verification link has been sent"}
+
+        if row["email_verified"]:
+            return {"message": "Email already verified", "already_verified": True}
+
+        # Neuen Token generieren
+        new_token = secrets.token_urlsafe(48)
+        await conn.execute(
+            "UPDATE users SET email_verification_token = %s WHERE uid = %s",
+            (new_token, row["uid"])
+        )
+        await conn.commit()
+
+    # Verifizierungs-E-Mail senden
+    try:
+        from app.services.email_service import EmailService
+        from app.db.site_settings import get_site_url
+        site_url = await get_site_url()
+        verify_link = f"{site_url}/verify-email/{new_token}"
+
+        await EmailService.send_email_verification(
+            to_email=email,
+            username=row["username"],
+            verify_link=verify_link
+        )
+    except Exception as e:
+        print(f"Error sending verification email: {e}")
+
+    return {"message": "If the email exists, a verification link has been sent"}
+
+
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """
@@ -179,6 +267,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Prüfen ob E-Mail verifiziert ist
+    if not user.get("email_verified"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified"
         )
 
     # Prüfen ob elterliche Einwilligung aussteht

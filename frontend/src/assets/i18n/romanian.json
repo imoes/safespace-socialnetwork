@@ -255,7 +255,8 @@
     "register": "Înregistrează-te acum",
     "errors": {
       "invalidCredentials": "Date de autentificare invalide",
-      "loginFailed": "Autentificarea a eșuat. Te rugăm să încerci din nou."
+      "loginFailed": "Autentificarea a eșuat. Te rugăm să încerci din nou.",
+      "emailNotVerified": "Adresa ta de email nu a fost încă verificată. Te rugăm să verifici inbox-ul."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Te rugăm să verifici adresa de email",
+    "verificationPendingHint": "Ți-am trimis un email cu un link de verificare. Te rugăm să dai click pe link pentru a-ți activa contul.",
+    "resendVerification": "Retrimite emailul de verificare",
+    "resendIn": "Retrimite în",
     "registerButton": "Înregistrează-te",
     "hasAccount": "Ai deja un cont?",
     "login": "Autentifică-te aici",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Se verifică emailul...",
+    "confirmedTitle": "Email verificat",
+    "confirmedMessage": "Adresa ta de email a fost verificată cu succes. Acum te poți autentifica.",
+    "alreadyConfirmedTitle": "Deja verificat",
+    "alreadyConfirmedMessage": "Adresa ta de email a fost deja verificată.",
+    "errorTitle": "Link invalid",
+    "errorMessage": "Acest link de verificare este invalid sau a expirat.",
+    "backToLogin": "Înapoi la autentificare"
   },
   "passwordReset": {
     "title": "Resetare parolă",

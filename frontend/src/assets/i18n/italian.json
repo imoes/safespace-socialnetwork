@@ -363,7 +363,8 @@
     "register": "Registrati ora",
     "errors": {
       "invalidCredentials": "Credenziali non valide",
-      "loginFailed": "Accesso non riuscito. Riprova."
+      "loginFailed": "Accesso non riuscito. Riprova.",
+      "emailNotVerified": "Il tuo indirizzo e-mail non è ancora stato verificato. Controlla la tua casella di posta."
     }
   },
   "register": {
@@ -378,6 +379,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Verifica il tuo indirizzo e-mail",
+    "verificationPendingHint": "Ti abbiamo inviato un'e-mail con un link di verifica. Clicca sul link per attivare il tuo account.",
+    "resendVerification": "Reinvia e-mail di verifica",
+    "resendIn": "Reinvia tra",
     "registerButton": "Registrati",
     "hasAccount": "Hai già un account?",
     "login": "Accedi qui",
@@ -406,6 +411,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verifica dell'e-mail in corso...",
+    "confirmedTitle": "E-mail verificata",
+    "confirmedMessage": "Il tuo indirizzo e-mail è stato verificato con successo. Puoi ora accedere.",
+    "alreadyConfirmedTitle": "Già verificato",
+    "alreadyConfirmedMessage": "Il tuo indirizzo e-mail è già stato verificato.",
+    "errorTitle": "Link non valido",
+    "errorMessage": "Questo link di verifica non è valido o è scaduto.",
+    "backToLogin": "Torna al login"
   },
   "common": {
     "loading": "Caricamento...",

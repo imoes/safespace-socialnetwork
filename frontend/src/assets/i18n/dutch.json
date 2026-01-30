@@ -255,7 +255,8 @@
     "register": "Registreer nu",
     "errors": {
       "invalidCredentials": "Ongeldige inloggegevens",
-      "loginFailed": "Inloggen mislukt. Probeer het opnieuw."
+      "loginFailed": "Inloggen mislukt. Probeer het opnieuw.",
+      "emailNotVerified": "Je e-mailadres is nog niet geverifieerd. Controleer je inbox."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Verifieer je e-mailadres",
+    "verificationPendingHint": "We hebben je een e-mail gestuurd met een verificatielink. Klik op de link om je account te activeren.",
+    "resendVerification": "Verificatie-e-mail opnieuw verzenden",
+    "resendIn": "Opnieuw verzenden over",
     "registerButton": "Registreren",
     "hasAccount": "Heb je al een account?",
     "login": "Log hier in",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-mail wordt geverifieerd...",
+    "confirmedTitle": "E-mail geverifieerd",
+    "confirmedMessage": "Je e-mailadres is succesvol geverifieerd. Je kunt nu inloggen.",
+    "alreadyConfirmedTitle": "Reeds geverifieerd",
+    "alreadyConfirmedMessage": "Je e-mailadres is al geverifieerd.",
+    "errorTitle": "Ongeldige link",
+    "errorMessage": "Deze verificatielink is ongeldig of verlopen.",
+    "backToLogin": "Terug naar inloggen"
   },
   "passwordReset": {
     "title": "Wachtwoord resetten",
