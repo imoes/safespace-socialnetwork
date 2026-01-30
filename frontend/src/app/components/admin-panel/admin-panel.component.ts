@@ -315,10 +315,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   async loadDeepSeekBalance(): Promise<void> {
     try {
-      const token = localStorage.getItem('access_token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      const response = await this.http.get<DeepSeekBalance>('/api/admin/deepseek-balance', { headers }).toPromise();
+      const response = await this.http.get<DeepSeekBalance>('/api/admin/deepseek-balance').toPromise();
       this.deepseekBalance.set(response || null);
       this.deepseekError.set(null);
     } catch (err: any) {
