@@ -363,7 +363,8 @@
     "register": "سجل الآن",
     "errors": {
       "invalidCredentials": "بيانات اعتماد غير صحيحة",
-      "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى."
+      "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+      "emailNotVerified": "لم يتم التحقق من عنوان بريدك الإلكتروني بعد. يرجى التحقق من صندوق الوارد."
     }
   },
   "register": {
@@ -378,6 +379,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "يرجى التحقق من عنوان بريدك الإلكتروني",
+    "verificationPendingHint": "لقد أرسلنا لك بريدًا إلكترونيًا يحتوي على رابط التحقق. يرجى النقر على الرابط لتفعيل حسابك.",
+    "resendVerification": "إعادة إرسال بريد التحقق",
+    "resendIn": "إعادة الإرسال بعد",
     "registerButton": "التسجيل",
     "hasAccount": "لديك حساب بالفعل؟",
     "login": "سجل الدخول هنا",
@@ -406,6 +411,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "جاري التحقق من البريد الإلكتروني...",
+    "confirmedTitle": "تم التحقق من البريد الإلكتروني",
+    "confirmedMessage": "تم التحقق من عنوان بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.",
+    "alreadyConfirmedTitle": "تم التحقق مسبقًا",
+    "alreadyConfirmedMessage": "تم التحقق من عنوان بريدك الإلكتروني بالفعل.",
+    "errorTitle": "رابط غير صالح",
+    "errorMessage": "رابط التحقق هذا غير صالح أو منتهي الصلاحية.",
+    "backToLogin": "العودة إلى تسجيل الدخول"
   },
   "common": {
     "loading": "جاري التحميل...",

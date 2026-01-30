@@ -363,7 +363,8 @@
     "register": "Regístrate ahora",
     "errors": {
       "invalidCredentials": "Credenciales inválidas",
-      "loginFailed": "Inicio de sesión fallido. Por favor, inténtalo de nuevo."
+      "loginFailed": "Inicio de sesión fallido. Por favor, inténtalo de nuevo.",
+      "emailNotVerified": "Tu dirección de correo electrónico aún no ha sido verificada. Por favor, revisa tu bandeja de entrada."
     }
   },
   "register": {
@@ -378,6 +379,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Por favor, verifica tu dirección de correo electrónico",
+    "verificationPendingHint": "Te hemos enviado un correo electrónico con un enlace de verificación. Haz clic en el enlace para activar tu cuenta.",
+    "resendVerification": "Reenviar correo de verificación",
+    "resendIn": "Reenviar en",
     "registerButton": "Registrarse",
     "hasAccount": "¿Ya tienes una cuenta?",
     "login": "Inicia sesión aquí",
@@ -406,6 +411,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verificando correo electrónico...",
+    "confirmedTitle": "Correo verificado",
+    "confirmedMessage": "Tu dirección de correo electrónico ha sido verificada con éxito. Ya puedes iniciar sesión.",
+    "alreadyConfirmedTitle": "Ya verificado",
+    "alreadyConfirmedMessage": "Tu dirección de correo electrónico ya ha sido verificada.",
+    "errorTitle": "Enlace no válido",
+    "errorMessage": "Este enlace de verificación no es válido o ha caducado.",
+    "backToLogin": "Volver al inicio de sesión"
   },
   "common": {
     "loading": "Cargando...",

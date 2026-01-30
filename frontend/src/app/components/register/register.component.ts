@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -17,10 +18,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         @if (success) { <div class="success">{{ success }}</div> }
-        @if (consentPending) {
+        @if (verificationPending) {
           <div class="consent-pending">
-            <h3>📧 {{ 'register.consentPending' | translate }}</h3>
-            <p>{{ 'register.consentPendingHint' | translate }}</p>
+            <h3>{{ 'register.verificationPending' | translate }}</h3>
+            <p>{{ 'register.verificationPendingHint' | translate }}</p>
+            @if (consentPending) {
+              <p style="margin-top: 12px; font-weight: 600;">{{ 'register.consentPendingHint' | translate }}</p>
+            }
+            <button class="resend-btn" (click)="resendVerification()" [disabled]="resendCooldown > 0">
+              {{ resendCooldown > 0 ? ('register.resendIn' | translate) + ' ' + resendCooldown + 's' : ('register.resendVerification' | translate) }}
+            </button>
           </div>
         } @else {
           <form (ngSubmit)="register()">
@@ -77,6 +84,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .consent-pending { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 8px; padding: 20px; text-align: center; }
     .consent-pending h3 { margin: 0 0 8px; color: #1565c0; }
     .consent-pending p { margin: 0; color: #1976d2; font-size: 14px; line-height: 1.5; }
+    .resend-btn { margin-top: 16px; padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .resend-btn:disabled { background: #ccc; cursor: not-allowed; }
     button { padding: 14px; background: #42b72a; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
     .checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #555; line-height: 1.4; }
@@ -95,6 +104,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
   public i18n = inject(I18nService);
 
   username = '';
@@ -112,6 +122,8 @@ export class RegisterComponent {
   needsParentalConsent = false;
   tooYoung = false;
   consentPending = false;
+  verificationPending = false;
+  resendCooldown = 0;
 
   onBirthdayChange(): void {
     if (!this.birthday) {
@@ -161,15 +173,11 @@ export class RegisterComponent {
       this.needsParentalConsent ? this.parentEmail : undefined
     ).subscribe({
       next: () => {
+        this.verificationPending = true;
         if (this.needsParentalConsent) {
           this.consentPending = true;
-          this.isLoading = false;
-        } else {
-          this.success = this.i18n.t('register.success');
-          setTimeout(() => {
-            this.router.navigate(['/']);
-          }, 1000);
         }
+        this.isLoading = false;
       },
       error: (err) => {
         const detail = err.error?.detail;
@@ -198,5 +206,17 @@ export class RegisterComponent {
         this.isLoading = false;
       }
     });
+  }
+
+  resendVerification(): void {
+    this.resendCooldown = 60;
+    const interval = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    this.http.post('/api/auth/resend-verification', { email: this.email }).subscribe();
   }
 }

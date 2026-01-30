@@ -255,7 +255,8 @@
     "register": "Regisztrálj most",
     "errors": {
       "invalidCredentials": "Érvénytelen hitelesítő adatok",
-      "loginFailed": "A bejelentkezés sikertelen. Kérjük, próbáld újra."
+      "loginFailed": "A bejelentkezés sikertelen. Kérjük, próbáld újra.",
+      "emailNotVerified": "Az e-mail címed még nincs megerősítve. Kérjük, ellenőrizd a postaládádat."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Kérjük, erősítsd meg az e-mail címedet",
+    "verificationPendingHint": "Küldtünk neked egy e-mailt egy megerősítő linkkel. Kérjük, kattints a linkre a fiókod aktiválásához.",
+    "resendVerification": "Megerősítő e-mail újraküldése",
+    "resendIn": "Újraküldés",
     "registerButton": "Regisztráció",
     "hasAccount": "Már van fiókod?",
     "login": "Jelentkezz be itt",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-mail megerősítése...",
+    "confirmedTitle": "E-mail megerősítve",
+    "confirmedMessage": "Az e-mail címed sikeresen megerősítve. Most már bejelentkezhetsz.",
+    "alreadyConfirmedTitle": "Már megerősítve",
+    "alreadyConfirmedMessage": "Az e-mail címed már megerősítve van.",
+    "errorTitle": "Érvénytelen link",
+    "errorMessage": "Ez a megerősítő link érvénytelen vagy lejárt.",
+    "backToLogin": "Vissza a bejelentkezéshez"
   },
   "passwordReset": {
     "title": "Jelszó visszaállítása",

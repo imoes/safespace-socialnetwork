@@ -255,7 +255,8 @@
     "register": "Rekisteröidy nyt",
     "errors": {
       "invalidCredentials": "Virheelliset kirjautumistiedot",
-      "loginFailed": "Kirjautuminen epäonnistui. Yritä uudelleen."
+      "loginFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
+      "emailNotVerified": "Sähköpostiosoitettasi ei ole vielä vahvistettu. Tarkista postilaatikkosi."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Vahvista sähköpostiosoitteesi",
+    "verificationPendingHint": "Olemme lähettäneet sinulle sähköpostin vahvistuslinkin kanssa. Klikkaa linkkiä aktivoidaksesi tilisi.",
+    "resendVerification": "Lähetä vahvistussähköposti uudelleen",
+    "resendIn": "Lähetä uudelleen",
     "registerButton": "Rekisteröidy",
     "hasAccount": "Onko sinulla jo tili?",
     "login": "Kirjaudu täällä",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Sähköpostia vahvistetaan...",
+    "confirmedTitle": "Sähköposti vahvistettu",
+    "confirmedMessage": "Sähköpostiosoitteesi on vahvistettu onnistuneesti. Voit nyt kirjautua sisään.",
+    "alreadyConfirmedTitle": "Jo vahvistettu",
+    "alreadyConfirmedMessage": "Sähköpostiosoitteesi on jo vahvistettu.",
+    "errorTitle": "Virheellinen linkki",
+    "errorMessage": "Tämä vahvistuslinkki on virheellinen tai vanhentunut.",
+    "backToLogin": "Takaisin kirjautumiseen"
   },
   "passwordReset": {
     "title": "Nollaa salasana",

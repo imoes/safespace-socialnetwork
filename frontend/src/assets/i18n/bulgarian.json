@@ -255,7 +255,8 @@
     "register": "Регистрирайте се сега",
     "errors": {
       "invalidCredentials": "Невалидни данни за вход",
-      "loginFailed": "Входът не бе успешен. Моля, опитайте отново."
+      "loginFailed": "Входът не бе успешен. Моля, опитайте отново.",
+      "emailNotVerified": "Вашият имейл адрес все още не е потвърден. Моля, проверете входящата си поща."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Моля, потвърдете имейл адреса си",
+    "verificationPendingHint": "Изпратихме ви имейл с линк за потвърждение. Моля, кликнете върху линка, за да активирате акаунта си.",
+    "resendVerification": "Изпрати отново имейл за потвърждение",
+    "resendIn": "Изпрати отново след",
     "registerButton": "Регистрация",
     "hasAccount": "Вече имате акаунт?",
     "login": "Влезте тук",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Проверка на имейл...",
+    "confirmedTitle": "Имейлът е потвърден",
+    "confirmedMessage": "Вашият имейл адрес беше успешно потвърден. Вече можете да влезете.",
+    "alreadyConfirmedTitle": "Вече потвърден",
+    "alreadyConfirmedMessage": "Вашият имейл адрес вече е потвърден.",
+    "errorTitle": "Невалиден линк",
+    "errorMessage": "Този линк за потвърждение е невалиден или е изтекъл.",
+    "backToLogin": "Обратно към вход"
   },
   "passwordReset": {
     "title": "Нулиране на парола",

@@ -255,7 +255,8 @@
     "register": "Registruotis dabar",
     "errors": {
       "invalidCredentials": "Neteisingi prisijungimo duomenys",
-      "loginFailed": "Prisijungimas nepavyko. Bandykite dar kartą."
+      "loginFailed": "Prisijungimas nepavyko. Bandykite dar kartą.",
+      "emailNotVerified": "Jūsų el. pašto adresas dar nepatvirtintas. Patikrinkite savo pašto dėžutę."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Patvirtinkite savo el. pašto adresą",
+    "verificationPendingHint": "Išsiuntėme jums el. laišką su patvirtinimo nuoroda. Spustelėkite nuorodą, kad aktyvuotumėte savo paskyrą.",
+    "resendVerification": "Pakartotinai siųsti patvirtinimo el. laišką",
+    "resendIn": "Pakartotinai siųsti po",
     "registerButton": "Registruotis",
     "hasAccount": "Jau turite paskyrą?",
     "login": "Prisijungti čia",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "El. paštas tikrinamas...",
+    "confirmedTitle": "El. paštas patvirtintas",
+    "confirmedMessage": "Jūsų el. pašto adresas sėkmingai patvirtintas. Dabar galite prisijungti.",
+    "alreadyConfirmedTitle": "Jau patvirtinta",
+    "alreadyConfirmedMessage": "Jūsų el. pašto adresas jau patvirtintas.",
+    "errorTitle": "Neteisinga nuoroda",
+    "errorMessage": "Ši patvirtinimo nuoroda yra neteisinga arba pasibaigė jos galiojimas.",
+    "backToLogin": "Grįžti prie prisijungimo"
   },
   "passwordReset": {
     "title": "Slaptažodžio atkūrimas",

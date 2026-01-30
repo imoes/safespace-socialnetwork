@@ -255,7 +255,8 @@
     "register": "Cláraigh anois",
     "errors": {
       "invalidCredentials": "Dintiúir neamhbhailí",
-      "loginFailed": "Theip ar an logáil isteach. Bain triail eile as le do thoil."
+      "loginFailed": "Theip ar an logáil isteach. Bain triail eile as le do thoil.",
+      "emailNotVerified": "Níl do sheoladh ríomhphoist fíoraithe fós. Seiceáil do bhosca isteach le do thoil."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Fíoraigh do sheoladh ríomhphoist le do thoil",
+    "verificationPendingHint": "Chuireamar ríomhphost chugat le nasc fíoraithe. Cliceáil ar an nasc le do chuntas a ghníomhachtú.",
+    "resendVerification": "Seol ríomhphost fíoraithe arís",
+    "resendIn": "Seol arís i",
     "registerButton": "Cláraigh",
     "hasAccount": "An bhfuil cuntas agat cheana?",
     "login": "Logáil isteach anseo",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Ríomhphost á fhíorú...",
+    "confirmedTitle": "Ríomhphost fíoraithe",
+    "confirmedMessage": "Fíoraíodh do sheoladh ríomhphoist go rathúil. Is féidir leat logáil isteach anois.",
+    "alreadyConfirmedTitle": "Fíoraithe cheana féin",
+    "alreadyConfirmedMessage": "Tá do sheoladh ríomhphoist fíoraithe cheana féin.",
+    "errorTitle": "Nasc neamhbhailí",
+    "errorMessage": "Tá an nasc fíoraithe seo neamhbhailí nó imithe in éag.",
+    "backToLogin": "Ar ais go logáil isteach"
   },
   "passwordReset": {
     "title": "Athshocraigh Pasfhocal",

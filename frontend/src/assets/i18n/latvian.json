@@ -255,7 +255,8 @@
     "register": "Reģistrēties tagad",
     "errors": {
       "invalidCredentials": "Nepareizi pieteikšanās dati",
-      "loginFailed": "Pieteikšanās neizdevās. Lūdzu, mēģiniet vēlreiz."
+      "loginFailed": "Pieteikšanās neizdevās. Lūdzu, mēģiniet vēlreiz.",
+      "emailNotVerified": "Jūsu e-pasta adrese vēl nav verificēta. Lūdzu, pārbaudiet savu iesūtni."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Lūdzu, verificējiet savu e-pasta adresi",
+    "verificationPendingHint": "Mēs jums nosūtījām e-pastu ar verifikācijas saiti. Lūdzu, noklikšķiniet uz saites, lai aktivizētu savu kontu.",
+    "resendVerification": "Atkārtoti nosūtīt verifikācijas e-pastu",
+    "resendIn": "Atkārtoti nosūtīt pēc",
     "registerButton": "Reģistrēties",
     "hasAccount": "Jau ir konts?",
     "login": "Pieteikties šeit",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-pasts tiek verificēts...",
+    "confirmedTitle": "E-pasts verificēts",
+    "confirmedMessage": "Jūsu e-pasta adrese ir veiksmīgi verificēta. Tagad varat pieslēgties.",
+    "alreadyConfirmedTitle": "Jau verificēts",
+    "alreadyConfirmedMessage": "Jūsu e-pasta adrese jau ir verificēta.",
+    "errorTitle": "Nederīga saite",
+    "errorMessage": "Šī verifikācijas saite ir nederīga vai ir beigusies tās derīguma termiņš.",
+    "backToLogin": "Atpakaļ uz pieslēgšanos"
   },
   "passwordReset": {
     "title": "Atjaunot paroli",

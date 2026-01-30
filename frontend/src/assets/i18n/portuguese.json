@@ -255,7 +255,8 @@
     "register": "Registar agora",
     "errors": {
       "invalidCredentials": "Credenciais inválidas",
-      "loginFailed": "Falha ao iniciar sessão. Por favor, tente novamente."
+      "loginFailed": "Falha ao iniciar sessão. Por favor, tente novamente.",
+      "emailNotVerified": "O seu endereço de e-mail ainda não foi verificado. Por favor, verifique a sua caixa de entrada."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Por favor, verifique o seu endereço de e-mail",
+    "verificationPendingHint": "Enviámos-lhe um e-mail com um link de verificação. Clique no link para ativar a sua conta.",
+    "resendVerification": "Reenviar e-mail de verificação",
+    "resendIn": "Reenviar em",
     "registerButton": "Registar",
     "hasAccount": "Já tem uma conta?",
     "login": "Iniciar sessão aqui",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "A verificar e-mail...",
+    "confirmedTitle": "E-mail verificado",
+    "confirmedMessage": "O seu endereço de e-mail foi verificado com sucesso. Pode agora iniciar sessão.",
+    "alreadyConfirmedTitle": "Já verificado",
+    "alreadyConfirmedMessage": "O seu endereço de e-mail já foi verificado.",
+    "errorTitle": "Link inválido",
+    "errorMessage": "Este link de verificação é inválido ou expirou.",
+    "backToLogin": "Voltar ao login"
   },
   "passwordReset": {
     "title": "Repor Palavra-passe",
