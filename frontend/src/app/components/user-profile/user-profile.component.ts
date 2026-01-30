@@ -48,7 +48,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             </div>
           </div>
 
-          @if (!isOwnProfile) {
+          @if (!isOwnProfile && !isFriend) {
             <div class="profile-actions">
               <button class="btn-primary" (click)="sendFriendRequest()" [disabled]="requestSent">
                 {{ requestSent ? ('✓ ' + ('profile.requestSent' | translate)) : ('👋 ' + ('profile.sendRequest' | translate)) }}
