@@ -261,24 +261,24 @@ async def get_friends_by_relationship(uid: int, relationship: str = None) -> lis
     async with PostgresDB.connection() as conn:
         if relationship:
             result = await conn.execute(
-                """SELECT u.uid, u.username, f.relation_type as relationship, f.created_at FROM users u
+                """SELECT u.uid, u.username, u.profile_picture, f.relation_type as relationship, f.created_at FROM users u
                    INNER JOIN (
-                       SELECT friend_id as uid, relation_type, created_at FROM friendships 
+                       SELECT friend_id as uid, relation_type, created_at FROM friendships
                        WHERE user_id = %s AND status = 'accepted' AND relation_type = %s
                        UNION
-                       SELECT user_id as uid, relation_type, created_at FROM friendships 
+                       SELECT user_id as uid, relation_type, created_at FROM friendships
                        WHERE friend_id = %s AND status = 'accepted' AND relation_type = %s
                    ) f ON u.uid = f.uid ORDER BY u.username""",
                 (uid, relationship, uid, relationship)
             )
         else:
             result = await conn.execute(
-                """SELECT u.uid, u.username, f.relation_type as relationship, f.created_at FROM users u
+                """SELECT u.uid, u.username, u.profile_picture, f.relation_type as relationship, f.created_at FROM users u
                    INNER JOIN (
-                       SELECT friend_id as uid, relation_type, created_at FROM friendships 
+                       SELECT friend_id as uid, relation_type, created_at FROM friendships
                        WHERE user_id = %s AND status = 'accepted'
                        UNION
-                       SELECT user_id as uid, relation_type, created_at FROM friendships 
+                       SELECT user_id as uid, relation_type, created_at FROM friendships
                        WHERE friend_id = %s AND status = 'accepted'
                    ) f ON u.uid = f.uid ORDER BY f.relation_type, u.username""",
                 (uid, uid)
