@@ -75,7 +75,8 @@
             "proxyConfig": "proxy.conf.js",
             "allowedHosts": [
               "thesafespace.blog",
-              "www.thesafespace.blog"
+              "www.thesafespace.blog",
+              "test.thesafespace.blog"
             ]
           }
         }
