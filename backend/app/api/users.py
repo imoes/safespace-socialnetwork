@@ -74,6 +74,7 @@ class UserProfile(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     birthday: Optional[date] = None
+    is_friend: bool = False
 
 
 @router.put("/me")
@@ -435,6 +436,7 @@ async def get_user_profile(
     current_user: dict = Depends(get_current_user)
 ):
     """Lädt das Profil eines Benutzers"""
+    from app.db.postgres import get_relation_type
 
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
@@ -453,6 +455,14 @@ async def get_user_profile(
                 detail="Benutzer nicht gefunden"
             )
 
+        # Freundschaftsstatus prüfen
+        is_friend = False
+        if current_user["uid"] != user_uid:
+            relation = await get_relation_type(current_user["uid"], user_uid)
+            is_friend = relation is not None
+        else:
+            is_friend = True  # Eigenes Profil
+
         return UserProfile(
             uid=row["uid"],
             username=row["username"],
@@ -462,7 +472,8 @@ async def get_user_profile(
             profile_picture=row["profile_picture"] if "profile_picture" in row.keys() else None,
             first_name=row.get("first_name"),
             last_name=row.get("last_name"),
-            birthday=row.get("birthday")
+            birthday=row.get("birthday"),
+            is_friend=is_friend
         )
 
 
@@ -1131,7 +1142,7 @@ async def create_personal_post(
 ):
     """Erstellt einen persönlichen Post auf dem Profil eines anderen Users"""
     from app.db.sqlite_posts import UserPostsDB
-    from app.db.postgres import get_user_by_uid, increment_user_posts_count
+    from app.db.postgres import get_user_by_uid, increment_user_posts_count, get_relation_type
 
     # Prüfen ob Ziel-User existiert
     target_user = await get_user_by_uid(user_uid)
@@ -1146,6 +1157,14 @@ async def create_personal_post(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Persönliche Posts können nicht auf dem eigenen Profil erstellt werden"
+        )
+
+    # Prüfen ob man mit dem User befreundet ist
+    relation = await get_relation_type(current_user["uid"], user_uid)
+    if not relation:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Du kannst nur auf Profilen von Freunden posten"
         )
 
     # Post in BEIDEN DBs speichern (Autor UND Empfänger)
