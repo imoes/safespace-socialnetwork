@@ -406,7 +406,16 @@
     "successSaved": "Üdvözlő üzenet mentve!",
     "successDeleted": "Üdvözlő üzenet törölve",
     "successPostCreated": "Közlemény létrehozva! Minden felhasználó látni fogja.",
-    "successPostDeleted": "Közlemény törölve"
+    "successPostDeleted": "Közlemény törölve",
+    "deepseekModel": "Modell",
+    "deepseekTotalBalance": "Teljes egyenleg",
+    "deepseekGranted": "Jóváírt egyenleg",
+    "deepseekToppedUp": "Feltöltött egyenleg",
+    "deepseekAvailable": "Elérhető",
+    "deepseekUnavailable": "Nem elérhető",
+    "deepseekLowBalance": "Figyelmeztetés: A DeepSeek egyenleg nagyon alacsony! Kérjük, töltse fel a moderálási szolgáltatás fenntartásához.",
+    "deepseekLoading": "DeepSeek egyenleg betöltése...",
+    "deepseekError": "Hiba a DeepSeek egyenleg betöltésekor"
   },
   "welcome": {
     "understood": "Megértettem"

@@ -406,7 +406,16 @@
     "successSaved": "Wiadomość powitalna zapisana!",
     "successDeleted": "Wiadomość powitalna usunięta",
     "successPostCreated": "Post rozgłoszeniowy utworzony! Wszyscy użytkownicy go teraz zobaczą.",
-    "successPostDeleted": "Post rozgłoszeniowy usunięty"
+    "successPostDeleted": "Post rozgłoszeniowy usunięty",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Saldo całkowite",
+    "deepseekGranted": "Saldo przyznane",
+    "deepseekToppedUp": "Saldo doładowane",
+    "deepseekAvailable": "Dostępny",
+    "deepseekUnavailable": "Niedostępny",
+    "deepseekLowBalance": "Uwaga: Saldo DeepSeek jest bardzo niskie! Doładuj, aby utrzymać usługę moderacji.",
+    "deepseekLoading": "Ładowanie salda DeepSeek...",
+    "deepseekError": "Błąd ładowania salda DeepSeek"
   },
   "welcome": {
     "understood": "Rozumiem"

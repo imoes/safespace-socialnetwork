@@ -406,7 +406,16 @@
     "successSaved": "Приветственото съобщение е запазено!",
     "successDeleted": "Приветственото съобщение е изтрито",
     "successPostCreated": "Излъчваната публикация е създадена! Всички потребители ще я видят сега.",
-    "successPostDeleted": "Излъчваната публикация е изтрита"
+    "successPostDeleted": "Излъчваната публикация е изтрита",
+    "deepseekModel": "Модел",
+    "deepseekTotalBalance": "Общо салдо",
+    "deepseekGranted": "Предоставено салдо",
+    "deepseekToppedUp": "Допълнено салдо",
+    "deepseekAvailable": "Наличен",
+    "deepseekUnavailable": "Недостъпен",
+    "deepseekLowBalance": "Внимание: Салдото на DeepSeek е много ниско! Моля, допълнете, за да поддържате услугата за модериране.",
+    "deepseekLoading": "Зареждане на салдото на DeepSeek...",
+    "deepseekError": "Грешка при зареждане на салдото на DeepSeek"
   },
   "welcome": {
     "understood": "Разбрах"

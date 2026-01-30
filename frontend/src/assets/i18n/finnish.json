@@ -406,7 +406,16 @@
     "successSaved": "Tervetuloviesti tallennettu!",
     "successDeleted": "Tervetuloviesti poistettu",
     "successPostCreated": "Yleislähetys luotu! Kaikki käyttäjät näkevät sen nyt.",
-    "successPostDeleted": "Yleislähetys poistettu"
+    "successPostDeleted": "Yleislähetys poistettu",
+    "deepseekModel": "Malli",
+    "deepseekTotalBalance": "Kokonaissaldo",
+    "deepseekGranted": "Myönnetty saldo",
+    "deepseekToppedUp": "Ladattu saldo",
+    "deepseekAvailable": "Saatavilla",
+    "deepseekUnavailable": "Ei saatavilla",
+    "deepseekLowBalance": "Varoitus: DeepSeek-saldo on erittäin alhainen! Lataa lisää ylläpitääksesi moderointipalvelun.",
+    "deepseekLoading": "Ladataan DeepSeek-saldoa...",
+    "deepseekError": "Virhe DeepSeek-saldon lataamisessa"
   },
   "welcome": {
     "understood": "Selvä"

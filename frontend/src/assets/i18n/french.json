@@ -487,7 +487,16 @@
     "successSaved": "Message de bienvenue enregistré !",
     "successDeleted": "Message de bienvenue supprimé",
     "successPostCreated": "Post de diffusion créé ! Tous les utilisateurs le verront maintenant.",
-    "successPostDeleted": "Post de diffusion supprimé"
+    "successPostDeleted": "Post de diffusion supprimé",
+    "deepseekModel": "Modèle",
+    "deepseekTotalBalance": "Solde total",
+    "deepseekGranted": "Solde accordé",
+    "deepseekToppedUp": "Solde rechargé",
+    "deepseekAvailable": "Disponible",
+    "deepseekUnavailable": "Indisponible",
+    "deepseekLowBalance": "Attention : Le solde DeepSeek est très bas ! Veuillez recharger pour maintenir le service de modération.",
+    "deepseekLoading": "Chargement du solde DeepSeek...",
+    "deepseekError": "Erreur lors du chargement du solde DeepSeek"
   },
   "welcome": {
     "understood": "Compris"

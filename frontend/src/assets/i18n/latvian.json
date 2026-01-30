@@ -406,7 +406,16 @@
     "successSaved": "Sveiciena ziņojums saglabāts!",
     "successDeleted": "Sveiciena ziņojums dzēsts",
     "successPostCreated": "Apraides ieraksts izveidots! Visi lietotāji to tagad redzēs.",
-    "successPostDeleted": "Apraides ieraksts dzēsts"
+    "successPostDeleted": "Apraides ieraksts dzēsts",
+    "deepseekModel": "Modelis",
+    "deepseekTotalBalance": "Kopējais atlikums",
+    "deepseekGranted": "Piešķirtais atlikums",
+    "deepseekToppedUp": "Papildinātais atlikums",
+    "deepseekAvailable": "Pieejams",
+    "deepseekUnavailable": "Nav pieejams",
+    "deepseekLowBalance": "Brīdinājums: DeepSeek atlikums ir ļoti zems! Lūdzu, papildiniet, lai uzturētu moderēšanas pakalpojumu.",
+    "deepseekLoading": "Ielādē DeepSeek atlikumu...",
+    "deepseekError": "Kļūda ielādējot DeepSeek atlikumu"
   },
   "welcome": {
     "understood": "Sapratu"

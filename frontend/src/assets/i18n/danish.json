@@ -406,7 +406,16 @@
     "successSaved": "Velkomstbesked gemt!",
     "successDeleted": "Velkomstbesked slettet",
     "successPostCreated": "Broadcastopslag oprettet! Alle brugere vil nu se det.",
-    "successPostDeleted": "Broadcastopslag slettet"
+    "successPostDeleted": "Broadcastopslag slettet",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Samlet saldo",
+    "deepseekGranted": "Tildelt saldo",
+    "deepseekToppedUp": "Opladet saldo",
+    "deepseekAvailable": "Tilgængelig",
+    "deepseekUnavailable": "Ikke tilgængelig",
+    "deepseekLowBalance": "Advarsel: DeepSeek-saldoen er meget lav! Oplad venligst for at opretholde moderationstjenesten.",
+    "deepseekLoading": "Indlæser DeepSeek-saldo...",
+    "deepseekError": "Fejl ved indlæsning af DeepSeek-saldo"
   },
   "welcome": {
     "understood": "Forstået"

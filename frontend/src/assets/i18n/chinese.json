@@ -406,7 +406,16 @@
     "successSaved": "欢迎消息已保存！",
     "successDeleted": "欢迎消息已删除",
     "successPostCreated": "广播帖子已创建！所有用户现在都将看到它。",
-    "successPostDeleted": "广播帖子已删除"
+    "successPostDeleted": "广播帖子已删除",
+    "deepseekModel": "模型",
+    "deepseekTotalBalance": "总余额",
+    "deepseekGranted": "赠送余额",
+    "deepseekToppedUp": "充值余额",
+    "deepseekAvailable": "可用",
+    "deepseekUnavailable": "不可用",
+    "deepseekLowBalance": "警告：DeepSeek余额非常低！请充值以维持审核服务。",
+    "deepseekLoading": "正在加载DeepSeek余额...",
+    "deepseekError": "加载DeepSeek余额时出错"
   },
   "welcome": {
     "understood": "我知道了"

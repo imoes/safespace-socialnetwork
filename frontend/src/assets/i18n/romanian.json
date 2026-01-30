@@ -406,7 +406,16 @@
     "successSaved": "Mesajul de bun venit a fost salvat!",
     "successDeleted": "Mesajul de bun venit a fost șters",
     "successPostCreated": "Postarea difuzată a fost creată! Toți utilizatorii o vor vedea acum.",
-    "successPostDeleted": "Postarea difuzată a fost ștearsă"
+    "successPostDeleted": "Postarea difuzată a fost ștearsă",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Sold total",
+    "deepseekGranted": "Sold acordat",
+    "deepseekToppedUp": "Sold reîncărcat",
+    "deepseekAvailable": "Disponibil",
+    "deepseekUnavailable": "Indisponibil",
+    "deepseekLowBalance": "Atenție: Soldul DeepSeek este foarte scăzut! Vă rugăm să reîncărcați pentru a menține serviciul de moderare.",
+    "deepseekLoading": "Se încarcă soldul DeepSeek...",
+    "deepseekError": "Eroare la încărcarea soldului DeepSeek"
   },
   "welcome": {
     "understood": "Am înțeles"

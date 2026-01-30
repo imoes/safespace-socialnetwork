@@ -406,7 +406,16 @@
     "successSaved": "Pozdravno sporočilo shranjeno!",
     "successDeleted": "Pozdravno sporočilo izbrisano",
     "successPostCreated": "Množična objava ustvarjena! Vsi uporabniki jo bodo zdaj videli.",
-    "successPostDeleted": "Množična objava izbrisana"
+    "successPostDeleted": "Množična objava izbrisana",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Skupno stanje",
+    "deepseekGranted": "Dodeljeno stanje",
+    "deepseekToppedUp": "Dopolnjeno stanje",
+    "deepseekAvailable": "Na voljo",
+    "deepseekUnavailable": "Ni na voljo",
+    "deepseekLowBalance": "Opozorilo: Stanje DeepSeek je zelo nizko! Prosimo, dopolnite za vzdrževanje storitve moderiranja.",
+    "deepseekLoading": "Nalaganje stanja DeepSeek...",
+    "deepseekError": "Napaka pri nalaganju stanja DeepSeek"
   },
   "welcome": {
     "understood": "Razumem"

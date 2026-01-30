@@ -487,7 +487,16 @@
     "successSaved": "¡Mensaje de bienvenida guardado!",
     "successDeleted": "Mensaje de bienvenida eliminado",
     "successPostCreated": "¡Publicación de difusión creada! Todos los usuarios la verán ahora.",
-    "successPostDeleted": "Publicación de difusión eliminada"
+    "successPostDeleted": "Publicación de difusión eliminada",
+    "deepseekModel": "Modelo",
+    "deepseekTotalBalance": "Saldo total",
+    "deepseekGranted": "Saldo otorgado",
+    "deepseekToppedUp": "Saldo recargado",
+    "deepseekAvailable": "Disponible",
+    "deepseekUnavailable": "No disponible",
+    "deepseekLowBalance": "Advertencia: ¡El saldo de DeepSeek es muy bajo! Por favor, recargue para mantener el servicio de moderación.",
+    "deepseekLoading": "Cargando saldo de DeepSeek...",
+    "deepseekError": "Error al cargar el saldo de DeepSeek"
   },
   "welcome": {
     "understood": "Entendido"

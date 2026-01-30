@@ -406,7 +406,16 @@
     "successSaved": "Welkomstbericht opgeslagen!",
     "successDeleted": "Welkomstbericht verwijderd",
     "successPostCreated": "Uitzendbericht aangemaakt! Alle gebruikers zullen het nu zien.",
-    "successPostDeleted": "Uitzendbericht verwijderd"
+    "successPostDeleted": "Uitzendbericht verwijderd",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Totaal saldo",
+    "deepseekGranted": "Toegekend saldo",
+    "deepseekToppedUp": "Opgeladen saldo",
+    "deepseekAvailable": "Beschikbaar",
+    "deepseekUnavailable": "Niet beschikbaar",
+    "deepseekLowBalance": "Waarschuwing: Het DeepSeek-saldo is erg laag! Laad op om de moderatiedienst te behouden.",
+    "deepseekLoading": "DeepSeek-saldo laden...",
+    "deepseekError": "Fout bij laden van DeepSeek-saldo"
   },
   "welcome": {
     "understood": "Begrepen"
