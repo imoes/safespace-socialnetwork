@@ -235,7 +235,12 @@
     "friends": "Freunde",
     "loadingFriends": "Freunde werden geladen...",
     "noFriends": "Noch keine Freunde",
-    "friendsCount": "Freunde"
+    "friendsCount": "Freunde",
+    "showAllFriends": "Alle Freunde anzeigen"
+  },
+  "friendsList": {
+    "back": "Zurück",
+    "title": "Freunde"
   },
   "login": {
     "title": "Anmelden",

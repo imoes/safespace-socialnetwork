@@ -235,7 +235,12 @@
     "friends": "Ħbieb",
     "loadingFriends": "Jitgħabbew il-ħbieb...",
     "noFriends": "Għad m'hemm l-ebda ħbieb",
-    "friendsCount": "Ħbieb"
+    "friendsCount": "Ħbieb",
+    "showAllFriends": "Uri l-ħbieb kollha"
+  },
+  "friendsList": {
+    "back": "Lura",
+    "title": "Ħbieb"
   },
   "login": {
     "title": "Idħol",

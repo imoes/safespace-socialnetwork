@@ -33,6 +33,7 @@ import { GroupsComponent } from './components/groups/groups.component';
 import { GroupDetailComponent } from './components/groups/group-detail.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { UserFriendsListComponent } from './components/user-friends-list/user-friends-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -46,6 +47,7 @@ export const routes: Routes = [
   { path: 'friends', component: FriendsComponent, canActivate: [authGuard] },
   { path: 'my-posts', component: MyPostsComponent, canActivate: [authGuard] },
   { path: 'public-feed', component: PublicFeedComponent, canActivate: [authGuard] },
+  { path: 'profile/:uid/friends', component: UserFriendsListComponent, canActivate: [authGuard] },
   { path: 'profile/:uid', component: UserProfileComponent, canActivate: [authGuard] },
   { path: 'hashtags', component: HashtagsComponent, canActivate: [authGuard] },
   { path: 'hashtag/:hashtag', component: HashtagDetailComponent, canActivate: [authGuard] },

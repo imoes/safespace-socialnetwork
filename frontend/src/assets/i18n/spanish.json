@@ -234,7 +234,12 @@
     "friends": "Amigos",
     "loadingFriends": "Cargando amigos...",
     "noFriends": "Aún no hay amigos",
-    "friendsCount": "Amigos"
+    "friendsCount": "Amigos",
+    "showAllFriends": "Ver todos los amigos"
+  },
+  "friendsList": {
+    "back": "Volver",
+    "title": "Amigos"
   },
   "friends": {
     "title": "Amigos",

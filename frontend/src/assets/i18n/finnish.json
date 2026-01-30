@@ -235,7 +235,12 @@
     "friends": "Kaverit",
     "loadingFriends": "Ladataan kavereita...",
     "noFriends": "Ei vielä kavereita",
-    "friendsCount": "Kaveria"
+    "friendsCount": "Kaveria",
+    "showAllFriends": "Näytä kaikki ystävät"
+  },
+  "friendsList": {
+    "back": "Takaisin",
+    "title": "Ystävät"
   },
   "login": {
     "title": "Kirjaudu sisään",

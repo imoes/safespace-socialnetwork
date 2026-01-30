@@ -235,7 +235,12 @@
     "friends": "Přátelé",
     "loadingFriends": "Načítání přátel...",
     "noFriends": "Zatím žádní přátelé",
-    "friendsCount": "Přátel"
+    "friendsCount": "Přátel",
+    "showAllFriends": "Zobrazit všechny přátele"
+  },
+  "friendsList": {
+    "back": "Zpět",
+    "title": "Přátelé"
   },
   "login": {
     "title": "Přihlášení",

@@ -235,7 +235,12 @@
     "friends": "Priatelia",
     "loadingFriends": "Načítanie priateľov...",
     "noFriends": "Zatiaľ žiadni priatelia",
-    "friendsCount": "Priateľov"
+    "friendsCount": "Priateľov",
+    "showAllFriends": "Zobraziť všetkých priateľov"
+  },
+  "friendsList": {
+    "back": "Späť",
+    "title": "Priatelia"
   },
   "login": {
     "title": "Prihlásenie",

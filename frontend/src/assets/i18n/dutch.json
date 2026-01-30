@@ -235,7 +235,12 @@
     "friends": "Vrienden",
     "loadingFriends": "Vrienden laden...",
     "noFriends": "Nog geen vrienden",
-    "friendsCount": "Vrienden"
+    "friendsCount": "Vrienden",
+    "showAllFriends": "Alle vrienden tonen"
+  },
+  "friendsList": {
+    "back": "Terug",
+    "title": "Vrienden"
   },
   "login": {
     "title": "Inloggen",

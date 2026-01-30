@@ -89,7 +89,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               } @else {
                 <div class="friends-count">{{ userFriends().length }} {{ 'profile.friendsCount' | translate }}</div>
                 <div class="friends-grid">
-                  @for (friend of userFriends(); track friend.uid) {
+                  @for (friend of userFriends().slice(0, 5); track friend.uid) {
                     <div class="friend-item" (click)="goToProfile(friend.uid)">
                       @if (friend.profile_picture) {
                         <img [src]="friend.profile_picture" [alt]="friend.username" class="friend-avatar friend-avatar-img" />
@@ -100,6 +100,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                     </div>
                   }
                 </div>
+                @if (userFriends().length > 5) {
+                  <div class="friends-show-more" (click)="goToFriendsList()">
+                    {{ 'profile.showAllFriends' | translate }}
+                  </div>
+                }
               }
             </div>
           </aside>
@@ -205,6 +210,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .friend-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; }
     .friend-avatar-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
     .friend-name { font-size: 14px; font-weight: 500; color: #050505; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .friends-show-more { text-align: center; padding: 10px 0 4px; font-size: 14px; font-weight: 600; color: #1877f2; cursor: pointer; transition: color 0.2s; }
+    .friends-show-more:hover { color: #166fe5; text-decoration: underline; }
 
     /* Posts section fills remaining space */
     .posts-section { flex: 1; min-width: 0; }
@@ -291,6 +298,12 @@ export class UserProfileComponent implements OnInit {
 
   goToProfile(uid: number): void {
     this.router.navigate(['/profile', uid]);
+  }
+
+  goToFriendsList(): void {
+    if (this.profile) {
+      this.router.navigate(['/profile', this.profile.uid, 'friends']);
+    }
   }
 
   loadPosts(uid: number): void {

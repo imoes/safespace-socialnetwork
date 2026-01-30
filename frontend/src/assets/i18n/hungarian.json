@@ -235,7 +235,12 @@
     "friends": "Barátok",
     "loadingFriends": "Barátok betöltése...",
     "noFriends": "Még nincsenek barátok",
-    "friendsCount": "Barát"
+    "friendsCount": "Barát",
+    "showAllFriends": "Összes barát megjelenítése"
+  },
+  "friendsList": {
+    "back": "Vissza",
+    "title": "Barátok"
   },
   "login": {
     "title": "Bejelentkezés",

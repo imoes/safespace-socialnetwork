@@ -235,7 +235,12 @@
     "friends": "Φίλοι",
     "loadingFriends": "Φόρτωση φίλων...",
     "noFriends": "Δεν υπάρχουν φίλοι ακόμα",
-    "friendsCount": "Φίλοι"
+    "friendsCount": "Φίλοι",
+    "showAllFriends": "Εμφάνιση όλων των φίλων"
+  },
+  "friendsList": {
+    "back": "Πίσω",
+    "title": "Φίλοι"
   },
   "login": {
     "title": "Σύνδεση",

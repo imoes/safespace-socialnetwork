@@ -235,7 +235,12 @@
     "friends": "Draugi",
     "loadingFriends": "Ielādē draugus...",
     "noFriends": "Vēl nav draugu",
-    "friendsCount": "Draugi"
+    "friendsCount": "Draugi",
+    "showAllFriends": "Rādīt visus draugus"
+  },
+  "friendsList": {
+    "back": "Atpakaļ",
+    "title": "Draugi"
   },
   "login": {
     "title": "Pieteikšanās",
