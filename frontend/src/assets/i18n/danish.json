@@ -265,7 +265,11 @@
     "password": "Adgangskode",
     "confirmPassword": "Bekræft adgangskode",
     "birthday": "Fødselsdag",
-    "optional": "valgfri",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
     "registerButton": "Registrer",
     "hasAccount": "Har du allerede en konto?",
     "login": "Log ind her",
@@ -273,13 +277,27 @@
       "usernameAlreadyRegistered": "Dette brugernavn er allerede taget. Vælg venligst et andet.",
       "emailAlreadyRegistered": "Denne e-mailadresse er allerede registreret. Brug venligst en anden eller log ind.",
       "passwordMismatch": "Adgangskoderne stemmer ikke overens",
-      "registrationFailed": "Registrering mislykkedes. Prøv venligst igen."
+      "registrationFailed": "Registrering mislykkedes. Prøv venligst igen.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registrering gennemført! Omdirigerer...",
     "agbAccept": "Jeg accepterer",
     "agbLink": "Servicevilkårene",
     "agbAnd": "og",
     "privacyLink": "Privatlivspolitikken"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "passwordReset": {
     "title": "Nulstil adgangskode",

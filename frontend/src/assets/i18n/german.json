@@ -265,7 +265,11 @@
     "password": "Passwort",
     "confirmPassword": "Passwort bestätigen",
     "birthday": "Geburtsdatum",
-    "optional": "optional",
+    "parentalRequired": "Du bist unter 16 Jahre alt. Gemäß DSGVO benötigst du die Einwilligung eines Erziehungsberechtigten.",
+    "parentEmail": "E-Mail-Adresse eines Erziehungsberechtigten",
+    "tooYoung": "Du musst mindestens 13 Jahre alt sein, um dich zu registrieren.",
+    "consentPending": "Einwilligung ausstehend",
+    "consentPendingHint": "Wir haben eine E-Mail an deine Eltern gesendet. Dein Account wird freigeschaltet, sobald die Einwilligung bestätigt wurde.",
     "registerButton": "Registrieren",
     "hasAccount": "Bereits ein Konto?",
     "login": "Hier anmelden",
@@ -273,13 +277,27 @@
       "usernameAlreadyRegistered": "Dieser Benutzername ist bereits vergeben. Bitte wähle einen anderen.",
       "emailAlreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert. Bitte verwende eine andere oder melde dich an.",
       "passwordMismatch": "Passwörter stimmen nicht überein",
-      "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuche es erneut."
+      "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+      "birthdayRequired": "Bitte gib dein Geburtsdatum an.",
+      "parentEmailRequired": "Bitte gib die E-Mail-Adresse eines Erziehungsberechtigten an.",
+      "parentEmailSame": "Die E-Mail-Adresse der Eltern muss sich von deiner eigenen unterscheiden.",
+      "consentPending": "Dein Account wartet noch auf die elterliche Einwilligung."
     },
     "success": "Registrierung erfolgreich! Weiterleitung...",
     "agbAccept": "Ich akzeptiere die",
     "agbLink": "Nutzungsbedingungen",
     "agbAnd": "und die",
     "privacyLink": "Datenschutzerklärung"
+  },
+  "parentalConsent": {
+    "verifying": "Einwilligung wird überprüft...",
+    "confirmedTitle": "Einwilligung bestätigt",
+    "confirmedMessage": "Die elterliche Einwilligung wurde erfolgreich erteilt. Der Account ist jetzt freigeschaltet.",
+    "alreadyConfirmedTitle": "Bereits bestätigt",
+    "alreadyConfirmedMessage": "Die elterliche Einwilligung wurde bereits erteilt.",
+    "errorTitle": "Ungültiger Link",
+    "errorMessage": "Dieser Einwilligungslink ist ungültig oder abgelaufen.",
+    "backToLogin": "Zurück zum Login"
   },
   "passwordReset": {
     "title": "Passwort zurücksetzen",

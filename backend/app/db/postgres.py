@@ -105,6 +105,29 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS screen_time_settings JSONB DEFAULT '{}'::jsonb
             """)
 
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS is_minor BOOLEAN DEFAULT FALSE
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS parental_consent_pending BOOLEAN DEFAULT FALSE
+            """)
+
+            # Elterliche Einwilligung
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS parental_consents (
+                    id SERIAL PRIMARY KEY,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    parent_email VARCHAR(255) NOT NULL,
+                    consent_token VARCHAR(255) UNIQUE NOT NULL,
+                    confirmed BOOLEAN DEFAULT FALSE,
+                    confirmed_at TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
             # Friendships mit Beziehungstyp (pro Seite unabhängig)
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (

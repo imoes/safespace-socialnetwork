@@ -372,6 +372,12 @@
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
+    "birthday": "Birthday",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
     "registerButton": "Registrarse",
     "hasAccount": "¿Ya tienes una cuenta?",
     "login": "Inicia sesión aquí",
@@ -379,13 +385,27 @@
       "usernameAlreadyRegistered": "Este nombre de usuario ya está en uso. Por favor elige otro.",
       "emailAlreadyRegistered": "Este correo electrónico ya está registrado. Por favor usa otro o inicia sesión.",
       "passwordMismatch": "Las contraseñas no coinciden",
-      "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo."
+      "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "¡Registro exitoso! Redirigiendo...",
     "agbAccept": "Acepto las",
     "agbLink": "condiciones de uso",
     "agbAnd": "y la",
     "privacyLink": "política de privacidad"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "common": {
     "loading": "Cargando...",
