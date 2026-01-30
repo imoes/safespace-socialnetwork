@@ -160,10 +160,10 @@ class FeedService:
         """
         # Mapping: Mein Tier → Welche Post-Visibilities kann ich sehen
         tier_to_visibility = {
-            "family": ["family", "close_friends", "friends", "public"],
-            "close_friend": ["close_friends", "friends", "public"],
-            "friend": ["friends", "public"],
-            "acquaintance": ["public"],
+            "family": ["family", "close_friends", "friends", "acquaintance", "public"],
+            "close_friend": ["close_friends", "friends", "acquaintance", "public"],
+            "friend": ["friends", "acquaintance", "public"],
+            "acquaintance": ["acquaintance", "public"],
         }
         return tier_to_visibility.get(viewer_tier, ["public"])
     

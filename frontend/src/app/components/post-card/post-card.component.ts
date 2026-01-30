@@ -138,6 +138,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
               @if (showVisibilityDropdown) {
                 <div class="visibility-dropdown">
                   <button (click)="changeVisibility('public')">🌍 {{ 'visibility.public' | translate }}</button>
+                  <button (click)="changeVisibility('acquaintance')">👋 {{ 'visibility.acquaintance' | translate }}</button>
                   <button (click)="changeVisibility('friends')">👥 {{ 'visibility.friends' | translate }}</button>
                   <button (click)="changeVisibility('close_friends')">💚 {{ 'visibility.closeFriends' | translate }}</button>
                   <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</button>

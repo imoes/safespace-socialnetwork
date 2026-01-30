@@ -150,13 +150,13 @@ async def search_by_hashtag(
 
                 # Determine allowed visibilities based on relation type
                 if relation == "family":
-                    allowed = ["friends", "close_friends", "family"]
+                    allowed = ["acquaintance", "friends", "close_friends", "family"]
                 elif relation == "close_friend":
-                    allowed = ["friends", "close_friends"]
+                    allowed = ["acquaintance", "friends", "close_friends"]
                 elif relation == "friend":
-                    allowed = ["friends"]
+                    allowed = ["acquaintance", "friends"]
                 else:  # acquaintance
-                    allowed = []
+                    allowed = ["acquaintance"]
 
                 if post_visibility in allowed:
                     filtered_posts.append(post)
