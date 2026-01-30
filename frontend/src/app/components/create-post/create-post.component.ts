@@ -58,6 +58,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
         <label class="media-btn">🎥<input #videoInput type="file" accept="video/*" (change)="onVideoSelect($event)" hidden /></label>
         <select [(ngModel)]="visibility">
           <option value="public">🌍 {{ 'visibility.public' | translate }}</option>
+          <option value="acquaintance">👋 {{ 'visibility.acquaintance' | translate }}</option>
           <option value="friends">👥 {{ 'visibility.friends' | translate }}</option>
           <option value="close_friends">💚 {{ 'visibility.closeFriends' | translate }}</option>
           <option value="family">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</option>
