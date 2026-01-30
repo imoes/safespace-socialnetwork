@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private i18n = inject(I18nService);
-  siteTitle = signal('SocialNet');
+  siteTitle = signal('SafeSpace');
   username = '';
   password = '';
   error = '';

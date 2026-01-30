@@ -374,7 +374,7 @@ async def get_site_settings(admin: dict = Depends(require_admin)):
     all_settings = await get_all_site_settings()
     return {
         "site_url": all_settings.get("site_url", "http://localhost:4200"),
-        "site_title": all_settings.get("site_title", "SocialNet")
+        "site_title": all_settings.get("site_title", "SafeSpace")
     }
 
 

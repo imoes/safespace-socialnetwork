@@ -87,7 +87,7 @@ interface SystemStatus {
 export class AdminPanelComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private i18n = inject(I18nService);
+  i18n = inject(I18nService);
 
   // Tabs
   activeTab = signal<'welcome' | 'broadcast' | 'status' | 'settings' | 'email-templates'>('welcome');
@@ -116,7 +116,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     site_url: ''
   };
   siteSettingsLoaded = false;
-  siteTitle = signal('SocialNet');
+  siteTitle = signal('SafeSpace');
   siteTitleForm = '';
 
   // Email Templates
@@ -135,13 +135,15 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     { code: 'it', name: 'Italiano', flag: '🇮🇹' },
     { code: 'ar', name: 'العربية', flag: '🇸🇦' }
   ];
-  notificationTypeLabels: Record<string, string> = {
-    'post_liked': 'Post geliked',
-    'post_commented': 'Post kommentiert',
-    'comment_liked': 'Kommentar geliked',
-    'birthday': 'Geburtstag',
-    'group_post': 'Gruppen-Post'
-  };
+  get notificationTypeLabels(): Record<string, string> {
+    return {
+      'post_liked': this.i18n.t('admin.notifPostLiked'),
+      'post_commented': this.i18n.t('admin.notifPostCommented'),
+      'comment_liked': this.i18n.t('admin.notifCommentLiked'),
+      'birthday': this.i18n.t('admin.notifBirthday'),
+      'group_post': this.i18n.t('admin.notifGroupPost')
+    };
+  }
 
   // UI States
   loading = signal(false);
@@ -388,7 +390,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   async saveEmailTemplate(): Promise<void> {
     if (!this.templateSubject.trim() || !this.templateBody.trim()) {
-      this.error.set('Betreff und Inhalt sind erforderlich');
+      this.error.set(this.i18n.t('admin.subjectAndContentRequired'));
       return;
     }
 
@@ -407,10 +409,10 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
         body: this.templateBody
       }, { headers }).toPromise();
 
-      this.success.set('Template erfolgreich gespeichert!');
+      this.success.set(this.i18n.t('admin.templateSaved'));
       await this.loadEmailTemplates();
     } catch (err) {
-      this.error.set('Fehler beim Speichern des Templates');
+      this.error.set(this.i18n.t('admin.errorSavingTemplate'));
       console.error(err);
     } finally {
       this.loading.set(false);
@@ -419,7 +421,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   async translateTemplate(): Promise<void> {
     if (!this.templateSubject.trim() || !this.templateBody.trim()) {
-      this.error.set('Bitte speichere erst das Template bevor du es übersetzt');
+      this.error.set(this.i18n.t('admin.saveTemplateFirst'));
       return;
     }
 
@@ -442,14 +444,14 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       const successLangs = Object.keys(translations).filter(l => !translations[l].error);
       const failedLangs = Object.keys(translations).filter(l => translations[l].error);
 
-      let msg = `Template in ${successLangs.length} Sprachen übersetzt!`;
+      let msg = this.i18n.t('admin.templateTranslated').replace('{{count}}', String(successLangs.length));
       if (failedLangs.length > 0) {
-        msg += ` (${failedLangs.length} fehlgeschlagen)`;
+        msg += ` (${this.i18n.t('admin.translationFailed').replace('{{count}}', String(failedLangs.length))})`;
       }
       this.success.set(msg);
       await this.loadEmailTemplates();
     } catch (err) {
-      this.error.set('Fehler beim Übersetzen');
+      this.error.set(this.i18n.t('admin.errorTranslating'));
       console.error(err);
     } finally {
       this.translating.set(false);
@@ -495,13 +497,13 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
       this.siteSettingsLoaded = true;
     } catch (err) {
       console.error('Error loading site settings:', err);
-      this.error.set('Fehler beim Laden der Einstellungen');
+      this.error.set(this.i18n.t('admin.errorLoadingSettings'));
     }
   }
 
   async saveSiteTitle(): Promise<void> {
     if (!this.siteTitleForm.trim()) {
-      this.error.set('Titel darf nicht leer sein');
+      this.error.set(this.i18n.t('admin.titleEmpty'));
       return;
     }
 
@@ -515,9 +517,9 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
       await this.http.put('/api/admin/site-settings/title', { site_title: this.siteTitleForm.trim() }, { headers }).toPromise();
       this.siteTitle.set(this.siteTitleForm.trim());
-      this.success.set('Seitentitel erfolgreich gespeichert!');
+      this.success.set(this.i18n.t('admin.titleSaved'));
     } catch (err) {
-      this.error.set('Fehler beim Speichern des Titels');
+      this.error.set(this.i18n.t('admin.errorSavingTitle'));
       console.error(err);
     } finally {
       this.loading.set(false);
@@ -526,7 +528,7 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
   async saveSiteSettings(): Promise<void> {
     if (!this.siteSettingsForm.site_url.trim()) {
-      this.error.set('Site-URL ist erforderlich');
+      this.error.set(this.i18n.t('admin.siteUrlRequired'));
       return;
     }
 
@@ -540,9 +542,9 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
 
       const response: any = await this.http.put('/api/admin/site-settings', this.siteSettingsForm, { headers }).toPromise();
       this.siteSettingsForm.site_url = response.site_url;
-      this.success.set('Einstellungen gespeichert!');
+      this.success.set(this.i18n.t('admin.settingsSaved'));
     } catch (err) {
-      this.error.set('Fehler beim Speichern der Einstellungen');
+      this.error.set(this.i18n.t('admin.errorSavingSettings'));
       console.error(err);
     } finally {
       this.loading.set(false);

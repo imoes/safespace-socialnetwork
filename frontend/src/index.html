@@ -2,13 +2,69 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>SocialNet</title>
+  <title>SafeSpace – Dein sicheres Social Network</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="SafeSpace ist ein sicheres, werbefreies Social Network aus Europa. Ohne Algorithmen, ohne Überwachung – deine Daten gehören dir. Open Source und Community-finanziert.">
+  <meta name="keywords" content="SafeSpace, Social Network, sicher, werbefrei, Open Source, Datenschutz, Europa, DSGVO, Community, soziales Netzwerk">
+  <meta name="author" content="SafeSpace Team">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://thesafespace.blog/">
+
+  <!-- Open Graph (Facebook, LinkedIn, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SafeSpace">
+  <meta property="og:title" content="SafeSpace – Dein sicheres Social Network">
+  <meta property="og:description" content="Ein sicheres, werbefreies Social Network aus Europa. Ohne Algorithmen, ohne Überwachung – deine Daten gehören dir.">
+  <meta property="og:url" content="https://thesafespace.blog/">
+  <meta property="og:image" content="https://thesafespace.blog/assets/og-image.png">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SafeSpace – Dein sicheres Social Network">
+  <meta name="twitter:description" content="Ein sicheres, werbefreies Social Network aus Europa. Ohne Algorithmen, ohne Überwachung – deine Daten gehören dir.">
+  <meta name="twitter:image" content="https://thesafespace.blog/assets/og-image.png">
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SafeSpace",
+    "url": "https://thesafespace.blog",
+    "description": "Ein sicheres, werbefreies Social Network aus Europa. Open Source und Community-finanziert.",
+    "applicationCategory": "SocialNetworkingApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "SafeSpace",
+      "url": "https://thesafespace.blog"
+    }
+  }
+  </script>
+
+  <!-- Favicons -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1877f2">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -25,5 +81,9 @@
 </head>
 <body>
   <app-root></app-root>
+  <noscript>
+    <h1>SafeSpace</h1>
+    <p>SafeSpace ist ein sicheres, werbefreies Social Network aus Europa. Bitte aktiviere JavaScript, um SafeSpace zu nutzen.</p>
+  </noscript>
 </body>
 </html>
