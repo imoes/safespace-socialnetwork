@@ -58,6 +58,7 @@ class PersonalPostRequest(BaseModel):
 class UserSearchResult(BaseModel):
     uid: int
     username: str
+    email: str
     bio: Optional[str] = None
     role: str
     first_name: Optional[str] = None
@@ -331,6 +332,7 @@ async def search_users(
             SELECT
                 u.uid,
                 u.username,
+                u.email,
                 u.bio,
                 u.role,
                 u.first_name,
@@ -363,6 +365,7 @@ async def search_users(
             UserSearchResult(
                 uid=row["uid"],
                 username=row["username"],
+                email=row["email"],
                 bio=row["bio"],
                 role=row["role"],
                 first_name=row.get("first_name"),
