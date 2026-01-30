@@ -69,7 +69,11 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "proxyConfig": "proxy.conf.js"
+            "proxyConfig": "proxy.conf.js",
+            "allowedHosts": [
+              "thesafespace.blog",
+              "www.thesafespace.blog"
+            ]
           }
         }
       }

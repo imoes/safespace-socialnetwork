@@ -454,7 +454,8 @@
     "newNotification": "Ny notifikation",
     "groupPost": "{{username}} slog op i gruppen {{group}}",
     "birthday": "🎂 {{username}} har fødselsdag i dag og er nu {{age}} år!",
-    "groupJoinRequest": "👥 {{username}} vil gerne deltage i gruppen \"{{groupName}}\""
+    "groupJoinRequest": "👥 {{username}} vil gerne deltage i gruppen \"{{groupName}}\"",
+    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her."
   },
   "screenTime": {
     "breakTitle": "Tid til en pause!",

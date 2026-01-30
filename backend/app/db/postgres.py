@@ -261,12 +261,63 @@ class PostgresDB:
                 ON group_posts(group_id, created_at DESC)
             """)
 
-            # Notifications table (created in notifications.py, but migration here)
-            # Migration: add group_id column for group-related notifications
+            # Notifications table
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS notifications (
+                    notification_id SERIAL PRIMARY KEY,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    actor_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    type VARCHAR(50) NOT NULL,
+                    post_id INTEGER,
+                    post_author_uid INTEGER,
+                    comment_id INTEGER,
+                    group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE,
+                    is_read BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_notifications_user
+                ON notifications(user_uid, is_read, created_at DESC)
+            """)
+
+            # Migration: add group_id column for existing databases without it
             await conn.execute("""
                 ALTER TABLE notifications
                 ADD COLUMN IF NOT EXISTS group_id INTEGER REFERENCES groups(group_id) ON DELETE CASCADE
             """)
+
+            # Welcome Messages
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS welcome_messages (
+                    id SERIAL PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    is_active BOOLEAN DEFAULT TRUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS user_welcome_seen (
+                    uid INTEGER PRIMARY KEY REFERENCES users(uid) ON DELETE CASCADE,
+                    message_id INTEGER REFERENCES welcome_messages(id) ON DELETE CASCADE,
+                    seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Default welcome message (nur wenn noch keine existiert)
+            result = await conn.execute(
+                "SELECT 1 FROM welcome_messages WHERE is_active = TRUE LIMIT 1"
+            )
+            if not await result.fetchone():
+                await conn.execute("""
+                    INSERT INTO welcome_messages (title, content, is_active)
+                    VALUES (
+                        'Welcome to SafeSpace!',
+                        'We''re glad you''re here! Discover your timeline, find friends, and share your thoughts. SafeSpace is your space — safe, respectful, and welcoming.'
+                    )
+                """)
 
             await conn.commit()
 

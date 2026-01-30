@@ -345,6 +345,31 @@ Dein SocialNet Team
                 {"<a href='" + group_link + "' class='button'>Anfrage überprüfen</a>" if group_link else ""}"""
             )
 
+        elif notification_type == "welcome":
+            subject = f"🎉 Willkommen bei SafeSpace, {to_username}!"
+            text = f"""
+Hallo {to_username},
+
+Willkommen bei SafeSpace! Wir freuen uns, dass du dabei bist.
+
+Entdecke deine Timeline, finde Freunde und teile deine Gedanken.
+SafeSpace ist dein Raum — sicher, respektvoll und einladend.
+
+Starte jetzt: {site_url}
+
+Viele Grüße,
+Dein SafeSpace Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "🎉 Willkommen bei SafeSpace!",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p>Willkommen bei SafeSpace! Wir freuen uns, dass du dabei bist.</p>
+                <p>Entdecke deine Timeline, finde Freunde und teile deine Gedanken.
+                SafeSpace ist dein Raum &mdash; sicher, respektvoll und einladend.</p>
+                <a href='{site_url}' class='button'>Jetzt loslegen</a>"""
+            )
+
         else:
             subject = f"🔔 Neue Benachrichtigung von {actor_username}"
             text = f"Hallo {to_username},\n\nDu hast eine neue Benachrichtigung erhalten.\n\nViele Grüße,\nDein SocialNet Team"

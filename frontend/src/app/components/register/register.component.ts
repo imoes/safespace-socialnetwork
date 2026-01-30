@@ -18,16 +18,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         @if (error) { <div class="error">{{ error }}</div> }
         @if (success) { <div class="success">{{ success }}</div> }
         <form (ngSubmit)="register()">
-          <input type="text" [(ngModel)]="username" name="username" [placeholder]="'register.username' | translate" required minlength="3" />
-          <input type="text" [(ngModel)]="firstName" name="firstName" [placeholder]="'settings.firstName' | translate" />
-          <input type="text" [(ngModel)]="lastName" name="lastName" [placeholder]="'settings.lastName' | translate" />
-          <input type="email" [(ngModel)]="email" name="email" [placeholder]="'register.email' | translate" required />
+          <input type="text" [(ngModel)]="username" name="username" autocomplete="username" [placeholder]="'register.username' | translate" required minlength="3" />
+          <input type="text" [(ngModel)]="firstName" name="firstName" autocomplete="given-name" [placeholder]="'settings.firstName' | translate" />
+          <input type="text" [(ngModel)]="lastName" name="lastName" autocomplete="family-name" [placeholder]="'settings.lastName' | translate" />
+          <input type="email" [(ngModel)]="email" name="email" autocomplete="email" [placeholder]="'register.email' | translate" required />
           <div class="birthday-field">
             <label>{{ 'register.birthday' | translate }} <span class="optional">({{ 'register.optional' | translate }})</span></label>
-            <input type="date" [(ngModel)]="birthday" name="birthday" />
+            <input type="date" [(ngModel)]="birthday" name="birthday" autocomplete="bday" />
           </div>
-          <input type="password" [(ngModel)]="password" name="password" [placeholder]="'register.password' | translate" required minlength="6" />
-          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" [placeholder]="'register.confirmPassword' | translate" required />
+          <input type="password" [(ngModel)]="password" name="password" autocomplete="new-password" [placeholder]="'register.password' | translate" required minlength="6" />
+          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" [placeholder]="'register.confirmPassword' | translate" required />
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="agbAccepted" name="agbAccepted" />
             <span>{{ 'register.agbAccept' | translate }} <a routerLink="/terms" target="_blank">{{ 'register.agbLink' | translate }}</a> {{ 'register.agbAnd' | translate }} <a routerLink="/privacy-policy" target="_blank">{{ 'register.privacyLink' | translate }}</a>.</span>

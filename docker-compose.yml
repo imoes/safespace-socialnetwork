@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: socialnet
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /mnt/data/postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -50,7 +50,7 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - opensearch_data:/usr/share/opensearch/data
+      - /mnt/data/opensearch_data:/usr/share/opensearch/data
     ports:
       - "9200:9200"
       - "9600:9600"
@@ -106,7 +106,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
     volumes:
-      - minio_data:/data
+      - /mnt/data/minio_data:/data
     ports:
       - "9000:9000"   # API
       - "9001:9001"   # Console
@@ -157,8 +157,8 @@ services:
       SMTP_FROM_NAME: ${SMTP_FROM_NAME:-SocialNet}
       SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
     volumes:
-      - user_data:/data/users
-      - group_data:/data/groups
+      - /mnt/data/backend/user_data:/data/users
+      - /mnt/data/backend/group_data:/data/groups
       - ./backend/app:/app/app:ro
     ports:
       - "8000:8000"
@@ -213,6 +213,43 @@ services:
     depends_on:
       - backend
 
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: socialnet-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+      - "25:25"
+      - "587:587"
+      - "993:993"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /mnt/data/certbot_www:/var/www/certbot:ro
+      - /mnt/data/certbot_certs:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    # extra_hosts erlaubt Zugriff auf das Host-Netzwerk / LAN
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Certbot (SSL-Zertifikate via Let's Encrypt)
+  certbot:
+    image: certbot/certbot
+    container_name: socialnet-certbot
+    volumes:
+      - /mnt/data/certbot_www:/var/www/certbot
+      - /mnt/data/certbot_certs:/etc/letsencrypt
+    # Zertifikat initial erstellen:
+    #   docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
+    #     -d thesafespace.blog -d www.thesafespace.blog \
+    #     -d mail.thesafespace.blog -d test.thesafespace.blog
+    # Renewal (als Cronjob oder manuell):
+    #   docker compose run --rm certbot renew
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
   # Kafka UI (optional, für Debugging)
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -226,12 +263,14 @@ services:
       - kafka
 
 volumes:
-  postgres_data:
+#  postgres_data:
   redis_data:
-  opensearch_data:
+#  opensearch_data:
   kafka_data:
   zookeeper_data:
   zookeeper_log:
-  minio_data:
-  user_data:
-  group_data:
+#  minio_data:
+#  user_data:
+#  group_data:
+#  certbot_www:
+#  certbot_certs:
