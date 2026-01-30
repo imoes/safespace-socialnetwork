@@ -738,17 +738,17 @@ async def get_user_posts(
             # Keine Freundschaft: nur öffentliche Posts
             allowed_visibility = ["public"]
         elif relation_type == "family":
-            # Familie sieht: public, friends, close_friends, family
-            allowed_visibility = ["public", "friends", "close_friends", "family"]
+            # Familie sieht: public, acquaintance, friends, close_friends, family
+            allowed_visibility = ["public", "acquaintance", "friends", "close_friends", "family"]
         elif relation_type == "close_friend":
-            # Enge Freunde sehen: public, friends, close_friends
-            allowed_visibility = ["public", "friends", "close_friends"]
+            # Enge Freunde sehen: public, acquaintance, friends, close_friends
+            allowed_visibility = ["public", "acquaintance", "friends", "close_friends"]
         elif relation_type == "friend":
-            # Normale Freunde sehen: public, friends
-            allowed_visibility = ["public", "friends"]
+            # Normale Freunde sehen: public, acquaintance, friends
+            allowed_visibility = ["public", "acquaintance", "friends"]
         elif relation_type == "acquaintance":
-            # Bekannte sehen: nur public
-            allowed_visibility = ["public"]
+            # Bekannte sehen: public, acquaintance
+            allowed_visibility = ["public", "acquaintance"]
         else:
             # Default: nur öffentliche Posts
             allowed_visibility = ["public"]
