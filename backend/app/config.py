@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from_email: str = "noreply@socialnet.local"
-    smtp_from_name: str = "SocialNet"
+    smtp_from_name: str = "SafeSpace"
     smtp_use_tls: bool = True
     email_enabled: bool = False  # Default disabled, enable via env
 

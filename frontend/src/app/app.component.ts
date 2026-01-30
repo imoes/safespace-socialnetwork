@@ -555,7 +555,7 @@ export class AppComponent implements OnInit {
   selectedIndex = signal(-1);
   pendingRequestsCount = signal(0);
   openReportsCount = signal(0);
-  siteTitle = signal('SocialNet');
+  siteTitle = signal('SafeSpace');
   searchQuery = '';
   private searchSubject = new Subject<string>();
 

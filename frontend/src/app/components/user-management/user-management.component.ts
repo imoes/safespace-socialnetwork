@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
 
 interface UserWithStats {
   uid: number;
@@ -22,12 +23,12 @@ interface UserWithStats {
   template: `
     <div class="management-container">
       <div class="header">
-        <h2>👥 Benutzerverwaltung</h2>
-        <p class="subtitle">Verwalten Sie alle Benutzer Ihrer Plattform</p>
+        <h2>👥 {{ i18n.t('userManagement.title') }}</h2>
+        <p class="subtitle">{{ i18n.t('userManagement.subtitle') }}</p>
       </div>
 
       @if (loading()) {
-        <div class="loading">Lade Benutzerdaten...</div>
+        <div class="loading">{{ i18n.t('userManagement.loadingUsers') }}</div>
       }
 
       @if (errorMessage()) {
@@ -41,7 +42,7 @@ interface UserWithStats {
       <div class="stats-bar">
         <div class="stat-card">
           <div class="stat-value">{{ users().length }}</div>
-          <div class="stat-label">Gesamt Benutzer</div>
+          <div class="stat-label">{{ i18n.t('userManagement.totalUsers') }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ countAdmins() }}</div>
@@ -49,11 +50,11 @@ interface UserWithStats {
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ countModerators() }}</div>
-          <div class="stat-label">Moderatoren</div>
+          <div class="stat-label">{{ i18n.t('userManagement.moderators') }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ countBanned() }}</div>
-          <div class="stat-label">Gebannt</div>
+          <div class="stat-label">{{ i18n.t('userManagement.banned') }}</div>
         </div>
       </div>
 
@@ -61,13 +62,13 @@ interface UserWithStats {
         <table>
           <thead>
             <tr>
-              <th>Benutzer</th>
-              <th>Rolle</th>
-              <th>Registriert</th>
+              <th>{{ i18n.t('userManagement.tableUser') }}</th>
+              <th>{{ i18n.t('userManagement.tableRole') }}</th>
+              <th>{{ i18n.t('userManagement.tableRegistered') }}</th>
               <th>Posts</th>
               <th>Reports</th>
-              <th>Status</th>
-              <th>Aktionen</th>
+              <th>{{ i18n.t('userManagement.tableStatus') }}</th>
+              <th>{{ i18n.t('userManagement.tableActions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -89,9 +90,9 @@ interface UserWithStats {
                 <td>{{ user.report_count }}</td>
                 <td>
                   @if (user.is_banned) {
-                    <span class="status-badge status-banned">Gebannt</span>
+                    <span class="status-badge status-banned">{{ i18n.t('userManagement.statusBanned') }}</span>
                   } @else {
-                    <span class="status-badge status-active">Aktiv</span>
+                    <span class="status-badge status-active">{{ i18n.t('userManagement.statusActive') }}</span>
                   }
                 </td>
                 <td>
@@ -101,13 +102,13 @@ interface UserWithStats {
                         class="btn btn-sm btn-danger"
                         (click)="banUser(user)"
                         [disabled]="user.role === 'admin' && !canBanAdmin(user)">
-                        🚫 Bannen
+                        🚫 {{ i18n.t('userManagement.ban') }}
                       </button>
                     } @else {
                       <button
                         class="btn btn-sm btn-success"
                         (click)="unbanUser(user)">
-                        ✓ Entbannen
+                        ✓ {{ i18n.t('userManagement.unban') }}
                       </button>
                     }
 
@@ -144,8 +145,8 @@ interface UserWithStats {
                       class="btn btn-sm btn-delete"
                       (click)="deleteUser(user)"
                       [disabled]="user.role === 'admin' && !canBanAdmin(user)"
-                      title="User und alle Daten permanent löschen">
-                      🗑️ Löschen
+                      [title]="i18n.t('userManagement.deleteTitle')">
+                      🗑️ {{ i18n.t('userManagement.deleteUser') }}
                     </button>
                   </div>
                 </td>
@@ -397,6 +398,7 @@ interface UserWithStats {
 })
 export class UserManagementComponent implements OnInit {
   authService = inject(AuthService);
+  i18n = inject(I18nService);
   http = inject(HttpClient);
   router = inject(Router);
 
@@ -425,7 +427,7 @@ export class UserManagementComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        this.errorMessage.set('Fehler beim Laden der Benutzer');
+        this.errorMessage.set(this.i18n.t('userManagement.errorLoadingUsers'));
         this.loading.set(false);
         console.error(error);
       }
@@ -446,9 +448,9 @@ export class UserManagementComponent implements OnInit {
 
   getRoleLabel(role: string): string {
     const labels: Record<string, string> = {
-      'admin': 'Administrator',
-      'moderator': 'Moderator',
-      'user': 'Benutzer'
+      'admin': this.i18n.t('userManagement.roleAdmin'),
+      'moderator': this.i18n.t('userManagement.roleModerator'),
+      'user': this.i18n.t('userManagement.roleUser')
     };
     return labels[role] || role;
   }
@@ -475,127 +477,121 @@ export class UserManagementComponent implements OnInit {
   }
 
   banUser(user: UserWithStats): void {
-    const reason = prompt('Grund für den Bann:');
+    const reason = prompt(this.i18n.t('userManagement.banReason'));
     if (!reason) return;
 
-    const days = prompt('Dauer in Tagen (leer lassen für permanent):');
+    const days = prompt(this.i18n.t('userManagement.banDuration'));
     const duration = days ? parseInt(days) : undefined;
 
     this.http.post(`/api/users/${user.uid}/ban`, { reason, days: duration }).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} wurde erfolgreich gebannt`);
+        this.successMessage.set(this.i18n.t('userManagement.banSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Bannen des Benutzers');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorBanning'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   unbanUser(user: UserWithStats): void {
-    if (!confirm(`Möchten Sie ${user.username} wirklich entbannen?`)) return;
+    if (!confirm(this.i18n.t('userManagement.confirmUnban').replace('{{username}}', user.username))) return;
 
     this.http.post(`/api/users/${user.uid}/unban`, {}).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} wurde erfolgreich entbannt`);
+        this.successMessage.set(this.i18n.t('userManagement.unbanSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Entbannen des Benutzers');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorUnbanning'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   promoteToModerator(user: UserWithStats): void {
-    if (!confirm(`Möchten Sie ${user.username} zum Moderator befördern?`)) return;
+    if (!confirm(this.i18n.t('userManagement.confirmPromoteMod').replace('{{username}}', user.username))) return;
 
     this.http.post(`/api/admin/users/${user.uid}/role`, { role: 'moderator' }).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} ist jetzt Moderator`);
+        this.successMessage.set(this.i18n.t('userManagement.promoteModSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Befördern');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorPromoting'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   promoteToAdmin(user: UserWithStats): void {
-    if (!confirm(`Möchten Sie ${user.username} zum Administrator befördern? Dies gibt volle Systemrechte!`)) return;
+    if (!confirm(this.i18n.t('userManagement.confirmPromoteAdmin').replace('{{username}}', user.username))) return;
 
     this.http.post(`/api/admin/users/${user.uid}/role`, { role: 'admin' }).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} ist jetzt Administrator`);
+        this.successMessage.set(this.i18n.t('userManagement.promoteAdminSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Befördern');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorPromoting'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   demoteToUser(user: UserWithStats): void {
-    if (!confirm(`Möchten Sie ${user.username} zum normalen Benutzer zurückstufen?`)) return;
+    if (!confirm(this.i18n.t('userManagement.confirmDemoteUser').replace('{{username}}', user.username))) return;
 
     this.http.post(`/api/admin/users/${user.uid}/role`, { role: 'user' }).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} ist jetzt normaler Benutzer`);
+        this.successMessage.set(this.i18n.t('userManagement.demoteUserSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Zurückstufen');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorDemoting'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   demoteToModerator(user: UserWithStats): void {
-    if (!confirm(`Möchten Sie ${user.username} zum Moderator zurückstufen?`)) return;
+    if (!confirm(this.i18n.t('userManagement.confirmDemoteMod').replace('{{username}}', user.username))) return;
 
     this.http.post(`/api/admin/users/${user.uid}/role`, { role: 'moderator' }).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} ist jetzt Moderator`);
+        this.successMessage.set(this.i18n.t('userManagement.demoteModSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Zurückstufen');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorDemoting'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });
   }
 
   deleteUser(user: UserWithStats): void {
-    const confirmMessage = `⚠️ WARNUNG: Diese Aktion kann nicht rückgängig gemacht werden!\n\n` +
-      `Sie sind dabei, ${user.username} und ALLE zugehörigen Daten permanent zu löschen:\n` +
-      `- Alle Posts und Medien\n` +
-      `- Alle Freundschaften\n` +
-      `- Alle Reports und Meldungen\n` +
-      `- Das gesamte Benutzerkonto\n\n` +
-      `Möchten Sie ${user.username} wirklich PERMANENT löschen?`;
+    const confirmMessage = this.i18n.t('userManagement.confirmDeleteMessage').replace('{{username}}', user.username);
 
     if (!confirm(confirmMessage)) return;
 
     // Zweite Bestätigung für extra Sicherheit
-    if (!confirm(`Letzte Bestätigung: ${user.username} wirklich löschen?`)) return;
+    if (!confirm(this.i18n.t('userManagement.confirmDeleteFinal').replace('{{username}}', user.username))) return;
 
     this.http.delete(`/api/users/${user.uid}`).subscribe({
       next: () => {
-        this.successMessage.set(`${user.username} wurde permanent gelöscht`);
+        this.successMessage.set(this.i18n.t('userManagement.deleteSuccess').replace('{{username}}', user.username));
         this.loadUsers();
         setTimeout(() => this.successMessage.set(''), 3000);
       },
       error: (error) => {
-        this.errorMessage.set(error.error?.detail || 'Fehler beim Löschen des Benutzers');
+        this.errorMessage.set(error.error?.detail || this.i18n.t('userManagement.errorDeleting'));
         setTimeout(() => this.errorMessage.set(''), 5000);
       }
     });

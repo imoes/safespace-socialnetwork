@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
+import { I18nService } from '../../services/i18n.service';
 
 interface VideoInfo {
   duration: number;
@@ -22,6 +23,8 @@ interface VideoInfo {
 export class VideoEditorComponent {
   @Output() videoProcessed = new EventEmitter<File>();
   @Output() cancelled = new EventEmitter<void>();
+
+  i18n = inject(I18nService);
 
   private ffmpeg: FFmpeg | null = null;
   private ffmpegLoaded = false;
@@ -63,7 +66,7 @@ export class VideoEditorComponent {
 
     // Validiere Dateityp
     if (!file.type.startsWith('video/')) {
-      this.errorMessage.set('Bitte wähle eine Video-Datei aus.');
+      this.errorMessage.set(this.i18n.t('videoEditor.selectVideoFile'));
       return;
     }
 
@@ -95,7 +98,7 @@ export class VideoEditorComponent {
 
         // Max 5 Minuten Validierung
         if (duration > 300) {
-          this.errorMessage.set('Video ist länger als 5 Minuten. Bitte schneide es zu.');
+          this.errorMessage.set(this.i18n.t('videoEditor.videoTooLong'));
         }
 
         this.videoInfo.set({
@@ -143,7 +146,7 @@ export class VideoEditorComponent {
       this.ffmpegLoaded = true;
     } catch (error) {
       console.error('Failed to load FFmpeg:', error);
-      this.errorMessage.set('FFmpeg konnte nicht geladen werden. Bitte versuche es später erneut.');
+      this.errorMessage.set(this.i18n.t('videoEditor.ffmpegError'));
     }
   }
 
@@ -221,7 +224,7 @@ export class VideoEditorComponent {
       this.closeEditor();
     } catch (error) {
       console.error('Video processing error:', error);
-      this.errorMessage.set('Fehler beim Verarbeiten des Videos. Bitte versuche es erneut.');
+      this.errorMessage.set(this.i18n.t('videoEditor.processingError'));
     } finally {
       this.isProcessing.set(false);
       this.processingProgress.set(0);
