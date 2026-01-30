@@ -10,7 +10,6 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 interface UserSearchResult {
   uid: number;
   username: string;
-  email: string;
   bio?: string;
   role: string;
 }
@@ -93,7 +92,6 @@ interface FriendRequest {
                 <div class="user-card">
                   <div class="user-info">
                     <div class="user-name">{{ user.username }}</div>
-                    <div class="user-email">{{ user.email }}</div>
                     @if (user.bio) {
                       <div class="user-bio">{{ user.bio }}</div>
                     }
@@ -369,12 +367,6 @@ interface FriendRequest {
       font-weight: 600;
       color: #333;
       font-size: 16px;
-      margin-bottom: 4px;
-    }
-
-    .user-email {
-      color: #65676b;
-      font-size: 13px;
       margin-bottom: 4px;
     }
 
