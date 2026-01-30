@@ -25,7 +25,7 @@ import { RouterLink } from '@angular/router';
         <section>
           <h2>Kontakt</h2>
           <p>
-            <strong>E-Mail:</strong> thomas&#64;kluge-online.de<br>
+            <strong>E-Mail:</strong> support&#64;thesafespace.blog<br>
             <strong>Website:</strong> <a href="https://github.com/imoes/safespace-socialnetwork" target="_blank" rel="noopener">github.com/imoes/safespace-socialnetwork</a>
           </p>
         </section>

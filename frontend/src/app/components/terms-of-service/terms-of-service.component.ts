@@ -123,7 +123,7 @@ import { RouterLink } from '@angular/router';
           </p>
           <p>
             <strong>Thomas Kluge</strong><br>
-            E-Mail: thomas&#64;kluge-online.de
+            E-Mail: support&#64;thesafespace.blog
           </p>
         </section>
       </div>
