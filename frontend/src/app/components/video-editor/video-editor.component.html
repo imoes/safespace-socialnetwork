@@ -38,11 +38,11 @@
             <span class="value">{{ formatTime(videoInfo()!.duration) }}</span>
           </div>
           <div class="info-item">
-            <span class="label">Größe:</span>
+            <span class="label">{{ i18n.t('videoEditor.size') }}</span>
             <span class="value">{{ formatSize(videoInfo()!.size) }}</span>
           </div>
           <div class="info-item">
-            <span class="label">Auflösung:</span>
+            <span class="label">{{ i18n.t('videoEditor.resolution') }}</span>
             <span class="value">{{ videoInfo()!.width }}x{{ videoInfo()!.height }}</span>
           </div>
         </div>
@@ -159,7 +159,7 @@
           class="btn btn-cancel"
           (click)="cancel()"
           [disabled]="isProcessing()">
-          Abbrechen
+          {{ i18n.t('videoEditor.cancel') }}
         </button>
         <button
           class="btn btn-primary"

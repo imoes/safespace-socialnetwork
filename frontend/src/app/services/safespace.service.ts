@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { I18nService } from './i18n.service';
 
 export interface ContentCheckResult {
   is_hate_speech: boolean;
@@ -42,6 +43,7 @@ export interface UserModerationStats {
 export class SafeSpaceService {
   private readonly API_URL = '/api/safespace';
   private http = inject(HttpClient);
+  private i18n = inject(I18nService);
 
   // Signals für Content-Check während des Tippens
   private lastCheckResult = signal<ContentCheckResult | null>(null);
@@ -142,18 +144,19 @@ export class SafeSpaceService {
    * Gibt deutsche Bezeichnung für Kategorie zurück.
    */
   getCategoryLabel(category: string): string {
-    const labels: Record<string, string> = {
-      racism: 'Rassismus',
-      sexism: 'Sexismus',
-      homophobia: 'Homophobie',
-      religious_hate: 'Religiöse Hetze',
-      disability_hate: 'Ableismus',
-      xenophobia: 'Fremdenfeindlichkeit',
-      general_hate: 'Hassrede',
-      threat: 'Drohung',
-      harassment: 'Belästigung',
-      none: 'Keine'
+    const keyMap: Record<string, string> = {
+      racism: 'categories.racism',
+      sexism: 'categories.sexism',
+      homophobia: 'categories.homophobia',
+      religious_hate: 'categories.religiousHate',
+      disability_hate: 'categories.disabilityHate',
+      xenophobia: 'categories.xenophobia',
+      general_hate: 'categories.generalHate',
+      threat: 'categories.threat',
+      harassment: 'categories.harassment',
+      none: 'categories.none'
     };
-    return labels[category] || category;
+    const key = keyMap[category];
+    return key ? this.i18n.t(key) : category;
   }
 }

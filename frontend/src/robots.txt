@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /privacy-policy
+Allow: /terms
+Allow: /impressum
+Allow: /info
+
+Disallow: /api/
+Disallow: /settings
+Disallow: /admin
+Disallow: /admin-panel
+Disallow: /users
+
+Sitemap: https://thesafespace.blog/sitemap.xml

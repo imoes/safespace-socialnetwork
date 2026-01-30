@@ -53,4 +53,4 @@ async def get_site_url() -> str:
 
 async def get_site_title() -> str:
     """Holt den Site-Titel"""
-    return await get_site_setting("site_title", "SocialNet")
+    return await get_site_setting("site_title", "SafeSpace")

@@ -374,7 +374,7 @@ async def get_site_settings(admin: dict = Depends(require_admin)):
     all_settings = await get_all_site_settings()
     return {
         "site_url": all_settings.get("site_url", "http://localhost:4200"),
-        "site_title": all_settings.get("site_title", "SocialNet")
+        "site_title": all_settings.get("site_title", "SafeSpace")
     }
 
 
@@ -564,3 +564,115 @@ async def translate_email_template(
             results[lang] = {"error": str(e)}
 
     return {"translations": results}
+
+
+@router.get("/deepseek-balance")
+async def get_deepseek_balance(
+    admin: dict = Depends(require_admin)
+):
+    """Ruft das DeepSeek API-Guthaben ab und sendet Warnung bei niedrigem Guthaben"""
+    from app.safespace.config import safespace_settings
+
+    if not safespace_settings.deepseek_api_key:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="DeepSeek API-Key nicht konfiguriert"
+        )
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                "https://api.deepseek.com/user/balance",
+                headers={
+                    "Authorization": f"Bearer {safespace_settings.deepseek_api_key}",
+                    "Content-Type": "application/json"
+                }
+            )
+
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"DeepSeek API Fehler: {response.text}"
+            )
+
+        data = response.json()
+        balance_infos = data.get("balance_infos", [])
+        is_available = data.get("is_available", False)
+
+        # USD-Guthaben extrahieren (oder erstes verfügbares)
+        total_balance = 0.0
+        currency = "USD"
+        granted_balance = 0.0
+        topped_up_balance = 0.0
+
+        for info in balance_infos:
+            if info.get("currency") == "USD":
+                total_balance = float(info.get("total_balance", 0))
+                granted_balance = float(info.get("granted_balance", 0))
+                topped_up_balance = float(info.get("topped_up_balance", 0))
+                currency = "USD"
+                break
+        else:
+            # Falls kein USD, erstes nehmen
+            if balance_infos:
+                info = balance_infos[0]
+                total_balance = float(info.get("total_balance", 0))
+                granted_balance = float(info.get("granted_balance", 0))
+                topped_up_balance = float(info.get("topped_up_balance", 0))
+                currency = info.get("currency", "USD")
+
+        # Bei niedrigem Guthaben (unter 1.00) E-Mail an alle Admins senden
+        if total_balance < 1.0:
+            try:
+                await _notify_admins_low_balance(total_balance, currency)
+            except Exception as e:
+                print(f"⚠️ Fehler beim Senden der Low-Balance E-Mail: {e}")
+
+        return {
+            "is_available": is_available,
+            "total_balance": total_balance,
+            "granted_balance": granted_balance,
+            "topped_up_balance": topped_up_balance,
+            "currency": currency,
+            "model": safespace_settings.deepseek_model
+        }
+
+    except httpx.RequestError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"DeepSeek API nicht erreichbar: {str(e)}"
+        )
+
+
+async def _notify_admins_low_balance(balance: float, currency: str):
+    """Sendet E-Mail-Warnung an alle Admins bei niedrigem DeepSeek-Guthaben"""
+    from app.services.email_service import EmailService
+
+    # Alle Admin-E-Mails laden
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT email, username FROM users WHERE role = 'admin' AND is_banned = FALSE"
+        )
+        admins = await result.fetchall()
+
+    if not admins:
+        return
+
+    for admin in admins:
+        try:
+            EmailService.send_notification_email(
+                to_email=admin["email"],
+                to_username=admin["username"],
+                subject="⚠️ DeepSeek API - Niedriges Guthaben!",
+                notification_type="system_warning",
+                body_html=f"""
+                <h2>⚠️ DeepSeek API Guthaben niedrig!</h2>
+                <p>Das DeepSeek API-Guthaben ist auf <strong>{balance:.2f} {currency}</strong> gesunken.</p>
+                <p>Bitte laden Sie das Guthaben auf, um den SafeSpace Moderationsdienst aufrechtzuerhalten.</p>
+                <p><a href="https://platform.deepseek.com/">DeepSeek Platform aufrufen</a></p>
+                <br>
+                <p>— SafeSpace System</p>
+                """
+            )
+        except Exception as e:
+            print(f"⚠️ Fehler beim Senden an {admin['email']}: {e}")

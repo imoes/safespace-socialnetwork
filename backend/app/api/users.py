@@ -74,6 +74,7 @@ class UserProfile(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     birthday: Optional[date] = None
+    is_friend: bool = False
 
 
 @router.put("/me")
@@ -343,13 +344,14 @@ async def search_users(
             WHERE (u.username ILIKE %s
               OR u.first_name ILIKE %s
               OR u.last_name ILIKE %s
-              OR CONCAT(u.first_name, ' ', u.last_name) ILIKE %s)
+              OR CONCAT(u.first_name, ' ', u.last_name) ILIKE %s
+              OR u.email ILIKE %s)
               AND u.uid != %s
               AND u.is_banned = FALSE
             ORDER BY is_friend DESC, u.username ASC
             LIMIT 20
             """,
-            (current_user["uid"], current_user["uid"], f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", current_user["uid"])
+            (current_user["uid"], current_user["uid"], f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", f"%{q}%", current_user["uid"])
         )
         rows = await result.fetchall()
 
@@ -386,6 +388,7 @@ async def get_users_list(
             SELECT
                 u.uid,
                 u.username,
+                u.email,
                 COALESCE(u.role, 'user') as role,
                 COALESCE(u.created_at, CURRENT_TIMESTAMP) as created_at,
                 COALESCE(u.is_banned, false) as is_banned,
@@ -395,7 +398,7 @@ async def get_users_list(
                 COALESCE(COUNT(DISTINCT CASE WHEN r.reporter_uid = u.uid THEN r.report_id END), 0) as report_count
             FROM users u
             LEFT JOIN user_reports r ON (r.author_uid = u.uid OR r.reporter_uid = u.uid)
-            GROUP BY u.uid, u.username, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
+            GROUP BY u.uid, u.username, u.email, u.role, u.created_at, u.is_banned, u.banned_until, u.posts_count
             ORDER BY u.created_at DESC
             """
         )
@@ -414,6 +417,7 @@ async def get_users_list(
             users_list.append({
                 "uid": row["uid"],
                 "username": row["username"],
+                "email": row["email"],
                 "role": row["role"],
                 "created_at": created_at,
                 "post_count": row["post_count"] or 0,
@@ -432,6 +436,7 @@ async def get_user_profile(
     current_user: dict = Depends(get_current_user)
 ):
     """Lädt das Profil eines Benutzers"""
+    from app.db.postgres import get_relation_type
 
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
@@ -450,6 +455,14 @@ async def get_user_profile(
                 detail="Benutzer nicht gefunden"
             )
 
+        # Freundschaftsstatus prüfen
+        is_friend = False
+        if current_user["uid"] != user_uid:
+            relation = await get_relation_type(current_user["uid"], user_uid)
+            is_friend = relation is not None
+        else:
+            is_friend = True  # Eigenes Profil
+
         return UserProfile(
             uid=row["uid"],
             username=row["username"],
@@ -459,7 +472,8 @@ async def get_user_profile(
             profile_picture=row["profile_picture"] if "profile_picture" in row.keys() else None,
             first_name=row.get("first_name"),
             last_name=row.get("last_name"),
-            birthday=row.get("birthday")
+            birthday=row.get("birthday"),
+            is_friend=is_friend
         )
 
 
@@ -1128,7 +1142,7 @@ async def create_personal_post(
 ):
     """Erstellt einen persönlichen Post auf dem Profil eines anderen Users"""
     from app.db.sqlite_posts import UserPostsDB
-    from app.db.postgres import get_user_by_uid, increment_user_posts_count
+    from app.db.postgres import get_user_by_uid, increment_user_posts_count, get_relation_type
 
     # Prüfen ob Ziel-User existiert
     target_user = await get_user_by_uid(user_uid)
@@ -1143,6 +1157,14 @@ async def create_personal_post(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Persönliche Posts können nicht auf dem eigenen Profil erstellt werden"
+        )
+
+    # Prüfen ob man mit dem User befreundet ist
+    relation = await get_relation_type(current_user["uid"], user_uid)
+    if not relation:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Du kannst nur auf Profilen von Freunden posten"
         )
 
     # Post in BEIDEN DBs speichern (Autor UND Empfänger)
