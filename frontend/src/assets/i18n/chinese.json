@@ -265,7 +265,11 @@
     "password": "密码",
     "confirmPassword": "确认密码",
     "birthday": "生日",
-    "optional": "选填",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
     "registerButton": "注册",
     "hasAccount": "已有账号？",
     "login": "点此登录",
@@ -273,13 +277,27 @@
       "usernameAlreadyRegistered": "该用户名已被使用，请选择其他用户名。",
       "emailAlreadyRegistered": "该邮箱地址已注册，请使用其他邮箱或直接登录。",
       "passwordMismatch": "两次输入的密码不一致",
-      "registrationFailed": "注册失败，请重试。"
+      "registrationFailed": "注册失败，请重试。",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "注册成功！正在跳转...",
     "agbAccept": "我接受",
     "agbLink": "服务条款",
     "agbAnd": "和",
     "privacyLink": "隐私政策"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "passwordReset": {
     "title": "重置密码",

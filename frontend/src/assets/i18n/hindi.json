@@ -265,7 +265,11 @@
     "password": "पासवर्ड",
     "confirmPassword": "पासवर्ड की पुष्टि करें",
     "birthday": "जन्मदिन",
-    "optional": "वैकल्पिक",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
     "registerButton": "रजिस्टर करें",
     "hasAccount": "पहले से खाता है?",
     "login": "यहां लॉगिन करें",
@@ -273,13 +277,27 @@
       "usernameAlreadyRegistered": "यह उपयोगकर्ता नाम पहले से लिया गया है। कृपया दूसरा चुनें।",
       "emailAlreadyRegistered": "यह ईमेल पता पहले से पंजीकृत है। कृपया दूसरा उपयोग करें या लॉगिन करें।",
       "passwordMismatch": "पासवर्ड मेल नहीं खाते",
-      "registrationFailed": "रजिस्ट्रेशन विफल। कृपया पुनः प्रयास करें।"
+      "registrationFailed": "रजिस्ट्रेशन विफल। कृपया पुनः प्रयास करें।",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "रजिस्ट्रेशन सफल! रीडायरेक्ट हो रहा है...",
     "agbAccept": "मैं स्वीकार करता/करती हूं",
     "agbLink": "सेवा की शर्तें",
     "agbAnd": "और",
     "privacyLink": "गोपनीयता नीति"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "passwordReset": {
     "title": "पासवर्ड रीसेट करें",

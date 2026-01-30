@@ -77,7 +77,15 @@ export class LoginComponent implements OnInit {
     this.error = '';
     this.authService.login(this.username, this.password).subscribe({
       next: () => this.router.navigate(['/']),
-      error: (err) => { this.error = err.error?.detail || this.i18n.t('login.errors.loginFailed'); this.isLoading = false; }
+      error: (err) => {
+        const detail = err.error?.detail;
+        if (detail === 'Parental consent pending') {
+          this.error = this.i18n.t('register.errors.consentPending');
+        } else {
+          this.error = detail || this.i18n.t('login.errors.loginFailed');
+        }
+        this.isLoading = false;
+      }
     });
   }
 }

@@ -265,7 +265,11 @@
     "password": "Lozinka",
     "confirmPassword": "Potvrdite lozinku",
     "birthday": "Rođendan",
-    "optional": "neobavezno",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
     "registerButton": "Registriraj se",
     "hasAccount": "Već imate račun?",
     "login": "Prijavite se ovdje",
@@ -273,13 +277,27 @@
       "usernameAlreadyRegistered": "Ovo korisničko ime je već zauzeto. Molimo odaberite drugo.",
       "emailAlreadyRegistered": "Ova adresa e-pošte je već registrirana. Molimo koristite drugu ili se prijavite.",
       "passwordMismatch": "Lozinke se ne podudaraju",
-      "registrationFailed": "Registracija nije uspjela. Molimo pokušajte ponovno."
+      "registrationFailed": "Registracija nije uspjela. Molimo pokušajte ponovno.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registracija uspješna! Preusmjeravanje...",
     "agbAccept": "Prihvaćam",
     "agbLink": "Uvjete korištenja",
     "agbAnd": "i",
     "privacyLink": "Pravila privatnosti"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "passwordReset": {
     "title": "Resetiraj lozinku",
