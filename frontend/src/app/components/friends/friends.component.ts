@@ -17,6 +17,7 @@ interface UserSearchResult {
 interface Friend {
   uid: number;
   username: string;
+  profile_picture?: string;
   relationship: string;
   created_at: string;
 }
