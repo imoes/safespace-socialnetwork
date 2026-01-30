@@ -17,23 +17,41 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <p class="subtitle">{{ 'login.subtitle' | translate }}</p>
         @if (error) { <div class="error">{{ error }}</div> }
         @if (success) { <div class="success">{{ success }}</div> }
-        <form (ngSubmit)="register()">
-          <input type="text" [(ngModel)]="username" name="username" autocomplete="username" [placeholder]="'register.username' | translate" required minlength="3" />
-          <input type="text" [(ngModel)]="firstName" name="firstName" autocomplete="given-name" [placeholder]="'settings.firstName' | translate" />
-          <input type="text" [(ngModel)]="lastName" name="lastName" autocomplete="family-name" [placeholder]="'settings.lastName' | translate" />
-          <input type="email" [(ngModel)]="email" name="email" autocomplete="email" [placeholder]="'register.email' | translate" required />
-          <div class="birthday-field">
-            <label>{{ 'register.birthday' | translate }} <span class="optional">({{ 'register.optional' | translate }})</span></label>
-            <input type="date" [(ngModel)]="birthday" name="birthday" autocomplete="bday" />
+        @if (consentPending) {
+          <div class="consent-pending">
+            <h3>📧 {{ 'register.consentPending' | translate }}</h3>
+            <p>{{ 'register.consentPendingHint' | translate }}</p>
           </div>
-          <input type="password" [(ngModel)]="password" name="password" autocomplete="new-password" [placeholder]="'register.password' | translate" required minlength="6" />
-          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" [placeholder]="'register.confirmPassword' | translate" required />
-          <label class="checkbox-label">
-            <input type="checkbox" [(ngModel)]="agbAccepted" name="agbAccepted" />
-            <span>{{ 'register.agbAccept' | translate }} <a routerLink="/terms" target="_blank">{{ 'register.agbLink' | translate }}</a> {{ 'register.agbAnd' | translate }} <a routerLink="/privacy-policy" target="_blank">{{ 'register.privacyLink' | translate }}</a>.</span>
-          </label>
-          <button type="submit" [disabled]="isLoading || !agbAccepted">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
-        </form>
+        } @else {
+          <form (ngSubmit)="register()">
+            <input type="text" [(ngModel)]="username" name="username" autocomplete="username" [placeholder]="'register.username' | translate" required minlength="3" />
+            <input type="text" [(ngModel)]="firstName" name="firstName" autocomplete="given-name" [placeholder]="'settings.firstName' | translate" />
+            <input type="text" [(ngModel)]="lastName" name="lastName" autocomplete="family-name" [placeholder]="'settings.lastName' | translate" />
+            <input type="email" [(ngModel)]="email" name="email" autocomplete="email" [placeholder]="'register.email' | translate" required />
+            <div class="birthday-field">
+              <label>{{ 'register.birthday' | translate }} <span class="required">*</span></label>
+              <input type="date" [(ngModel)]="birthday" name="birthday" autocomplete="bday" required (change)="onBirthdayChange()" />
+            </div>
+            @if (needsParentalConsent) {
+              <div class="parental-info">
+                <p>{{ 'register.parentalRequired' | translate }}</p>
+                <input type="email" [(ngModel)]="parentEmail" name="parentEmail" [placeholder]="'register.parentEmail' | translate" required />
+              </div>
+            }
+            @if (tooYoung) {
+              <div class="age-blocked">
+                {{ 'register.tooYoung' | translate }}
+              </div>
+            }
+            <input type="password" [(ngModel)]="password" name="password" autocomplete="new-password" [placeholder]="'register.password' | translate" required minlength="6" />
+            <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" autocomplete="new-password" [placeholder]="'register.confirmPassword' | translate" required />
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="agbAccepted" name="agbAccepted" />
+              <span>{{ 'register.agbAccept' | translate }} <a routerLink="/terms" target="_blank">{{ 'register.agbLink' | translate }}</a> {{ 'register.agbAnd' | translate }} <a routerLink="/privacy-policy" target="_blank">{{ 'register.privacyLink' | translate }}</a>.</span>
+            </label>
+            <button type="submit" [disabled]="isLoading || !agbAccepted || tooYoung || !birthday">{{ isLoading ? '...' : ('register.registerButton' | translate) }}</button>
+          </form>
+        }
         <p class="link">{{ 'register.hasAccount' | translate }} <a routerLink="/login">{{ 'register.login' | translate }}</a></p>
       </div>
     </div>
@@ -50,8 +68,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     input:focus { outline: none; border-color: #1877f2; }
     .birthday-field { display: flex; flex-direction: column; gap: 4px; }
     .birthday-field label { font-size: 14px; color: #333; }
-    .birthday-field .optional { color: #888; font-size: 12px; }
+    .birthday-field .required { color: #c62828; font-weight: bold; }
     .birthday-field input { padding: 12px 14px; }
+    .parental-info { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 14px; }
+    .parental-info p { margin: 0 0 10px; font-size: 13px; color: #856404; line-height: 1.5; }
+    .parental-info input { width: 100%; box-sizing: border-box; }
+    .age-blocked { background: #ffebee; border: 1px solid #ef9a9a; border-radius: 8px; padding: 14px; color: #c62828; font-size: 14px; text-align: center; font-weight: 600; }
+    .consent-pending { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 8px; padding: 20px; text-align: center; }
+    .consent-pending h3 { margin: 0 0 8px; color: #1565c0; }
+    .consent-pending p { margin: 0; color: #1976d2; font-size: 14px; line-height: 1.5; }
     button { padding: 14px; background: #42b72a; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
     .checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #555; line-height: 1.4; }
@@ -77,37 +102,76 @@ export class RegisterComponent {
   lastName = '';
   email = '';
   birthday = '';
+  parentEmail = '';
   password = '';
   confirmPassword = '';
   agbAccepted = false;
   error = '';
   success = '';
   isLoading = false;
+  needsParentalConsent = false;
+  tooYoung = false;
+  consentPending = false;
+
+  onBirthdayChange(): void {
+    if (!this.birthday) {
+      this.needsParentalConsent = false;
+      this.tooYoung = false;
+      return;
+    }
+
+    const birth = new Date(this.birthday);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    this.tooYoung = age < 13;
+    this.needsParentalConsent = age >= 13 && age < 16;
+
+    if (!this.needsParentalConsent) {
+      this.parentEmail = '';
+    }
+  }
 
   register(): void {
-    console.log('🔵 Registration gestartet');
-
     if (this.password !== this.confirmPassword) {
       this.error = this.i18n.t('register.errors.passwordMismatch');
+      return;
+    }
+
+    if (!this.birthday) {
+      this.error = this.i18n.t('register.errors.birthdayRequired');
+      return;
+    }
+
+    if (this.needsParentalConsent && !this.parentEmail) {
+      this.error = this.i18n.t('register.errors.parentEmailRequired');
       return;
     }
 
     this.isLoading = true;
     this.error = '';
 
-    this.authService.register(this.username, this.email, this.password, this.firstName, this.lastName, this.birthday || undefined).subscribe({
+    this.authService.register(
+      this.username, this.email, this.password,
+      this.firstName, this.lastName, this.birthday,
+      this.needsParentalConsent ? this.parentEmail : undefined
+    ).subscribe({
       next: () => {
-        console.log('✅ Registration erfolgreich, Token gespeichert!');
-        this.success = this.i18n.t('register.success');
-
-        setTimeout(() => {
-          console.log('🔄 Navigiere zu Feed...');
-          this.router.navigate(['/']);
-        }, 1000);
+        if (this.needsParentalConsent) {
+          this.consentPending = true;
+          this.isLoading = false;
+        } else {
+          this.success = this.i18n.t('register.success');
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 1000);
+        }
       },
       error: (err) => {
-        console.error('Registration failed:', err);
-
         const detail = err.error?.detail;
 
         if (typeof detail === 'string') {
@@ -115,11 +179,16 @@ export class RegisterComponent {
             this.error = this.i18n.t('register.errors.usernameAlreadyRegistered');
           } else if (detail === 'Email already registered') {
             this.error = this.i18n.t('register.errors.emailAlreadyRegistered');
+          } else if (detail === 'Minimum age is 13') {
+            this.error = this.i18n.t('register.tooYoung');
+          } else if (detail === 'Parental consent required') {
+            this.error = this.i18n.t('register.errors.parentEmailRequired');
+          } else if (detail === 'Parent email must be different from your own email') {
+            this.error = this.i18n.t('register.errors.parentEmailSame');
           } else {
             this.error = detail;
           }
         } else if (Array.isArray(detail)) {
-          // Pydantic validation errors (422)
           const messages = detail.map((d: any) => d.msg || JSON.stringify(d));
           this.error = messages.join(', ');
         } else {

@@ -36,7 +36,8 @@ class UserCreate(BaseModel):
     password: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    birthday: Optional[date] = None
+    birthday: date
+    parent_email: Optional[EmailStr] = None
 
 
 class UserLogin(BaseModel):

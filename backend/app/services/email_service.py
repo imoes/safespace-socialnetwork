@@ -969,3 +969,61 @@ class EmailService:
 </body>
 </html>
         """.strip()
+
+    @classmethod
+    async def send_parental_consent_email(
+        cls,
+        parent_email: str,
+        child_username: str,
+        consent_link: str
+    ) -> bool:
+        """Sendet die Einwilligungsanfrage an die Eltern eines minderjährigen Nutzers"""
+        subject = f"SafeSpace – Elterliche Einwilligung für {child_username}"
+
+        body_html = f"""
+            <h2>Elterliche Einwilligung erforderlich</h2>
+            <p>Der Benutzer <strong>{child_username}</strong> möchte sich bei SafeSpace registrieren
+               und ist unter 16 Jahre alt.</p>
+            <p>Gemäß Art. 8 DSGVO benötigen Minderjährige unter 16 Jahren die Einwilligung
+               eines Erziehungsberechtigten zur Nutzung von Social-Media-Diensten.</p>
+            <p>Wenn Sie damit einverstanden sind, dass <strong>{child_username}</strong> SafeSpace nutzt,
+               klicken Sie bitte auf den folgenden Link:</p>
+            <p style="text-align: center;">
+                <a href="{consent_link}" style="display: inline-block; padding: 14px 32px; background: #42b72a; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                    Einwilligung erteilen
+                </a>
+            </p>
+            <p style="color: #666; font-size: 13px;">Oder kopieren Sie diesen Link in Ihren Browser:<br/>
+               <a href="{consent_link}">{consent_link}</a></p>
+            <p style="color: #666; font-size: 13px;">Solange die Einwilligung nicht erteilt wurde,
+               ist der Account eingeschränkt.</p>
+            <p style="color: #999; font-size: 12px;">Falls Sie diese Anfrage nicht kennen, können Sie diese E-Mail ignorieren.</p>
+        """
+
+        html_content = f"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<style>
+    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+    .header {{ background: linear-gradient(135deg, #1877f2, #42b72a); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }}
+    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }}
+    .notification {{ background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+    .footer {{ text-align: center; color: #666; font-size: 12px; margin-top: 30px; }}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><h1>SafeSpace – Jugendschutz</h1></div>
+        <div class="content">
+            <div class="notification">{body_html}</div>
+            <div class="footer">
+                <p>SafeSpace - Dein sicheres Social Network</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+        return await cls._send_email(parent_email, subject, html_content)

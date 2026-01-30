@@ -34,10 +34,12 @@ import { GroupDetailComponent } from './components/groups/group-detail.component
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { UserFriendsListComponent } from './components/user-friends-list/user-friends-list.component';
+import { ParentalConsentComponent } from './components/parental-consent/parental-consent.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'parental-consent/:token', component: ParentalConsentComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard] },

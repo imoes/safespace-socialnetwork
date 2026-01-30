@@ -265,7 +265,11 @@
     "password": "Heslo",
     "confirmPassword": "Potvrdit heslo",
     "birthday": "Narozeniny",
-    "optional": "volitelné",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
     "registerButton": "Zaregistrovat se",
     "hasAccount": "Již máte účet?",
     "login": "Přihlaste se zde",
@@ -273,13 +277,27 @@
       "usernameAlreadyRegistered": "Toto uživatelské jméno je již obsazeno. Zvolte prosím jiné.",
       "emailAlreadyRegistered": "Tato e-mailová adresa je již registrována. Použijte prosím jinou nebo se přihlaste.",
       "passwordMismatch": "Hesla se neshodují",
-      "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu."
+      "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registrace úspěšná! Přesměrování...",
     "agbAccept": "Přijímám",
     "agbLink": "Podmínky služby",
     "agbAnd": "a",
     "privacyLink": "Zásady ochrany osobních údajů"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "passwordReset": {
     "title": "Obnovit heslo",
