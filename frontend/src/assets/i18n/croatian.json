@@ -235,7 +235,12 @@
     "friends": "Prijatelji",
     "loadingFriends": "Učitavanje prijatelja...",
     "noFriends": "Još nema prijatelja",
-    "friendsCount": "Prijatelja"
+    "friendsCount": "Prijatelja",
+    "showAllFriends": "Prikaži sve prijatelje"
+  },
+  "friendsList": {
+    "back": "Natrag",
+    "title": "Prijatelji"
   },
   "login": {
     "title": "Prijava",

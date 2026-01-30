@@ -235,7 +235,12 @@
     "friends": "好友",
     "loadingFriends": "正在加载好友...",
     "noFriends": "暂无好友",
-    "friendsCount": "位好友"
+    "friendsCount": "位好友",
+    "showAllFriends": "显示所有好友"
+  },
+  "friendsList": {
+    "back": "返回",
+    "title": "好友"
   },
   "login": {
     "title": "登录",

@@ -235,7 +235,12 @@
     "friends": "मित्र",
     "loadingFriends": "मित्र लोड हो रहे हैं...",
     "noFriends": "अभी तक कोई मित्र नहीं",
-    "friendsCount": "मित्र"
+    "friendsCount": "मित्र",
+    "showAllFriends": "सभी मित्र दिखाएं"
+  },
+  "friendsList": {
+    "back": "वापस",
+    "title": "मित्र"
   },
   "login": {
     "title": "लॉगिन",

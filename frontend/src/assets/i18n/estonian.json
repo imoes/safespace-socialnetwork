@@ -235,7 +235,12 @@
     "friends": "Sõbrad",
     "loadingFriends": "Sõprade laadimine...",
     "noFriends": "Veel pole sõpru",
-    "friendsCount": "Sõpra"
+    "friendsCount": "Sõpra",
+    "showAllFriends": "Näita kõiki sõpru"
+  },
+  "friendsList": {
+    "back": "Tagasi",
+    "title": "Sõbrad"
   },
   "login": {
     "title": "Sisselogimine",

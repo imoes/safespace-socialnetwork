@@ -235,7 +235,12 @@
     "friends": "Venner",
     "loadingFriends": "Indlæser venner...",
     "noFriends": "Ingen venner endnu",
-    "friendsCount": "Venner"
+    "friendsCount": "Venner",
+    "showAllFriends": "Vis alle venner"
+  },
+  "friendsList": {
+    "back": "Tilbage",
+    "title": "Venner"
   },
   "login": {
     "title": "Log ind",

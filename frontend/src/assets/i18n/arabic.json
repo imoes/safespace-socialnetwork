@@ -234,7 +234,12 @@
     "friends": "الأصدقاء",
     "loadingFriends": "جارٍ تحميل الأصدقاء...",
     "noFriends": "لا يوجد أصدقاء بعد",
-    "friendsCount": "أصدقاء"
+    "friendsCount": "أصدقاء",
+    "showAllFriends": "عرض جميع الأصدقاء"
+  },
+  "friendsList": {
+    "back": "رجوع",
+    "title": "الأصدقاء"
   },
   "friends": {
     "title": "الأصدقاء",

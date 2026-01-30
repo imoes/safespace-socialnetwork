@@ -235,7 +235,12 @@
     "friends": "Znajomi",
     "loadingFriends": "Ładowanie znajomych...",
     "noFriends": "Brak znajomych",
-    "friendsCount": "Znajomych"
+    "friendsCount": "Znajomych",
+    "showAllFriends": "Pokaż wszystkich znajomych"
+  },
+  "friendsList": {
+    "back": "Wstecz",
+    "title": "Znajomi"
   },
   "login": {
     "title": "Logowanie",

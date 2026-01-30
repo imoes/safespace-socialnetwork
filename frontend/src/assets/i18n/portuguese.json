@@ -235,7 +235,12 @@
     "friends": "Amigos",
     "loadingFriends": "A carregar amigos...",
     "noFriends": "Ainda sem amigos",
-    "friendsCount": "Amigos"
+    "friendsCount": "Amigos",
+    "showAllFriends": "Ver todos os amigos"
+  },
+  "friendsList": {
+    "back": "Voltar",
+    "title": "Amigos"
   },
   "login": {
     "title": "Iniciar Sessão",

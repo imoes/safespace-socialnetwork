@@ -235,7 +235,12 @@
     "friends": "Приятели",
     "loadingFriends": "Зареждане на приятели...",
     "noFriends": "Все още няма приятели",
-    "friendsCount": "Приятели"
+    "friendsCount": "Приятели",
+    "showAllFriends": "Покажи всички приятели"
+  },
+  "friendsList": {
+    "back": "Назад",
+    "title": "Приятели"
   },
   "login": {
     "title": "Вход",

@@ -235,7 +235,12 @@
     "friends": "Draugai",
     "loadingFriends": "Įkeliami draugai...",
     "noFriends": "Dar nėra draugų",
-    "friendsCount": "Draugai"
+    "friendsCount": "Draugai",
+    "showAllFriends": "Rodyti visus draugus"
+  },
+  "friendsList": {
+    "back": "Atgal",
+    "title": "Draugai"
   },
   "login": {
     "title": "Prisijungimas",

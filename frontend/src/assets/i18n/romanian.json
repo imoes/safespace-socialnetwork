@@ -235,7 +235,12 @@
     "friends": "Prieteni",
     "loadingFriends": "Se încarcă prietenii...",
     "noFriends": "Încă nu are prieteni",
-    "friendsCount": "Prieteni"
+    "friendsCount": "Prieteni",
+    "showAllFriends": "Arată toți prietenii"
+  },
+  "friendsList": {
+    "back": "Înapoi",
+    "title": "Prieteni"
   },
   "login": {
     "title": "Autentificare",

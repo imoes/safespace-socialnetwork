@@ -235,7 +235,12 @@
     "friends": "Vänner",
     "loadingFriends": "Laddar vänner...",
     "noFriends": "Inga vänner ännu",
-    "friendsCount": "Vänner"
+    "friendsCount": "Vänner",
+    "showAllFriends": "Visa alla vänner"
+  },
+  "friendsList": {
+    "back": "Tillbaka",
+    "title": "Vänner"
   },
   "login": {
     "title": "Logga in",

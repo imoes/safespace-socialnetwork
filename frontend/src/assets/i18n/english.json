@@ -235,7 +235,12 @@
     "friends": "Friends",
     "loadingFriends": "Loading friends...",
     "noFriends": "No friends yet",
-    "friendsCount": "Friends"
+    "friendsCount": "Friends",
+    "showAllFriends": "Show all friends"
+  },
+  "friendsList": {
+    "back": "Back",
+    "title": "Friends"
   },
   "login": {
     "title": "Login",

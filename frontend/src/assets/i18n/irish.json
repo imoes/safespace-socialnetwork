@@ -235,7 +235,12 @@
     "friends": "Cairde",
     "loadingFriends": "Cairde á lódáil...",
     "noFriends": "Níl aon chairde fós",
-    "friendsCount": "Cairde"
+    "friendsCount": "Cairde",
+    "showAllFriends": "Taispeáin gach cara"
+  },
+  "friendsList": {
+    "back": "Ar ais",
+    "title": "Cairde"
   },
   "login": {
     "title": "Logáil Isteach",
