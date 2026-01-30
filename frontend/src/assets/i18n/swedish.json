@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Tillbaka",
-    "title": "Vänner"
+    "title": "Vänner",
+    "accessDenied": "Åtkomst nekad",
+    "accessDeniedHint": "Du kan bara se vänlistan för dina egna vänner."
   },
   "login": {
     "title": "Logga in",

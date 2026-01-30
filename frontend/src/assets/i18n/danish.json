@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Tilbage",
-    "title": "Venner"
+    "title": "Venner",
+    "accessDenied": "Adgang nægtet",
+    "accessDeniedHint": "Du kan kun se vennelisten for dine egne venner."
   },
   "login": {
     "title": "Log ind",

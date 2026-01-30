@@ -482,7 +482,17 @@ async def get_user_friends(
     user_uid: int,
     current_user: dict = Depends(get_current_user)
 ):
-    """Gibt die Freundesliste eines Benutzers zurück (nur Username und Profilbild)"""
+    """Gibt die Freundesliste eines Benutzers zurück (nur für Freunde und eigenes Profil sichtbar)"""
+    # Nur eigene Freundesliste oder die von Freunden anzeigen
+    if user_uid != current_user["uid"]:
+        from app.db.postgres import get_relation_type
+        relation = await get_relation_type(current_user["uid"], user_uid)
+        if not relation:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can only view friends lists of your own friends"
+            )
+
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """

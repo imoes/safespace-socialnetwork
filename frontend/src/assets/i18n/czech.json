@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Zpět",
-    "title": "Přátelé"
+    "title": "Přátelé",
+    "accessDenied": "Přístup odepřen",
+    "accessDeniedHint": "Můžete zobrazit pouze seznam přátel svých vlastních přátel."
   },
   "login": {
     "title": "Přihlášení",

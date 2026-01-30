@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Takaisin",
-    "title": "Ystävät"
+    "title": "Ystävät",
+    "accessDenied": "Pääsy estetty",
+    "accessDeniedHint": "Voit tarkastella vain omien ystäviesi ystävälistaa."
   },
   "login": {
     "title": "Kirjaudu sisään",

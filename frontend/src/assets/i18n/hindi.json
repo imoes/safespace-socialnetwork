@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "वापस",
-    "title": "मित्र"
+    "title": "मित्र",
+    "accessDenied": "पहुँच अस्वीकृत",
+    "accessDeniedHint": "आप केवल अपने मित्रों की मित्र सूची देख सकते हैं।"
   },
   "login": {
     "title": "लॉगिन",

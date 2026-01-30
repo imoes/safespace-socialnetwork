@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "返回",
-    "title": "好友"
+    "title": "好友",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedHint": "你只能查看自己好友的好友列表。"
   },
   "login": {
     "title": "登录",

@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Lura",
-    "title": "Ħbieb"
+    "title": "Ħbieb",
+    "accessDenied": "Aċċess miċħud",
+    "accessDeniedHint": "Tista' tara biss il-lista tal-ħbieb tal-ħbieb tiegħek."
   },
   "login": {
     "title": "Idħol",

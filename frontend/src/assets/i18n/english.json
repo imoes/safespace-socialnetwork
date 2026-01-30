@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Back",
-    "title": "Friends"
+    "title": "Friends",
+    "accessDenied": "Access denied",
+    "accessDeniedHint": "You can only view the friends list of your own friends."
   },
   "login": {
     "title": "Login",

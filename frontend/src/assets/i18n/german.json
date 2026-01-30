@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Zurück",
-    "title": "Freunde"
+    "title": "Freunde",
+    "accessDenied": "Zugriff verweigert",
+    "accessDeniedHint": "Du kannst nur die Freundesliste deiner eigenen Freunde sehen."
   },
   "login": {
     "title": "Anmelden",

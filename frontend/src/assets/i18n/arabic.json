@@ -239,7 +239,9 @@
   },
   "friendsList": {
     "back": "رجوع",
-    "title": "الأصدقاء"
+    "title": "الأصدقاء",
+    "accessDenied": "تم رفض الوصول",
+    "accessDeniedHint": "يمكنك فقط عرض قائمة أصدقاء أصدقائك."
   },
   "friends": {
     "title": "الأصدقاء",
