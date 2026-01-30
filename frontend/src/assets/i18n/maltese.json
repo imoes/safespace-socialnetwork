@@ -255,7 +255,8 @@
     "register": "Irreġistra issa",
     "errors": {
       "invalidCredentials": "Kredenzjali invalidi",
-      "loginFailed": "Id-dħul falla. Jekk jogħġbok erġa' pprova."
+      "loginFailed": "Id-dħul falla. Jekk jogħġbok erġa' pprova.",
+      "emailNotVerified": "L-indirizz tal-email tiegħek għadu mhux verifikat. Jekk jogħġbok iċċekkja l-inbox tiegħek."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Jekk jogħġbok ivverifika l-indirizz tal-email tiegħek",
+    "verificationPendingHint": "Bgħatna email b'link ta' verifika. Jekk jogħġbok ikklikkja fuq il-link biex tattiva l-kont tiegħek.",
+    "resendVerification": "Erġa' ibgħat l-email ta' verifika",
+    "resendIn": "Erġa' ibgħat fi",
     "registerButton": "Irreġistra",
     "hasAccount": "Diġà għandek kont?",
     "login": "Idħol hawn",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Qed jiġi verifikat l-email...",
+    "confirmedTitle": "Email verifikat",
+    "confirmedMessage": "L-indirizz tal-email tiegħek ġie verifikat b'suċċess. Issa tista' tidħol.",
+    "alreadyConfirmedTitle": "Diġà verifikat",
+    "alreadyConfirmedMessage": "L-indirizz tal-email tiegħek diġà ġie verifikat.",
+    "errorTitle": "Link invalidu",
+    "errorMessage": "Dan il-link ta' verifika huwa invalidu jew skada.",
+    "backToLogin": "Lura għal-login"
   },
   "passwordReset": {
     "title": "Irrisettja l-Password",

@@ -255,7 +255,8 @@
     "register": "Registrera dig nu",
     "errors": {
       "invalidCredentials": "Ogiltiga inloggningsuppgifter",
-      "loginFailed": "Inloggningen misslyckades. Vänligen försök igen."
+      "loginFailed": "Inloggningen misslyckades. Vänligen försök igen.",
+      "emailNotVerified": "Din e-postadress har inte verifierats ännu. Vänligen kontrollera din inkorg."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Vänligen verifiera din e-postadress",
+    "verificationPendingHint": "Vi har skickat ett e-postmeddelande med en verifieringslänk. Klicka på länken för att aktivera ditt konto.",
+    "resendVerification": "Skicka verifieringsmail igen",
+    "resendIn": "Skicka igen om",
     "registerButton": "Registrera",
     "hasAccount": "Har du redan ett konto?",
     "login": "Logga in här",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verifierar e-post...",
+    "confirmedTitle": "E-post verifierad",
+    "confirmedMessage": "Din e-postadress har verifierats framgångsrikt. Du kan nu logga in.",
+    "alreadyConfirmedTitle": "Redan verifierad",
+    "alreadyConfirmedMessage": "Din e-postadress har redan verifierats.",
+    "errorTitle": "Ogiltig länk",
+    "errorMessage": "Denna verifieringslänk är ogiltig eller har löpt ut.",
+    "backToLogin": "Tillbaka till inloggning"
   },
   "passwordReset": {
     "title": "Återställ lösenord",

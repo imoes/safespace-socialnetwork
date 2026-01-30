@@ -363,7 +363,8 @@
     "register": "S'inscrire maintenant",
     "errors": {
       "invalidCredentials": "Identifiants invalides",
-      "loginFailed": "Échec de la connexion. Veuillez réessayer."
+      "loginFailed": "Échec de la connexion. Veuillez réessayer.",
+      "emailNotVerified": "Votre adresse e-mail n'a pas encore été vérifiée. Veuillez vérifier votre boîte de réception."
     }
   },
   "register": {
@@ -378,6 +379,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Veuillez vérifier votre adresse e-mail",
+    "verificationPendingHint": "Nous vous avons envoyé un e-mail avec un lien de vérification. Veuillez cliquer sur le lien pour activer votre compte.",
+    "resendVerification": "Renvoyer l'e-mail de vérification",
+    "resendIn": "Renvoyer dans",
     "registerButton": "S'inscrire",
     "hasAccount": "Vous avez déjà un compte?",
     "login": "Se connecter ici",
@@ -406,6 +411,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Vérification de l'e-mail...",
+    "confirmedTitle": "E-mail vérifié",
+    "confirmedMessage": "Votre adresse e-mail a été vérifiée avec succès. Vous pouvez maintenant vous connecter.",
+    "alreadyConfirmedTitle": "Déjà vérifié",
+    "alreadyConfirmedMessage": "Votre adresse e-mail a déjà été vérifiée.",
+    "errorTitle": "Lien invalide",
+    "errorMessage": "Ce lien de vérification est invalide ou a expiré.",
+    "backToLogin": "Retour à la connexion"
   },
   "common": {
     "loading": "Chargement...",

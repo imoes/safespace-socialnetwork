@@ -1026,4 +1026,57 @@ class EmailService:
 </body>
 </html>"""
 
-        return await cls._send_email(parent_email, subject, html_content)
+        return await cls.send_email(parent_email, subject, html_content)
+
+    @classmethod
+    async def send_email_verification(
+        cls,
+        to_email: str,
+        username: str,
+        verify_link: str
+    ) -> bool:
+        """Sendet die E-Mail-Verifizierung an den neuen Benutzer (Double Opt-In)"""
+        subject = f"SafeSpace – E-Mail-Adresse bestätigen"
+
+        body_html = f"""
+            <h2>E-Mail-Adresse bestätigen</h2>
+            <p>Hallo <strong>{username}</strong>,</p>
+            <p>vielen Dank für deine Registrierung bei SafeSpace!</p>
+            <p>Bitte bestätige deine E-Mail-Adresse, indem du auf den folgenden Link klickst:</p>
+            <p style="text-align: center;">
+                <a href="{verify_link}" style="display: inline-block; padding: 14px 32px; background: #1877f2; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                    E-Mail bestätigen
+                </a>
+            </p>
+            <p style="color: #666; font-size: 13px;">Oder kopiere diesen Link in deinen Browser:<br/>
+               <a href="{verify_link}">{verify_link}</a></p>
+            <p style="color: #999; font-size: 12px;">Falls du dich nicht bei SafeSpace registriert hast, kannst du diese E-Mail ignorieren.</p>
+        """
+
+        html_content = f"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<style>
+    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+    .header {{ background: linear-gradient(135deg, #1877f2, #42b72a); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }}
+    .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }}
+    .notification {{ background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+    .footer {{ text-align: center; color: #666; font-size: 12px; margin-top: 30px; }}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><h1>SafeSpace – E-Mail bestätigen</h1></div>
+        <div class="content">
+            <div class="notification">{body_html}</div>
+            <div class="footer">
+                <p>SafeSpace - Dein sicheres Social Network</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+        return await cls.send_email(to_email, subject, html_content)

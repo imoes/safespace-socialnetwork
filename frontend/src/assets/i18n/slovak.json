@@ -255,7 +255,8 @@
     "register": "Zaregistrujte sa",
     "errors": {
       "invalidCredentials": "Neplatné prihlasovacie údaje",
-      "loginFailed": "Prihlásenie zlyhalo. Skúste to prosím znova."
+      "loginFailed": "Prihlásenie zlyhalo. Skúste to prosím znova.",
+      "emailNotVerified": "Vaša e-mailová adresa ešte nebola overená. Skontrolujte prosím svoju schránku."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Prosím overte svoju e-mailovú adresu",
+    "verificationPendingHint": "Poslali sme vám e-mail s overovacím odkazom. Kliknite prosím na odkaz pre aktiváciu vášho účtu.",
+    "resendVerification": "Znova odoslať overovací e-mail",
+    "resendIn": "Znova odoslať za",
     "registerButton": "Zaregistrovať sa",
     "hasAccount": "Už máte účet?",
     "login": "Prihláste sa tu",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Overovanie e-mailu...",
+    "confirmedTitle": "E-mail overený",
+    "confirmedMessage": "Vaša e-mailová adresa bola úspešne overená. Teraz sa môžete prihlásiť.",
+    "alreadyConfirmedTitle": "Už overené",
+    "alreadyConfirmedMessage": "Vaša e-mailová adresa už bola overená.",
+    "errorTitle": "Neplatný odkaz",
+    "errorMessage": "Tento overovací odkaz je neplatný alebo vypršal.",
+    "backToLogin": "Späť na prihlásenie"
   },
   "passwordReset": {
     "title": "Obnovenie hesla",

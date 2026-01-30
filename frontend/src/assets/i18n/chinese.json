@@ -255,7 +255,8 @@
     "register": "立即注册",
     "errors": {
       "invalidCredentials": "用户名或密码错误",
-      "loginFailed": "登录失败，请重试。"
+      "loginFailed": "登录失败，请重试。",
+      "emailNotVerified": "您的电子邮件地址尚未验证。请检查您的收件箱。"
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "请验证您的电子邮件地址",
+    "verificationPendingHint": "我们已向您发送了一封包含验证链接的电子邮件。请点击链接以激活您的账户。",
+    "resendVerification": "重新发送验证邮件",
+    "resendIn": "重新发送倒计时",
     "registerButton": "注册",
     "hasAccount": "已有账号？",
     "login": "点此登录",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "正在验证电子邮件...",
+    "confirmedTitle": "电子邮件已验证",
+    "confirmedMessage": "您的电子邮件地址已成功验证。您现在可以登录了。",
+    "alreadyConfirmedTitle": "已验证",
+    "alreadyConfirmedMessage": "您的电子邮件地址已经验证过了。",
+    "errorTitle": "无效链接",
+    "errorMessage": "此验证链接无效或已过期。",
+    "backToLogin": "返回登录"
   },
   "passwordReset": {
     "title": "重置密码",

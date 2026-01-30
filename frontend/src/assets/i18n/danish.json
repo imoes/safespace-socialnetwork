@@ -255,7 +255,8 @@
     "register": "Registrer dig nu",
     "errors": {
       "invalidCredentials": "Ugyldige loginoplysninger",
-      "loginFailed": "Login mislykkedes. Prøv venligst igen."
+      "loginFailed": "Login mislykkedes. Prøv venligst igen.",
+      "emailNotVerified": "Din e-mailadresse er endnu ikke bekræftet. Tjek venligst din indbakke."
     }
   },
   "register": {
@@ -270,6 +271,10 @@
     "tooYoung": "You must be at least 13 years old to register.",
     "consentPending": "Consent pending",
     "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Bekræft venligst din e-mailadresse",
+    "verificationPendingHint": "Vi har sendt dig en e-mail med et bekræftelseslink. Klik venligst på linket for at aktivere din konto.",
+    "resendVerification": "Send bekræftelses-e-mail igen",
+    "resendIn": "Send igen om",
     "registerButton": "Registrer",
     "hasAccount": "Har du allerede en konto?",
     "login": "Log ind her",
@@ -298,6 +303,16 @@
     "errorTitle": "Invalid link",
     "errorMessage": "This consent link is invalid or expired.",
     "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Bekræfter e-mail...",
+    "confirmedTitle": "E-mail bekræftet",
+    "confirmedMessage": "Din e-mailadresse er blevet bekræftet. Du kan nu logge ind.",
+    "alreadyConfirmedTitle": "Allerede bekræftet",
+    "alreadyConfirmedMessage": "Din e-mailadresse er allerede bekræftet.",
+    "errorTitle": "Ugyldigt link",
+    "errorMessage": "Dette bekræftelseslink er ugyldigt eller udløbet.",
+    "backToLogin": "Tilbage til login"
   },
   "passwordReset": {
     "title": "Nulstil adgangskode",

@@ -35,11 +35,13 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { UserFriendsListComponent } from './components/user-friends-list/user-friends-list.component';
 import { ParentalConsentComponent } from './components/parental-consent/parental-consent.component';
+import { EmailVerificationComponent } from './components/email-verification/email-verification.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'parental-consent/:token', component: ParentalConsentComponent },
+  { path: 'verify-email/:token', component: EmailVerificationComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard] },
