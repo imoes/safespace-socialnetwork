@@ -474,9 +474,9 @@ async def get_user_profile(
             role=row["role"],
             created_at=row["created_at"].isoformat() if row["created_at"] else "",
             profile_picture=row["profile_picture"] if "profile_picture" in row.keys() else None,
-            first_name=row.get("first_name"),
-            last_name=row.get("last_name"),
-            birthday=row.get("birthday"),
+            first_name=row.get("first_name") if is_friend else None,
+            last_name=row.get("last_name") if is_friend else None,
+            birthday=row.get("birthday") if is_friend else None,
             is_friend=is_friend
         )
 
