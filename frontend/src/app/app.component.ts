@@ -23,7 +23,7 @@ import { Title } from '@angular/platform-browser';
     @if (authService.isAuthenticated()) {
       <nav class="navbar">
         <a routerLink="/" class="logo">{{ siteTitle() }}</a>
-        <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="donate-link" title="{{ 'nav.donate' | translate }}">❤️ {{ 'nav.donate' | translate }}</a>
+        <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="donate-link desktop-only" title="{{ 'nav.donate' | translate }}">❤️ {{ 'nav.donate' | translate }}</a>
 
         <div class="search-container desktop-only">
           <input
