@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Недостъпен",
     "deepseekLowBalance": "Внимание: Салдото на DeepSeek е много ниско! Моля, допълнете, за да поддържате услугата за модериране.",
     "deepseekLoading": "Зареждане на салдото на DeepSeek...",
-    "deepseekError": "Грешка при зареждане на салдото на DeepSeek"
+    "deepseekError": "Грешка при зареждане на салдото на DeepSeek",
+    "emailSettings": "Настройки на имейл",
+    "emailSettingsDesc": "Текуща SMTP конфигурация и изпращане на тестов имейл.",
+    "emailEnabled": "Активирано",
+    "emailDisabled": "Деактивирано",
+    "emailUser": "Потребител",
+    "emailFrom": "Адрес на подателя",
+    "emailSender": "Име на подателя",
+    "testEmailLabel": "Изпращане на тестов имейл",
+    "testEmailPlaceholder": "Въведете имейл адрес...",
+    "testEmailSend": "Изпрати тест",
+    "testEmailSent": "Тестовият имейл беше изпратен успешно.",
+    "testEmailFailed": "Тестовият имейл не можа да бъде изпратен.",
+    "testEmailRequired": "Моля, въведете имейл адрес.",
+    "emailDisabledHint": "Имейлът е деактивиран. Задайте SAFESPACE_EMAIL_ENABLED=true, за да активирате имейли.",
+    "loading": "Зареждане"
   },
   "welcome": {
     "understood": "Разбрах"

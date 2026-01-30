@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Pole saadaval",
     "deepseekLowBalance": "Hoiatus: DeepSeeki saldo on väga madal! Palun laadige üles, et modereerimisteenus toimiks.",
     "deepseekLoading": "DeepSeeki saldo laadimine...",
-    "deepseekError": "Viga DeepSeeki saldo laadimisel"
+    "deepseekError": "Viga DeepSeeki saldo laadimisel",
+    "emailSettings": "E-posti seaded",
+    "emailSettingsDesc": "Praegune SMTP konfiguratsioon ja test-e-kirja saatmine.",
+    "emailEnabled": "Lubatud",
+    "emailDisabled": "Keelatud",
+    "emailUser": "Kasutaja",
+    "emailFrom": "Saatja aadress",
+    "emailSender": "Saatja nimi",
+    "testEmailLabel": "Saada test-e-kiri",
+    "testEmailPlaceholder": "Sisestage e-posti aadress...",
+    "testEmailSend": "Saada test",
+    "testEmailSent": "Test-e-kiri saadeti edukalt.",
+    "testEmailFailed": "Test-e-kirja ei saanud saata.",
+    "testEmailRequired": "Palun sisestage e-posti aadress.",
+    "emailDisabledHint": "E-post on keelatud. Seadke SAFESPACE_EMAIL_ENABLED=true, et lubada e-posti.",
+    "loading": "Laadimine"
   },
   "welcome": {
     "understood": "Selge"

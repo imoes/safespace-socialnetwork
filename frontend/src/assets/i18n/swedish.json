@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Inte tillgänglig",
     "deepseekLowBalance": "Varning: DeepSeek-saldot är mycket lågt! Fyll på för att upprätthålla modereringstjänsten.",
     "deepseekLoading": "Laddar DeepSeek-saldo...",
-    "deepseekError": "Fel vid laddning av DeepSeek-saldo"
+    "deepseekError": "Fel vid laddning av DeepSeek-saldo",
+    "emailSettings": "E-postinställningar",
+    "emailSettingsDesc": "Aktuell SMTP-konfiguration och skicka testmejl.",
+    "emailEnabled": "Aktiverad",
+    "emailDisabled": "Inaktiverad",
+    "emailUser": "Användare",
+    "emailFrom": "Avsändaradress",
+    "emailSender": "Avsändarnamn",
+    "testEmailLabel": "Skicka testmejl",
+    "testEmailPlaceholder": "Ange e-postadress...",
+    "testEmailSend": "Skicka test",
+    "testEmailSent": "Testmejlet skickades.",
+    "testEmailFailed": "Testmejlet kunde inte skickas.",
+    "testEmailRequired": "Ange en e-postadress.",
+    "emailDisabledHint": "E-post är inaktiverad. Ställ in SAFESPACE_EMAIL_ENABLED=true för att aktivera e-post.",
+    "loading": "Laddar"
   },
   "welcome": {
     "understood": "Uppfattat"

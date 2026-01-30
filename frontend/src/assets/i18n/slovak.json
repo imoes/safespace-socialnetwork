@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Nedostupný",
     "deepseekLowBalance": "Upozornenie: Zostatok DeepSeek je veľmi nízky! Dobite prosím pre zachovanie služby moderovania.",
     "deepseekLoading": "Načítavanie zostatku DeepSeek...",
-    "deepseekError": "Chyba pri načítavaní zostatku DeepSeek"
+    "deepseekError": "Chyba pri načítavaní zostatku DeepSeek",
+    "emailSettings": "Nastavenia e-mailu",
+    "emailSettingsDesc": "Aktuálna konfigurácia SMTP a odoslanie testovacieho e-mailu.",
+    "emailEnabled": "Povolené",
+    "emailDisabled": "Zakázané",
+    "emailUser": "Používateľ",
+    "emailFrom": "Adresa odosielateľa",
+    "emailSender": "Meno odosielateľa",
+    "testEmailLabel": "Odoslať testovací e-mail",
+    "testEmailPlaceholder": "Zadajte e-mailovú adresu...",
+    "testEmailSend": "Odoslať test",
+    "testEmailSent": "Testovací e-mail bol úspešne odoslaný.",
+    "testEmailFailed": "Testovací e-mail sa nepodarilo odoslať.",
+    "testEmailRequired": "Zadajte prosím e-mailovú adresu.",
+    "emailDisabledHint": "E-mail je zakázaný. Nastavte SAFESPACE_EMAIL_ENABLED=true na povolenie e-mailov.",
+    "loading": "Načítavanie"
   },
   "welcome": {
     "understood": "Rozumiem"

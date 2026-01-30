@@ -676,3 +676,71 @@ async def _notify_admins_low_balance(balance: float, currency: str):
             )
         except Exception as e:
             print(f"⚠️ Fehler beim Senden an {admin['email']}: {e}")
+
+
+class TestEmailRequest(BaseModel):
+    to_email: str
+
+
+@router.post("/test-email")
+async def send_test_email(request: TestEmailRequest, admin: dict = Depends(require_admin)):
+    """Sendet eine Test-E-Mail um die SMTP-Konfiguration zu überprüfen"""
+    from app.services.email_service import EmailService
+    from app.config import settings as app_settings
+
+    if not app_settings.email_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="E-Mail ist deaktiviert. Setze SAFESPACE_EMAIL_ENABLED=true in der Konfiguration."
+        )
+
+    html_content = EmailService._wrap_email_html(
+        "✅ Test-E-Mail erfolgreich!",
+        f"""<p>Hallo <strong>{admin['username']}</strong>,</p>
+        <p>Diese Test-E-Mail bestätigt, dass die SMTP-Konfiguration korrekt funktioniert.</p>
+        <div style="background: #f0f2f5; padding: 16px; border-radius: 8px; margin: 16px 0;">
+            <p style="margin: 4px 0;"><strong>SMTP Host:</strong> {app_settings.smtp_host}</p>
+            <p style="margin: 4px 0;"><strong>SMTP Port:</strong> {app_settings.smtp_port}</p>
+            <p style="margin: 4px 0;"><strong>Absender:</strong> {app_settings.smtp_from_email}</p>
+            <p style="margin: 4px 0;"><strong>TLS:</strong> {'Ja' if app_settings.smtp_use_tls else 'Nein'}</p>
+        </div>
+        <p>Die E-Mail-Benachrichtigungen sind einsatzbereit.</p>"""
+    )
+
+    success = await EmailService.send_email(
+        to_email=request.to_email,
+        subject="✅ SafeSpace - Test-E-Mail",
+        html_content=html_content,
+        text_content=f"Test-E-Mail von SafeSpace. SMTP-Konfiguration funktioniert. Host: {app_settings.smtp_host}, Port: {app_settings.smtp_port}"
+    )
+
+    if success:
+        return {
+            "success": True,
+            "message": f"Test-E-Mail wurde an {request.to_email} gesendet.",
+            "smtp_host": app_settings.smtp_host,
+            "smtp_port": app_settings.smtp_port,
+            "smtp_from": app_settings.smtp_from_email,
+            "smtp_tls": app_settings.smtp_use_tls
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Test-E-Mail konnte nicht gesendet werden. Überprüfe die SMTP-Einstellungen und Server-Logs."
+        )
+
+
+@router.get("/email-settings")
+async def get_email_settings(admin: dict = Depends(require_admin)):
+    """Gibt die aktuellen E-Mail-Einstellungen zurück (ohne Passwort)"""
+    from app.config import settings as app_settings
+
+    return {
+        "email_enabled": app_settings.email_enabled,
+        "smtp_host": app_settings.smtp_host,
+        "smtp_port": app_settings.smtp_port,
+        "smtp_user": app_settings.smtp_user,
+        "smtp_from_email": app_settings.smtp_from_email,
+        "smtp_from_name": app_settings.smtp_from_name,
+        "smtp_use_tls": app_settings.smtp_use_tls
+    }

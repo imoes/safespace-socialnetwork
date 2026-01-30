@@ -405,6 +405,62 @@
   margin-bottom: 0;
 }
 
+/* Email Settings & Test */
+.email-settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.email-settings-grid .stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.test-email-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.test-email-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.test-email-row {
+  display: flex;
+  gap: 10px;
+}
+
+.test-email-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.test-email-row input:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+.test-email-row .btn {
+  white-space: nowrap;
+}
+
+.warning-text {
+  color: #e65100;
+  margin-top: 8px;
+}
+
 /* Email Templates */
 .template-selectors {
   display: grid;

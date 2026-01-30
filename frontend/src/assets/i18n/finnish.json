@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Ei saatavilla",
     "deepseekLowBalance": "Varoitus: DeepSeek-saldo on erittäin alhainen! Lataa lisää ylläpitääksesi moderointipalvelun.",
     "deepseekLoading": "Ladataan DeepSeek-saldoa...",
-    "deepseekError": "Virhe DeepSeek-saldon lataamisessa"
+    "deepseekError": "Virhe DeepSeek-saldon lataamisessa",
+    "emailSettings": "Sähköpostiasetukset",
+    "emailSettingsDesc": "Nykyinen SMTP-määritys ja testisähköpostin lähetys.",
+    "emailEnabled": "Käytössä",
+    "emailDisabled": "Pois käytöstä",
+    "emailUser": "Käyttäjä",
+    "emailFrom": "Lähettäjän osoite",
+    "emailSender": "Lähettäjän nimi",
+    "testEmailLabel": "Lähetä testisähköposti",
+    "testEmailPlaceholder": "Syötä sähköpostiosoite...",
+    "testEmailSend": "Lähetä testi",
+    "testEmailSent": "Testisähköposti lähetettiin onnistuneesti.",
+    "testEmailFailed": "Testisähköpostia ei voitu lähettää.",
+    "testEmailRequired": "Syötä sähköpostiosoite.",
+    "emailDisabledHint": "Sähköposti on pois käytöstä. Aseta SAFESPACE_EMAIL_ENABLED=true ottaaksesi sähköpostit käyttöön.",
+    "loading": "Ladataan"
   },
   "welcome": {
     "understood": "Selvä"

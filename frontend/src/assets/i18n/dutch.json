@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Niet beschikbaar",
     "deepseekLowBalance": "Waarschuwing: Het DeepSeek-saldo is erg laag! Laad op om de moderatiedienst te behouden.",
     "deepseekLoading": "DeepSeek-saldo laden...",
-    "deepseekError": "Fout bij laden van DeepSeek-saldo"
+    "deepseekError": "Fout bij laden van DeepSeek-saldo",
+    "emailSettings": "E-mailinstellingen",
+    "emailSettingsDesc": "Huidige SMTP-configuratie en test-e-mail verzenden.",
+    "emailEnabled": "Ingeschakeld",
+    "emailDisabled": "Uitgeschakeld",
+    "emailUser": "Gebruiker",
+    "emailFrom": "Afzenderadres",
+    "emailSender": "Afzendernaam",
+    "testEmailLabel": "Test-e-mail verzenden",
+    "testEmailPlaceholder": "Voer e-mailadres in...",
+    "testEmailSend": "Test verzenden",
+    "testEmailSent": "De test-e-mail is succesvol verzonden.",
+    "testEmailFailed": "De test-e-mail kon niet worden verzonden.",
+    "testEmailRequired": "Voer een e-mailadres in.",
+    "emailDisabledHint": "E-mail is uitgeschakeld. Stel SAFESPACE_EMAIL_ENABLED=true in om e-mails in te schakelen.",
+    "loading": "Laden"
   },
   "welcome": {
     "understood": "Begrepen"
