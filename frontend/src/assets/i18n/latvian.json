@@ -336,6 +336,8 @@
     "notifCommentLiked": "Komentāram atzīmēts patīk",
     "notifBirthday": "Dzimšanas dienas",
     "notifGroupPost": "Grupu ieraksti",
+    "notifFriendRequest": "Draugu pieprasījumi",
+    "notifFriendRequestAccepted": "Pieņemtie draugu pieprasījumi",
     "passwordSection": "Mainīt paroli",
     "currentPassword": "Pašreizējā parole",
     "currentPasswordPlaceholder": "Aizpildiet tikai tad, ja vēlaties mainīt paroli",

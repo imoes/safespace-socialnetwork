@@ -336,6 +336,8 @@
     "notifCommentLiked": "评论被点赞",
     "notifBirthday": "生日提醒",
     "notifGroupPost": "群组帖子",
+    "notifFriendRequest": "好友请求",
+    "notifFriendRequestAccepted": "已接受的好友请求",
     "passwordSection": "修改密码",
     "currentPassword": "当前密码",
     "currentPasswordPlaceholder": "仅在需要修改密码时填写",

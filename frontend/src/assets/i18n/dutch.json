@@ -336,6 +336,8 @@
     "notifCommentLiked": "Reactie geliket",
     "notifBirthday": "Verjaardagen",
     "notifGroupPost": "Groepsberichten",
+    "notifFriendRequest": "Vriendschapsverzoeken",
+    "notifFriendRequestAccepted": "Geaccepteerde vriendschapsverzoeken",
     "passwordSection": "Wachtwoord wijzigen",
     "currentPassword": "Huidig wachtwoord",
     "currentPasswordPlaceholder": "Alleen invullen als je je wachtwoord wilt wijzigen",

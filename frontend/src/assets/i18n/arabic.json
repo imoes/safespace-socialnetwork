@@ -279,6 +279,8 @@
     "notifCommentLiked": "إعجاب بالتعليق",
     "notifBirthday": "أعياد الميلاد",
     "notifGroupPost": "منشورات المجموعة",
+    "notifFriendRequest": "طلبات الصداقة",
+    "notifFriendRequestAccepted": "طلبات الصداقة المقبولة",
     "passwordSection": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "currentPasswordPlaceholder": "املأ فقط إذا كنت تريد تغيير كلمة المرور",

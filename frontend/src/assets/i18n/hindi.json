@@ -336,6 +336,8 @@
     "notifCommentLiked": "टिप्पणी पसंद की गई",
     "notifBirthday": "जन्मदिन",
     "notifGroupPost": "समूह पोस्ट",
+    "notifFriendRequest": "मित्रता अनुरोध",
+    "notifFriendRequestAccepted": "स्वीकृत मित्रता अनुरोध",
     "passwordSection": "पासवर्ड बदलें",
     "currentPassword": "वर्तमान पासवर्ड",
     "currentPasswordPlaceholder": "केवल तभी भरें जब आप अपना पासवर्ड बदलना चाहते हैं",

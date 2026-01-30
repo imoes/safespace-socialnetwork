@@ -176,6 +176,14 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               <input type="checkbox" [(ngModel)]="notifPrefs.group_post" name="notif_group_post" />
               <span>{{ 'settings.notifGroupPost' | translate }}</span>
             </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.friend_request" name="notif_friend_request" />
+              <span>{{ 'settings.notifFriendRequest' | translate }}</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="notifPrefs.friend_request_accepted" name="notif_friend_request_accepted" />
+              <span>{{ 'settings.notifFriendRequestAccepted' | translate }}</span>
+            </label>
           </div>
 
           <!-- Screen Time / Mental Health -->
@@ -727,7 +735,9 @@ export class SettingsComponent implements OnInit {
     post_commented: true,
     comment_liked: true,
     birthday: true,
-    group_post: true
+    group_post: true,
+    friend_request: true,
+    friend_request_accepted: true
   };
 
   screenTimeEnabled = true;
@@ -779,7 +789,9 @@ export class SettingsComponent implements OnInit {
           post_commented: prefs.post_commented ?? true,
           comment_liked: prefs.comment_liked ?? true,
           birthday: prefs.birthday ?? true,
-          group_post: prefs.group_post ?? true
+          group_post: prefs.group_post ?? true,
+          friend_request: prefs.friend_request ?? true,
+          friend_request_accepted: prefs.friend_request_accepted ?? true
         };
       },
       error: () => {}

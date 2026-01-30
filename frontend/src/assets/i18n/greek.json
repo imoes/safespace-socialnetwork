@@ -336,6 +336,8 @@
     "notifCommentLiked": "«Μου αρέσει» σε σχόλιο",
     "notifBirthday": "Γενέθλια",
     "notifGroupPost": "Δημοσιεύσεις ομάδας",
+    "notifFriendRequest": "Αιτήματα φιλίας",
+    "notifFriendRequestAccepted": "Αποδεκτά αιτήματα φιλίας",
     "passwordSection": "Αλλαγή Κωδικού",
     "currentPassword": "Τρέχων Κωδικός",
     "currentPasswordPlaceholder": "Συμπληρώστε μόνο εάν θέλετε να αλλάξετε τον κωδικό σας",

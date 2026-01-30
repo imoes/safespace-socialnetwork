@@ -336,6 +336,8 @@
     "notifCommentLiked": "Kommentar gillad",
     "notifBirthday": "Födelsedagar",
     "notifGroupPost": "Gruppinlägg",
+    "notifFriendRequest": "Vänförfrågningar",
+    "notifFriendRequestAccepted": "Accepterade vänförfrågningar",
     "passwordSection": "Ändra lösenord",
     "currentPassword": "Nuvarande lösenord",
     "currentPasswordPlaceholder": "Fyll bara i om du vill ändra ditt lösenord",

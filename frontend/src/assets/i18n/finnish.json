@@ -336,6 +336,8 @@
     "notifCommentLiked": "Kommentista tykätty",
     "notifBirthday": "Syntymäpäivät",
     "notifGroupPost": "Ryhmäjulkaisut",
+    "notifFriendRequest": "Ystäväpyynnöt",
+    "notifFriendRequestAccepted": "Hyväksytyt ystäväpyynnöt",
     "passwordSection": "Vaihda salasana",
     "currentPassword": "Nykyinen salasana",
     "currentPasswordPlaceholder": "Täytä vain jos haluat vaihtaa salasanan",

@@ -336,6 +336,8 @@
     "notifCommentLiked": "Gosto em comentário",
     "notifBirthday": "Aniversários",
     "notifGroupPost": "Publicações de grupo",
+    "notifFriendRequest": "Pedidos de amizade",
+    "notifFriendRequestAccepted": "Pedidos de amizade aceitos",
     "passwordSection": "Alterar Palavra-passe",
     "currentPassword": "Palavra-passe Atual",
     "currentPasswordPlaceholder": "Preencha apenas se desejar alterar a palavra-passe",

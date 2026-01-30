@@ -34,6 +34,8 @@ class NotificationPreferencesRequest(BaseModel):
     comment_liked: bool = True
     birthday: bool = True
     group_post: bool = True
+    friend_request: bool = True
+    friend_request_accepted: bool = True
 
 
 class ScreenTimeSettingsRequest(BaseModel):
@@ -148,7 +150,9 @@ async def get_notification_preferences(current_user: dict = Depends(get_current_
         "post_commented": True,
         "comment_liked": True,
         "birthday": True,
-        "group_post": True
+        "group_post": True,
+        "friend_request": True,
+        "friend_request_accepted": True
     }
 
     # Merge defaults mit gespeicherten Preferences

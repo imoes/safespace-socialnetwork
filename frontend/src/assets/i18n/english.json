@@ -336,6 +336,8 @@
     "notifCommentLiked": "Comment liked",
     "notifBirthday": "Birthdays",
     "notifGroupPost": "Group posts",
+    "notifFriendRequest": "Friend requests",
+    "notifFriendRequestAccepted": "Accepted friend requests",
     "passwordSection": "Change Password",
     "currentPassword": "Current Password",
     "currentPasswordPlaceholder": "Only fill in if you want to change your password",

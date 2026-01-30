@@ -336,6 +336,8 @@
     "notifCommentLiked": "Taitin le trácht",
     "notifBirthday": "Laethanta Breithe",
     "notifGroupPost": "Postanna grúpa",
+    "notifFriendRequest": "Iarratais chairdis",
+    "notifFriendRequestAccepted": "Iarratais chairdis a glacadh",
     "passwordSection": "Athraigh Pasfhocal",
     "currentPassword": "Pasfhocal Reatha",
     "currentPasswordPlaceholder": "Ná líon isteach ach amháin má tá tú ag iarraidh do phasfhocal a athrú",
