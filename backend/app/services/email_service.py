@@ -32,7 +32,7 @@ class EmailService:
             "new_comment": "Neuer Kommentar",
             "years": "Jahre",
             "a_group": "einer Gruppe",
-            "footer_reason": "Du erhältst diese E-Mail, weil du Benachrichtigungen aktiviert hast.",
+            "footer_reason": "Du erhältst diese E-Mail, weil du Benachrichtigungen aktiviert hast. Du kannst diese in deinen Einstellungen deaktivieren.",
             "footer_tagline": "Dein sicheres Social Network",
             # post_liked
             "post_liked_subject": "{actor} hat deinen Post geliked!",
@@ -102,7 +102,7 @@ class EmailService:
             "new_comment": "New comment",
             "years": "years",
             "a_group": "a group",
-            "footer_reason": "You are receiving this email because you have notifications enabled.",
+            "footer_reason": "You are receiving this email because you have notifications enabled. You can disable them in your settings.",
             "footer_tagline": "Your safe social network",
             "post_liked_subject": "{actor} liked your post!",
             "post_liked_body": "{actor} liked one of your posts!",
@@ -162,7 +162,7 @@ class EmailService:
             "new_comment": "Nouveau commentaire",
             "years": "ans",
             "a_group": "un groupe",
-            "footer_reason": "Vous recevez cet e-mail car vous avez activé les notifications.",
+            "footer_reason": "Vous recevez cet e-mail car vous avez activé les notifications. Vous pouvez les désactiver dans vos paramètres.",
             "footer_tagline": "Votre réseau social sûr",
             "post_liked_subject": "{actor} a aimé votre publication !",
             "post_liked_body": "{actor} a aimé l'une de vos publications !",
@@ -222,7 +222,7 @@ class EmailService:
             "new_comment": "Nuevo comentario",
             "years": "años",
             "a_group": "un grupo",
-            "footer_reason": "Recibes este correo porque tienes las notificaciones activadas.",
+            "footer_reason": "Recibes este correo porque tienes las notificaciones activadas. Puedes desactivarlas en tu configuración.",
             "footer_tagline": "Tu red social segura",
             "post_liked_subject": "¡A {actor} le gustó tu publicación!",
             "post_liked_body": "¡A {actor} le gustó una de tus publicaciones!",
@@ -282,7 +282,7 @@ class EmailService:
             "new_comment": "Nuovo commento",
             "years": "anni",
             "a_group": "un gruppo",
-            "footer_reason": "Ricevi questa email perché hai le notifiche attivate.",
+            "footer_reason": "Ricevi questa email perché hai le notifiche attivate. Puoi disattivarle nelle impostazioni.",
             "footer_tagline": "Il tuo social network sicuro",
             "post_liked_subject": "A {actor} è piaciuto il tuo post!",
             "post_liked_body": "A {actor} è piaciuto uno dei tuoi post!",
@@ -342,7 +342,7 @@ class EmailService:
             "new_comment": "Novo comentário",
             "years": "anos",
             "a_group": "um grupo",
-            "footer_reason": "Você recebe este e-mail porque tem as notificações ativadas.",
+            "footer_reason": "Você recebe este e-mail porque tem as notificações ativadas. Pode desativá-las nas configurações.",
             "footer_tagline": "Sua rede social segura",
             "post_liked_subject": "{actor} curtiu sua publicação!",
             "post_liked_body": "{actor} curtiu uma de suas publicações!",
@@ -402,7 +402,7 @@ class EmailService:
             "new_comment": "Nieuwe reactie",
             "years": "jaar",
             "a_group": "een groep",
-            "footer_reason": "Je ontvangt deze e-mail omdat je meldingen hebt ingeschakeld.",
+            "footer_reason": "Je ontvangt deze e-mail omdat je meldingen hebt ingeschakeld. Je kunt deze uitschakelen in je instellingen.",
             "footer_tagline": "Je veilige sociale netwerk",
             "post_liked_subject": "{actor} vond je bericht leuk!",
             "post_liked_body": "{actor} vond een van je berichten leuk!",
@@ -462,7 +462,7 @@ class EmailService:
             "new_comment": "Nowy komentarz",
             "years": "lat",
             "a_group": "grupy",
-            "footer_reason": "Otrzymujesz ten e-mail, ponieważ masz włączone powiadomienia.",
+            "footer_reason": "Otrzymujesz ten e-mail, ponieważ masz włączone powiadomienia. Możesz je wyłączyć w ustawieniach.",
             "footer_tagline": "Twoja bezpieczna sieć społecznościowa",
             "post_liked_subject": "{actor} polubił(a) Twój post!",
             "post_liked_body": "{actor} polubił(a) jeden z Twoich postów!",
@@ -962,7 +962,7 @@ class EmailService:
             </div>
             <div class="footer">
                 <p>{s['footer_reason']}</p>
-                <p>&copy; 2024 SafeSpace - {s['footer_tagline']}</p>
+                <p>SafeSpace - {s['footer_tagline']}</p>
             </div>
         </div>
     </div>
