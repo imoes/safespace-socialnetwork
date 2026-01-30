@@ -40,7 +40,7 @@ export class WelcomeModalComponent {
   private async checkWelcomeMessage(): Promise<void> {
     console.log('[WelcomeModal] checkWelcomeMessage() called');
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       console.log('[WelcomeModal] token exists:', !!token);
       if (!token) return;
 
@@ -68,7 +68,7 @@ export class WelcomeModalComponent {
   async closeModal(): Promise<void> {
     console.log('[WelcomeModal] closeModal() called');
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
       await firstValueFrom(
         this.http.post('/api/welcome/message/seen', {}, { headers })
