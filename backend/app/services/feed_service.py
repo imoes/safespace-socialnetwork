@@ -94,10 +94,11 @@ class FeedService:
         profile_data_map = await get_user_profile_data_map(all_uids)
         username_map = {uid: data["username"] for uid, data in profile_data_map.items()}
         
-        # Friendship Tiers laden
+        # Friendship Tiers laden — aus Sicht des jeweiligen Autors,
+        # denn der Autor bestimmt wer seine Posts sehen darf
         tier_map = {}
         for friend_uid in friend_uids:
-            tier = await get_relation_type(uid, friend_uid)
+            tier = await get_relation_type(friend_uid, uid)
             tier_map[friend_uid] = tier or "friend"  # Default: friend
         
         # Posts parallel laden

@@ -99,12 +99,15 @@ async def search_by_hashtag(
     try:
         current_user_uid = current_user["uid"]
 
-        # Get friends and their relation types
+        # Get friends and their relation types — aus Sicht des jeweiligen Autors,
+        # denn der Autor bestimmt wer seine Posts sehen darf
+        from app.db.postgres import get_relation_type
         friends_data = await get_friends_with_info(current_user_uid)
         friend_relations: Dict[int, str] = {}
         for friend in friends_data:
             friend_uid = friend["uid"]
-            relation = friend["relation_type"]
+            # Perspektive des Freundes (Autors) auf den aktuellen User
+            relation = await get_relation_type(friend_uid, current_user_uid)
             if relation:
                 friend_relations[friend_uid] = relation
 
@@ -153,7 +156,7 @@ async def search_by_hashtag(
                 elif relation == "friend":
                     allowed = ["friends"]
                 else:  # acquaintance
-                    allowed = ["friends"]
+                    allowed = []
 
                 if post_visibility in allowed:
                     filtered_posts.append(post)
