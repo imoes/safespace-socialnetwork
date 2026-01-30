@@ -406,7 +406,16 @@
     "successSaved": "स्वागत संदेश सहेजा गया!",
     "successDeleted": "स्वागत संदेश हटाया गया",
     "successPostCreated": "प्रसारण पोस्ट बनाई गई! सभी उपयोगकर्ता अब इसे देखेंगे।",
-    "successPostDeleted": "प्रसारण पोस्ट हटाई गई"
+    "successPostDeleted": "प्रसारण पोस्ट हटाई गई",
+    "deepseekModel": "मॉडल",
+    "deepseekTotalBalance": "कुल शेष",
+    "deepseekGranted": "प्रदत्त शेष",
+    "deepseekToppedUp": "रिचार्ज शेष",
+    "deepseekAvailable": "उपलब्ध",
+    "deepseekUnavailable": "अनुपलब्ध",
+    "deepseekLowBalance": "चेतावनी: DeepSeek शेष बहुत कम है! कृपया मॉडरेशन सेवा बनाए रखने के लिए रिचार्ज करें।",
+    "deepseekLoading": "DeepSeek शेष लोड हो रहा है...",
+    "deepseekError": "DeepSeek शेष लोड करने में त्रुटि"
   },
   "welcome": {
     "understood": "समझ गया"

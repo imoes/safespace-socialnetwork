@@ -406,7 +406,16 @@
     "successSaved": "Poruka dobrodošlice spremljena!",
     "successDeleted": "Poruka dobrodošlice obrisana",
     "successPostCreated": "Objava za sve stvorena! Svi korisnici će je sada vidjeti.",
-    "successPostDeleted": "Objava za sve obrisana"
+    "successPostDeleted": "Objava za sve obrisana",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Ukupno stanje",
+    "deepseekGranted": "Dodijeljeno stanje",
+    "deepseekToppedUp": "Dopunjeno stanje",
+    "deepseekAvailable": "Dostupno",
+    "deepseekUnavailable": "Nedostupno",
+    "deepseekLowBalance": "Upozorenje: DeepSeek stanje je vrlo nisko! Molimo dopunite kako biste održali uslugu moderiranja.",
+    "deepseekLoading": "Učitavanje DeepSeek stanja...",
+    "deepseekError": "Greška pri učitavanju DeepSeek stanja"
   },
   "welcome": {
     "understood": "Razumijem"

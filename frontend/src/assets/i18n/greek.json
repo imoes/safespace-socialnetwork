@@ -406,7 +406,16 @@
     "successSaved": "Το μήνυμα καλωσορίσματος αποθηκεύτηκε!",
     "successDeleted": "Το μήνυμα καλωσορίσματος διαγράφηκε",
     "successPostCreated": "Η μαζική δημοσίευση δημιουργήθηκε! Όλοι οι χρήστες θα τη δουν τώρα.",
-    "successPostDeleted": "Η μαζική δημοσίευση διαγράφηκε"
+    "successPostDeleted": "Η μαζική δημοσίευση διαγράφηκε",
+    "deepseekModel": "Μοντέλο",
+    "deepseekTotalBalance": "Συνολικό υπόλοιπο",
+    "deepseekGranted": "Χορηγημένο υπόλοιπο",
+    "deepseekToppedUp": "Ανανεωμένο υπόλοιπο",
+    "deepseekAvailable": "Διαθέσιμο",
+    "deepseekUnavailable": "Μη διαθέσιμο",
+    "deepseekLowBalance": "Προειδοποίηση: Το υπόλοιπο του DeepSeek είναι πολύ χαμηλό! Παρακαλούμε ανανεώστε για να διατηρήσετε την υπηρεσία εποπτείας.",
+    "deepseekLoading": "Φόρτωση υπολοίπου DeepSeek...",
+    "deepseekError": "Σφάλμα φόρτωσης υπολοίπου DeepSeek"
   },
   "welcome": {
     "understood": "Κατάλαβα"

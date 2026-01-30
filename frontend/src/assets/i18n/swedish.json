@@ -406,7 +406,16 @@
     "successSaved": "Välkomstmeddelandet har sparats!",
     "successDeleted": "Välkomstmeddelandet har raderats",
     "successPostCreated": "Sändningsinlägget har skapats! Alla användare kommer att se det nu.",
-    "successPostDeleted": "Sändningsinlägget har raderats"
+    "successPostDeleted": "Sändningsinlägget har raderats",
+    "deepseekModel": "Modell",
+    "deepseekTotalBalance": "Totalt saldo",
+    "deepseekGranted": "Beviljat saldo",
+    "deepseekToppedUp": "Påfyllt saldo",
+    "deepseekAvailable": "Tillgänglig",
+    "deepseekUnavailable": "Inte tillgänglig",
+    "deepseekLowBalance": "Varning: DeepSeek-saldot är mycket lågt! Fyll på för att upprätthålla modereringstjänsten.",
+    "deepseekLoading": "Laddar DeepSeek-saldo...",
+    "deepseekError": "Fel vid laddning av DeepSeek-saldo"
   },
   "welcome": {
     "understood": "Uppfattat"

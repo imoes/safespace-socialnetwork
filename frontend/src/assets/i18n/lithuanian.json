@@ -406,7 +406,16 @@
     "successSaved": "Pasisveikinimo žinutė išsaugota!",
     "successDeleted": "Pasisveikinimo žinutė ištrinta",
     "successPostCreated": "Transliuojamas įrašas sukurtas! Visi naudotojai jį matys.",
-    "successPostDeleted": "Transliuojamas įrašas ištrintas"
+    "successPostDeleted": "Transliuojamas įrašas ištrintas",
+    "deepseekModel": "Modelis",
+    "deepseekTotalBalance": "Bendras likutis",
+    "deepseekGranted": "Suteiktas likutis",
+    "deepseekToppedUp": "Papildytas likutis",
+    "deepseekAvailable": "Pasiekiamas",
+    "deepseekUnavailable": "Nepasiekiamas",
+    "deepseekLowBalance": "Įspėjimas: DeepSeek likutis labai mažas! Prašome papildyti, kad moderavimo paslauga veiktų.",
+    "deepseekLoading": "Kraunamas DeepSeek likutis...",
+    "deepseekError": "Klaida kraunant DeepSeek likutį"
   },
   "welcome": {
     "understood": "Supratau"

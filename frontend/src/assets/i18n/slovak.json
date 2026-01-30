@@ -406,7 +406,16 @@
     "successSaved": "Uvítacia správa bola uložená!",
     "successDeleted": "Uvítacia správa bola odstránená",
     "successPostCreated": "Hromadný príspevok bol vytvorený! Všetci používatelia ho teraz uvidia.",
-    "successPostDeleted": "Hromadný príspevok bol odstránený"
+    "successPostDeleted": "Hromadný príspevok bol odstránený",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Celkový zostatok",
+    "deepseekGranted": "Pridelený zostatok",
+    "deepseekToppedUp": "Dobitý zostatok",
+    "deepseekAvailable": "Dostupný",
+    "deepseekUnavailable": "Nedostupný",
+    "deepseekLowBalance": "Upozornenie: Zostatok DeepSeek je veľmi nízky! Dobite prosím pre zachovanie služby moderovania.",
+    "deepseekLoading": "Načítavanie zostatku DeepSeek...",
+    "deepseekError": "Chyba pri načítavaní zostatku DeepSeek"
   },
   "welcome": {
     "understood": "Rozumiem"

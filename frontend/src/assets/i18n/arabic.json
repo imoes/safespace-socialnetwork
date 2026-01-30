@@ -487,7 +487,16 @@
     "successSaved": "تم حفظ رسالة الترحيب!",
     "successDeleted": "تم حذف رسالة الترحيب",
     "successPostCreated": "تم إنشاء منشور البث! سيراه جميع المستخدمين الآن.",
-    "successPostDeleted": "تم حذف منشور البث"
+    "successPostDeleted": "تم حذف منشور البث",
+    "deepseekModel": "النموذج",
+    "deepseekTotalBalance": "الرصيد الإجمالي",
+    "deepseekGranted": "الرصيد الممنوح",
+    "deepseekToppedUp": "الرصيد المشحون",
+    "deepseekAvailable": "متاح",
+    "deepseekUnavailable": "غير متاح",
+    "deepseekLowBalance": "تحذير: رصيد DeepSeek منخفض جداً! يرجى الشحن للحفاظ على خدمة الإشراف.",
+    "deepseekLoading": "جارٍ تحميل رصيد DeepSeek...",
+    "deepseekError": "خطأ في تحميل رصيد DeepSeek"
   },
   "welcome": {
     "understood": "مفهوم"

@@ -482,7 +482,16 @@
     "settingsSaved": "Settings saved!",
     "errorSavingSettings": "Error saving settings",
     "broadcastVisibilityPublic": "Public",
-    "broadcastVisibilityFriends": "Friends only"
+    "broadcastVisibilityFriends": "Friends only",
+    "deepseekModel": "Model",
+    "deepseekTotalBalance": "Total Balance",
+    "deepseekGranted": "Granted Balance",
+    "deepseekToppedUp": "Topped-Up Balance",
+    "deepseekAvailable": "Available",
+    "deepseekUnavailable": "Unavailable",
+    "deepseekLowBalance": "Warning: DeepSeek balance is very low! Please top up to maintain the moderation service.",
+    "deepseekLoading": "Loading DeepSeek balance...",
+    "deepseekError": "Error loading DeepSeek balance"
   },
   "welcome": {
     "understood": "Understood"

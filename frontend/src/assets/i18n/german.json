@@ -482,7 +482,16 @@
     "settingsSaved": "Einstellungen gespeichert!",
     "errorSavingSettings": "Fehler beim Speichern der Einstellungen",
     "broadcastVisibilityPublic": "Öffentlich",
-    "broadcastVisibilityFriends": "Nur Freunde"
+    "broadcastVisibilityFriends": "Nur Freunde",
+    "deepseekModel": "Modell",
+    "deepseekTotalBalance": "Gesamtguthaben",
+    "deepseekGranted": "Gratis-Guthaben",
+    "deepseekToppedUp": "Aufgeladenes Guthaben",
+    "deepseekAvailable": "Verfügbar",
+    "deepseekUnavailable": "Nicht verfügbar",
+    "deepseekLowBalance": "Achtung: Das DeepSeek-Guthaben ist sehr niedrig! Bitte laden Sie das Guthaben auf, um den Moderationsdienst aufrechtzuerhalten.",
+    "deepseekLoading": "Lade DeepSeek-Guthaben...",
+    "deepseekError": "Fehler beim Laden des DeepSeek-Guthabens"
   },
   "welcome": {
     "understood": "Verstanden"

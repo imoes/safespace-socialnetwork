@@ -321,6 +321,52 @@
               </div>
             </div>
           </div>
+
+          <!-- DeepSeek API Balance -->
+          <div class="status-section">
+            <h3>🤖 DeepSeek API</h3>
+            @if (deepseekBalance()) {
+              <div class="stats-grid">
+                <div class="stat">
+                  <span class="stat-label">{{ i18n.t('admin.deepseekModel') }}:</span>
+                  <span class="stat-value">{{ deepseekBalance()!.model }}</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">{{ i18n.t('admin.deepseekTotalBalance') }}:</span>
+                  <span class="stat-value"
+                    [class.warning]="deepseekBalance()!.total_balance < 5"
+                    [class.critical]="deepseekBalance()!.total_balance < 1">
+                    {{ deepseekBalance()!.total_balance.toFixed(2) }} {{ deepseekBalance()!.currency }}
+                  </span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">{{ i18n.t('admin.deepseekGranted') }}:</span>
+                  <span class="stat-value">{{ deepseekBalance()!.granted_balance.toFixed(2) }} {{ deepseekBalance()!.currency }}</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">{{ i18n.t('admin.deepseekToppedUp') }}:</span>
+                  <span class="stat-value">{{ deepseekBalance()!.topped_up_balance.toFixed(2) }} {{ deepseekBalance()!.currency }}</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Status:</span>
+                  <span class="stat-value" [class.online]="deepseekBalance()!.is_available" [class.warning]="!deepseekBalance()!.is_available">
+                    {{ deepseekBalance()!.is_available ? i18n.t('admin.deepseekAvailable') : i18n.t('admin.deepseekUnavailable') }}
+                  </span>
+                </div>
+              </div>
+              @if (deepseekBalance()!.total_balance < 1) {
+                <div class="deepseek-warning">
+                  ⚠️ {{ i18n.t('admin.deepseekLowBalance') }}
+                </div>
+              }
+            } @else if (deepseekError()) {
+              <div class="deepseek-error">
+                ❌ {{ deepseekError() }}
+              </div>
+            } @else {
+              <p>⏳ {{ i18n.t('admin.deepseekLoading') }}</p>
+            }
+          </div>
         </div>
       } @else {
         <div class="loading-state">

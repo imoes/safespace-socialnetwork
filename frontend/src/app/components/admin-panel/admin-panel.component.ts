@@ -33,6 +33,15 @@ interface BroadcastPost {
   is_broadcast: boolean;
 }
 
+interface DeepSeekBalance {
+  is_available: boolean;
+  total_balance: number;
+  granted_balance: number;
+  topped_up_balance: number;
+  currency: string;
+  model: string;
+}
+
 interface SystemStatus {
   timestamp: string;
   system: {
@@ -110,6 +119,10 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
   // System Status
   systemStatus = signal<SystemStatus | null>(null);
   autoRefreshInterval: any = null;
+
+  // DeepSeek Balance
+  deepseekBalance = signal<DeepSeekBalance | null>(null);
+  deepseekError = signal<string | null>(null);
 
   // Site Settings
   siteSettingsForm = {
@@ -295,6 +308,22 @@ export class AdminPanelComponent implements OnInit, OnDestroy {
     } catch (err) {
       console.error('Error loading system status:', err);
       this.error.set(this.i18n.t('admin.errorLoading'));
+    }
+
+    this.loadDeepSeekBalance();
+  }
+
+  async loadDeepSeekBalance(): Promise<void> {
+    try {
+      const token = localStorage.getItem('access_token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      const response = await this.http.get<DeepSeekBalance>('/api/admin/deepseek-balance', { headers }).toPromise();
+      this.deepseekBalance.set(response || null);
+      this.deepseekError.set(null);
+    } catch (err: any) {
+      console.error('Error loading DeepSeek balance:', err);
+      this.deepseekError.set(err.error?.detail || this.i18n.t('admin.deepseekError'));
     }
   }
 

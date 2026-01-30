@@ -406,7 +406,16 @@
     "successSaved": "Sábháladh an teachtaireacht fáilte!",
     "successDeleted": "Scriosadh an teachtaireacht fáilte",
     "successPostCreated": "Cruthaíodh an postáil chraolta! Feicfidh gach úsáideoir anois í.",
-    "successPostDeleted": "Scriosadh an postáil chraolta"
+    "successPostDeleted": "Scriosadh an postáil chraolta",
+    "deepseekModel": "Múnla",
+    "deepseekTotalBalance": "Iarmhéid iomlán",
+    "deepseekGranted": "Iarmhéid deonaithe",
+    "deepseekToppedUp": "Iarmhéid breisithe",
+    "deepseekAvailable": "Ar fáil",
+    "deepseekUnavailable": "Níl ar fáil",
+    "deepseekLowBalance": "Rabhadh: Tá iarmhéid DeepSeek an-íseal! Breisigh le do thoil chun an tseirbhís modhnóireachta a choinneáil.",
+    "deepseekLoading": "Iarmhéid DeepSeek á lódáil...",
+    "deepseekError": "Earráid ag lódáil iarmhéid DeepSeek"
   },
   "welcome": {
     "understood": "Tuigim"

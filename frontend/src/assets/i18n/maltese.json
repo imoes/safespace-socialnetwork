@@ -406,7 +406,16 @@
     "successSaved": "Il-messaġġ ta' merħba ġie ssejvjat!",
     "successDeleted": "Il-messaġġ ta' merħba tħassar",
     "successPostCreated": "Il-post ta' xandir inħolqot! L-utenti kollha se jarawha issa.",
-    "successPostDeleted": "Il-post ta' xandir tħassret"
+    "successPostDeleted": "Il-post ta' xandir tħassret",
+    "deepseekModel": "Mudell",
+    "deepseekTotalBalance": "Bilanċ totali",
+    "deepseekGranted": "Bilanċ mogħti",
+    "deepseekToppedUp": "Bilanċ miżjud",
+    "deepseekAvailable": "Disponibbli",
+    "deepseekUnavailable": "Mhux disponibbli",
+    "deepseekLowBalance": "Twissija: Il-bilanċ ta' DeepSeek huwa baxx ħafna! Jekk jogħġbok żid biex iżżomm is-servizz ta' moderazzjoni.",
+    "deepseekLoading": "Qed jitgħabba l-bilanċ ta' DeepSeek...",
+    "deepseekError": "Żball fit-tagħbija tal-bilanċ ta' DeepSeek"
   },
   "welcome": {
     "understood": "Fhimt"
