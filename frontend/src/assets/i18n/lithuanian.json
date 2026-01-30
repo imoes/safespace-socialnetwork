@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Atgal",
-    "title": "Draugai"
+    "title": "Draugai",
+    "accessDenied": "Prieiga uždrausta",
+    "accessDeniedHint": "Galite matyti tik savo draugų draugų sąrašą."
   },
   "login": {
     "title": "Prisijungimas",

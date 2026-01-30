@@ -18,7 +18,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         }
       </div>
 
-      @if (loading) {
+      @if (accessDenied) {
+        <div class="access-denied">
+          <h3>🔒 {{ 'friendsList.accessDenied' | translate }}</h3>
+          <p>{{ 'friendsList.accessDeniedHint' | translate }}</p>
+        </div>
+      } @else if (loading) {
         <div class="loading">{{ 'profile.loadingFriends' | translate }}</div>
       } @else if (friends().length === 0) {
         <div class="empty">{{ 'profile.noFriends' | translate }}</div>
@@ -54,6 +59,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
     .back-button:hover { background: #e7f3ff; }
 
     .loading, .empty { text-align: center; padding: 40px; color: #65676b; font-size: 15px; }
+
+    .access-denied { background: #fff3cd; border: 1px solid #ffc107; border-radius: 12px; padding: 24px; text-align: center; }
+    .access-denied h3 { margin: 0 0 8px; font-size: 18px; color: #856404; }
+    .access-denied p { margin: 0; color: #856404; font-size: 14px; }
 
     .friends-count { font-size: 14px; color: #65676b; margin-bottom: 16px; }
 
@@ -93,6 +102,7 @@ export class UserFriendsListComponent implements OnInit {
 
   profile: UserProfile | null = null;
   loading = true;
+  accessDenied = false;
   friends = signal<UserFriend[]>([]);
 
   ngOnInit(): void {
@@ -106,6 +116,7 @@ export class UserFriendsListComponent implements OnInit {
 
   private loadData(uid: number): void {
     this.loading = true;
+    this.accessDenied = false;
 
     this.userService.getUserProfile(uid).subscribe({
       next: (profile) => { this.profile = profile; },
@@ -117,7 +128,12 @@ export class UserFriendsListComponent implements OnInit {
         this.friends.set(response.friends);
         this.loading = false;
       },
-      error: () => { this.loading = false; }
+      error: (err) => {
+        this.loading = false;
+        if (err.status === 403) {
+          this.accessDenied = true;
+        }
+      }
     });
   }
 

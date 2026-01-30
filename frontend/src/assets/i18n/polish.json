@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Wstecz",
-    "title": "Znajomi"
+    "title": "Znajomi",
+    "accessDenied": "Brak dostępu",
+    "accessDeniedHint": "Możesz przeglądać tylko listę znajomych swoich znajomych."
   },
   "login": {
     "title": "Logowanie",

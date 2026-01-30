@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Înapoi",
-    "title": "Prieteni"
+    "title": "Prieteni",
+    "accessDenied": "Acces interzis",
+    "accessDeniedHint": "Poți vedea doar lista de prieteni a propriilor tăi prieteni."
   },
   "login": {
     "title": "Autentificare",

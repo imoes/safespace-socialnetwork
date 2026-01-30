@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Ar ais",
-    "title": "Cairde"
+    "title": "Cairde",
+    "accessDenied": "Rochtain diúltaithe",
+    "accessDeniedHint": "Ní féidir leat ach liosta cairde do chairde féin a fheiceáil."
   },
   "login": {
     "title": "Logáil Isteach",

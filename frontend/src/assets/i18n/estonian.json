@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Tagasi",
-    "title": "Sõbrad"
+    "title": "Sõbrad",
+    "accessDenied": "Juurdepääs keelatud",
+    "accessDeniedHint": "Saate vaadata ainult oma sõprade sõprade nimekirja."
   },
   "login": {
     "title": "Sisselogimine",

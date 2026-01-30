@@ -239,7 +239,9 @@
   },
   "friendsList": {
     "back": "Retour",
-    "title": "Amis"
+    "title": "Amis",
+    "accessDenied": "Accès refusé",
+    "accessDeniedHint": "Vous ne pouvez voir que la liste d'amis de vos propres amis."
   },
   "friends": {
     "title": "Amis",

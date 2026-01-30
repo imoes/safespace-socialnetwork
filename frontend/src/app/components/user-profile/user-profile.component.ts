@@ -78,36 +78,38 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         }
 
         <div class="profile-content-layout">
-          <!-- Freunde Sidebar -->
-          <aside class="friends-sidebar">
-            <div class="friends-sidebar-card">
-              <h3 class="friends-sidebar-title">👥 {{ 'profile.friends' | translate }}</h3>
-              @if (loadingFriends) {
-                <div class="friends-loading">{{ 'profile.loadingFriends' | translate }}</div>
-              } @else if (userFriends().length === 0) {
-                <div class="friends-empty">{{ 'profile.noFriends' | translate }}</div>
-              } @else {
-                <div class="friends-count">{{ userFriends().length }} {{ 'profile.friendsCount' | translate }}</div>
-                <div class="friends-grid">
-                  @for (friend of userFriends().slice(0, 5); track friend.uid) {
-                    <div class="friend-item" (click)="goToProfile(friend.uid)">
-                      @if (friend.profile_picture) {
-                        <img [src]="friend.profile_picture" [alt]="friend.username" class="friend-avatar friend-avatar-img" />
-                      } @else {
-                        <div class="friend-avatar">{{ friend.username.charAt(0).toUpperCase() }}</div>
-                      }
-                      <span class="friend-name">{{ friend.username }}</span>
+          <!-- Freunde Sidebar (nur für Freunde und eigenes Profil sichtbar) -->
+          @if (isOwnProfile || isFriend) {
+            <aside class="friends-sidebar">
+              <div class="friends-sidebar-card">
+                <h3 class="friends-sidebar-title">👥 {{ 'profile.friends' | translate }}</h3>
+                @if (loadingFriends) {
+                  <div class="friends-loading">{{ 'profile.loadingFriends' | translate }}</div>
+                } @else if (userFriends().length === 0) {
+                  <div class="friends-empty">{{ 'profile.noFriends' | translate }}</div>
+                } @else {
+                  <div class="friends-count">{{ userFriends().length }} {{ 'profile.friendsCount' | translate }}</div>
+                  <div class="friends-grid">
+                    @for (friend of userFriends().slice(0, 5); track friend.uid) {
+                      <div class="friend-item" (click)="goToProfile(friend.uid)">
+                        @if (friend.profile_picture) {
+                          <img [src]="friend.profile_picture" [alt]="friend.username" class="friend-avatar friend-avatar-img" />
+                        } @else {
+                          <div class="friend-avatar">{{ friend.username.charAt(0).toUpperCase() }}</div>
+                        }
+                        <span class="friend-name">{{ friend.username }}</span>
+                      </div>
+                    }
+                  </div>
+                  @if (userFriends().length > 5) {
+                    <div class="friends-show-more" (click)="goToFriendsList()">
+                      {{ 'profile.showAllFriends' | translate }}
                     </div>
                   }
-                </div>
-                @if (userFriends().length > 5) {
-                  <div class="friends-show-more" (click)="goToFriendsList()">
-                    {{ 'profile.showAllFriends' | translate }}
-                  </div>
                 }
-              }
-            </div>
-          </aside>
+              </div>
+            </aside>
+          }
 
           <!-- Posts -->
           <div class="posts-section">
@@ -273,7 +275,11 @@ export class UserProfileComponent implements OnInit {
         this.isFriend = profile.is_friend || false;
         this.loading = false;
         this.loadPosts(uid);
-        this.loadUserFriends(uid);
+        if (this.isOwnProfile || this.isFriend) {
+          this.loadUserFriends(uid);
+        } else {
+          this.loadingFriends = false;
+        }
       },
       error: (err) => {
         this.error = this.i18n.t('errors.loadProfile');

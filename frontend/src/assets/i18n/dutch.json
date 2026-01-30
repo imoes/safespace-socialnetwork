@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Terug",
-    "title": "Vrienden"
+    "title": "Vrienden",
+    "accessDenied": "Toegang geweigerd",
+    "accessDeniedHint": "Je kunt alleen de vriendenlijst van je eigen vrienden bekijken."
   },
   "login": {
     "title": "Inloggen",

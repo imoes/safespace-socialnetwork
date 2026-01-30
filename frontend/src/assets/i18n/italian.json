@@ -239,7 +239,9 @@
   },
   "friendsList": {
     "back": "Indietro",
-    "title": "Amici"
+    "title": "Amici",
+    "accessDenied": "Accesso negato",
+    "accessDeniedHint": "Puoi vedere solo la lista amici dei tuoi amici."
   },
   "friends": {
     "title": "Amici",

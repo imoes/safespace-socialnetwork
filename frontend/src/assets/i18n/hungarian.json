@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Vissza",
-    "title": "Barátok"
+    "title": "Barátok",
+    "accessDenied": "Hozzáférés megtagadva",
+    "accessDeniedHint": "Csak a saját barátaid barátlistáját tekintheted meg."
   },
   "login": {
     "title": "Bejelentkezés",

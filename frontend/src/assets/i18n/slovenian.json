@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Nazaj",
-    "title": "Prijatelji"
+    "title": "Prijatelji",
+    "accessDenied": "Dostop zavrnjen",
+    "accessDeniedHint": "Ogledate si lahko samo seznam prijateljev svojih prijateljev."
   },
   "login": {
     "title": "Prijava",

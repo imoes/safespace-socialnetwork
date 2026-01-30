@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Späť",
-    "title": "Priatelia"
+    "title": "Priatelia",
+    "accessDenied": "Prístup zamietnutý",
+    "accessDeniedHint": "Môžete zobraziť iba zoznam priateľov svojich vlastných priateľov."
   },
   "login": {
     "title": "Prihlásenie",

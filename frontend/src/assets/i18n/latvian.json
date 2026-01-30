@@ -240,7 +240,9 @@
   },
   "friendsList": {
     "back": "Atpakaļ",
-    "title": "Draugi"
+    "title": "Draugi",
+    "accessDenied": "Piekļuve liegta",
+    "accessDeniedHint": "Jūs varat apskatīt tikai savu draugu draugu sarakstu."
   },
   "login": {
     "title": "Pieteikšanās",
