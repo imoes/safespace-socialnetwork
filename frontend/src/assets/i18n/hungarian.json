@@ -336,6 +336,8 @@
     "notifCommentLiked": "Hozzászólás kedvelve",
     "notifBirthday": "Születésnapok",
     "notifGroupPost": "Csoportos bejegyzések",
+    "notifFriendRequest": "Barátkérelmek",
+    "notifFriendRequestAccepted": "Elfogadott barátkérelmek",
     "passwordSection": "Jelszó megváltoztatása",
     "currentPassword": "Jelenlegi jelszó",
     "currentPasswordPlaceholder": "Csak akkor töltsd ki, ha meg szeretnéd változtatni a jelszavadat",

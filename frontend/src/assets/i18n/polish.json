@@ -336,6 +336,8 @@
     "notifCommentLiked": "Polubienie komentarza",
     "notifBirthday": "Urodziny",
     "notifGroupPost": "Posty w grupach",
+    "notifFriendRequest": "Zaproszenia do znajomych",
+    "notifFriendRequestAccepted": "Zaakceptowane zaproszenia do znajomych",
     "passwordSection": "Zmiana hasła",
     "currentPassword": "Aktualne hasło",
     "currentPasswordPlaceholder": "Wypełnij tylko, jeśli chcesz zmienić hasło",

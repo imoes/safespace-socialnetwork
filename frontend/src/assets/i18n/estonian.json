@@ -336,6 +336,8 @@
     "notifCommentLiked": "Kommentaarile meeldib",
     "notifBirthday": "Sünnipäevad",
     "notifGroupPost": "Grupi postitused",
+    "notifFriendRequest": "Sõbrakutsed",
+    "notifFriendRequestAccepted": "Vastuvõetud sõbrakutsed",
     "passwordSection": "Muuda parooli",
     "currentPassword": "Praegune parool",
     "currentPasswordPlaceholder": "Täida ainult siis, kui soovid parooli muuta",

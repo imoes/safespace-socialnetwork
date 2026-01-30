@@ -336,6 +336,8 @@
     "notifCommentLiked": "Komentář se líbil",
     "notifBirthday": "Narozeniny",
     "notifGroupPost": "Příspěvky ve skupinách",
+    "notifFriendRequest": "Žádosti o přátelství",
+    "notifFriendRequestAccepted": "Přijaté žádosti o přátelství",
     "passwordSection": "Změna hesla",
     "currentPassword": "Aktuální heslo",
     "currentPasswordPlaceholder": "Vyplňte pouze pokud chcete změnit heslo",

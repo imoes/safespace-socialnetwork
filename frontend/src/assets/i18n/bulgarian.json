@@ -336,6 +336,8 @@
     "notifCommentLiked": "Харесан коментар",
     "notifBirthday": "Рождени дни",
     "notifGroupPost": "Публикации в групи",
+    "notifFriendRequest": "Заявки за приятелство",
+    "notifFriendRequestAccepted": "Приети заявки за приятелство",
     "passwordSection": "Промяна на парола",
     "currentPassword": "Текуща парола",
     "currentPasswordPlaceholder": "Попълнете само ако искате да промените паролата си",

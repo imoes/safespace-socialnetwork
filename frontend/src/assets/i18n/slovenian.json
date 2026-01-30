@@ -336,6 +336,8 @@
     "notifCommentLiked": "Komentar všečkan",
     "notifBirthday": "Rojstni dnevi",
     "notifGroupPost": "Objave v skupinah",
+    "notifFriendRequest": "Prošnje za prijateljstvo",
+    "notifFriendRequestAccepted": "Sprejete prošnje za prijateljstvo",
     "passwordSection": "Sprememba gesla",
     "currentPassword": "Trenutno geslo",
     "currentPasswordPlaceholder": "Izpolnite samo, če želite spremeniti geslo",

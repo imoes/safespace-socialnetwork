@@ -336,6 +336,8 @@
     "notifCommentLiked": "Comentariu apreciat",
     "notifBirthday": "Zile de naștere",
     "notifGroupPost": "Postări în grup",
+    "notifFriendRequest": "Cereri de prietenie",
+    "notifFriendRequestAccepted": "Cereri de prietenie acceptate",
     "passwordSection": "Schimbă parola",
     "currentPassword": "Parola curentă",
     "currentPasswordPlaceholder": "Completează doar dacă dorești să schimbi parola",

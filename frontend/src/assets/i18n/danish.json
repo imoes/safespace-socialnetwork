@@ -336,6 +336,8 @@
     "notifCommentLiked": "Kommentar liked",
     "notifBirthday": "Fødselsdage",
     "notifGroupPost": "Gruppeopslag",
+    "notifFriendRequest": "Venneanmodninger",
+    "notifFriendRequestAccepted": "Accepterede venneanmodninger",
     "passwordSection": "Skift adgangskode",
     "currentPassword": "Nuværende adgangskode",
     "currentPasswordPlaceholder": "Udfyld kun hvis du vil ændre din adgangskode",

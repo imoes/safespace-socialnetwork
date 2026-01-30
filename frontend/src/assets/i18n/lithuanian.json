@@ -336,6 +336,8 @@
     "notifCommentLiked": "Komentaras pamėgtas",
     "notifBirthday": "Gimtadieniai",
     "notifGroupPost": "Grupės įrašai",
+    "notifFriendRequest": "Draugystės užklausos",
+    "notifFriendRequestAccepted": "Priimtos draugystės užklausos",
     "passwordSection": "Keisti slaptažodį",
     "currentPassword": "Dabartinis slaptažodis",
     "currentPasswordPlaceholder": "Užpildykite tik jei norite pakeisti slaptažodį",

@@ -279,6 +279,8 @@
     "notifCommentLiked": "Commentaire aimé",
     "notifBirthday": "Anniversaires",
     "notifGroupPost": "Posts de groupe",
+    "notifFriendRequest": "Demandes d'amitié",
+    "notifFriendRequestAccepted": "Demandes d'amitié acceptées",
     "passwordSection": "Changer le mot de passe",
     "currentPassword": "Mot de passe actuel",
     "currentPasswordPlaceholder": "Remplir uniquement si vous souhaitez changer votre mot de passe",

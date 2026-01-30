@@ -336,6 +336,8 @@
     "notifCommentLiked": "Kumment togħġob",
     "notifBirthday": "Għeluq snin",
     "notifGroupPost": "Posts tal-grupp",
+    "notifFriendRequest": "Talbiet ta' ħbiberija",
+    "notifFriendRequestAccepted": "Talbiet ta' ħbiberija aċċettati",
     "passwordSection": "Ibdel il-Password",
     "currentPassword": "Password Attwali",
     "currentPasswordPlaceholder": "Imla biss jekk trid tibdel il-password tiegħek",
