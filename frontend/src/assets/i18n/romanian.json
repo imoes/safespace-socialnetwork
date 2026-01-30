@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Indisponibil",
     "deepseekLowBalance": "Atenție: Soldul DeepSeek este foarte scăzut! Vă rugăm să reîncărcați pentru a menține serviciul de moderare.",
     "deepseekLoading": "Se încarcă soldul DeepSeek...",
-    "deepseekError": "Eroare la încărcarea soldului DeepSeek"
+    "deepseekError": "Eroare la încărcarea soldului DeepSeek",
+    "emailSettings": "Setări e-mail",
+    "emailSettingsDesc": "Configurația SMTP curentă și trimiterea unui e-mail de test.",
+    "emailEnabled": "Activat",
+    "emailDisabled": "Dezactivat",
+    "emailUser": "Utilizator",
+    "emailFrom": "Adresa expeditorului",
+    "emailSender": "Numele expeditorului",
+    "testEmailLabel": "Trimite e-mail de test",
+    "testEmailPlaceholder": "Introduceți adresa de e-mail...",
+    "testEmailSend": "Trimite test",
+    "testEmailSent": "E-mailul de test a fost trimis cu succes.",
+    "testEmailFailed": "E-mailul de test nu a putut fi trimis.",
+    "testEmailRequired": "Vă rugăm să introduceți o adresă de e-mail.",
+    "emailDisabledHint": "E-mailul este dezactivat. Setați SAFESPACE_EMAIL_ENABLED=true pentru a activa e-mailurile.",
+    "loading": "Se încarcă"
   },
   "welcome": {
     "understood": "Am înțeles"

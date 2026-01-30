@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Nepasiekiamas",
     "deepseekLowBalance": "Įspėjimas: DeepSeek likutis labai mažas! Prašome papildyti, kad moderavimo paslauga veiktų.",
     "deepseekLoading": "Kraunamas DeepSeek likutis...",
-    "deepseekError": "Klaida kraunant DeepSeek likutį"
+    "deepseekError": "Klaida kraunant DeepSeek likutį",
+    "emailSettings": "El. pašto nustatymai",
+    "emailSettingsDesc": "Dabartinė SMTP konfigūracija ir bandomojo el. laiško siuntimas.",
+    "emailEnabled": "Įjungta",
+    "emailDisabled": "Išjungta",
+    "emailUser": "Vartotojas",
+    "emailFrom": "Siuntėjo adresas",
+    "emailSender": "Siuntėjo vardas",
+    "testEmailLabel": "Siųsti bandomąjį el. laišką",
+    "testEmailPlaceholder": "Įveskite el. pašto adresą...",
+    "testEmailSend": "Siųsti testą",
+    "testEmailSent": "Bandomasis el. laiškas sėkmingai išsiųstas.",
+    "testEmailFailed": "Bandomojo el. laiško nepavyko išsiųsti.",
+    "testEmailRequired": "Prašome įvesti el. pašto adresą.",
+    "emailDisabledHint": "El. paštas išjungtas. Nustatykite SAFESPACE_EMAIL_ENABLED=true, kad įjungtumėte el. paštą.",
+    "loading": "Kraunama"
   },
   "welcome": {
     "understood": "Supratau"

@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Ni na voljo",
     "deepseekLowBalance": "Opozorilo: Stanje DeepSeek je zelo nizko! Prosimo, dopolnite za vzdrževanje storitve moderiranja.",
     "deepseekLoading": "Nalaganje stanja DeepSeek...",
-    "deepseekError": "Napaka pri nalaganju stanja DeepSeek"
+    "deepseekError": "Napaka pri nalaganju stanja DeepSeek",
+    "emailSettings": "Nastavitve e-pošte",
+    "emailSettingsDesc": "Trenutna SMTP konfiguracija in pošiljanje testne e-pošte.",
+    "emailEnabled": "Omogočeno",
+    "emailDisabled": "Onemogočeno",
+    "emailUser": "Uporabnik",
+    "emailFrom": "Naslov pošiljatelja",
+    "emailSender": "Ime pošiljatelja",
+    "testEmailLabel": "Pošlji testno e-pošto",
+    "testEmailPlaceholder": "Vnesite e-poštni naslov...",
+    "testEmailSend": "Pošlji test",
+    "testEmailSent": "Testna e-pošta je bila uspešno poslana.",
+    "testEmailFailed": "Testne e-pošte ni bilo mogoče poslati.",
+    "testEmailRequired": "Prosimo, vnesite e-poštni naslov.",
+    "emailDisabledHint": "E-pošta je onemogočena. Nastavite SAFESPACE_EMAIL_ENABLED=true za omogočanje e-pošte.",
+    "loading": "Nalaganje"
   },
   "welcome": {
     "understood": "Razumem"

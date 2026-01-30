@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Μη διαθέσιμο",
     "deepseekLowBalance": "Προειδοποίηση: Το υπόλοιπο του DeepSeek είναι πολύ χαμηλό! Παρακαλούμε ανανεώστε για να διατηρήσετε την υπηρεσία εποπτείας.",
     "deepseekLoading": "Φόρτωση υπολοίπου DeepSeek...",
-    "deepseekError": "Σφάλμα φόρτωσης υπολοίπου DeepSeek"
+    "deepseekError": "Σφάλμα φόρτωσης υπολοίπου DeepSeek",
+    "emailSettings": "Ρυθμίσεις email",
+    "emailSettingsDesc": "Τρέχουσα διαμόρφωση SMTP και αποστολή δοκιμαστικού email.",
+    "emailEnabled": "Ενεργοποιημένο",
+    "emailDisabled": "Απενεργοποιημένο",
+    "emailUser": "Χρήστης",
+    "emailFrom": "Διεύθυνση αποστολέα",
+    "emailSender": "Όνομα αποστολέα",
+    "testEmailLabel": "Αποστολή δοκιμαστικού email",
+    "testEmailPlaceholder": "Εισάγετε διεύθυνση email...",
+    "testEmailSend": "Αποστολή δοκιμής",
+    "testEmailSent": "Το δοκιμαστικό email στάλθηκε επιτυχώς.",
+    "testEmailFailed": "Το δοκιμαστικό email δεν μπόρεσε να σταλεί.",
+    "testEmailRequired": "Παρακαλώ εισάγετε μια διεύθυνση email.",
+    "emailDisabledHint": "Το email είναι απενεργοποιημένο. Ορίστε SAFESPACE_EMAIL_ENABLED=true για να ενεργοποιήσετε τα email.",
+    "loading": "Φόρτωση"
   },
   "welcome": {
     "understood": "Κατάλαβα"

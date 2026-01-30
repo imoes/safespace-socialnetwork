@@ -415,7 +415,22 @@
     "deepseekUnavailable": "अनुपलब्ध",
     "deepseekLowBalance": "चेतावनी: DeepSeek शेष बहुत कम है! कृपया मॉडरेशन सेवा बनाए रखने के लिए रिचार्ज करें।",
     "deepseekLoading": "DeepSeek शेष लोड हो रहा है...",
-    "deepseekError": "DeepSeek शेष लोड करने में त्रुटि"
+    "deepseekError": "DeepSeek शेष लोड करने में त्रुटि",
+    "emailSettings": "ईमेल सेटिंग्स",
+    "emailSettingsDesc": "वर्तमान SMTP कॉन्फ़िगरेशन और परीक्षण ईमेल भेजें।",
+    "emailEnabled": "सक्षम",
+    "emailDisabled": "अक्षम",
+    "emailUser": "उपयोगकर्ता",
+    "emailFrom": "प्रेषक का पता",
+    "emailSender": "प्रेषक का नाम",
+    "testEmailLabel": "परीक्षण ईमेल भेजें",
+    "testEmailPlaceholder": "ईमेल पता दर्ज करें...",
+    "testEmailSend": "परीक्षण भेजें",
+    "testEmailSent": "परीक्षण ईमेल सफलतापूर्वक भेजा गया।",
+    "testEmailFailed": "परीक्षण ईमेल नहीं भेजा जा सका।",
+    "testEmailRequired": "कृपया एक ईमेल पता दर्ज करें।",
+    "emailDisabledHint": "ईमेल अक्षम है। ईमेल सक्षम करने के लिए SAFESPACE_EMAIL_ENABLED=true सेट करें।",
+    "loading": "लोड हो रहा है"
   },
   "welcome": {
     "understood": "समझ गया"

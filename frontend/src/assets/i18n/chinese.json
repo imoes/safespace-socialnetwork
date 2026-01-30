@@ -415,7 +415,22 @@
     "deepseekUnavailable": "不可用",
     "deepseekLowBalance": "警告：DeepSeek余额非常低！请充值以维持审核服务。",
     "deepseekLoading": "正在加载DeepSeek余额...",
-    "deepseekError": "加载DeepSeek余额时出错"
+    "deepseekError": "加载DeepSeek余额时出错",
+    "emailSettings": "邮件设置",
+    "emailSettingsDesc": "当前SMTP配置和发送测试邮件。",
+    "emailEnabled": "已启用",
+    "emailDisabled": "已禁用",
+    "emailUser": "用户",
+    "emailFrom": "发件人地址",
+    "emailSender": "发件人名称",
+    "testEmailLabel": "发送测试邮件",
+    "testEmailPlaceholder": "输入邮箱地址...",
+    "testEmailSend": "发送测试",
+    "testEmailSent": "测试邮件发送成功。",
+    "testEmailFailed": "测试邮件发送失败。",
+    "testEmailRequired": "请输入邮箱地址。",
+    "emailDisabledHint": "邮件已禁用。设置 SAFESPACE_EMAIL_ENABLED=true 以启用邮件。",
+    "loading": "加载中"
   },
   "welcome": {
     "understood": "我知道了"

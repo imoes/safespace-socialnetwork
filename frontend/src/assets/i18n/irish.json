@@ -415,7 +415,22 @@
     "deepseekUnavailable": "Níl ar fáil",
     "deepseekLowBalance": "Rabhadh: Tá iarmhéid DeepSeek an-íseal! Breisigh le do thoil chun an tseirbhís modhnóireachta a choinneáil.",
     "deepseekLoading": "Iarmhéid DeepSeek á lódáil...",
-    "deepseekError": "Earráid ag lódáil iarmhéid DeepSeek"
+    "deepseekError": "Earráid ag lódáil iarmhéid DeepSeek",
+    "emailSettings": "Socruithe Ríomhphoist",
+    "emailSettingsDesc": "Cumraíocht SMTP reatha agus ríomhphost tástála a sheoladh.",
+    "emailEnabled": "Cumasaithe",
+    "emailDisabled": "Díchumasaithe",
+    "emailUser": "Úsáideoir",
+    "emailFrom": "Seoladh an tSeoltóra",
+    "emailSender": "Ainm an tSeoltóra",
+    "testEmailLabel": "Seol Ríomhphost Tástála",
+    "testEmailPlaceholder": "Cuir isteach seoladh ríomhphoist...",
+    "testEmailSend": "Seol Tástáil",
+    "testEmailSent": "Seoladh an ríomhphost tástála go rathúil.",
+    "testEmailFailed": "Níorbh fhéidir an ríomhphost tástála a sheoladh.",
+    "testEmailRequired": "Cuir isteach seoladh ríomhphoist le do thoil.",
+    "emailDisabledHint": "Tá ríomhphost díchumasaithe. Socraigh SAFESPACE_EMAIL_ENABLED=true chun ríomhphoist a chumasú.",
+    "loading": "Ag lódáil"
   },
   "welcome": {
     "understood": "Tuigim"
