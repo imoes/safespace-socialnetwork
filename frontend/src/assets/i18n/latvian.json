@@ -69,7 +69,11 @@
     "currentVisibility": "Pašreizējā redzamība:",
     "disputePrompt": "Lūdzu, paskaidrojiet savu iebildumu:",
     "disputeSuccess": "Jūsu iebildums ir nosūtīts moderatoriem. Jūs saņemsiet atbildi 48 stundu laikā.",
-    "sendComment": "Nosūtīt komentāru"
+    "sendComment": "Nosūtīt komentāru",
+    "share": "Dalīties",
+    "shareWith": "Dalīties ar...",
+    "noFriendsToShare": "Nav draugu ar ko dalīties",
+    "shareSuccess": "Ieraksts kopīgots ar {{username}}!"
   },
   "visibility": {
     "public": "Publisks",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Kļūda iesniedzot iebildumu.",
     "disputeSuccess": "Jūsu iebildums ir nosūtīts moderatora izskatīšanai.",
     "sendComment": "Kļūda nosūtot komentāru",
-    "dataExport": "Kļūda eksportējot datus"
+    "dataExport": "Kļūda eksportējot datus",
+    "sharePost": "Neizdevās kopīgot ierakstu"
   },
   "myPosts": {
     "title": "Manas ziņas",
@@ -226,7 +231,11 @@
     "roleUser": "Lietotājs",
     "roleModerator": "Moderators",
     "roleAdmin": "Administrators",
-    "birthday": "Dzimšanas diena"
+    "birthday": "Dzimšanas diena",
+    "friends": "Draugi",
+    "loadingFriends": "Ielādē draugus...",
+    "noFriends": "Vēl nav draugu",
+    "friendsCount": "Draugi"
   },
   "login": {
     "title": "Pieteikšanās",
@@ -479,7 +488,10 @@
     "groupPost": "{{username}} publicēja grupā {{group}}",
     "birthday": "🎂 {{username}} šodien svin dzimšanas dienu un tagad ir {{age}} gadus vecs(-a)!",
     "groupJoinRequest": "👥 {{username}} vēlas pievienoties grupai \"{{groupName}}\"",
-    "welcome": "Laipni lūdzam SafeSpace! Priecājamies, ka esat šeit."
+    "welcome": "Laipni lūdzam SafeSpace! Priecājamies, ka esat šeit.",
+    "friendRequest": "👋 {{username}} nosūtīja tev draugu pieprasījumu",
+    "friendRequestAccepted": "🎉 {{username}} pieņēma tavu draugu pieprasījumu",
+    "postShared": "📨 {{username}} kopīgoja ar tevi ierakstu"
   },
   "screenTime": {
     "breakTitle": "Laiks pārtraukumam!",

@@ -69,7 +69,11 @@
     "currentVisibility": "当前可见范围：",
     "disputePrompt": "请说明你的异议：",
     "disputeSuccess": "你的异议已转交给审核员。你将在48小时内收到回复。",
-    "sendComment": "发送评论"
+    "sendComment": "发送评论",
+    "share": "分享",
+    "shareWith": "分享给...",
+    "noFriendsToShare": "没有可分享的好友",
+    "shareSuccess": "已分享给 {{username}}！"
   },
   "visibility": {
     "public": "公开",
@@ -141,7 +145,8 @@
     "disputeSubmit": "提交异议时出错。",
     "disputeSuccess": "你的异议已转交审核员审核。",
     "sendComment": "发送评论时出错",
-    "dataExport": "导出数据时出错"
+    "dataExport": "导出数据时出错",
+    "sharePost": "分享帖子失败"
   },
   "myPosts": {
     "title": "我的帖子",
@@ -226,7 +231,11 @@
     "roleUser": "用户",
     "roleModerator": "审核员",
     "roleAdmin": "管理员",
-    "birthday": "生日"
+    "birthday": "生日",
+    "friends": "好友",
+    "loadingFriends": "正在加载好友...",
+    "noFriends": "暂无好友",
+    "friendsCount": "位好友"
   },
   "login": {
     "title": "登录",
@@ -479,7 +488,10 @@
     "groupPost": "{{username}} 在群组 {{group}} 中发布了帖子",
     "birthday": "🎂 {{username}} 今天过生日，{{age}} 岁了！",
     "groupJoinRequest": "👥 {{username}} 申请加入群组「{{groupName}}」",
-    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。"
+    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。",
+    "friendRequest": "👋 {{username}} 向你发送了好友请求",
+    "friendRequestAccepted": "🎉 {{username}} 接受了你的好友请求",
+    "postShared": "📨 {{username}} 与你分享了一篇帖子"
   },
   "screenTime": {
     "breakTitle": "该休息一下了！",

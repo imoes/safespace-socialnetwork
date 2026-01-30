@@ -69,7 +69,11 @@
     "currentVisibility": "Current visibility:",
     "disputePrompt": "Please explain your objection:",
     "disputeSuccess": "Your objection has been forwarded to the moderators. You will receive a response within 48 hours.",
-    "sendComment": "Send comment"
+    "sendComment": "Send comment",
+    "share": "Share",
+    "shareWith": "Share with...",
+    "noFriendsToShare": "No friends to share with",
+    "shareSuccess": "Post shared with {{username}}!"
   },
   "visibility": {
     "public": "Public",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Error submitting objection.",
     "disputeSuccess": "Your objection has been forwarded for review by a moderator.",
     "sendComment": "Error sending comment",
-    "dataExport": "Error exporting data"
+    "dataExport": "Error exporting data",
+    "sharePost": "Failed to share post"
   },
   "myPosts": {
     "title": "My Posts",
@@ -226,7 +231,11 @@
     "roleUser": "User",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Birthday"
+    "birthday": "Birthday",
+    "friends": "Friends",
+    "loadingFriends": "Loading friends...",
+    "noFriends": "No friends yet",
+    "friendsCount": "Friends"
   },
   "login": {
     "title": "Login",
@@ -555,7 +564,10 @@
     "groupPost": "{{username}} posted in group {{group}}",
     "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
     "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\"",
-    "welcome": "Welcome to SafeSpace! We're glad you're here."
+    "welcome": "Welcome to SafeSpace! We're glad you're here.",
+    "friendRequest": "👋 {{username}} sent you a friend request",
+    "friendRequestAccepted": "🎉 {{username}} accepted your friend request",
+    "postShared": "📨 {{username}} shared a post with you"
   },
   "screenTime": {
     "breakTitle": "Time for a Break!",

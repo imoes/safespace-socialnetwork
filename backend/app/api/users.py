@@ -477,6 +477,42 @@ async def get_user_profile(
         )
 
 
+@router.get("/{user_uid}/friends")
+async def get_user_friends(
+    user_uid: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Gibt die Freundesliste eines Benutzers zurück (nur Username und Profilbild)"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT u.uid, u.username, u.profile_picture
+            FROM users u
+            INNER JOIN (
+                SELECT friend_id as uid FROM friendships
+                WHERE user_id = %s AND status = 'accepted'
+                UNION
+                SELECT user_id as uid FROM friendships
+                WHERE friend_id = %s AND status = 'accepted'
+            ) f ON u.uid = f.uid
+            ORDER BY u.username
+            """,
+            (user_uid, user_uid)
+        )
+        rows = await result.fetchall()
+
+        return {
+            "friends": [
+                {
+                    "uid": row["uid"],
+                    "username": row["username"],
+                    "profile_picture": row["profile_picture"]
+                }
+                for row in rows
+            ]
+        }
+
+
 @router.get("/me/commented-posts")
 async def get_my_commented_posts(
     limit: int = 25,

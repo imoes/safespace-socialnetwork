@@ -17,6 +17,7 @@ from app.db.moderation import (
     get_friends_by_relationship
 )
 from app.cache.redis_cache import OnlineStatus, FeedCache
+from app.db.notifications import create_notification
 
 
 router = APIRouter(prefix="/friends", tags=["Friends"])
@@ -94,13 +95,20 @@ async def send_request(
         )
     
     result = await send_friend_request(current_user["uid"], request.target_uid)
-    
+
     if not result:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Friend request already exists"
         )
-    
+
+    # Benachrichtigung an den Empfänger senden
+    await create_notification(
+        user_uid=request.target_uid,
+        actor_uid=current_user["uid"],
+        notification_type="friend_request"
+    )
+
     return {"message": "Friend request sent", "status": "pending"}
 
 
@@ -112,17 +120,24 @@ async def accept_request(
     """Akzeptiert eine Freundschaftsanfrage"""
     
     success = await accept_friend_request(current_user["uid"], requester_uid)
-    
+
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No pending friend request from this user"
         )
-    
+
+    # Benachrichtigung an den Anfragenden senden
+    await create_notification(
+        user_uid=requester_uid,
+        actor_uid=current_user["uid"],
+        notification_type="friend_request_accepted"
+    )
+
     # Feed-Cache invalidieren damit neue Posts erscheinen
     await FeedCache.invalidate(current_user["uid"])
     await FeedCache.invalidate(requester_uid)
-    
+
     return {"message": "Friend request accepted"}
 
 

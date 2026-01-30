@@ -68,7 +68,11 @@
     "currentVisibility": "Visibilité actuelle :",
     "disputePrompt": "Veuillez expliquer votre objection :",
     "disputeSuccess": "Votre objection a été transmise aux modérateurs. Vous recevrez une réponse dans les 48 heures.",
-    "sendComment": "Envoyer le commentaire"
+    "sendComment": "Envoyer le commentaire",
+    "share": "Partager",
+    "shareWith": "Partager avec...",
+    "noFriendsToShare": "Aucun ami avec qui partager",
+    "shareSuccess": "Post partagé avec {{username}} !"
   },
   "visibility": {
     "public": "Public",
@@ -140,7 +144,8 @@
     "disputeSubmit": "Erreur lors de l'envoi de l'objection.",
     "disputeSuccess": "Votre objection a été transmise pour examen par un modérateur.",
     "sendComment": "Erreur lors de l'envoi du commentaire",
-    "dataExport": "Erreur lors de l'exportation des données"
+    "dataExport": "Erreur lors de l'exportation des données",
+    "sharePost": "Échec du partage"
   },
   "myPosts": {
     "title": "Mes Posts",
@@ -225,7 +230,11 @@
     "roleUser": "Utilisateur",
     "roleModerator": "Modérateur",
     "roleAdmin": "Administrateur",
-    "birthday": "Anniversaire"
+    "birthday": "Anniversaire",
+    "friends": "Amis",
+    "loadingFriends": "Chargement des amis...",
+    "noFriends": "Pas encore d'amis",
+    "friendsCount": "Amis"
   },
   "friends": {
     "title": "Amis",
@@ -399,7 +408,10 @@
     "groupPost": "{{username}} a publié dans le groupe {{group}}",
     "birthday": "🎂 {{username}} fête son anniversaire aujourd'hui et a maintenant {{age}} ans !",
     "groupJoinRequest": "👥 {{username}} souhaite rejoindre le groupe \"{{groupName}}\"",
-    "welcome": "Bienvenue sur SafeSpace ! Nous sommes ravis de vous accueillir."
+    "welcome": "Bienvenue sur SafeSpace ! Nous sommes ravis de vous accueillir.",
+    "friendRequest": "👋 {{username}} t'a envoyé une demande d'ami",
+    "friendRequestAccepted": "🎉 {{username}} a accepté ta demande d'ami",
+    "postShared": "📨 {{username}} a partagé un post avec toi"
   },
   "groups": {
     "title": "Groupes",

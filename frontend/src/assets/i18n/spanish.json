@@ -68,7 +68,11 @@
     "currentVisibility": "Visibilidad actual:",
     "disputePrompt": "Por favor explica tu objeción:",
     "disputeSuccess": "Tu objeción ha sido enviada a los moderadores. Recibirás una respuesta en un plazo de 48 horas.",
-    "sendComment": "Enviar comentario"
+    "sendComment": "Enviar comentario",
+    "share": "Compartir",
+    "shareWith": "Compartir con...",
+    "noFriendsToShare": "No hay amigos para compartir",
+    "shareSuccess": "¡Post compartido con {{username}}!"
   },
   "visibility": {
     "public": "Público",
@@ -140,7 +144,8 @@
     "disputeSubmit": "Error al enviar la objeción.",
     "disputeSuccess": "Tu objeción ha sido enviada para revisión por un moderador.",
     "sendComment": "Error al enviar el comentario",
-    "dataExport": "Error al exportar los datos"
+    "dataExport": "Error al exportar los datos",
+    "sharePost": "Error al compartir el post"
   },
   "myPosts": {
     "title": "Mis Posts",
@@ -225,7 +230,11 @@
     "roleUser": "Usuario",
     "roleModerator": "Moderador",
     "roleAdmin": "Administrador",
-    "birthday": "Cumpleaños"
+    "birthday": "Cumpleaños",
+    "friends": "Amigos",
+    "loadingFriends": "Cargando amigos...",
+    "noFriends": "Aún no hay amigos",
+    "friendsCount": "Amigos"
   },
   "friends": {
     "title": "Amigos",
@@ -399,7 +408,10 @@
     "groupPost": "{{username}} publicó en el grupo {{group}}",
     "birthday": "🎂 ¡{{username}} cumple años hoy y ahora tiene {{age}} años!",
     "groupJoinRequest": "👥 {{username}} quiere unirse al grupo \"{{groupName}}\"",
-    "welcome": "¡Bienvenido/a a SafeSpace! Nos alegra que estés aquí."
+    "welcome": "¡Bienvenido/a a SafeSpace! Nos alegra que estés aquí.",
+    "friendRequest": "👋 {{username}} te ha enviado una solicitud de amistad",
+    "friendRequestAccepted": "🎉 {{username}} ha aceptado tu solicitud de amistad",
+    "postShared": "📨 {{username}} compartió un post contigo"
   },
   "groups": {
     "title": "Grupos",

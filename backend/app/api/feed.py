@@ -6,7 +6,8 @@ from app.services.auth_service import get_current_user
 from app.services.feed_service import FeedService, PostService
 from app.services.media_service import MediaService
 from app.db.sqlite_posts import UserPostsDB
-from app.db.postgres import get_username_map
+from app.db.postgres import get_username_map, get_relation_type
+from app.db.notifications import create_notification
 from pydantic import BaseModel
 
 
@@ -465,3 +466,54 @@ async def delete_comment(
         )
 
     return {"message": "Comment deleted"}
+
+
+class SharePostRequest(BaseModel):
+    friend_uid: int
+
+
+@router.post("/{author_uid}/{post_id}/share")
+async def share_post(
+    author_uid: int,
+    post_id: int,
+    share_data: SharePostRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Teilt einen Post mit einem Freund per Benachrichtigung"""
+
+    friend_uid = share_data.friend_uid
+
+    # Kann nicht an sich selbst teilen
+    if friend_uid == current_user["uid"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot share a post with yourself"
+        )
+
+    # Prüfe ob sie befreundet sind
+    relation = await get_relation_type(current_user["uid"], friend_uid)
+    if not relation:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only share posts with friends"
+        )
+
+    # Prüfe ob der Post existiert
+    posts_db = UserPostsDB(author_uid)
+    post = await posts_db.get_post(post_id)
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
+
+    # Benachrichtigung an den Freund senden
+    await create_notification(
+        user_uid=friend_uid,
+        actor_uid=current_user["uid"],
+        notification_type="post_shared",
+        post_id=post_id,
+        post_author_uid=author_uid
+    )
+
+    return {"message": "Post shared successfully"}

@@ -345,6 +345,69 @@ Dein SafeSpace Team
                 {"<a href='" + group_link + "' class='button'>Anfrage überprüfen</a>" if group_link else ""}"""
             )
 
+        elif notification_type == "friend_request":
+            profile_link = f"{site_url}/profile/{actor_username}"
+            subject = f"👋 {actor_username} möchte mit dir befreundet sein!"
+            text = f"""
+Hallo {to_username},
+
+{actor_username} hat dir eine Freundschaftsanfrage gesendet!
+
+Sieh dir das Profil an: {profile_link}
+
+Viele Grüße,
+Dein SafeSpace Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "👋 Neue Freundschaftsanfrage",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p><strong>{actor_username}</strong> hat dir eine Freundschaftsanfrage gesendet!</p>
+                <a href='{profile_link}' class='button'>Profil ansehen</a>"""
+            )
+
+        elif notification_type == "friend_request_accepted":
+            profile_link = f"{site_url}/profile/{actor_username}"
+            subject = f"🎉 {actor_username} hat deine Freundschaftsanfrage angenommen!"
+            text = f"""
+Hallo {to_username},
+
+{actor_username} hat deine Freundschaftsanfrage angenommen! Ihr seid jetzt Freunde.
+
+Sieh dir das Profil an: {profile_link}
+
+Viele Grüße,
+Dein SafeSpace Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "🎉 Freundschaftsanfrage angenommen",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p><strong>{actor_username}</strong> hat deine Freundschaftsanfrage angenommen! Ihr seid jetzt Freunde.</p>
+                <a href='{profile_link}' class='button'>Profil ansehen</a>"""
+            )
+
+        elif notification_type == "post_shared":
+            post_link = f"{site_url}"
+            subject = f"📨 {actor_username} hat einen Post mit dir geteilt!"
+            text = f"""
+Hallo {to_username},
+
+{actor_username} hat einen Post mit dir geteilt!
+
+Schau dir den Post an: {post_link}
+
+Viele Grüße,
+Dein SafeSpace Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "📨 Post geteilt",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p><strong>{actor_username}</strong> hat einen Post mit dir geteilt!</p>
+                <a href='{post_link}' class='button'>Post ansehen</a>"""
+            )
+
         elif notification_type == "welcome":
             subject = f"🎉 Willkommen bei SafeSpace, {to_username}!"
             text = f"""

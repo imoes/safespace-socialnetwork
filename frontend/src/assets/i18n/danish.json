@@ -69,7 +69,11 @@
     "currentVisibility": "Nuværende synlighed:",
     "disputePrompt": "Forklar venligst din indsigelse:",
     "disputeSuccess": "Din indsigelse er blevet videresendt til moderatorerne. Du vil modtage et svar inden for 48 timer.",
-    "sendComment": "Send kommentar"
+    "sendComment": "Send kommentar",
+    "share": "Del",
+    "shareWith": "Del med...",
+    "noFriendsToShare": "Ingen venner at dele med",
+    "shareSuccess": "Opslag delt med {{username}}!"
   },
   "visibility": {
     "public": "Offentlig",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Fejl ved indsendelse af indsigelse.",
     "disputeSuccess": "Din indsigelse er blevet videresendt til gennemgang af en moderator.",
     "sendComment": "Fejl ved afsendelse af kommentar",
-    "dataExport": "Fejl ved eksport af data"
+    "dataExport": "Fejl ved eksport af data",
+    "sharePost": "Kunne ikke dele opslaget"
   },
   "myPosts": {
     "title": "Mine opslag",
@@ -226,7 +231,11 @@
     "roleUser": "Bruger",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Fødselsdag"
+    "birthday": "Fødselsdag",
+    "friends": "Venner",
+    "loadingFriends": "Indlæser venner...",
+    "noFriends": "Ingen venner endnu",
+    "friendsCount": "Venner"
   },
   "login": {
     "title": "Log ind",
@@ -479,7 +488,10 @@
     "groupPost": "{{username}} slog op i gruppen {{group}}",
     "birthday": "🎂 {{username}} har fødselsdag i dag og er nu {{age}} år!",
     "groupJoinRequest": "👥 {{username}} vil gerne deltage i gruppen \"{{groupName}}\"",
-    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her."
+    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her.",
+    "friendRequest": "👋 {{username}} har sendt dig en venneanmodning",
+    "friendRequestAccepted": "🎉 {{username}} har accepteret din venneanmodning",
+    "postShared": "📨 {{username}} delte et opslag med dig"
   },
   "screenTime": {
     "breakTitle": "Tid til en pause!",
