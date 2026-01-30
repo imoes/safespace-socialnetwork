@@ -730,8 +730,9 @@ async def get_user_posts(
     if is_own_profile:
         allowed_visibility = None  # Alle Posts
     else:
-        # Freundschaftsstatus prüfen
-        relation_type = await get_relation_type(current_user["uid"], user_uid)
+        # Freundschaftsstatus prüfen — aus Sicht des Profil-Besitzers (Post-Autors),
+        # denn dieser bestimmt wer seine Posts sehen darf
+        relation_type = await get_relation_type(user_uid, current_user["uid"])
 
         if not relation_type:
             # Keine Freundschaft: nur öffentliche Posts
