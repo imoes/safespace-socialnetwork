@@ -126,6 +126,13 @@ interface FriendRequest {
             <div class="friends-list">
               @for (friend of friends(); track friend.uid) {
                 <div class="friend-card" (click)="goToFriendProfile(friend.uid)">
+                  <div class="friend-avatar-wrapper">
+                    @if (friend.profile_picture) {
+                      <img [src]="friend.profile_picture" [alt]="friend.username" class="friend-avatar-img" />
+                    } @else {
+                      <div class="friend-avatar-placeholder">{{ friend.username.charAt(0).toUpperCase() }}</div>
+                    }
+                  </div>
                   <div class="friend-info">
                     <div class="friend-name">{{ friend.username }}</div>
                     <div class="friend-meta">
@@ -332,6 +339,19 @@ interface FriendRequest {
 
     .friend-card {
       cursor: pointer;
+    }
+
+    .friend-avatar-wrapper {
+      width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    }
+    .friend-avatar-img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    }
+    .friend-avatar-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #1877f2, #42b72a); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 18px; border-radius: 50%;
     }
 
     .user-card:hover, .friend-card:hover, .request-card:hover {
