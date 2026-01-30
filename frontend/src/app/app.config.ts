@@ -52,7 +52,7 @@ export const routes: Routes = [
   { path: 'groups', component: GroupsComponent, canActivate: [authGuard] },
   { path: 'groups/:id', component: GroupDetailComponent, canActivate: [authGuard] },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
-  { path: 'impressum', component: ImpressumComponent, canActivate: [authGuard] },
+  { path: 'impressum', component: ImpressumComponent },
   { path: 'terms', component: TermsOfServiceComponent },
   { path: 'info', component: InfoComponent, canActivate: [authGuard] },
   { path: '', component: FeedComponent, canActivate: [authGuard] },
