@@ -479,7 +479,9 @@
     "groupPost": "Phostáil {{username}} sa ghrúpa {{group}}",
     "birthday": "🎂 Tá lá breithe ag {{username}} inniu agus tá sé/sí {{age}} bliain d'aois anois!",
     "groupJoinRequest": "👥 Ba mhaith le {{username}} dul isteach sa ghrúpa \"{{groupName}}\"",
-    "welcome": "Fáilte go SafeSpace! Tá áthas orainn go bhfuil tú anseo."
+    "welcome": "Fáilte go SafeSpace! Tá áthas orainn go bhfuil tú anseo.",
+    "friendRequest": "👋 Sheol {{username}} iarratas cairdis chugat",
+    "friendRequestAccepted": "🎉 Ghlac {{username}} le d'iarratas cairdis"
   },
   "screenTime": {
     "breakTitle": "Am do Shos!",

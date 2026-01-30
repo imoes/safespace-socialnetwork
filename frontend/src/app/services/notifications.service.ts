@@ -144,6 +144,10 @@ export class NotificationsService {
         return this.i18n.t('notifications.birthday')
           .replace('{{username}}', notification.actor_username)
           .replace('{{age}}', notification.comment_id?.toString() || '?');
+      case 'friend_request':
+        return this.i18n.t('notifications.friendRequest').replace('{{username}}', notification.actor_username);
+      case 'friend_request_accepted':
+        return this.i18n.t('notifications.friendRequestAccepted').replace('{{username}}', notification.actor_username);
       case 'welcome':
         return this.i18n.t('notifications.welcome');
       default:

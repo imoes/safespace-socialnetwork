@@ -479,7 +479,9 @@
     "groupPost": "{{username}} publicēja grupā {{group}}",
     "birthday": "🎂 {{username}} šodien svin dzimšanas dienu un tagad ir {{age}} gadus vecs(-a)!",
     "groupJoinRequest": "👥 {{username}} vēlas pievienoties grupai \"{{groupName}}\"",
-    "welcome": "Laipni lūdzam SafeSpace! Priecājamies, ka esat šeit."
+    "welcome": "Laipni lūdzam SafeSpace! Priecājamies, ka esat šeit.",
+    "friendRequest": "👋 {{username}} nosūtīja tev draugu pieprasījumu",
+    "friendRequestAccepted": "🎉 {{username}} pieņēma tavu draugu pieprasījumu"
   },
   "screenTime": {
     "breakTitle": "Laiks pārtraukumam!",

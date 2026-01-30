@@ -479,7 +479,9 @@
     "groupPost": "{{username}} pridal príspevok do skupiny {{group}}",
     "birthday": "🎂 {{username}} má dnes narodeniny a má {{age}} rokov!",
     "groupJoinRequest": "👥 {{username}} chce vstúpiť do skupiny \"{{groupName}}\"",
-    "welcome": "Vitajte v SafeSpace! Sme radi, že ste tu."
+    "welcome": "Vitajte v SafeSpace! Sme radi, že ste tu.",
+    "friendRequest": "👋 {{username}} ti poslal(a) žiadosť o priateľstvo",
+    "friendRequestAccepted": "🎉 {{username}} prijal(a) tvoju žiadosť o priateľstvo"
   },
   "screenTime": {
     "breakTitle": "Čas na prestávku!",

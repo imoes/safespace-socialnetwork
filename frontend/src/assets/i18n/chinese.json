@@ -479,7 +479,9 @@
     "groupPost": "{{username}} 在群组 {{group}} 中发布了帖子",
     "birthday": "🎂 {{username}} 今天过生日，{{age}} 岁了！",
     "groupJoinRequest": "👥 {{username}} 申请加入群组「{{groupName}}」",
-    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。"
+    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。",
+    "friendRequest": "👋 {{username}} 向你发送了好友请求",
+    "friendRequestAccepted": "🎉 {{username}} 接受了你的好友请求"
   },
   "screenTime": {
     "breakTitle": "该休息一下了！",

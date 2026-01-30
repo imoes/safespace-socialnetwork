@@ -479,7 +479,9 @@
     "groupPost": "{{username}} a postat în grupul {{group}}",
     "birthday": "🎂 {{username}} are ziua de naștere astăzi și a împlinit {{age}} ani!",
     "groupJoinRequest": "👥 {{username}} dorește să se alăture grupului \"{{groupName}}\"",
-    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici."
+    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici.",
+    "friendRequest": "👋 {{username}} ți-a trimis o cerere de prietenie",
+    "friendRequestAccepted": "🎉 {{username}} ți-a acceptat cererea de prietenie"
   },
   "screenTime": {
     "breakTitle": "E timpul pentru o pauză!",

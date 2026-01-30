@@ -479,7 +479,9 @@
     "groupPost": "{{username}} je objavil/-a v skupini {{group}}",
     "birthday": "🎂 {{username}} ima danes rojstni dan in je zdaj star/-a {{age}} let!",
     "groupJoinRequest": "👥 {{username}} želi pridružiti skupini \"{{groupName}}\"",
-    "welcome": "Dobrodošli v SafeSpace! Veseli smo, da ste tukaj."
+    "welcome": "Dobrodošli v SafeSpace! Veseli smo, da ste tukaj.",
+    "friendRequest": "👋 {{username}} ti je poslal/a prošnjo za prijateljstvo",
+    "friendRequestAccepted": "🎉 {{username}} je sprejel/a tvojo prošnjo za prijateljstvo"
   },
   "screenTime": {
     "breakTitle": "Čas za odmor!",

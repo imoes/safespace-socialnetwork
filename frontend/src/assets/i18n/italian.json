@@ -399,7 +399,9 @@
     "groupPost": "{{username}} ha pubblicato nel gruppo {{group}}",
     "birthday": "🎂 {{username}} compie gli anni oggi e ha ora {{age}} anni!",
     "groupJoinRequest": "👥 {{username}} vuole unirsi al gruppo \"{{groupName}}\"",
-    "welcome": "Benvenuto/a su SafeSpace! Siamo felici che tu sia qui."
+    "welcome": "Benvenuto/a su SafeSpace! Siamo felici che tu sia qui.",
+    "friendRequest": "👋 {{username}} ti ha inviato una richiesta di amicizia",
+    "friendRequestAccepted": "🎉 {{username}} ha accettato la tua richiesta di amicizia"
   },
   "groups": {
     "title": "Gruppi",

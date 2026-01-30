@@ -479,7 +479,9 @@
     "groupPost": "Ο/Η {{username}} δημοσίευσε στην ομάδα {{group}}",
     "birthday": "🎂 Ο/Η {{username}} έχει γενέθλια σήμερα και γίνεται {{age}} ετών!",
     "groupJoinRequest": "👥 Ο/Η {{username}} θέλει να συμμετάσχει στην ομάδα \"{{groupName}}\"",
-    "welcome": "Καλώς ήρθατε στο SafeSpace! Χαιρόμαστε που είστε εδώ."
+    "welcome": "Καλώς ήρθατε στο SafeSpace! Χαιρόμαστε που είστε εδώ.",
+    "friendRequest": "👋 Ο/Η {{username}} σου έστειλε αίτημα φιλίας",
+    "friendRequestAccepted": "🎉 Ο/Η {{username}} αποδέχτηκε το αίτημα φιλίας σου"
   },
   "screenTime": {
     "breakTitle": "Ώρα για Διάλειμμα!",

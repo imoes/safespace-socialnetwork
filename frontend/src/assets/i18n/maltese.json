@@ -479,7 +479,9 @@
     "groupPost": "{{username}} ippubblika fil-grupp {{group}}",
     "birthday": "🎂 {{username}} għandu/ha l-għeluq snin illum u issa għandu/ha {{age}} sena!",
     "groupJoinRequest": "👥 {{username}} irid/trid jingħaqad/tingħaqad mal-grupp \"{{groupName}}\"",
-    "welcome": "Merħba f'SafeSpace! Ferħanin li inti hawn."
+    "welcome": "Merħba f'SafeSpace! Ferħanin li inti hawn.",
+    "friendRequest": "👋 {{username}} bagħatlek talba ta' ħbiberija",
+    "friendRequestAccepted": "🎉 {{username}} aċċetta t-talba ta' ħbiberija tiegħek"
   },
   "screenTime": {
     "breakTitle": "Wasal il-Ħin għal Waqfa!",

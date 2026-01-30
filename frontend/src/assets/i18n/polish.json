@@ -479,7 +479,9 @@
     "groupPost": "{{username}} opublikował(a) post w grupie {{group}}",
     "birthday": "🎂 {{username}} ma dziś urodziny i kończy {{age}} lat!",
     "groupJoinRequest": "👥 {{username}} chce dołączyć do grupy \"{{groupName}}\"",
-    "welcome": "Witamy w SafeSpace! Cieszymy się, że tu jesteś."
+    "welcome": "Witamy w SafeSpace! Cieszymy się, że tu jesteś.",
+    "friendRequest": "👋 {{username}} wysłał(a) ci zaproszenie do znajomych",
+    "friendRequestAccepted": "🎉 {{username}} zaakceptował(a) twoje zaproszenie do znajomych"
   },
   "screenTime": {
     "breakTitle": "Czas na przerwę!",

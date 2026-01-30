@@ -555,7 +555,9 @@
     "groupPost": "{{username}} posted in group {{group}}",
     "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
     "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\"",
-    "welcome": "Welcome to SafeSpace! We're glad you're here."
+    "welcome": "Welcome to SafeSpace! We're glad you're here.",
+    "friendRequest": "👋 {{username}} sent you a friend request",
+    "friendRequestAccepted": "🎉 {{username}} accepted your friend request"
   },
   "screenTime": {
     "breakTitle": "Time for a Break!",

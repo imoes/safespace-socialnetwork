@@ -479,7 +479,9 @@
     "groupPost": "{{username}} slog op i gruppen {{group}}",
     "birthday": "🎂 {{username}} har fødselsdag i dag og er nu {{age}} år!",
     "groupJoinRequest": "👥 {{username}} vil gerne deltage i gruppen \"{{groupName}}\"",
-    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her."
+    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her.",
+    "friendRequest": "👋 {{username}} har sendt dig en venneanmodning",
+    "friendRequestAccepted": "🎉 {{username}} har accepteret din venneanmodning"
   },
   "screenTime": {
     "breakTitle": "Tid til en pause!",
