@@ -56,7 +56,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           }
         </div>
 
-        @if (!isOwnProfile) {
+        @if (!isOwnProfile && isFriend) {
           <div class="personal-post-card">
             <h3 class="personal-post-title">✍️ {{ 'profile.personalPost' | translate }}</h3>
             <textarea
@@ -205,6 +205,7 @@ export class UserProfileComponent implements OnInit {
     this.userService.getUserProfile(uid).subscribe({
       next: (profile) => {
         this.profile = profile;
+        this.isFriend = profile.is_friend || false;
         this.loading = false;
         this.loadPosts(uid);
       },
@@ -220,7 +221,6 @@ export class UserProfileComponent implements OnInit {
     this.http.get<{posts: Post[], has_more: boolean}>(`/api/users/${uid}/posts`).subscribe({
       next: (response) => {
         this.posts.set(response.posts);
-        this.isFriend = response.posts.length > 0 || this.isOwnProfile;
         this.loadingPosts = false;
       },
       error: (err) => {
