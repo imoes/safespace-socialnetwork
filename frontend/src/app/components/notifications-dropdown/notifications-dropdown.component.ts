@@ -355,6 +355,8 @@ export class NotificationsDropdownComponent implements OnInit {
         return this.i18n.t('notifications.friendRequest', { username });
       case 'friend_request_accepted':
         return this.i18n.t('notifications.friendRequestAccepted', { username });
+      case 'post_shared':
+        return this.i18n.t('notifications.postShared', { username });
       case 'welcome':
         return this.i18n.t('notifications.welcome');
       default:

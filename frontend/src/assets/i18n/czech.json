@@ -69,7 +69,11 @@
     "currentVisibility": "Aktuální viditelnost:",
     "disputePrompt": "Prosím vysvětlete svou námitku:",
     "disputeSuccess": "Vaše námitka byla předána moderátorům. Odpověď obdržíte do 48 hodin.",
-    "sendComment": "Odeslat komentář"
+    "sendComment": "Odeslat komentář",
+    "share": "Sdílet",
+    "shareWith": "Sdílet s...",
+    "noFriendsToShare": "Žádní přátelé ke sdílení",
+    "shareSuccess": "Příspěvek sdílen s {{username}}!"
   },
   "visibility": {
     "public": "Veřejné",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Chyba při podávání námitky.",
     "disputeSuccess": "Vaše námitka byla předána k posouzení moderátorem.",
     "sendComment": "Chyba při odesílání komentáře",
-    "dataExport": "Chyba při exportu dat"
+    "dataExport": "Chyba při exportu dat",
+    "sharePost": "Nepodařilo se sdílet příspěvek"
   },
   "myPosts": {
     "title": "Moje příspěvky",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} chce vstoupit do skupiny \"{{groupName}}\"",
     "welcome": "Vítejte v SafeSpace! Jsme rádi, že jste tady.",
     "friendRequest": "👋 {{username}} ti poslal(a) žádost o přátelství",
-    "friendRequestAccepted": "🎉 {{username}} přijal(a) tvou žádost o přátelství"
+    "friendRequestAccepted": "🎉 {{username}} přijal(a) tvou žádost o přátelství",
+    "postShared": "📨 {{username}} s tebou sdílel(a) příspěvek"
   },
   "screenTime": {
     "breakTitle": "Čas na přestávku!",

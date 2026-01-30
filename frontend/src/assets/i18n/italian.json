@@ -68,7 +68,11 @@
     "currentVisibility": "Visibilità attuale:",
     "disputePrompt": "Per favore spiega la tua obiezione:",
     "disputeSuccess": "La tua obiezione è stata inoltrata ai moderatori. Riceverai una risposta entro 48 ore.",
-    "sendComment": "Invia commento"
+    "sendComment": "Invia commento",
+    "share": "Condividi",
+    "shareWith": "Condividi con...",
+    "noFriendsToShare": "Nessun amico con cui condividere",
+    "shareSuccess": "Post condiviso con {{username}}!"
   },
   "visibility": {
     "public": "Pubblico",
@@ -140,7 +144,8 @@
     "disputeSubmit": "Errore nell'invio dell'obiezione.",
     "disputeSuccess": "La tua obiezione è stata inoltrata per la revisione da parte di un moderatore.",
     "sendComment": "Errore nell'invio del commento",
-    "dataExport": "Errore nell'esportazione dei dati"
+    "dataExport": "Errore nell'esportazione dei dati",
+    "sharePost": "Impossibile condividere il post"
   },
   "myPosts": {
     "title": "I miei Post",
@@ -401,7 +406,8 @@
     "groupJoinRequest": "👥 {{username}} vuole unirsi al gruppo \"{{groupName}}\"",
     "welcome": "Benvenuto/a su SafeSpace! Siamo felici che tu sia qui.",
     "friendRequest": "👋 {{username}} ti ha inviato una richiesta di amicizia",
-    "friendRequestAccepted": "🎉 {{username}} ha accettato la tua richiesta di amicizia"
+    "friendRequestAccepted": "🎉 {{username}} ha accettato la tua richiesta di amicizia",
+    "postShared": "📨 {{username}} ha condiviso un post con te"
   },
   "groups": {
     "title": "Gruppi",

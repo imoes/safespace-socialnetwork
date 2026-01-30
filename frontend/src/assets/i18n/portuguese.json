@@ -69,7 +69,11 @@
     "currentVisibility": "Visibilidade atual:",
     "disputePrompt": "Por favor, explique a sua objeção:",
     "disputeSuccess": "A sua objeção foi encaminhada para os moderadores. Receberá uma resposta dentro de 48 horas.",
-    "sendComment": "Enviar comentário"
+    "sendComment": "Enviar comentário",
+    "share": "Partilhar",
+    "shareWith": "Partilhar com...",
+    "noFriendsToShare": "Sem amigos para partilhar",
+    "shareSuccess": "Post partilhado com {{username}}!"
   },
   "visibility": {
     "public": "Público",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Erro ao submeter objeção.",
     "disputeSuccess": "A sua objeção foi encaminhada para análise por um moderador.",
     "sendComment": "Erro ao enviar comentário",
-    "dataExport": "Erro ao exportar dados"
+    "dataExport": "Erro ao exportar dados",
+    "sharePost": "Erro ao partilhar o post"
   },
   "myPosts": {
     "title": "As Minhas Publicações",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} quer juntar-se ao grupo \"{{groupName}}\"",
     "welcome": "Bem-vindo/a ao SafeSpace! Estamos felizes por teres chegado.",
     "friendRequest": "👋 {{username}} enviou-te um pedido de amizade",
-    "friendRequestAccepted": "🎉 {{username}} aceitou o teu pedido de amizade"
+    "friendRequestAccepted": "🎉 {{username}} aceitou o teu pedido de amizade",
+    "postShared": "📨 {{username}} partilhou um post contigo"
   },
   "screenTime": {
     "breakTitle": "Hora de Fazer uma Pausa!",

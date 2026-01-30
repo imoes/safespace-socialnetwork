@@ -69,7 +69,11 @@
     "currentVisibility": "Aktuelle Sichtbarkeit:",
     "disputePrompt": "Bitte begründe deinen Widerspruch:",
     "disputeSuccess": "Dein Widerspruch wurde an die Moderatoren weitergeleitet. Du erhältst eine Rückmeldung innerhalb von 48 Stunden.",
-    "sendComment": "Kommentar senden"
+    "sendComment": "Kommentar senden",
+    "share": "Teilen",
+    "shareWith": "Teilen mit...",
+    "noFriendsToShare": "Keine Freunde zum Teilen",
+    "shareSuccess": "Post mit {{username}} geteilt!"
   },
   "visibility": {
     "public": "Öffentlich",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Fehler beim Einreichen des Widerspruchs.",
     "disputeSuccess": "Dein Widerspruch wurde zur Prüfung durch einen Moderator weitergeleitet.",
     "sendComment": "Fehler beim Senden des Kommentars",
-    "dataExport": "Fehler beim Exportieren der Daten"
+    "dataExport": "Fehler beim Exportieren der Daten",
+    "sharePost": "Post konnte nicht geteilt werden"
   },
   "myPosts": {
     "title": "Meine Posts",
@@ -557,7 +562,8 @@
     "groupJoinRequest": "👥 {{username}} möchte der Gruppe \"{{groupName}}\" beitreten",
     "welcome": "Willkommen bei SafeSpace! Schön, dass du da bist.",
     "friendRequest": "👋 {{username}} hat dir eine Freundschaftsanfrage gesendet",
-    "friendRequestAccepted": "🎉 {{username}} hat deine Freundschaftsanfrage angenommen"
+    "friendRequestAccepted": "🎉 {{username}} hat deine Freundschaftsanfrage angenommen",
+    "postShared": "📨 {{username}} hat einen Post mit dir geteilt"
   },
   "screenTime": {
     "breakTitle": "Zeit für eine Pause!",

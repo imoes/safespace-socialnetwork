@@ -69,7 +69,11 @@
     "currentVisibility": "Vizibilitate curentă:",
     "disputePrompt": "Te rugăm să explici obiecția ta:",
     "disputeSuccess": "Obiecția ta a fost transmisă moderatorilor. Vei primi un răspuns în 48 de ore.",
-    "sendComment": "Trimite comentariu"
+    "sendComment": "Trimite comentariu",
+    "share": "Distribuie",
+    "shareWith": "Distribuie către...",
+    "noFriendsToShare": "Niciun prieten cu care să distribui",
+    "shareSuccess": "Post distribuit către {{username}}!"
   },
   "visibility": {
     "public": "Public",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Eroare la trimiterea obiecției.",
     "disputeSuccess": "Obiecția ta a fost transmisă pentru examinare de către un moderator.",
     "sendComment": "Eroare la trimiterea comentariului",
-    "dataExport": "Eroare la exportul datelor"
+    "dataExport": "Eroare la exportul datelor",
+    "sharePost": "Eroare la distribuirea postării"
   },
   "myPosts": {
     "title": "Postările mele",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} dorește să se alăture grupului \"{{groupName}}\"",
     "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici.",
     "friendRequest": "👋 {{username}} ți-a trimis o cerere de prietenie",
-    "friendRequestAccepted": "🎉 {{username}} ți-a acceptat cererea de prietenie"
+    "friendRequestAccepted": "🎉 {{username}} ți-a acceptat cererea de prietenie",
+    "postShared": "📨 {{username}} a distribuit o postare cu tine"
   },
   "screenTime": {
     "breakTitle": "E timpul pentru o pauză!",

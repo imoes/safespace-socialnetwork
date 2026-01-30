@@ -69,7 +69,11 @@
     "currentVisibility": "Viżibilità attwali:",
     "disputePrompt": "Jekk jogħġbok spjega l-oġġezzjoni tiegħek:",
     "disputeSuccess": "L-oġġezzjoni tiegħek intbagħtet lill-moderaturi. Se tirċievi risposta fi żmien 48 siegħa.",
-    "sendComment": "Ibgħat kumment"
+    "sendComment": "Ibgħat kumment",
+    "share": "Aqsam",
+    "shareWith": "Aqsam ma'...",
+    "noFriendsToShare": "L-ebda ħbieb li taqsam magħhom",
+    "shareSuccess": "Post maqsum ma' {{username}}!"
   },
   "visibility": {
     "public": "Pubbliku",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Żball fil-bgħit tal-oġġezzjoni.",
     "disputeSuccess": "L-oġġezzjoni tiegħek intbagħtet għar-reviżjoni minn moderatur.",
     "sendComment": "Żball fil-bgħit tal-kumment",
-    "dataExport": "Żball fl-esportazzjoni tad-data"
+    "dataExport": "Żball fl-esportazzjoni tad-data",
+    "sharePost": "Ma setax jaqsam il-post"
   },
   "myPosts": {
     "title": "Il-Posts Tiegħi",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} irid/trid jingħaqad/tingħaqad mal-grupp \"{{groupName}}\"",
     "welcome": "Merħba f'SafeSpace! Ferħanin li inti hawn.",
     "friendRequest": "👋 {{username}} bagħatlek talba ta' ħbiberija",
-    "friendRequestAccepted": "🎉 {{username}} aċċetta t-talba ta' ħbiberija tiegħek"
+    "friendRequestAccepted": "🎉 {{username}} aċċetta t-talba ta' ħbiberija tiegħek",
+    "postShared": "📨 {{username}} qasam post miegħek"
   },
   "screenTime": {
     "breakTitle": "Wasal il-Ħin għal Waqfa!",

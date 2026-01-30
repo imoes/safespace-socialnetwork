@@ -56,6 +56,7 @@ async def create_notification(
     - 'welcome': Willkommens-Benachrichtigung für neue User
     - 'friend_request': Jemand hat dir eine Freundschaftsanfrage gesendet
     - 'friend_request_accepted': Jemand hat deine Freundschaftsanfrage angenommen
+    - 'post_shared': Jemand hat einen Post mit dir geteilt
     """
     # Erstelle keine Benachrichtigung wenn User sich selbst liked/kommentiert
     # (Ausnahme: welcome-Benachrichtigung)

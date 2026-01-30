@@ -387,6 +387,27 @@ Dein SafeSpace Team
                 <a href='{profile_link}' class='button'>Profil ansehen</a>"""
             )
 
+        elif notification_type == "post_shared":
+            post_link = f"{site_url}"
+            subject = f"📨 {actor_username} hat einen Post mit dir geteilt!"
+            text = f"""
+Hallo {to_username},
+
+{actor_username} hat einen Post mit dir geteilt!
+
+Schau dir den Post an: {post_link}
+
+Viele Grüße,
+Dein SafeSpace Team
+            """.strip()
+
+            html = cls._wrap_email_html(
+                "📨 Post geteilt",
+                f"""<p>Hallo <strong>{to_username}</strong>,</p>
+                <p><strong>{actor_username}</strong> hat einen Post mit dir geteilt!</p>
+                <a href='{post_link}' class='button'>Post ansehen</a>"""
+            )
+
         elif notification_type == "welcome":
             subject = f"🎉 Willkommen bei SafeSpace, {to_username}!"
             text = f"""

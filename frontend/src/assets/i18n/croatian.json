@@ -69,7 +69,11 @@
     "currentVisibility": "Trenutna vidljivost:",
     "disputePrompt": "Molimo objasnite svoj prigovor:",
     "disputeSuccess": "Vaš prigovor je proslijeđen moderatorima. Odgovor ćete dobiti u roku od 48 sati.",
-    "sendComment": "Pošalji komentar"
+    "sendComment": "Pošalji komentar",
+    "share": "Podijeli",
+    "shareWith": "Podijeli s...",
+    "noFriendsToShare": "Nema prijatelja za dijeljenje",
+    "shareSuccess": "Objava podijeljena s {{username}}!"
   },
   "visibility": {
     "public": "Javno",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Greška pri podnošenju prigovora.",
     "disputeSuccess": "Vaš prigovor je proslijeđen moderatoru na pregled.",
     "sendComment": "Greška pri slanju komentara",
-    "dataExport": "Greška pri izvozu podataka"
+    "dataExport": "Greška pri izvozu podataka",
+    "sharePost": "Greška pri dijeljenju objave"
   },
   "myPosts": {
     "title": "Moje objave",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} želi se pridružiti grupi \"{{groupName}}\"",
     "welcome": "Dobrodošli na SafeSpace! Drago nam je što ste tu.",
     "friendRequest": "👋 {{username}} ti je poslao/la zahtjev za prijateljstvo",
-    "friendRequestAccepted": "🎉 {{username}} je prihvatio/la tvoj zahtjev za prijateljstvo"
+    "friendRequestAccepted": "🎉 {{username}} je prihvatio/la tvoj zahtjev za prijateljstvo",
+    "postShared": "📨 {{username}} je podijelio/la objavu s tobom"
   },
   "screenTime": {
     "breakTitle": "Vrijeme za pauzu!",

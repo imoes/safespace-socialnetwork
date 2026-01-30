@@ -69,7 +69,11 @@
     "currentVisibility": "Obecna widoczność:",
     "disputePrompt": "Proszę opisać swoje zastrzeżenie:",
     "disputeSuccess": "Twoje zastrzeżenie zostało przekazane moderatorom. Otrzymasz odpowiedź w ciągu 48 godzin.",
-    "sendComment": "Wyślij komentarz"
+    "sendComment": "Wyślij komentarz",
+    "share": "Udostępnij",
+    "shareWith": "Udostępnij...",
+    "noFriendsToShare": "Brak znajomych do udostępnienia",
+    "shareSuccess": "Post udostępniony {{username}}!"
   },
   "visibility": {
     "public": "Publiczny",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Błąd przesyłania zastrzeżenia.",
     "disputeSuccess": "Twoje zastrzeżenie zostało przekazane do rozpatrzenia przez moderatora.",
     "sendComment": "Błąd wysyłania komentarza",
-    "dataExport": "Błąd eksportu danych"
+    "dataExport": "Błąd eksportu danych",
+    "sharePost": "Nie udało się udostępnić posta"
   },
   "myPosts": {
     "title": "Moje posty",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} chce dołączyć do grupy \"{{groupName}}\"",
     "welcome": "Witamy w SafeSpace! Cieszymy się, że tu jesteś.",
     "friendRequest": "👋 {{username}} wysłał(a) ci zaproszenie do znajomych",
-    "friendRequestAccepted": "🎉 {{username}} zaakceptował(a) twoje zaproszenie do znajomych"
+    "friendRequestAccepted": "🎉 {{username}} zaakceptował(a) twoje zaproszenie do znajomych",
+    "postShared": "📨 {{username}} udostępnił(a) ci post"
   },
   "screenTime": {
     "breakTitle": "Czas na przerwę!",

@@ -69,7 +69,11 @@
     "currentVisibility": "Nykyinen näkyvyys:",
     "disputePrompt": "Kerro vastalauseesi:",
     "disputeSuccess": "Vastalauseesi on välitetty moderaattoreille. Saat vastauksen 48 tunnin kuluessa.",
-    "sendComment": "Lähetä kommentti"
+    "sendComment": "Lähetä kommentti",
+    "share": "Jaa",
+    "shareWith": "Jaa...",
+    "noFriendsToShare": "Ei kavereita joille jakaa",
+    "shareSuccess": "Julkaisu jaettu {{username}} kanssa!"
   },
   "visibility": {
     "public": "Julkinen",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Virhe vastalauseen lähettämisessä.",
     "disputeSuccess": "Vastalauseesi on välitetty moderaattorin tarkastettavaksi.",
     "sendComment": "Virhe kommentin lähettämisessä",
-    "dataExport": "Virhe tietojen viennissä"
+    "dataExport": "Virhe tietojen viennissä",
+    "sharePost": "Julkaisun jakaminen epäonnistui"
   },
   "myPosts": {
     "title": "Omat julkaisut",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} haluaa liittyä ryhmään \"{{groupName}}\"",
     "welcome": "Tervetuloa SafeSpaceen! Mukavaa, että olet täällä.",
     "friendRequest": "👋 {{username}} lähetti sinulle kaveripyynnön",
-    "friendRequestAccepted": "🎉 {{username}} hyväksyi kaveripyyntösi"
+    "friendRequestAccepted": "🎉 {{username}} hyväksyi kaveripyyntösi",
+    "postShared": "📨 {{username}} jakoi julkaisun kanssasi"
   },
   "screenTime": {
     "breakTitle": "Aika pitää tauko!",

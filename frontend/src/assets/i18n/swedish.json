@@ -69,7 +69,11 @@
     "currentVisibility": "Nuvarande synlighet:",
     "disputePrompt": "Vänligen förklara din invändning:",
     "disputeSuccess": "Din invändning har vidarebefordrats till moderatorerna. Du kommer att få svar inom 48 timmar.",
-    "sendComment": "Skicka kommentar"
+    "sendComment": "Skicka kommentar",
+    "share": "Dela",
+    "shareWith": "Dela med...",
+    "noFriendsToShare": "Inga vänner att dela med",
+    "shareSuccess": "Inlägg delat med {{username}}!"
   },
   "visibility": {
     "public": "Offentligt",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Fel vid inlämning av invändning.",
     "disputeSuccess": "Din invändning har vidarebefordrats för granskning av en moderator.",
     "sendComment": "Fel vid skickande av kommentar",
-    "dataExport": "Fel vid export av data"
+    "dataExport": "Fel vid export av data",
+    "sharePost": "Kunde inte dela inlägget"
   },
   "myPosts": {
     "title": "Mina inlägg",
@@ -481,7 +486,8 @@
     "groupJoinRequest": "👥 {{username}} vill gå med i gruppen \"{{groupName}}\"",
     "welcome": "Välkommen till SafeSpace! Vi är glada att du är här.",
     "friendRequest": "👋 {{username}} har skickat en vänförfrågan till dig",
-    "friendRequestAccepted": "🎉 {{username}} har accepterat din vänförfrågan"
+    "friendRequestAccepted": "🎉 {{username}} har accepterat din vänförfrågan",
+    "postShared": "📨 {{username}} delade ett inlägg med dig"
   },
   "screenTime": {
     "breakTitle": "Dags för en paus!",
