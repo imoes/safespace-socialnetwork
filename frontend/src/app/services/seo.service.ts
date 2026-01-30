@@ -79,8 +79,8 @@ export class SeoService {
   init(): void {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      const url = event.urlAfterRedirects.split('?')[0];
+    ).subscribe((event) => {
+      const url = (event as NavigationEnd).urlAfterRedirects.split('?')[0];
       const config = ROUTE_SEO[url] || DEFAULT_SEO;
 
       this.titleService.setTitle(config.title);
