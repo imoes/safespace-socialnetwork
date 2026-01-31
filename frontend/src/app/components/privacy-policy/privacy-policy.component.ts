@@ -28,9 +28,11 @@ import { CommonModule } from '@angular/common';
           <h3>2.1 Registrierung</h3>
           <ul>
             <li>Benutzername (erforderlich)</li>
-            <li>E-Mail-Adresse (erforderlich)</li>
+            <li>E-Mail-Adresse (erforderlich, wird per Double Opt-In verifiziert)</li>
             <li>Passwort (verschlüsselt mit Bcrypt)</li>
+            <li>Geburtsdatum (erforderlich, zur Altersverifikation)</li>
             <li>Vor- und Nachname (optional)</li>
+            <li>E-Mail-Adresse eines Erziehungsberechtigten (nur bei Nutzern unter 16 Jahren, für die elterliche Einwilligung)</li>
           </ul>
 
           <h3>2.2 Nutzung der Plattform</h3>
@@ -54,8 +56,10 @@ import { CommonModule } from '@angular/common';
           <h2>3. Rechtsgrundlage der Verarbeitung</h2>
           <ul>
             <li><strong>Art. 6 Abs. 1 lit. b DSGVO</strong>: Vertragserfüllung (Bereitstellung der Plattform)</li>
-            <li><strong>Art. 6 Abs. 1 lit. a DSGVO</strong>: Einwilligung (E-Mail-Benachrichtigungen)</li>
+            <li><strong>Art. 6 Abs. 1 lit. a DSGVO</strong>: Einwilligung (E-Mail-Benachrichtigungen, Double Opt-In)</li>
             <li><strong>Art. 6 Abs. 1 lit. f DSGVO</strong>: Berechtigtes Interesse (Sicherheit, Spam-Schutz, Content-Moderation)</li>
+            <li><strong>Art. 8 DSGVO</strong>: Bedingungen für die Einwilligung eines Kindes in Bezug auf Dienste der Informationsgesellschaft.
+                Nutzer unter 16 Jahren benötigen die Einwilligung eines Erziehungsberechtigten. Das Mindestalter für die Nutzung beträgt 13 Jahre.</li>
           </ul>
         </section>
 
@@ -123,7 +127,26 @@ import { CommonModule } from '@angular/common';
         </section>
 
         <section>
-          <h2>9. Cookies und Tracking</h2>
+          <h2>9. Jugendschutz und Minderjährige</h2>
+          <p>
+            Gemäß Art. 8 DSGVO und den deutschen Jugendschutzbestimmungen gelten folgende Regelungen
+            für die Verarbeitung personenbezogener Daten von Minderjährigen:
+          </p>
+          <ul>
+            <li><strong>Mindestalter:</strong> Die Nutzung der Plattform ist erst ab einem Alter von 13 Jahren möglich.</li>
+            <li><strong>Altersverifikation:</strong> Bei der Registrierung wird das Geburtsdatum abgefragt, um das Alter des Nutzers zu prüfen.</li>
+            <li><strong>Elterliche Einwilligung (13–15 Jahre):</strong> Nutzer zwischen 13 und 15 Jahren müssen die E-Mail-Adresse
+                eines Erziehungsberechtigten angeben. Der Erziehungsberechtigte erhält einen Bestätigungslink per E-Mail.
+                Bis zur Bestätigung bleibt der Account gesperrt.</li>
+            <li><strong>Daten der Erziehungsberechtigten:</strong> Die E-Mail-Adresse des Erziehungsberechtigten wird ausschließlich
+                zur Einholung der Einwilligung verwendet und nach erfolgter Bestätigung gespeichert, um die erteilte
+                Einwilligung nachweisen zu können (Art. 7 Abs. 1 DSGVO).</li>
+            <li><strong>E-Mail-Verifizierung:</strong> Alle Nutzer müssen ihre E-Mail-Adresse per Double-Opt-In-Verfahren bestätigen.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>10. Cookies und Tracking</h2>
           <p>
             Diese Website verwendet ausschließlich <strong>essenzielle Cookies</strong> für die Authentifizierung (Login-Session).
           </p>
@@ -136,7 +159,7 @@ import { CommonModule } from '@angular/common';
         </section>
 
         <section>
-          <h2>10. Datensicherheit</h2>
+          <h2>11. Datensicherheit</h2>
           <p>
             Wir setzen technische und organisatorische Sicherheitsmaßnahmen ein, um Ihre Daten gegen Manipulation, Verlust, Zerstörung oder Zugriff unberechtigter Personen zu schützen:
           </p>
@@ -151,7 +174,7 @@ import { CommonModule } from '@angular/common';
         </section>
 
         <section>
-          <h2>11. Änderungen der Datenschutzerklärung</h2>
+          <h2>12. Änderungen der Datenschutzerklärung</h2>
           <p>
             Wir behalten uns vor, diese Datenschutzerklärung anzupassen, um sie an geänderte Rechtslagen oder Änderungen unseres Dienstes anzupassen.
           </p>
@@ -161,7 +184,7 @@ import { CommonModule } from '@angular/common';
         </section>
 
         <section>
-          <h2>12. Kontakt</h2>
+          <h2>13. Kontakt</h2>
           <p>
             Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:
           </p>

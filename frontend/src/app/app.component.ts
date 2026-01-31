@@ -133,6 +133,9 @@ import { Title } from '@angular/platform-browser';
                 <a routerLink="/terms" class="dropdown-item" (click)="closeDropdown()">
                   📋 {{ 'nav.terms' | translate }}
                 </a>
+                <a routerLink="/community-guidelines" class="dropdown-item" (click)="closeDropdown()">
+                  🤝 {{ 'nav.communityGuidelines' | translate }}
+                </a>
                 <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="dropdown-item" (click)="closeDropdown()">
                   ❤️ {{ 'nav.donate' | translate }}
                 </a>
@@ -235,6 +238,7 @@ import { Title } from '@angular/platform-browser';
             <a routerLink="/privacy-policy" class="mobile-menu-item" (click)="closeMobileMenu()">📜 {{ 'nav.privacyPolicy' | translate }}</a>
             <a routerLink="/impressum" class="mobile-menu-item" (click)="closeMobileMenu()">⚖️ {{ 'nav.impressum' | translate }}</a>
             <a routerLink="/terms" class="mobile-menu-item" (click)="closeMobileMenu()">📋 {{ 'nav.terms' | translate }}</a>
+            <a routerLink="/community-guidelines" class="mobile-menu-item" (click)="closeMobileMenu()">🤝 {{ 'nav.communityGuidelines' | translate }}</a>
             <a href="https://github.com/sponsors/imoes" target="_blank" rel="noopener noreferrer" class="mobile-menu-item" (click)="closeMobileMenu()">❤️ {{ 'nav.donate' | translate }}</a>
           </div>
 
