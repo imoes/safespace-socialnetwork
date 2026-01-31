@@ -167,11 +167,19 @@ export class RegisterComponent {
     this.isLoading = true;
     this.error = '';
 
-    this.authService.register(
-      this.username, this.email, this.password,
-      this.firstName, this.lastName, this.birthday,
-      this.needsParentalConsent ? this.parentEmail : undefined
-    ).subscribe({
+    const body: any = {
+      username: this.username,
+      email: this.email,
+      password: this.password,
+      first_name: this.firstName,
+      last_name: this.lastName,
+      birthday: this.birthday || null
+    };
+    if (this.needsParentalConsent && this.parentEmail) {
+      body.parent_email = this.parentEmail;
+    }
+
+    this.http.post('/api/auth/register', body).subscribe({
       next: () => {
         this.verificationPending = true;
         if (this.needsParentalConsent) {

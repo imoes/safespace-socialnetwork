@@ -27,9 +27,9 @@ def calculate_age(birthday: date) -> int:
     return age
 
 
-@router.post("/register", response_model=Token)
+@router.post("/register")
 async def register(user_data: UserCreate):
-    """Registriert einen neuen User und gibt einen JWT Token zurück"""
+    """Registriert einen neuen User. E-Mail muss erst verifiziert werden."""
 
     # Altersprüfung
     age = calculate_age(user_data.birthday)
@@ -123,8 +123,7 @@ async def register(user_data: UserCreate):
         try:
             from app.services.email_service import EmailService
             from app.db.site_settings import get_site_url
-            site_url = await get_site_url()
-            consent_link = f"{site_url}/parental-consent/{consent_token}"
+            consent_link = f"{(await get_site_url())}/parental-consent/{consent_token}"
 
             await EmailService.send_parental_consent_email(
                 parent_email=user_data.parent_email,
@@ -141,14 +140,8 @@ async def register(user_data: UserCreate):
         notification_type="welcome"
     )
 
-    # JWT Token erstellen (wie beim Login)
-    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
-    access_token = create_access_token(
-        data={"sub": str(user["uid"])},
-        expires_delta=access_token_expires
-    )
-
-    return Token(access_token=access_token)
+    # Kein JWT-Token zurückgeben - User muss erst E-Mail verifizieren
+    return {"message": "Registration successful. Please verify your email."}
 
 
 @router.get("/parental-consent/{token}")
