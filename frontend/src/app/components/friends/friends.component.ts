@@ -33,282 +33,441 @@ interface FriendRequest {
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   template: `
-    <div class="friends-container">
-      <!-- Header -->
-      <div class="header">
-        <h2>👫 {{ 'friendsPage.title' | translate }}</h2>
-        <p class="subtitle">{{ 'friendsPage.subtitle' | translate }}</p>
-      </div>
-
-      <!-- Tabs -->
-      <div class="tabs">
-        <button
-          class="tab"
-          [class.active]="activeTab() === 'search'"
-          (click)="activeTab.set('search')">
-          🔍 {{ 'friendsPage.searchUsers' | translate }}
-        </button>
-        <button
-          class="tab"
-          [class.active]="activeTab() === 'friends'"
-          (click)="loadFriends(); activeTab.set('friends')">
-          👥 {{ 'friends.myFriends' | translate }} ({{ friends().length }})
-        </button>
-        <button
-          class="tab"
-          [class.active]="activeTab() === 'requests'"
-          (click)="loadRequests(); activeTab.set('requests')">
-          📬 {{ 'friendsPage.requests' | translate }} ({{ requests().length }})
-        </button>
-      </div>
-
-      @if (successMessage()) {
-        <div class="alert alert-success">{{ successMessage() }}</div>
-      }
-
-      @if (errorMessage()) {
-        <div class="alert alert-error">{{ errorMessage() }}</div>
-      }
-
-      <!-- Search Tab -->
-      @if (activeTab() === 'search') {
-        <div class="search-section">
-          <div class="search-box">
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchInput()"
-              [placeholder]="'friendsPage.searchPlaceholder' | translate"
-              class="search-input"
-            />
-            @if (searching()) {
-              <span class="search-spinner">🔄</span>
-            }
-          </div>
-
-          @if (searchResults().length > 0) {
-            <div class="results-list">
-              @for (user of searchResults(); track user.uid) {
-                <div class="user-card">
-                  <div class="user-info">
-                    <div class="user-name">{{ user.username }}</div>
-                    @if (user.bio) {
-                      <div class="user-bio">{{ user.bio }}</div>
-                    }
-                    <div class="user-role">{{ getRoleLabel(user.role) }}</div>
-                  </div>
-                  <button
-                    class="btn btn-primary"
-                    (click)="sendFriendRequest(user)"
-                    [disabled]="isSending.has(user.uid)">
-                    {{ isSending.has(user.uid) ? ('friendsPage.sending' | translate) : ('➕ ' + ('friendsPage.friendRequest' | translate)) }}
-                  </button>
-                </div>
-              }
-            </div>
-          } @else if (searchQuery.length >= 2) {
-            <div class="empty-state">
-              {{ 'friendsPage.noUsersFound' | translate }} "{{ searchQuery }}"
-            </div>
-          } @else if (searchQuery.length > 0) {
-            <div class="empty-state">
-              {{ 'friendsPage.minChars' | translate }}
-            </div>
-          }
+    <div class="friends-page">
+      <!-- Left Sidebar -->
+      <aside class="friends-sidebar">
+        <div class="sidebar-header">
+          <h2>{{ 'friendsPage.title' | translate }}</h2>
         </div>
-      }
+        <nav class="sidebar-nav">
+          <button
+            class="sidebar-nav-item"
+            [class.active]="activeTab() === 'requests'"
+            (click)="loadRequests(); activeTab.set('requests')">
+            <span class="sidebar-nav-icon">👤</span>
+            <span class="sidebar-nav-label">{{ 'friendsPage.requests' | translate }}</span>
+            @if (requests().length > 0) {
+              <span class="sidebar-nav-badge">{{ requests().length }}</span>
+            }
+          </button>
+          <button
+            class="sidebar-nav-item"
+            [class.active]="activeTab() === 'search'"
+            (click)="activeTab.set('search')">
+            <span class="sidebar-nav-icon">🔍</span>
+            <span class="sidebar-nav-label">{{ 'friendsPage.searchUsers' | translate }}</span>
+          </button>
+          <button
+            class="sidebar-nav-item"
+            [class.active]="activeTab() === 'friends'"
+            (click)="loadFriends(); activeTab.set('friends')">
+            <span class="sidebar-nav-icon">👥</span>
+            <span class="sidebar-nav-label">{{ 'friends.myFriends' | translate }}</span>
+            @if (friends().length > 0) {
+              <span class="sidebar-nav-count">{{ friends().length }}</span>
+            }
+          </button>
+        </nav>
+      </aside>
 
-      <!-- Friends Tab -->
-      @if (activeTab() === 'friends') {
-        <div class="friends-section">
-          @if (loadingFriends()) {
-            <div class="loading">{{ 'friendsPage.loadingFriends' | translate }}</div>
-          } @else if (friends().length > 0) {
-            <div class="friends-list">
-              @for (friend of friends(); track friend.uid) {
-                <div class="friend-card" (click)="goToFriendProfile(friend.uid)">
-                  <div class="friend-avatar-wrapper">
-                    @if (friend.profile_picture) {
-                      <img [src]="friend.profile_picture" [alt]="friend.username" class="friend-avatar-img" />
-                    } @else {
-                      <div class="friend-avatar-placeholder">{{ friend.username.charAt(0).toUpperCase() }}</div>
-                    }
-                  </div>
-                  <div class="friend-info">
-                    <div class="friend-name">{{ friend.username }}</div>
-                    <div class="friend-meta">
-                      <span class="relationship-badge" [class]="'rel-' + friend.relationship">
-                        {{ getRelationshipLabel(friend.relationship) }}
-                      </span>
-                      <span class="friend-since">
-                        {{ 'friendsPage.friendsSince' | translate }} {{ formatDate(friend.created_at) }}
-                      </span>
+      <!-- Main Content -->
+      <main class="friends-main">
+        @if (successMessage()) {
+          <div class="alert alert-success">{{ successMessage() }}</div>
+        }
+
+        @if (errorMessage()) {
+          <div class="alert alert-error">{{ errorMessage() }}</div>
+        }
+
+        <!-- Friend Requests -->
+        @if (activeTab() === 'requests') {
+          <div class="content-section">
+            <div class="section-header">
+              <h3>{{ 'friendsPage.requests' | translate }}</h3>
+            </div>
+            @if (loadingRequests()) {
+              <div class="loading">{{ 'friendsPage.loadingRequests' | translate }}</div>
+            } @else if (requests().length > 0) {
+              <div class="cards-grid">
+                @for (request of requests(); track request.uid) {
+                  <div class="person-card">
+                    <div class="person-card-avatar" (click)="goToFriendProfile(request.uid)">
+                      <div class="person-card-avatar-placeholder">{{ request.username.charAt(0).toUpperCase() }}</div>
+                    </div>
+                    <div class="person-card-info">
+                      <div class="person-card-name" (click)="goToFriendProfile(request.uid)">{{ request.username }}</div>
+                      <div class="person-card-meta">{{ formatDate(request.created_at) }}</div>
+                      <div class="person-card-actions">
+                        <button
+                          class="btn btn-confirm"
+                          (click)="acceptRequest(request)"
+                          [disabled]="isProcessing.has(request.uid)">
+                          {{ 'friendsPage.acceptBtn' | translate }}
+                        </button>
+                        <button
+                          class="btn btn-delete"
+                          (click)="declineRequest(request)"
+                          [disabled]="isProcessing.has(request.uid)">
+                          {{ 'friendsPage.declineBtn' | translate }}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div class="friend-actions" (click)="$event.stopPropagation()">
-                    <select
-                      [value]="friend.relationship"
-                      (change)="updateRelationship(friend, $event)"
-                      class="relationship-select">
-                      <option value="acquaintance">{{ 'friendsPage.acquaintance' | translate }}</option>
-                      <option value="friend">{{ 'friendsPage.friend' | translate }}</option>
-                      <option value="close_friend">{{ 'friendsPage.closeFriend' | translate }}</option>
-                      <option value="family">{{ 'visibility.family' | translate }}</option>
-                    </select>
-                    <button
-                      class="btn btn-unfriend"
-                      (click)="unfriend(friend)"
-                      [disabled]="isProcessing.has(friend.uid)"
-                      [title]="'friendsPage.endFriendship' | translate">
-                      🚫 {{ 'friendsPage.end' | translate }}
-                    </button>
-                  </div>
-                </div>
-              }
-            </div>
-          } @else {
-            <div class="empty-state">
-              <p>{{ 'friendsPage.noFriendsDesc' | translate }}</p>
-              <p>{{ 'friendsPage.noFriendsHint' | translate }}</p>
-            </div>
-          }
-        </div>
-      }
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                {{ 'friendsPage.noPendingRequests' | translate }}
+              </div>
+            }
+          </div>
+        }
 
-      <!-- Requests Tab -->
-      @if (activeTab() === 'requests') {
-        <div class="requests-section">
-          @if (loadingRequests()) {
-            <div class="loading">{{ 'friendsPage.loadingRequests' | translate }}</div>
-          } @else if (requests().length > 0) {
-            <div class="requests-list">
-              @for (request of requests(); track request.uid) {
-                <div class="request-card">
-                  <div class="request-info">
-                    <div class="request-name">{{ request.username }}</div>
-                    <div class="request-time">{{ formatDate(request.created_at) }}</div>
-                  </div>
-                  <div class="request-actions">
-                    <button
-                      class="btn btn-success"
-                      (click)="acceptRequest(request)"
-                      [disabled]="isProcessing.has(request.uid)">
-                      ✓ {{ 'friendsPage.acceptBtn' | translate }}
-                    </button>
-                    <button
-                      class="btn btn-danger"
-                      (click)="declineRequest(request)"
-                      [disabled]="isProcessing.has(request.uid)">
-                      ✗ {{ 'friendsPage.declineBtn' | translate }}
-                    </button>
-                  </div>
-                </div>
+        <!-- Search Users -->
+        @if (activeTab() === 'search') {
+          <div class="content-section">
+            <div class="section-header">
+              <h3>{{ 'friendsPage.searchUsers' | translate }}</h3>
+            </div>
+            <div class="search-box">
+              <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput()"
+                [placeholder]="'friendsPage.searchPlaceholder' | translate"
+                class="search-input"
+              />
+              @if (searching()) {
+                <span class="search-spinner">🔄</span>
               }
             </div>
-          } @else {
-            <div class="empty-state">
-              {{ 'friendsPage.noPendingRequests' | translate }}
+
+            @if (searchResults().length > 0) {
+              <div class="cards-grid">
+                @for (user of searchResults(); track user.uid) {
+                  <div class="person-card">
+                    <div class="person-card-avatar">
+                      <div class="person-card-avatar-placeholder">{{ user.username.charAt(0).toUpperCase() }}</div>
+                    </div>
+                    <div class="person-card-info">
+                      <div class="person-card-name">{{ user.username }}</div>
+                      @if (user.bio) {
+                        <div class="person-card-meta">{{ user.bio }}</div>
+                      }
+                      <div class="person-card-actions">
+                        <button
+                          class="btn btn-confirm"
+                          (click)="sendFriendRequest(user)"
+                          [disabled]="isSending.has(user.uid)">
+                          {{ isSending.has(user.uid) ? ('friendsPage.sending' | translate) : ('friendsPage.friendRequest' | translate) }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else if (searchQuery.length >= 2) {
+              <div class="empty-state">
+                {{ 'friendsPage.noUsersFound' | translate }} "{{ searchQuery }}"
+              </div>
+            } @else if (searchQuery.length > 0) {
+              <div class="empty-state">
+                {{ 'friendsPage.minChars' | translate }}
+              </div>
+            }
+          </div>
+        }
+
+        <!-- All Friends -->
+        @if (activeTab() === 'friends') {
+          <div class="content-section">
+            <div class="section-header">
+              <h3>{{ 'friends.myFriends' | translate }} ({{ friends().length }})</h3>
             </div>
-          }
-        </div>
-      }
+            @if (loadingFriends()) {
+              <div class="loading">{{ 'friendsPage.loadingFriends' | translate }}</div>
+            } @else if (friends().length > 0) {
+              <div class="cards-grid">
+                @for (friend of friends(); track friend.uid) {
+                  <div class="person-card">
+                    <div class="person-card-avatar" (click)="goToFriendProfile(friend.uid)">
+                      @if (friend.profile_picture) {
+                        <img [src]="friend.profile_picture" [alt]="friend.username" class="person-card-avatar-img" />
+                      } @else {
+                        <div class="person-card-avatar-placeholder">{{ friend.username.charAt(0).toUpperCase() }}</div>
+                      }
+                    </div>
+                    <div class="person-card-info">
+                      <div class="person-card-name" (click)="goToFriendProfile(friend.uid)">{{ friend.username }}</div>
+                      <div class="person-card-meta">
+                        <span class="relationship-badge" [class]="'rel-' + friend.relationship">
+                          {{ getRelationshipLabel(friend.relationship) }}
+                        </span>
+                      </div>
+                      <div class="person-card-actions" (click)="$event.stopPropagation()">
+                        <select
+                          [value]="friend.relationship"
+                          (change)="updateRelationship(friend, $event)"
+                          class="relationship-select">
+                          <option value="acquaintance">{{ 'friendsPage.acquaintance' | translate }}</option>
+                          <option value="friend">{{ 'friendsPage.friend' | translate }}</option>
+                          <option value="close_friend">{{ 'friendsPage.closeFriend' | translate }}</option>
+                          <option value="family">{{ 'visibility.family' | translate }}</option>
+                        </select>
+                        <button
+                          class="btn btn-delete"
+                          (click)="unfriend(friend)"
+                          [disabled]="isProcessing.has(friend.uid)">
+                          {{ 'friendsPage.end' | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <p>{{ 'friendsPage.noFriendsDesc' | translate }}</p>
+                <p>{{ 'friendsPage.noFriendsHint' | translate }}</p>
+              </div>
+            }
+          </div>
+        }
+      </main>
     </div>
   `,
   styles: [`
-    .friends-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 24px;
+    /* === Facebook-style Friends Page Layout === */
+    .friends-page {
+      display: flex;
+      min-height: calc(100vh - 56px);
     }
 
-    .header {
-      margin-bottom: 24px;
+    /* Left Sidebar */
+    .friends-sidebar {
+      position: sticky;
+      top: 56px;
+      width: 360px;
+      height: calc(100vh - 56px);
+      background: white;
+      box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 10;
     }
-
-    h2 {
-      margin: 0 0 8px 0;
-      color: #333;
-      font-size: 28px;
+    .sidebar-header {
+      padding: 20px 16px 12px;
     }
-
-    .subtitle {
+    .sidebar-header h2 {
       margin: 0;
-      color: #666;
+      font-size: 24px;
+      font-weight: 700;
+      color: #050505;
+    }
+    .sidebar-nav {
+      padding: 4px 8px;
+    }
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      color: #050505;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .sidebar-nav-item:hover { background: #f0f2f5; }
+    .sidebar-nav-item.active { background: #e7f3ff; color: #1877f2; }
+    .sidebar-nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: #e4e6e9;
+      border-radius: 50%;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .sidebar-nav-item.active .sidebar-nav-icon {
+      background: #1877f2;
+      filter: brightness(1);
+    }
+    .sidebar-nav-label { flex: 1; }
+    .sidebar-nav-badge {
+      background: #e74c3c;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .sidebar-nav-count {
+      color: #65676b;
       font-size: 14px;
     }
 
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
-      border-bottom: 2px solid #e4e6e9;
+    /* Main Content Area */
+    .friends-main {
+      flex: 1;
+      padding: 24px;
+      background: #f0f2f5;
+      min-width: 0;
     }
 
-    .tab {
-      padding: 12px 24px;
-      border: none;
-      background: none;
-      color: #666;
-      font-weight: 500;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-      margin-bottom: -2px;
+    .content-section {
+      max-width: 960px;
     }
 
-    .tab:hover {
-      color: #1877f2;
-    }
-
-    .tab.active {
-      color: #1877f2;
-      border-bottom-color: #1877f2;
-    }
-
-    .alert {
-      padding: 12px 16px;
-      border-radius: 6px;
+    .section-header {
       margin-bottom: 20px;
     }
-
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+    .section-header h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #050505;
     }
 
-    .alert-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+    /* Person Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
     }
 
-    .search-section {
+    .person-card {
       background: white;
       border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .person-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .person-card-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      cursor: pointer;
+      background: #f0f2f5;
+    }
+    .person-card-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .person-card-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1877f2, #42b72a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 48px;
     }
 
+    .person-card-info {
+      padding: 12px;
+    }
+    .person-card-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #050505;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .person-card-name:hover { text-decoration: underline; }
+    .person-card-meta {
+      font-size: 13px;
+      color: #65676b;
+      margin-bottom: 10px;
+    }
+    .person-card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      text-align: center;
+      width: 100%;
+    }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-confirm {
+      background: #1877f2;
+      color: white;
+    }
+    .btn-confirm:hover:not(:disabled) { background: #166fe5; }
+
+    .btn-delete {
+      background: #e4e6e9;
+      color: #050505;
+    }
+    .btn-delete:hover:not(:disabled) { background: #d8dadf; }
+
+    /* Relationship */
+    .relationship-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .rel-family { background: #fce4ec; color: #c62828; }
+    .rel-close_friend { background: #fff3e0; color: #e65100; }
+    .rel-friend { background: #e3f2fd; color: #1565c0; }
+    .rel-acquaintance { background: #f5f5f5; color: #616161; }
+
+    .relationship-select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      background: white;
+    }
+
+    /* Search */
     .search-box {
       position: relative;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-
     .search-input {
       width: 100%;
       padding: 12px 16px;
-      border: 2px solid #e4e6e9;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.2s;
-    }
-
-    .search-input:focus {
+      border: none;
+      border-radius: 50px;
+      font-size: 15px;
+      background: white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
       outline: none;
-      border-color: #1877f2;
+      box-sizing: border-box;
     }
-
+    .search-input:focus { box-shadow: 0 0 0 2px #1877f2; }
     .search-spinner {
       position: absolute;
       right: 16px;
@@ -316,210 +475,53 @@ interface FriendRequest {
       transform: translateY(-50%);
       animation: spin 1s linear infinite;
     }
-
     @keyframes spin {
       from { transform: translateY(-50%) rotate(0deg); }
       to { transform: translateY(-50%) rotate(360deg); }
     }
 
-    .results-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .user-card, .friend-card, .request-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      background: #f8f9fa;
+    /* Alerts */
+    .alert {
+      padding: 12px 16px;
       border-radius: 8px;
-      transition: background 0.2s;
-    }
-
-    .friend-card {
-      cursor: pointer;
-    }
-
-    .friend-avatar-wrapper {
-      width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
-    }
-    .friend-avatar-img {
-      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
-    }
-    .friend-avatar-placeholder {
-      width: 100%; height: 100%;
-      background: linear-gradient(135deg, #1877f2, #42b72a); color: white;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: bold; font-size: 18px; border-radius: 50%;
-    }
-
-    .user-card:hover, .friend-card:hover, .request-card:hover {
-      background: #f0f2f5;
-    }
-
-    .user-info, .friend-info, .request-info {
-      flex: 1;
-    }
-
-    .user-name, .friend-name, .request-name {
-      font-weight: 600;
-      color: #333;
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-
-    .user-bio {
-      color: #666;
+      margin-bottom: 16px;
       font-size: 14px;
-      margin-bottom: 4px;
     }
-
-    .user-role {
-      color: #999;
-      font-size: 12px;
-    }
-
-    .friend-meta {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-top: 6px;
-    }
-
-    .relationship-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    .rel-family {
-      background: #e74c3c;
-      color: white;
-    }
-
-    .rel-close_friend {
-      background: #f39c12;
-      color: white;
-    }
-
-    .rel-friend {
-      background: #3498db;
-      color: white;
-    }
-
-    .rel-acquaintance {
-      background: #95a5a6;
-      color: white;
-    }
-
-    .friend-since, .request-time {
-      color: #999;
-      font-size: 12px;
-    }
-
-    .relationship-select {
-      padding: 6px 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: #1877f2;
-      color: white;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background: #155db2;
-    }
-
-    .btn-success {
-      background: #27ae60;
-      color: white;
-    }
-
-    .btn-success:hover:not(:disabled) {
-      background: #229954;
-    }
-
-    .btn-danger {
-      background: #e74c3c;
-      color: white;
-    }
-
-    .btn-danger:hover:not(:disabled) {
-      background: #c0392b;
-    }
-
-    .btn-unfriend {
-      background: #6c757d;
-      color: white;
-      font-size: 13px;
-      padding: 6px 12px;
-    }
-
-    .btn-unfriend:hover:not(:disabled) {
-      background: #5a6268;
-    }
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
     .loading, .empty-state {
       text-align: center;
       padding: 40px;
-      color: #666;
+      color: #65676b;
     }
+    .empty-state p { margin: 8px 0; }
 
-    .empty-state p {
-      margin: 8px 0;
-    }
-
-    .friends-section, .requests-section {
-      background: white;
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .friends-list, .requests-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .friend-actions, .request-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    @media (max-width: 1024px) {
-      .friends-container { padding: 16px 12px; }
-      h2 { font-size: 22px; }
-      .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; }
-      .tab { padding: 10px 14px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
-      .search-section, .friends-section, .requests-section { padding: 16px; }
-      .user-card, .friend-card, .request-card { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .friend-actions, .request-actions { width: 100%; justify-content: flex-end; }
-      .friend-meta { flex-wrap: wrap; }
+    @media (max-width: 900px) {
+      .friends-page { flex-direction: column; }
+      .friends-sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+      .sidebar-nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 4px;
+        padding: 4px 8px 8px;
+      }
+      .sidebar-nav-item {
+        flex-shrink: 0;
+        padding: 8px 16px;
+      }
+      .sidebar-nav-icon { width: 28px; height: 28px; font-size: 14px; }
+      .friends-main { padding: 12px; }
+      .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 8px;
+      }
+      .person-card-avatar-placeholder { font-size: 36px; }
     }
   `]
 })
