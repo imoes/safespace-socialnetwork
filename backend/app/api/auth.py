@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, date
 import secrets
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.models.schemas import UserCreate, UserLogin, Token, UserProfile
@@ -28,7 +28,7 @@ def calculate_age(birthday: date) -> int:
 
 
 @router.post("/register", response_model=Token)
-async def register(user_data: UserCreate):
+async def register(user_data: UserCreate, request: Request):
     """Registriert einen neuen User und gibt einen JWT Token zurück"""
 
     # Altersprüfung
@@ -91,9 +91,14 @@ async def register(user_data: UserCreate):
     # Verifizierungs-E-Mail senden
     try:
         from app.services.email_service import EmailService
-        from app.db.site_settings import get_site_url
-        site_url = await get_site_url()
-        verify_link = f"{site_url}/verify-email/{email_verification_token}"
+        # Base-URL aus dem Request ermitteln (Origin-Header oder Referer)
+        origin = request.headers.get("origin") or request.headers.get("referer", "").rstrip("/")
+        if not origin:
+            from app.db.site_settings import get_site_url
+            origin = await get_site_url()
+        # Trailing slash und /api-Pfade entfernen
+        origin = origin.split("/api")[0].rstrip("/")
+        verify_link = f"{origin}/verify-email/{email_verification_token}"
 
         await EmailService.send_email_verification(
             to_email=user_data.email,
@@ -122,9 +127,7 @@ async def register(user_data: UserCreate):
         # E-Mail an Eltern senden
         try:
             from app.services.email_service import EmailService
-            from app.db.site_settings import get_site_url
-            site_url = await get_site_url()
-            consent_link = f"{site_url}/parental-consent/{consent_token}"
+            consent_link = f"{origin}/parental-consent/{consent_token}"
 
             await EmailService.send_parental_consent_email(
                 parent_email=user_data.parent_email,
@@ -208,7 +211,7 @@ async def verify_email(token: str):
 
 
 @router.post("/resend-verification")
-async def resend_verification_email(data: dict):
+async def resend_verification_email(data: dict, request: Request):
     """Sendet die Verifizierungs-E-Mail erneut"""
     email = data.get("email")
     if not email:
@@ -239,9 +242,12 @@ async def resend_verification_email(data: dict):
     # Verifizierungs-E-Mail senden
     try:
         from app.services.email_service import EmailService
-        from app.db.site_settings import get_site_url
-        site_url = await get_site_url()
-        verify_link = f"{site_url}/verify-email/{new_token}"
+        origin = request.headers.get("origin") or request.headers.get("referer", "").rstrip("/")
+        if not origin:
+            from app.db.site_settings import get_site_url
+            origin = await get_site_url()
+        origin = origin.split("/api")[0].rstrip("/")
+        verify_link = f"{origin}/verify-email/{new_token}"
 
         await EmailService.send_email_verification(
             to_email=email,
