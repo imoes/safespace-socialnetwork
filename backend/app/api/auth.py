@@ -94,14 +94,18 @@ async def register(user_data: UserCreate):
         from app.db.site_settings import get_site_url
         site_url = await get_site_url()
         verify_link = f"{site_url}/verify-email/{email_verification_token}"
+        print(f"[VERIFY] Sending verification email to {user_data.email}, link: {verify_link}")
 
-        await EmailService.send_email_verification(
+        result = await EmailService.send_email_verification(
             to_email=user_data.email,
             username=user_data.username,
             verify_link=verify_link
         )
+        print(f"[VERIFY] send_email_verification returned: {result}")
     except Exception as e:
-        print(f"Error sending verification email: {e}")
+        import traceback
+        print(f"[VERIFY] Error sending verification email: {e}")
+        traceback.print_exc()
 
     # Bei 13-15: Eltern-Einwilligung anfordern, Account ist bis dahin gesperrt
     if age < 16 and user_data.parent_email:
