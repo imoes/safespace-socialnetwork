@@ -120,6 +120,12 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE
             """)
 
+            # Bestehende Benutzer ohne email_verification_token als verifiziert markieren
+            await conn.execute("""
+                UPDATE users SET email_verified = TRUE
+                WHERE email_verification_token IS NULL AND email_verified = FALSE
+            """)
+
             await conn.execute("""
                 ALTER TABLE users
                 ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(255)
