@@ -28,6 +28,7 @@ import { PublicFeedComponent } from './components/public-feed/public-feed.compon
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { ImpressumComponent } from './components/impressum/impressum.component';
 import { TermsOfServiceComponent } from './components/terms-of-service/terms-of-service.component';
+import { CommunityGuidelinesComponent } from './components/community-guidelines/community-guidelines.component';
 import { InfoComponent } from './components/info/info.component';
 import { GroupsComponent } from './components/groups/groups.component';
 import { GroupDetailComponent } from './components/groups/group-detail.component';
@@ -60,6 +61,7 @@ export const routes: Routes = [
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'impressum', component: ImpressumComponent },
   { path: 'terms', component: TermsOfServiceComponent },
+  { path: 'community-guidelines', component: CommunityGuidelinesComponent },
   { path: 'info', component: InfoComponent, canActivate: [authGuard] },
   { path: '', component: FeedComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
