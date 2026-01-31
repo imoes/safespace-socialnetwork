@@ -68,7 +68,11 @@
     "currentVisibility": "الرؤية الحالية:",
     "disputePrompt": "يرجى شرح اعتراضك:",
     "disputeSuccess": "تم إرسال اعتراضك إلى المشرفين. ستتلقى رداً خلال 48 ساعة.",
-    "sendComment": "إرسال التعليق"
+    "sendComment": "إرسال التعليق",
+    "share": "مشاركة",
+    "shareWith": "مشاركة مع...",
+    "noFriendsToShare": "لا يوجد أصدقاء للمشاركة معهم",
+    "shareSuccess": "تمت مشاركة المنشور مع {{username}}!"
   },
   "visibility": {
     "public": "عام",
@@ -140,7 +144,8 @@
     "disputeSubmit": "خطأ في تقديم الاعتراض.",
     "disputeSuccess": "تم إرسال اعتراضك لمراجعة المشرف.",
     "sendComment": "خطأ في إرسال التعليق",
-    "dataExport": "خطأ في تصدير البيانات"
+    "dataExport": "خطأ في تصدير البيانات",
+    "sharePost": "فشل في مشاركة المنشور"
   },
   "myPosts": {
     "title": "منشوراتي",
@@ -225,7 +230,18 @@
     "roleUser": "مستخدم",
     "roleModerator": "مشرف",
     "roleAdmin": "مدير",
-    "birthday": "تاريخ الميلاد"
+    "birthday": "تاريخ الميلاد",
+    "friends": "الأصدقاء",
+    "loadingFriends": "جارٍ تحميل الأصدقاء...",
+    "noFriends": "لا يوجد أصدقاء بعد",
+    "friendsCount": "أصدقاء",
+    "showAllFriends": "عرض جميع الأصدقاء"
+  },
+  "friendsList": {
+    "back": "رجوع",
+    "title": "الأصدقاء",
+    "accessDenied": "تم رفض الوصول",
+    "accessDeniedHint": "يمكنك فقط عرض قائمة أصدقاء أصدقائك."
   },
   "friends": {
     "title": "الأصدقاء",
@@ -263,6 +279,8 @@
     "notifCommentLiked": "إعجاب بالتعليق",
     "notifBirthday": "أعياد الميلاد",
     "notifGroupPost": "منشورات المجموعة",
+    "notifFriendRequest": "طلبات الصداقة",
+    "notifFriendRequestAccepted": "طلبات الصداقة المقبولة",
     "passwordSection": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "currentPasswordPlaceholder": "املأ فقط إذا كنت تريد تغيير كلمة المرور",
@@ -345,7 +363,8 @@
     "register": "سجل الآن",
     "errors": {
       "invalidCredentials": "بيانات اعتماد غير صحيحة",
-      "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى."
+      "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+      "emailNotVerified": "لم يتم التحقق من عنوان بريدك الإلكتروني بعد. يرجى التحقق من صندوق الوارد."
     }
   },
   "register": {
@@ -354,6 +373,16 @@
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",
+    "birthday": "Birthday",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "يرجى التحقق من عنوان بريدك الإلكتروني",
+    "verificationPendingHint": "لقد أرسلنا لك بريدًا إلكترونيًا يحتوي على رابط التحقق. يرجى النقر على الرابط لتفعيل حسابك.",
+    "resendVerification": "إعادة إرسال بريد التحقق",
+    "resendIn": "إعادة الإرسال بعد",
     "registerButton": "التسجيل",
     "hasAccount": "لديك حساب بالفعل؟",
     "login": "سجل الدخول هنا",
@@ -361,13 +390,37 @@
       "usernameAlreadyRegistered": "اسم المستخدم هذا مستخدم بالفعل. الرجاء اختيار اسم آخر.",
       "emailAlreadyRegistered": "عنوان البريد الإلكتروني هذا مسجل بالفعل. الرجاء استخدام عنوان آخر أو تسجيل الدخول.",
       "passwordMismatch": "كلمات المرور غير متطابقة",
-      "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى."
+      "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "التسجيل ناجح! إعادة التوجيه...",
     "agbAccept": "أوافق على",
     "agbLink": "شروط الاستخدام",
     "agbAnd": "و",
     "privacyLink": "سياسة الخصوصية"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "جاري التحقق من البريد الإلكتروني...",
+    "confirmedTitle": "تم التحقق من البريد الإلكتروني",
+    "confirmedMessage": "تم التحقق من عنوان بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.",
+    "alreadyConfirmedTitle": "تم التحقق مسبقًا",
+    "alreadyConfirmedMessage": "تم التحقق من عنوان بريدك الإلكتروني بالفعل.",
+    "errorTitle": "رابط غير صالح",
+    "errorMessage": "رابط التحقق هذا غير صالح أو منتهي الصلاحية.",
+    "backToLogin": "العودة إلى تسجيل الدخول"
   },
   "common": {
     "loading": "جاري التحميل...",
@@ -399,7 +452,10 @@
     "groupPost": "{{username}} نشر في مجموعة {{group}}",
     "birthday": "🎂 {{username}} عيد ميلاده اليوم وأصبح عمره {{age}} سنة!",
     "groupJoinRequest": "👥 {{username}} يريد الانضمام إلى مجموعة \"{{groupName}}\"",
-    "welcome": "مرحباً بك في SafeSpace! سعداء بانضمامك إلينا."
+    "welcome": "مرحباً بك في SafeSpace! سعداء بانضمامك إلينا.",
+    "friendRequest": "👋 أرسل لك {{username}} طلب صداقة",
+    "friendRequestAccepted": "🎉 قبل {{username}} طلب صداقتك",
+    "postShared": "📨 شارك {{username}} منشوراً معك"
   },
   "groups": {
     "title": "المجموعات",
@@ -496,7 +552,22 @@
     "deepseekUnavailable": "غير متاح",
     "deepseekLowBalance": "تحذير: رصيد DeepSeek منخفض جداً! يرجى الشحن للحفاظ على خدمة الإشراف.",
     "deepseekLoading": "جارٍ تحميل رصيد DeepSeek...",
-    "deepseekError": "خطأ في تحميل رصيد DeepSeek"
+    "deepseekError": "خطأ في تحميل رصيد DeepSeek",
+    "emailSettings": "إعدادات البريد الإلكتروني",
+    "emailSettingsDesc": "تكوين SMTP الحالي وإرسال بريد إلكتروني تجريبي.",
+    "emailEnabled": "مُفعّل",
+    "emailDisabled": "مُعطّل",
+    "emailUser": "المستخدم",
+    "emailFrom": "عنوان المرسل",
+    "emailSender": "اسم المرسل",
+    "testEmailLabel": "إرسال بريد إلكتروني تجريبي",
+    "testEmailPlaceholder": "أدخل عنوان البريد الإلكتروني...",
+    "testEmailSend": "إرسال اختبار",
+    "testEmailSent": "تم إرسال البريد الإلكتروني التجريبي بنجاح.",
+    "testEmailFailed": "تعذر إرسال البريد الإلكتروني التجريبي.",
+    "testEmailRequired": "يرجى إدخال عنوان بريد إلكتروني.",
+    "emailDisabledHint": "البريد الإلكتروني مُعطّل. قم بتعيين SAFESPACE_EMAIL_ENABLED=true لتفعيل البريد الإلكتروني.",
+    "loading": "جارٍ التحميل"
   },
   "welcome": {
     "understood": "مفهوم"

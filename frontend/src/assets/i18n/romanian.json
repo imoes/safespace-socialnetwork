@@ -69,7 +69,11 @@
     "currentVisibility": "Vizibilitate curentă:",
     "disputePrompt": "Te rugăm să explici obiecția ta:",
     "disputeSuccess": "Obiecția ta a fost transmisă moderatorilor. Vei primi un răspuns în 48 de ore.",
-    "sendComment": "Trimite comentariu"
+    "sendComment": "Trimite comentariu",
+    "share": "Distribuie",
+    "shareWith": "Distribuie către...",
+    "noFriendsToShare": "Niciun prieten cu care să distribui",
+    "shareSuccess": "Post distribuit către {{username}}!"
   },
   "visibility": {
     "public": "Public",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Eroare la trimiterea obiecției.",
     "disputeSuccess": "Obiecția ta a fost transmisă pentru examinare de către un moderator.",
     "sendComment": "Eroare la trimiterea comentariului",
-    "dataExport": "Eroare la exportul datelor"
+    "dataExport": "Eroare la exportul datelor",
+    "sharePost": "Eroare la distribuirea postării"
   },
   "myPosts": {
     "title": "Postările mele",
@@ -226,7 +231,18 @@
     "roleUser": "Utilizator",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Ziua de naștere"
+    "birthday": "Ziua de naștere",
+    "friends": "Prieteni",
+    "loadingFriends": "Se încarcă prietenii...",
+    "noFriends": "Încă nu are prieteni",
+    "friendsCount": "Prieteni",
+    "showAllFriends": "Arată toți prietenii"
+  },
+  "friendsList": {
+    "back": "Înapoi",
+    "title": "Prieteni",
+    "accessDenied": "Acces interzis",
+    "accessDeniedHint": "Poți vedea doar lista de prieteni a propriilor tăi prieteni."
   },
   "login": {
     "title": "Autentificare",
@@ -239,7 +255,8 @@
     "register": "Înregistrează-te acum",
     "errors": {
       "invalidCredentials": "Date de autentificare invalide",
-      "loginFailed": "Autentificarea a eșuat. Te rugăm să încerci din nou."
+      "loginFailed": "Autentificarea a eșuat. Te rugăm să încerci din nou.",
+      "emailNotVerified": "Adresa ta de email nu a fost încă verificată. Te rugăm să verifici inbox-ul."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Parolă",
     "confirmPassword": "Confirmă parola",
     "birthday": "Ziua de naștere",
-    "optional": "opțional",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Te rugăm să verifici adresa de email",
+    "verificationPendingHint": "Ți-am trimis un email cu un link de verificare. Te rugăm să dai click pe link pentru a-ți activa contul.",
+    "resendVerification": "Retrimite emailul de verificare",
+    "resendIn": "Retrimite în",
     "registerButton": "Înregistrează-te",
     "hasAccount": "Ai deja un cont?",
     "login": "Autentifică-te aici",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Acest nume de utilizator este deja ocupat. Te rugăm să alegi altul.",
       "emailAlreadyRegistered": "Această adresă de e-mail este deja înregistrată. Te rugăm să folosești alta sau să te autentifici.",
       "passwordMismatch": "Parolele nu se potrivesc",
-      "registrationFailed": "Înregistrarea a eșuat. Te rugăm să încerci din nou."
+      "registrationFailed": "Înregistrarea a eșuat. Te rugăm să încerci din nou.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Înregistrare reușită! Se redirecționează...",
     "agbAccept": "Accept",
     "agbLink": "Termenii și condițiile",
     "agbAnd": "și",
     "privacyLink": "Politica de confidențialitate"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Se verifică emailul...",
+    "confirmedTitle": "Email verificat",
+    "confirmedMessage": "Adresa ta de email a fost verificată cu succes. Acum te poți autentifica.",
+    "alreadyConfirmedTitle": "Deja verificat",
+    "alreadyConfirmedMessage": "Adresa ta de email a fost deja verificată.",
+    "errorTitle": "Link invalid",
+    "errorMessage": "Acest link de verificare este invalid sau a expirat.",
+    "backToLogin": "Înapoi la autentificare"
   },
   "passwordReset": {
     "title": "Resetare parolă",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Comentariu apreciat",
     "notifBirthday": "Zile de naștere",
     "notifGroupPost": "Postări în grup",
+    "notifFriendRequest": "Cereri de prietenie",
+    "notifFriendRequestAccepted": "Cereri de prietenie acceptate",
     "passwordSection": "Schimbă parola",
     "currentPassword": "Parola curentă",
     "currentPasswordPlaceholder": "Completează doar dacă dorești să schimbi parola",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Indisponibil",
     "deepseekLowBalance": "Atenție: Soldul DeepSeek este foarte scăzut! Vă rugăm să reîncărcați pentru a menține serviciul de moderare.",
     "deepseekLoading": "Se încarcă soldul DeepSeek...",
-    "deepseekError": "Eroare la încărcarea soldului DeepSeek"
+    "deepseekError": "Eroare la încărcarea soldului DeepSeek",
+    "emailSettings": "Setări e-mail",
+    "emailSettingsDesc": "Configurația SMTP curentă și trimiterea unui e-mail de test.",
+    "emailEnabled": "Activat",
+    "emailDisabled": "Dezactivat",
+    "emailUser": "Utilizator",
+    "emailFrom": "Adresa expeditorului",
+    "emailSender": "Numele expeditorului",
+    "testEmailLabel": "Trimite e-mail de test",
+    "testEmailPlaceholder": "Introduceți adresa de e-mail...",
+    "testEmailSend": "Trimite test",
+    "testEmailSent": "E-mailul de test a fost trimis cu succes.",
+    "testEmailFailed": "E-mailul de test nu a putut fi trimis.",
+    "testEmailRequired": "Vă rugăm să introduceți o adresă de e-mail.",
+    "emailDisabledHint": "E-mailul este dezactivat. Setați SAFESPACE_EMAIL_ENABLED=true pentru a activa e-mailurile.",
+    "loading": "Se încarcă"
   },
   "welcome": {
     "understood": "Am înțeles"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} a postat în grupul {{group}}",
     "birthday": "🎂 {{username}} are ziua de naștere astăzi și a împlinit {{age}} ani!",
     "groupJoinRequest": "👥 {{username}} dorește să se alăture grupului \"{{groupName}}\"",
-    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici."
+    "welcome": "Bine ai venit pe SafeSpace! Ne bucurăm că ești aici.",
+    "friendRequest": "👋 {{username}} ți-a trimis o cerere de prietenie",
+    "friendRequestAccepted": "🎉 {{username}} ți-a acceptat cererea de prietenie",
+    "postShared": "📨 {{username}} a distribuit o postare cu tine"
   },
   "screenTime": {
     "breakTitle": "E timpul pentru o pauză!",

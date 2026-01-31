@@ -301,7 +301,11 @@ export class NotificationsDropdownComponent implements OnInit {
     this.closeDropdown();
 
     // Navigate based on notification type
-    if (notification.type === 'group_join_request' && notification.group_id) {
+    if (notification.type === 'friend_request') {
+      this.router.navigate(['/friends']);
+    } else if (notification.type === 'friend_request_accepted') {
+      this.router.navigate(['/profile', notification.actor_username]);
+    } else if (notification.type === 'group_join_request' && notification.group_id) {
       this.router.navigate(['/groups', notification.group_id]);
     } else if (notification.post_id && notification.post_author_uid) {
       this.router.navigate(['/my-posts'], {
@@ -347,6 +351,12 @@ export class NotificationsDropdownComponent implements OnInit {
         return this.i18n.t('notifications.groupJoinRequest', { username, groupName: notification.group_name || '' });
       case 'birthday':
         return this.i18n.t('notifications.birthday', { username, age: notification.comment_id?.toString() || '?' });
+      case 'friend_request':
+        return this.i18n.t('notifications.friendRequest', { username });
+      case 'friend_request_accepted':
+        return this.i18n.t('notifications.friendRequestAccepted', { username });
+      case 'post_shared':
+        return this.i18n.t('notifications.postShared', { username });
       case 'welcome':
         return this.i18n.t('notifications.welcome');
       default:

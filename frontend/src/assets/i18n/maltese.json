@@ -69,7 +69,11 @@
     "currentVisibility": "Viżibilità attwali:",
     "disputePrompt": "Jekk jogħġbok spjega l-oġġezzjoni tiegħek:",
     "disputeSuccess": "L-oġġezzjoni tiegħek intbagħtet lill-moderaturi. Se tirċievi risposta fi żmien 48 siegħa.",
-    "sendComment": "Ibgħat kumment"
+    "sendComment": "Ibgħat kumment",
+    "share": "Aqsam",
+    "shareWith": "Aqsam ma'...",
+    "noFriendsToShare": "L-ebda ħbieb li taqsam magħhom",
+    "shareSuccess": "Post maqsum ma' {{username}}!"
   },
   "visibility": {
     "public": "Pubbliku",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Żball fil-bgħit tal-oġġezzjoni.",
     "disputeSuccess": "L-oġġezzjoni tiegħek intbagħtet għar-reviżjoni minn moderatur.",
     "sendComment": "Żball fil-bgħit tal-kumment",
-    "dataExport": "Żball fl-esportazzjoni tad-data"
+    "dataExport": "Żball fl-esportazzjoni tad-data",
+    "sharePost": "Ma setax jaqsam il-post"
   },
   "myPosts": {
     "title": "Il-Posts Tiegħi",
@@ -226,7 +231,18 @@
     "roleUser": "Utent",
     "roleModerator": "Moderatur",
     "roleAdmin": "Amministratur",
-    "birthday": "Għeluq snin"
+    "birthday": "Għeluq snin",
+    "friends": "Ħbieb",
+    "loadingFriends": "Jitgħabbew il-ħbieb...",
+    "noFriends": "Għad m'hemm l-ebda ħbieb",
+    "friendsCount": "Ħbieb",
+    "showAllFriends": "Uri l-ħbieb kollha"
+  },
+  "friendsList": {
+    "back": "Lura",
+    "title": "Ħbieb",
+    "accessDenied": "Aċċess miċħud",
+    "accessDeniedHint": "Tista' tara biss il-lista tal-ħbieb tal-ħbieb tiegħek."
   },
   "login": {
     "title": "Idħol",
@@ -239,7 +255,8 @@
     "register": "Irreġistra issa",
     "errors": {
       "invalidCredentials": "Kredenzjali invalidi",
-      "loginFailed": "Id-dħul falla. Jekk jogħġbok erġa' pprova."
+      "loginFailed": "Id-dħul falla. Jekk jogħġbok erġa' pprova.",
+      "emailNotVerified": "L-indirizz tal-email tiegħek għadu mhux verifikat. Jekk jogħġbok iċċekkja l-inbox tiegħek."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Password",
     "confirmPassword": "Ikkonferma l-Password",
     "birthday": "Għeluq snin",
-    "optional": "mhux obbligatorju",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Jekk jogħġbok ivverifika l-indirizz tal-email tiegħek",
+    "verificationPendingHint": "Bgħatna email b'link ta' verifika. Jekk jogħġbok ikklikkja fuq il-link biex tattiva l-kont tiegħek.",
+    "resendVerification": "Erġa' ibgħat l-email ta' verifika",
+    "resendIn": "Erġa' ibgħat fi",
     "registerButton": "Irreġistra",
     "hasAccount": "Diġà għandek kont?",
     "login": "Idħol hawn",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Dan il-username diġà meħud. Jekk jogħġbok agħżel ieħor.",
       "emailAlreadyRegistered": "Dan l-indirizz tal-email diġà reġistrat. Jekk jogħġbok uża wieħed differenti jew idħol.",
       "passwordMismatch": "Il-passwords ma jaqblux",
-      "registrationFailed": "Ir-reġistrazzjoni falliet. Jekk jogħġbok erġa' pprova."
+      "registrationFailed": "Ir-reġistrazzjoni falliet. Jekk jogħġbok erġa' pprova.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Reġistrazzjoni b'suċċess! Qed tiġi direzzjonat...",
     "agbAccept": "Naċċetta t-",
     "agbLink": "Termini tas-Servizz",
     "agbAnd": "u l-",
     "privacyLink": "Politika tal-Privatezza"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Qed jiġi verifikat l-email...",
+    "confirmedTitle": "Email verifikat",
+    "confirmedMessage": "L-indirizz tal-email tiegħek ġie verifikat b'suċċess. Issa tista' tidħol.",
+    "alreadyConfirmedTitle": "Diġà verifikat",
+    "alreadyConfirmedMessage": "L-indirizz tal-email tiegħek diġà ġie verifikat.",
+    "errorTitle": "Link invalidu",
+    "errorMessage": "Dan il-link ta' verifika huwa invalidu jew skada.",
+    "backToLogin": "Lura għal-login"
   },
   "passwordReset": {
     "title": "Irrisettja l-Password",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Kumment togħġob",
     "notifBirthday": "Għeluq snin",
     "notifGroupPost": "Posts tal-grupp",
+    "notifFriendRequest": "Talbiet ta' ħbiberija",
+    "notifFriendRequestAccepted": "Talbiet ta' ħbiberija aċċettati",
     "passwordSection": "Ibdel il-Password",
     "currentPassword": "Password Attwali",
     "currentPasswordPlaceholder": "Imla biss jekk trid tibdel il-password tiegħek",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Mhux disponibbli",
     "deepseekLowBalance": "Twissija: Il-bilanċ ta' DeepSeek huwa baxx ħafna! Jekk jogħġbok żid biex iżżomm is-servizz ta' moderazzjoni.",
     "deepseekLoading": "Qed jitgħabba l-bilanċ ta' DeepSeek...",
-    "deepseekError": "Żball fit-tagħbija tal-bilanċ ta' DeepSeek"
+    "deepseekError": "Żball fit-tagħbija tal-bilanċ ta' DeepSeek",
+    "emailSettings": "Settings tal-Email",
+    "emailSettingsDesc": "Konfigurazzjoni SMTP attwali u ibgħat email ta' prova.",
+    "emailEnabled": "Attivat",
+    "emailDisabled": "Diżattivat",
+    "emailUser": "Utent",
+    "emailFrom": "Indirizz tal-Mittent",
+    "emailSender": "Isem tal-Mittent",
+    "testEmailLabel": "Ibgħat Email ta' Prova",
+    "testEmailPlaceholder": "Daħħal indirizz tal-email...",
+    "testEmailSend": "Ibgħat Prova",
+    "testEmailSent": "L-email ta' prova ntbagħtet b'suċċess.",
+    "testEmailFailed": "L-email ta' prova ma setgħetx tintbagħat.",
+    "testEmailRequired": "Jekk jogħġbok daħħal indirizz tal-email.",
+    "emailDisabledHint": "L-email hija diżattivata. Issettja SAFESPACE_EMAIL_ENABLED=true biex tattiva l-emails.",
+    "loading": "Qed jitgħabba"
   },
   "welcome": {
     "understood": "Fhimt"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} ippubblika fil-grupp {{group}}",
     "birthday": "🎂 {{username}} għandu/ha l-għeluq snin illum u issa għandu/ha {{age}} sena!",
     "groupJoinRequest": "👥 {{username}} irid/trid jingħaqad/tingħaqad mal-grupp \"{{groupName}}\"",
-    "welcome": "Merħba f'SafeSpace! Ferħanin li inti hawn."
+    "welcome": "Merħba f'SafeSpace! Ferħanin li inti hawn.",
+    "friendRequest": "👋 {{username}} bagħatlek talba ta' ħbiberija",
+    "friendRequestAccepted": "🎉 {{username}} aċċetta t-talba ta' ħbiberija tiegħek",
+    "postShared": "📨 {{username}} qasam post miegħek"
   },
   "screenTime": {
     "breakTitle": "Wasal il-Ħin għal Waqfa!",

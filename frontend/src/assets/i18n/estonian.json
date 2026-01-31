@@ -69,7 +69,11 @@
     "currentVisibility": "Praegune nähtavus:",
     "disputePrompt": "Palun selgita oma vastuväidet:",
     "disputeSuccess": "Sinu vastuväide on edastatud moderaatoritele. Saad vastuse 48 tunni jooksul.",
-    "sendComment": "Saada kommentaar"
+    "sendComment": "Saada kommentaar",
+    "share": "Jaga",
+    "shareWith": "Jaga...",
+    "noFriendsToShare": "Pole sõpru kellega jagada",
+    "shareSuccess": "Postitus jagatud {{username}}-ga!"
   },
   "visibility": {
     "public": "Avalik",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Viga vastuväite esitamisel.",
     "disputeSuccess": "Sinu vastuväide on edastatud moderaatorile ülevaatamiseks.",
     "sendComment": "Viga kommentaari saatmisel",
-    "dataExport": "Viga andmete eksportimisel"
+    "dataExport": "Viga andmete eksportimisel",
+    "sharePost": "Postituse jagamine ebaõnnestus"
   },
   "myPosts": {
     "title": "Minu postitused",
@@ -226,7 +231,18 @@
     "roleUser": "Kasutaja",
     "roleModerator": "Moderaator",
     "roleAdmin": "Administraator",
-    "birthday": "Sünnipäev"
+    "birthday": "Sünnipäev",
+    "friends": "Sõbrad",
+    "loadingFriends": "Sõprade laadimine...",
+    "noFriends": "Veel pole sõpru",
+    "friendsCount": "Sõpra",
+    "showAllFriends": "Näita kõiki sõpru"
+  },
+  "friendsList": {
+    "back": "Tagasi",
+    "title": "Sõbrad",
+    "accessDenied": "Juurdepääs keelatud",
+    "accessDeniedHint": "Saate vaadata ainult oma sõprade sõprade nimekirja."
   },
   "login": {
     "title": "Sisselogimine",
@@ -239,7 +255,8 @@
     "register": "Registreeru kohe",
     "errors": {
       "invalidCredentials": "Valed sisselogimisandmed",
-      "loginFailed": "Sisselogimine ebaõnnestus. Palun proovi uuesti."
+      "loginFailed": "Sisselogimine ebaõnnestus. Palun proovi uuesti.",
+      "emailNotVerified": "Teie e-posti aadress pole veel kinnitatud. Palun kontrollige oma postkasti."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Parool",
     "confirmPassword": "Kinnita parool",
     "birthday": "Sünnipäev",
-    "optional": "valikuline",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Palun kinnitage oma e-posti aadress",
+    "verificationPendingHint": "Saatsime teile kinnituslingiga e-kirja. Palun klõpsake lingil, et oma konto aktiveerida.",
+    "resendVerification": "Saada kinnituskiri uuesti",
+    "resendIn": "Saada uuesti",
     "registerButton": "Registreeru",
     "hasAccount": "On juba konto olemas?",
     "login": "Logi sisse siin",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "See kasutajanimi on juba võetud. Palun vali teine.",
       "emailAlreadyRegistered": "See e-posti aadress on juba registreeritud. Palun kasuta teist aadressi või logi sisse.",
       "passwordMismatch": "Paroolid ei kattu",
-      "registrationFailed": "Registreerimine ebaõnnestus. Palun proovi uuesti."
+      "registrationFailed": "Registreerimine ebaõnnestus. Palun proovi uuesti.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registreerimine õnnestus! Suunamine...",
     "agbAccept": "Nõustun",
     "agbLink": "Kasutustingimustega",
     "agbAnd": "ja",
     "privacyLink": "Privaatsuspoliitikaga"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-posti kinnitamine...",
+    "confirmedTitle": "E-post kinnitatud",
+    "confirmedMessage": "Teie e-posti aadress on edukalt kinnitatud. Nüüd saate sisse logida.",
+    "alreadyConfirmedTitle": "Juba kinnitatud",
+    "alreadyConfirmedMessage": "Teie e-posti aadress on juba kinnitatud.",
+    "errorTitle": "Kehtetu link",
+    "errorMessage": "See kinnituslink on kehtetu või aegunud.",
+    "backToLogin": "Tagasi sisselogimisse"
   },
   "passwordReset": {
     "title": "Parooli lähtestamine",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Kommentaarile meeldib",
     "notifBirthday": "Sünnipäevad",
     "notifGroupPost": "Grupi postitused",
+    "notifFriendRequest": "Sõbrakutsed",
+    "notifFriendRequestAccepted": "Vastuvõetud sõbrakutsed",
     "passwordSection": "Muuda parooli",
     "currentPassword": "Praegune parool",
     "currentPasswordPlaceholder": "Täida ainult siis, kui soovid parooli muuta",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Pole saadaval",
     "deepseekLowBalance": "Hoiatus: DeepSeeki saldo on väga madal! Palun laadige üles, et modereerimisteenus toimiks.",
     "deepseekLoading": "DeepSeeki saldo laadimine...",
-    "deepseekError": "Viga DeepSeeki saldo laadimisel"
+    "deepseekError": "Viga DeepSeeki saldo laadimisel",
+    "emailSettings": "E-posti seaded",
+    "emailSettingsDesc": "Praegune SMTP konfiguratsioon ja test-e-kirja saatmine.",
+    "emailEnabled": "Lubatud",
+    "emailDisabled": "Keelatud",
+    "emailUser": "Kasutaja",
+    "emailFrom": "Saatja aadress",
+    "emailSender": "Saatja nimi",
+    "testEmailLabel": "Saada test-e-kiri",
+    "testEmailPlaceholder": "Sisestage e-posti aadress...",
+    "testEmailSend": "Saada test",
+    "testEmailSent": "Test-e-kiri saadeti edukalt.",
+    "testEmailFailed": "Test-e-kirja ei saanud saata.",
+    "testEmailRequired": "Palun sisestage e-posti aadress.",
+    "emailDisabledHint": "E-post on keelatud. Seadke SAFESPACE_EMAIL_ENABLED=true, et lubada e-posti.",
+    "loading": "Laadimine"
   },
   "welcome": {
     "understood": "Selge"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} postitas grupis {{group}}",
     "birthday": "🎂 {{username}} tähistab täna sünnipäeva ja on nüüd {{age}}-aastane!",
     "groupJoinRequest": "👥 {{username}} soovib liituda grupiga \"{{groupName}}\"",
-    "welcome": "Tere tulemast SafeSpace'i! Meil on hea meel, et oled siin."
+    "welcome": "Tere tulemast SafeSpace'i! Meil on hea meel, et oled siin.",
+    "friendRequest": "👋 {{username}} saatis sulle sõbrakutse",
+    "friendRequestAccepted": "🎉 {{username}} võttis su sõbrakutse vastu",
+    "postShared": "📨 {{username}} jagas sinuga postitust"
   },
   "screenTime": {
     "breakTitle": "Aeg paus teha!",

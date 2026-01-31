@@ -69,7 +69,11 @@
     "currentVisibility": "Current visibility:",
     "disputePrompt": "Please explain your objection:",
     "disputeSuccess": "Your objection has been forwarded to the moderators. You will receive a response within 48 hours.",
-    "sendComment": "Send comment"
+    "sendComment": "Send comment",
+    "share": "Share",
+    "shareWith": "Share with...",
+    "noFriendsToShare": "No friends to share with",
+    "shareSuccess": "Post shared with {{username}}!"
   },
   "visibility": {
     "public": "Public",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Error submitting objection.",
     "disputeSuccess": "Your objection has been forwarded for review by a moderator.",
     "sendComment": "Error sending comment",
-    "dataExport": "Error exporting data"
+    "dataExport": "Error exporting data",
+    "sharePost": "Failed to share post"
   },
   "myPosts": {
     "title": "My Posts",
@@ -226,7 +231,18 @@
     "roleUser": "User",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Birthday"
+    "birthday": "Birthday",
+    "friends": "Friends",
+    "loadingFriends": "Loading friends...",
+    "noFriends": "No friends yet",
+    "friendsCount": "Friends",
+    "showAllFriends": "Show all friends"
+  },
+  "friendsList": {
+    "back": "Back",
+    "title": "Friends",
+    "accessDenied": "Access denied",
+    "accessDeniedHint": "You can only view the friends list of your own friends."
   },
   "login": {
     "title": "Login",
@@ -239,7 +255,8 @@
     "register": "Register now",
     "errors": {
       "invalidCredentials": "Invalid credentials",
-      "loginFailed": "Login failed. Please try again."
+      "loginFailed": "Login failed. Please try again.",
+      "emailNotVerified": "Your email address has not been verified yet. Please check your inbox."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "birthday": "Birthday",
-    "optional": "optional",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Please verify your email address",
+    "verificationPendingHint": "We have sent you an email with a verification link. Please click the link to activate your account.",
+    "resendVerification": "Resend verification email",
+    "resendIn": "Resend in",
     "registerButton": "Register",
     "hasAccount": "Already have an account?",
     "login": "Login here",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "This username is already taken. Please choose another one.",
       "emailAlreadyRegistered": "This email address is already registered. Please use a different one or log in.",
       "passwordMismatch": "Passwords do not match",
-      "registrationFailed": "Registration failed. Please try again."
+      "registrationFailed": "Registration failed. Please try again.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registration successful! Redirecting...",
     "agbAccept": "I accept the",
     "agbLink": "Terms of Service",
     "agbAnd": "and the",
     "privacyLink": "Privacy Policy"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verifying email...",
+    "confirmedTitle": "Email verified",
+    "confirmedMessage": "Your email address has been successfully verified. You can now log in.",
+    "alreadyConfirmedTitle": "Already verified",
+    "alreadyConfirmedMessage": "Your email address has already been verified.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This verification link is invalid or has expired.",
+    "backToLogin": "Back to login"
   },
   "passwordReset": {
     "title": "Reset Password",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Comment liked",
     "notifBirthday": "Birthdays",
     "notifGroupPost": "Group posts",
+    "notifFriendRequest": "Friend requests",
+    "notifFriendRequestAccepted": "Accepted friend requests",
     "passwordSection": "Change Password",
     "currentPassword": "Current Password",
     "currentPasswordPlaceholder": "Only fill in if you want to change your password",
@@ -491,7 +542,22 @@
     "deepseekUnavailable": "Unavailable",
     "deepseekLowBalance": "Warning: DeepSeek balance is very low! Please top up to maintain the moderation service.",
     "deepseekLoading": "Loading DeepSeek balance...",
-    "deepseekError": "Error loading DeepSeek balance"
+    "deepseekError": "Error loading DeepSeek balance",
+    "emailSettings": "Email Settings",
+    "emailSettingsDesc": "Current SMTP configuration and send test email.",
+    "emailEnabled": "Enabled",
+    "emailDisabled": "Disabled",
+    "emailUser": "User",
+    "emailFrom": "Sender Address",
+    "emailSender": "Sender Name",
+    "testEmailLabel": "Send Test Email",
+    "testEmailPlaceholder": "Enter email address...",
+    "testEmailSend": "Send Test",
+    "testEmailSent": "Test email was sent successfully.",
+    "testEmailFailed": "Test email could not be sent.",
+    "testEmailRequired": "Please enter an email address.",
+    "emailDisabledHint": "Email is disabled. Set SAFESPACE_EMAIL_ENABLED=true to enable emails.",
+    "loading": "Loading"
   },
   "welcome": {
     "understood": "Understood"
@@ -540,7 +606,10 @@
     "groupPost": "{{username}} posted in group {{group}}",
     "birthday": "🎂 {{username}} has a birthday today and is now {{age}} years old!",
     "groupJoinRequest": "👥 {{username}} wants to join the group \"{{groupName}}\"",
-    "welcome": "Welcome to SafeSpace! We're glad you're here."
+    "welcome": "Welcome to SafeSpace! We're glad you're here.",
+    "friendRequest": "👋 {{username}} sent you a friend request",
+    "friendRequestAccepted": "🎉 {{username}} accepted your friend request",
+    "postShared": "📨 {{username}} shared a post with you"
   },
   "screenTime": {
     "breakTitle": "Time for a Break!",

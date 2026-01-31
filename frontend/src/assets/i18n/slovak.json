@@ -69,7 +69,11 @@
     "currentVisibility": "Aktuálna viditeľnosť:",
     "disputePrompt": "Prosím, vysvetlite svoju námietku:",
     "disputeSuccess": "Vaša námietka bola postúpená moderátorom. Odpoveď dostanete do 48 hodín.",
-    "sendComment": "Odoslať komentár"
+    "sendComment": "Odoslať komentár",
+    "share": "Zdieľať",
+    "shareWith": "Zdieľať s...",
+    "noFriendsToShare": "Žiadni priatelia na zdieľanie",
+    "shareSuccess": "Príspevok zdieľaný s {{username}}!"
   },
   "visibility": {
     "public": "Verejné",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Chyba pri odosielaní námietky.",
     "disputeSuccess": "Vaša námietka bola postúpená na preskúmanie moderátorom.",
     "sendComment": "Chyba pri odosielaní komentára",
-    "dataExport": "Chyba pri exporte údajov"
+    "dataExport": "Chyba pri exporte údajov",
+    "sharePost": "Nepodarilo sa zdieľať príspevok"
   },
   "myPosts": {
     "title": "Moje príspevky",
@@ -226,7 +231,18 @@
     "roleUser": "Používateľ",
     "roleModerator": "Moderátor",
     "roleAdmin": "Administrátor",
-    "birthday": "Narodeniny"
+    "birthday": "Narodeniny",
+    "friends": "Priatelia",
+    "loadingFriends": "Načítanie priateľov...",
+    "noFriends": "Zatiaľ žiadni priatelia",
+    "friendsCount": "Priateľov",
+    "showAllFriends": "Zobraziť všetkých priateľov"
+  },
+  "friendsList": {
+    "back": "Späť",
+    "title": "Priatelia",
+    "accessDenied": "Prístup zamietnutý",
+    "accessDeniedHint": "Môžete zobraziť iba zoznam priateľov svojich vlastných priateľov."
   },
   "login": {
     "title": "Prihlásenie",
@@ -239,7 +255,8 @@
     "register": "Zaregistrujte sa",
     "errors": {
       "invalidCredentials": "Neplatné prihlasovacie údaje",
-      "loginFailed": "Prihlásenie zlyhalo. Skúste to prosím znova."
+      "loginFailed": "Prihlásenie zlyhalo. Skúste to prosím znova.",
+      "emailNotVerified": "Vaša e-mailová adresa ešte nebola overená. Skontrolujte prosím svoju schránku."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Heslo",
     "confirmPassword": "Potvrdiť heslo",
     "birthday": "Dátum narodenia",
-    "optional": "voliteľné",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Prosím overte svoju e-mailovú adresu",
+    "verificationPendingHint": "Poslali sme vám e-mail s overovacím odkazom. Kliknite prosím na odkaz pre aktiváciu vášho účtu.",
+    "resendVerification": "Znova odoslať overovací e-mail",
+    "resendIn": "Znova odoslať za",
     "registerButton": "Zaregistrovať sa",
     "hasAccount": "Už máte účet?",
     "login": "Prihláste sa tu",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Toto používateľské meno je už obsadené. Zvoľte si prosím iné.",
       "emailAlreadyRegistered": "Táto e-mailová adresa je už zaregistrovaná. Použite prosím inú alebo sa prihláste.",
       "passwordMismatch": "Heslá sa nezhodujú",
-      "registrationFailed": "Registrácia zlyhala. Skúste to prosím znova."
+      "registrationFailed": "Registrácia zlyhala. Skúste to prosím znova.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registrácia úspešná! Presmerovanie...",
     "agbAccept": "Súhlasím s",
     "agbLink": "Podmienkami používania",
     "agbAnd": "a s",
     "privacyLink": "Zásadami ochrany osobných údajov"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Overovanie e-mailu...",
+    "confirmedTitle": "E-mail overený",
+    "confirmedMessage": "Vaša e-mailová adresa bola úspešne overená. Teraz sa môžete prihlásiť.",
+    "alreadyConfirmedTitle": "Už overené",
+    "alreadyConfirmedMessage": "Vaša e-mailová adresa už bola overená.",
+    "errorTitle": "Neplatný odkaz",
+    "errorMessage": "Tento overovací odkaz je neplatný alebo vypršal.",
+    "backToLogin": "Späť na prihlásenie"
   },
   "passwordReset": {
     "title": "Obnovenie hesla",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Niekto označil komentár ako Páči sa mi",
     "notifBirthday": "Narodeniny",
     "notifGroupPost": "Príspevky v skupinách",
+    "notifFriendRequest": "Žiadosti o priateľstvo",
+    "notifFriendRequestAccepted": "Prijaté žiadosti o priateľstvo",
     "passwordSection": "Zmena hesla",
     "currentPassword": "Aktuálne heslo",
     "currentPasswordPlaceholder": "Vyplňte len ak chcete zmeniť heslo",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Nedostupný",
     "deepseekLowBalance": "Upozornenie: Zostatok DeepSeek je veľmi nízky! Dobite prosím pre zachovanie služby moderovania.",
     "deepseekLoading": "Načítavanie zostatku DeepSeek...",
-    "deepseekError": "Chyba pri načítavaní zostatku DeepSeek"
+    "deepseekError": "Chyba pri načítavaní zostatku DeepSeek",
+    "emailSettings": "Nastavenia e-mailu",
+    "emailSettingsDesc": "Aktuálna konfigurácia SMTP a odoslanie testovacieho e-mailu.",
+    "emailEnabled": "Povolené",
+    "emailDisabled": "Zakázané",
+    "emailUser": "Používateľ",
+    "emailFrom": "Adresa odosielateľa",
+    "emailSender": "Meno odosielateľa",
+    "testEmailLabel": "Odoslať testovací e-mail",
+    "testEmailPlaceholder": "Zadajte e-mailovú adresu...",
+    "testEmailSend": "Odoslať test",
+    "testEmailSent": "Testovací e-mail bol úspešne odoslaný.",
+    "testEmailFailed": "Testovací e-mail sa nepodarilo odoslať.",
+    "testEmailRequired": "Zadajte prosím e-mailovú adresu.",
+    "emailDisabledHint": "E-mail je zakázaný. Nastavte SAFESPACE_EMAIL_ENABLED=true na povolenie e-mailov.",
+    "loading": "Načítavanie"
   },
   "welcome": {
     "understood": "Rozumiem"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} pridal príspevok do skupiny {{group}}",
     "birthday": "🎂 {{username}} má dnes narodeniny a má {{age}} rokov!",
     "groupJoinRequest": "👥 {{username}} chce vstúpiť do skupiny \"{{groupName}}\"",
-    "welcome": "Vitajte v SafeSpace! Sme radi, že ste tu."
+    "welcome": "Vitajte v SafeSpace! Sme radi, že ste tu.",
+    "friendRequest": "👋 {{username}} ti poslal(a) žiadosť o priateľstvo",
+    "friendRequestAccepted": "🎉 {{username}} prijal(a) tvoju žiadosť o priateľstvo",
+    "postShared": "📨 {{username}} s tebou zdieľal(a) príspevok"
   },
   "screenTime": {
     "breakTitle": "Čas na prestávku!",

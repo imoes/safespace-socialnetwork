@@ -9,6 +9,7 @@ import { TranslationService, TranslationResult } from '../../services/translatio
 import { I18nService } from '../../services/i18n.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LinkPreviewService, LinkPreview } from '../../services/link-preview.service';
+import { FriendsService, Friend } from '../../services/friends.service';
 import { AutoEmojiDirective } from '../../directives/auto-emoji.directive';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -108,6 +109,26 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
         <button class="action-btn" (click)="toggleTranslation()" [disabled]="translating">
           {{ showTranslation ? '📝' : '🌐' }} {{ translating ? ('post.translating' | translate) : (showTranslation ? ('post.original' | translate) : ('post.translate' | translate)) }}
         </button>
+        <div class="share-wrapper" #shareWrapper>
+          <button class="action-btn" (click)="toggleShareDropdown($event)">📨 {{ 'post.share' | translate }}</button>
+          @if (showShareDropdown) {
+            <div class="share-dropdown">
+              <div class="share-dropdown-header">{{ 'post.shareWith' | translate }}</div>
+              @if (shareableFriends.length === 0) {
+                <div class="share-no-friends">{{ 'post.noFriendsToShare' | translate }}</div>
+              } @else {
+                <div class="share-friends-list">
+                  @for (friend of shareableFriends; track friend.uid) {
+                    <button class="share-friend-item" (click)="shareWithFriend(friend)" [disabled]="sharingInProgress">
+                      <div class="share-friend-avatar">{{ friend.username.charAt(0).toUpperCase() }}</div>
+                      <span class="share-friend-name">{{ friend.username }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
         @if (post.author_uid === currentUid) {
           <div class="post-controls">
             <button class="action-icon-btn" (click)="startEditPost()" [title]="'post.edit' | translate">✏️</button>
@@ -117,6 +138,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
               @if (showVisibilityDropdown) {
                 <div class="visibility-dropdown">
                   <button (click)="changeVisibility('public')">🌍 {{ 'visibility.public' | translate }}</button>
+                  <button (click)="changeVisibility('acquaintance')">👋 {{ 'visibility.acquaintance' | translate }}</button>
                   <button (click)="changeVisibility('friends')">👥 {{ 'visibility.friends' | translate }}</button>
                   <button (click)="changeVisibility('close_friends')">💚 {{ 'visibility.closeFriends' | translate }}</button>
                   <button (click)="changeVisibility('family')">👨‍👩‍👧‍👦 {{ 'visibility.family' | translate }}</button>
@@ -379,6 +401,17 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     .action-icon-btn { background: none; border: none; padding: 4px 8px; cursor: pointer; font-size: 16px; border-radius: 4px; transition: background 0.2s; }
     .action-icon-btn:hover { background: #f0f2f5; }
 
+    .share-wrapper { position: relative; }
+    .share-dropdown { position: absolute; bottom: 100%; left: 0; margin-bottom: 4px; background: white; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); min-width: 220px; z-index: 10; overflow: hidden; }
+    .share-dropdown-header { padding: 10px 14px; font-weight: 600; font-size: 14px; border-bottom: 1px solid #e4e6e9; color: #050505; }
+    .share-no-friends { padding: 14px; font-size: 13px; color: #65676b; text-align: center; }
+    .share-friends-list { max-height: 200px; overflow-y: auto; }
+    .share-friend-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 14px; border: none; background: none; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+    .share-friend-item:hover { background: #f0f2f5; }
+    .share-friend-item:disabled { opacity: 0.5; cursor: not-allowed; }
+    .share-friend-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b72a); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; flex-shrink: 0; }
+    .share-friend-name { color: #050505; }
+
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .report-modal, .visibility-modal, .edit-modal { background: white; padding: 24px; border-radius: 12px; width: 90%; max-width: 400px; }
     .report-modal h3, .visibility-modal h3, .edit-modal h3 { margin: 0 0 16px; }
@@ -480,6 +513,7 @@ export class PostCardComponent implements OnChanges, OnInit, OnDestroy {
 
   private reportService = inject(ReportService);
   private feedService = inject(FeedService);
+  private friendsService = inject(FriendsService);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   translationService = inject(TranslationService);
@@ -513,6 +547,11 @@ export class PostCardComponent implements OnChanges, OnInit, OnDestroy {
   private commentInput$ = new Subject<string>();
   private commentPreviewUrls = new Set<string>();
   private destroy$ = new Subject<void>();
+
+  // Share
+  showShareDropdown = false;
+  shareableFriends: Friend[] = [];
+  sharingInProgress = false;
 
   // Guardian Modal für Kommentare
   showGuardianModal = false;
@@ -614,6 +653,10 @@ export class PostCardComponent implements OnChanges, OnInit, OnDestroy {
     // Close visibility dropdown when clicking outside
     if (this.showVisibilityDropdown) {
       this.showVisibilityDropdown = false;
+    }
+    // Close share dropdown when clicking outside
+    if (this.showShareDropdown) {
+      this.showShareDropdown = false;
     }
   }
 
@@ -931,6 +974,44 @@ export class PostCardComponent implements OnChanges, OnInit, OnDestroy {
       videoElement.muted = true;
       videoElement.play().catch(() => {});
     }
+  }
+
+  // Share Methods
+  toggleShareDropdown(event: Event): void {
+    event.stopPropagation();
+    this.showShareDropdown = !this.showShareDropdown;
+    if (this.showShareDropdown) {
+      this.friendsService.loadFriends();
+      // Lade Freunde und filtere den Post-Autor heraus
+      this.shareableFriends = this.friendsService.friends().filter(f => f.uid !== this.post.author_uid);
+      // Nochmal aktualisieren wenn Daten geladen werden
+      const checkInterval = setInterval(() => {
+        const friends = this.friendsService.friends();
+        if (friends.length > 0 || !this.friendsService.isLoading()) {
+          this.shareableFriends = friends.filter(f => f.uid !== this.post.author_uid);
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      // Timeout nach 3 Sekunden
+      setTimeout(() => clearInterval(checkInterval), 3000);
+    }
+  }
+
+  shareWithFriend(friend: Friend): void {
+    if (this.sharingInProgress) return;
+    this.sharingInProgress = true;
+
+    this.feedService.sharePost(this.post.author_uid, this.post.post_id, friend.uid).subscribe({
+      next: () => {
+        this.sharingInProgress = false;
+        this.showShareDropdown = false;
+        alert(this.i18n.t('post.shareSuccess', { username: friend.username }));
+      },
+      error: () => {
+        this.sharingInProgress = false;
+        alert(this.i18n.t('errors.sharePost'));
+      }
+    });
   }
 
   // Guardian Modal Methods

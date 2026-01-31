@@ -432,6 +432,72 @@
           </button>
         </div>
       </div>
+
+      <!-- Email Settings & Test -->
+      <div class="form-card">
+        <h3>📧 {{ i18n.t('admin.emailSettings') }}</h3>
+        <p class="description">{{ i18n.t('admin.emailSettingsDesc') }}</p>
+
+        @if (emailSettings()) {
+          <div class="email-settings-grid">
+            <div class="stat">
+              <span class="stat-label">Status:</span>
+              <span class="stat-value" [class.online]="emailSettings().email_enabled" [class.warning]="!emailSettings().email_enabled">
+                {{ emailSettings().email_enabled ? i18n.t('admin.emailEnabled') : i18n.t('admin.emailDisabled') }}
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">SMTP Host:</span>
+              <span class="stat-value">{{ emailSettings().smtp_host }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">SMTP Port:</span>
+              <span class="stat-value">{{ emailSettings().smtp_port }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ i18n.t('admin.emailUser') }}:</span>
+              <span class="stat-value">{{ emailSettings().smtp_user || '—' }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ i18n.t('admin.emailFrom') }}:</span>
+              <span class="stat-value">{{ emailSettings().smtp_from_email }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">{{ i18n.t('admin.emailSender') }}:</span>
+              <span class="stat-value">{{ emailSettings().smtp_from_name }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">TLS:</span>
+              <span class="stat-value" [class.online]="emailSettings().smtp_use_tls">
+                {{ emailSettings().smtp_use_tls ? 'Ja' : 'Nein' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="test-email-section">
+            <label for="test-email">{{ i18n.t('admin.testEmailLabel') }}</label>
+            <div class="test-email-row">
+              <input
+                id="test-email"
+                type="email"
+                [(ngModel)]="testEmailAddress"
+                [placeholder]="i18n.t('admin.testEmailPlaceholder')"
+                [disabled]="testEmailLoading()" />
+              <button
+                class="btn btn-primary"
+                (click)="sendTestEmail()"
+                [disabled]="testEmailLoading() || !emailSettings().email_enabled">
+                {{ testEmailLoading() ? '⏳ ...' : '📤 ' + i18n.t('admin.testEmailSend') }}
+              </button>
+            </div>
+            @if (!emailSettings().email_enabled) {
+              <p class="field-description warning-text">{{ i18n.t('admin.emailDisabledHint') }}</p>
+            }
+          </div>
+        } @else {
+          <p>⏳ {{ i18n.t('admin.loading') }}...</p>
+        }
+      </div>
     </div>
   }
 

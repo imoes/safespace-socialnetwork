@@ -69,7 +69,11 @@
     "currentVisibility": "Infheictheacht reatha:",
     "disputePrompt": "Mínigh do chur i gcoinne le do thoil:",
     "disputeSuccess": "Cuireadh do chur i gcoinne ar aghaidh chuig na modhnóirí. Gheobhaidh tú freagra laistigh de 48 uair an chloig.",
-    "sendComment": "Seol trácht"
+    "sendComment": "Seol trácht",
+    "share": "Roinn",
+    "shareWith": "Roinn le...",
+    "noFriendsToShare": "Níl aon chairde le roinnt leo",
+    "shareSuccess": "Postáil roinnte le {{username}}!"
   },
   "visibility": {
     "public": "Poiblí",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Earráid ag cur isteach agóide.",
     "disputeSuccess": "Cuireadh d'agóid ar aghaidh le hathbhreithniú ag modhnóir.",
     "sendComment": "Earráid ag seoladh tráchta",
-    "dataExport": "Earráid ag easpórtáil sonraí"
+    "dataExport": "Earráid ag easpórtáil sonraí",
+    "sharePost": "Theip ar an bpostáil a roinnt"
   },
   "myPosts": {
     "title": "Mo Phostanna",
@@ -226,7 +231,18 @@
     "roleUser": "Úsáideoir",
     "roleModerator": "Modhnóir",
     "roleAdmin": "Riarthóir",
-    "birthday": "Lá Breithe"
+    "birthday": "Lá Breithe",
+    "friends": "Cairde",
+    "loadingFriends": "Cairde á lódáil...",
+    "noFriends": "Níl aon chairde fós",
+    "friendsCount": "Cairde",
+    "showAllFriends": "Taispeáin gach cara"
+  },
+  "friendsList": {
+    "back": "Ar ais",
+    "title": "Cairde",
+    "accessDenied": "Rochtain diúltaithe",
+    "accessDeniedHint": "Ní féidir leat ach liosta cairde do chairde féin a fheiceáil."
   },
   "login": {
     "title": "Logáil Isteach",
@@ -239,7 +255,8 @@
     "register": "Cláraigh anois",
     "errors": {
       "invalidCredentials": "Dintiúir neamhbhailí",
-      "loginFailed": "Theip ar an logáil isteach. Bain triail eile as le do thoil."
+      "loginFailed": "Theip ar an logáil isteach. Bain triail eile as le do thoil.",
+      "emailNotVerified": "Níl do sheoladh ríomhphoist fíoraithe fós. Seiceáil do bhosca isteach le do thoil."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Pasfhocal",
     "confirmPassword": "Deimhnigh Pasfhocal",
     "birthday": "Lá Breithe",
-    "optional": "roghnach",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Fíoraigh do sheoladh ríomhphoist le do thoil",
+    "verificationPendingHint": "Chuireamar ríomhphost chugat le nasc fíoraithe. Cliceáil ar an nasc le do chuntas a ghníomhachtú.",
+    "resendVerification": "Seol ríomhphost fíoraithe arís",
+    "resendIn": "Seol arís i",
     "registerButton": "Cláraigh",
     "hasAccount": "An bhfuil cuntas agat cheana?",
     "login": "Logáil isteach anseo",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Tá an t-ainm úsáideora seo tógtha cheana. Roghnaigh ceann eile le do thoil.",
       "emailAlreadyRegistered": "Tá an seoladh ríomhphoist seo cláraithe cheana. Úsáid ceann eile le do thoil nó logáil isteach.",
       "passwordMismatch": "Ní hionann na pasfhocail",
-      "registrationFailed": "Theip ar an gclárú. Bain triail eile as le do thoil."
+      "registrationFailed": "Theip ar an gclárú. Bain triail eile as le do thoil.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "D'éirigh leis an gclárú! Ag atreorú...",
     "agbAccept": "Glacaim leis na",
     "agbLink": "Téarmaí Seirbhíse",
     "agbAnd": "agus an",
     "privacyLink": "Polasaí Príobháideachais"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Ríomhphost á fhíorú...",
+    "confirmedTitle": "Ríomhphost fíoraithe",
+    "confirmedMessage": "Fíoraíodh do sheoladh ríomhphoist go rathúil. Is féidir leat logáil isteach anois.",
+    "alreadyConfirmedTitle": "Fíoraithe cheana féin",
+    "alreadyConfirmedMessage": "Tá do sheoladh ríomhphoist fíoraithe cheana féin.",
+    "errorTitle": "Nasc neamhbhailí",
+    "errorMessage": "Tá an nasc fíoraithe seo neamhbhailí nó imithe in éag.",
+    "backToLogin": "Ar ais go logáil isteach"
   },
   "passwordReset": {
     "title": "Athshocraigh Pasfhocal",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Taitin le trácht",
     "notifBirthday": "Laethanta Breithe",
     "notifGroupPost": "Postanna grúpa",
+    "notifFriendRequest": "Iarratais chairdis",
+    "notifFriendRequestAccepted": "Iarratais chairdis a glacadh",
     "passwordSection": "Athraigh Pasfhocal",
     "currentPassword": "Pasfhocal Reatha",
     "currentPasswordPlaceholder": "Ná líon isteach ach amháin má tá tú ag iarraidh do phasfhocal a athrú",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Níl ar fáil",
     "deepseekLowBalance": "Rabhadh: Tá iarmhéid DeepSeek an-íseal! Breisigh le do thoil chun an tseirbhís modhnóireachta a choinneáil.",
     "deepseekLoading": "Iarmhéid DeepSeek á lódáil...",
-    "deepseekError": "Earráid ag lódáil iarmhéid DeepSeek"
+    "deepseekError": "Earráid ag lódáil iarmhéid DeepSeek",
+    "emailSettings": "Socruithe Ríomhphoist",
+    "emailSettingsDesc": "Cumraíocht SMTP reatha agus ríomhphost tástála a sheoladh.",
+    "emailEnabled": "Cumasaithe",
+    "emailDisabled": "Díchumasaithe",
+    "emailUser": "Úsáideoir",
+    "emailFrom": "Seoladh an tSeoltóra",
+    "emailSender": "Ainm an tSeoltóra",
+    "testEmailLabel": "Seol Ríomhphost Tástála",
+    "testEmailPlaceholder": "Cuir isteach seoladh ríomhphoist...",
+    "testEmailSend": "Seol Tástáil",
+    "testEmailSent": "Seoladh an ríomhphost tástála go rathúil.",
+    "testEmailFailed": "Níorbh fhéidir an ríomhphost tástála a sheoladh.",
+    "testEmailRequired": "Cuir isteach seoladh ríomhphoist le do thoil.",
+    "emailDisabledHint": "Tá ríomhphost díchumasaithe. Socraigh SAFESPACE_EMAIL_ENABLED=true chun ríomhphoist a chumasú.",
+    "loading": "Ag lódáil"
   },
   "welcome": {
     "understood": "Tuigim"
@@ -464,7 +530,10 @@
     "groupPost": "Phostáil {{username}} sa ghrúpa {{group}}",
     "birthday": "🎂 Tá lá breithe ag {{username}} inniu agus tá sé/sí {{age}} bliain d'aois anois!",
     "groupJoinRequest": "👥 Ba mhaith le {{username}} dul isteach sa ghrúpa \"{{groupName}}\"",
-    "welcome": "Fáilte go SafeSpace! Tá áthas orainn go bhfuil tú anseo."
+    "welcome": "Fáilte go SafeSpace! Tá áthas orainn go bhfuil tú anseo.",
+    "friendRequest": "👋 Sheol {{username}} iarratas cairdis chugat",
+    "friendRequestAccepted": "🎉 Ghlac {{username}} le d'iarratas cairdis",
+    "postShared": "📨 Roinn {{username}} postáil leat"
   },
   "screenTime": {
     "breakTitle": "Am do Shos!",

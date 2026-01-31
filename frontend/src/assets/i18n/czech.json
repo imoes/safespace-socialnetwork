@@ -69,7 +69,11 @@
     "currentVisibility": "Aktuální viditelnost:",
     "disputePrompt": "Prosím vysvětlete svou námitku:",
     "disputeSuccess": "Vaše námitka byla předána moderátorům. Odpověď obdržíte do 48 hodin.",
-    "sendComment": "Odeslat komentář"
+    "sendComment": "Odeslat komentář",
+    "share": "Sdílet",
+    "shareWith": "Sdílet s...",
+    "noFriendsToShare": "Žádní přátelé ke sdílení",
+    "shareSuccess": "Příspěvek sdílen s {{username}}!"
   },
   "visibility": {
     "public": "Veřejné",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Chyba při podávání námitky.",
     "disputeSuccess": "Vaše námitka byla předána k posouzení moderátorem.",
     "sendComment": "Chyba při odesílání komentáře",
-    "dataExport": "Chyba při exportu dat"
+    "dataExport": "Chyba při exportu dat",
+    "sharePost": "Nepodařilo se sdílet příspěvek"
   },
   "myPosts": {
     "title": "Moje příspěvky",
@@ -226,7 +231,18 @@
     "roleUser": "Uživatel",
     "roleModerator": "Moderátor",
     "roleAdmin": "Administrátor",
-    "birthday": "Narozeniny"
+    "birthday": "Narozeniny",
+    "friends": "Přátelé",
+    "loadingFriends": "Načítání přátel...",
+    "noFriends": "Zatím žádní přátelé",
+    "friendsCount": "Přátel",
+    "showAllFriends": "Zobrazit všechny přátele"
+  },
+  "friendsList": {
+    "back": "Zpět",
+    "title": "Přátelé",
+    "accessDenied": "Přístup odepřen",
+    "accessDeniedHint": "Můžete zobrazit pouze seznam přátel svých vlastních přátel."
   },
   "login": {
     "title": "Přihlášení",
@@ -239,7 +255,8 @@
     "register": "Zaregistrujte se",
     "errors": {
       "invalidCredentials": "Neplatné přihlašovací údaje",
-      "loginFailed": "Přihlášení se nezdařilo. Zkuste to prosím znovu."
+      "loginFailed": "Přihlášení se nezdařilo. Zkuste to prosím znovu.",
+      "emailNotVerified": "Vaše e-mailová adresa dosud nebyla ověřena. Zkontrolujte prosím svou schránku."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Heslo",
     "confirmPassword": "Potvrdit heslo",
     "birthday": "Narozeniny",
-    "optional": "volitelné",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Ověřte prosím svou e-mailovou adresu",
+    "verificationPendingHint": "Poslali jsme vám e-mail s ověřovacím odkazem. Klikněte prosím na odkaz pro aktivaci vašeho účtu.",
+    "resendVerification": "Znovu odeslat ověřovací e-mail",
+    "resendIn": "Znovu odeslat za",
     "registerButton": "Zaregistrovat se",
     "hasAccount": "Již máte účet?",
     "login": "Přihlaste se zde",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Toto uživatelské jméno je již obsazeno. Zvolte prosím jiné.",
       "emailAlreadyRegistered": "Tato e-mailová adresa je již registrována. Použijte prosím jinou nebo se přihlaste.",
       "passwordMismatch": "Hesla se neshodují",
-      "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu."
+      "registrationFailed": "Registrace se nezdařila. Zkuste to prosím znovu.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registrace úspěšná! Přesměrování...",
     "agbAccept": "Přijímám",
     "agbLink": "Podmínky služby",
     "agbAnd": "a",
     "privacyLink": "Zásady ochrany osobních údajů"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Ověřování e-mailu...",
+    "confirmedTitle": "E-mail ověřen",
+    "confirmedMessage": "Vaše e-mailová adresa byla úspěšně ověřena. Nyní se můžete přihlásit.",
+    "alreadyConfirmedTitle": "Již ověřeno",
+    "alreadyConfirmedMessage": "Vaše e-mailová adresa již byla ověřena.",
+    "errorTitle": "Neplatný odkaz",
+    "errorMessage": "Tento ověřovací odkaz je neplatný nebo vypršel.",
+    "backToLogin": "Zpět na přihlášení"
   },
   "passwordReset": {
     "title": "Obnovit heslo",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Komentář se líbil",
     "notifBirthday": "Narozeniny",
     "notifGroupPost": "Příspěvky ve skupinách",
+    "notifFriendRequest": "Žádosti o přátelství",
+    "notifFriendRequestAccepted": "Přijaté žádosti o přátelství",
     "passwordSection": "Změna hesla",
     "currentPassword": "Aktuální heslo",
     "currentPasswordPlaceholder": "Vyplňte pouze pokud chcete změnit heslo",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Nedostupný",
     "deepseekLowBalance": "Upozornění: Zůstatek DeepSeek je velmi nízký! Dobijte prosím pro zachování služby moderování.",
     "deepseekLoading": "Načítání zůstatku DeepSeek...",
-    "deepseekError": "Chyba při načítání zůstatku DeepSeek"
+    "deepseekError": "Chyba při načítání zůstatku DeepSeek",
+    "emailSettings": "Nastavení e-mailu",
+    "emailSettingsDesc": "Aktuální konfigurace SMTP a odeslání testovacího e-mailu.",
+    "emailEnabled": "Povoleno",
+    "emailDisabled": "Zakázáno",
+    "emailUser": "Uživatel",
+    "emailFrom": "Adresa odesílatele",
+    "emailSender": "Jméno odesílatele",
+    "testEmailLabel": "Odeslat testovací e-mail",
+    "testEmailPlaceholder": "Zadejte e-mailovou adresu...",
+    "testEmailSend": "Odeslat test",
+    "testEmailSent": "Testovací e-mail byl úspěšně odeslán.",
+    "testEmailFailed": "Testovací e-mail se nepodařilo odeslat.",
+    "testEmailRequired": "Zadejte prosím e-mailovou adresu.",
+    "emailDisabledHint": "E-mail je zakázán. Nastavte SAFESPACE_EMAIL_ENABLED=true pro povolení e-mailů.",
+    "loading": "Načítání"
   },
   "welcome": {
     "understood": "Rozumím"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} přidal(a) příspěvek ve skupině {{group}}",
     "birthday": "🎂 {{username}} má dnes narozeniny a je mu/jí {{age}} let!",
     "groupJoinRequest": "👥 {{username}} chce vstoupit do skupiny \"{{groupName}}\"",
-    "welcome": "Vítejte v SafeSpace! Jsme rádi, že jste tady."
+    "welcome": "Vítejte v SafeSpace! Jsme rádi, že jste tady.",
+    "friendRequest": "👋 {{username}} ti poslal(a) žádost o přátelství",
+    "friendRequestAccepted": "🎉 {{username}} přijal(a) tvou žádost o přátelství",
+    "postShared": "📨 {{username}} s tebou sdílel(a) příspěvek"
   },
   "screenTime": {
     "breakTitle": "Čas na přestávku!",

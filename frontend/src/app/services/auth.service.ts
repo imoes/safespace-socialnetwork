@@ -85,17 +85,22 @@ export class AuthService {
     );
   }
 
-  register(username: string, email: string, password: string, firstName?: string, lastName?: string, birthday?: string): Observable<AuthResponse> {
+  register(username: string, email: string, password: string, firstName?: string, lastName?: string, birthday?: string, parentEmail?: string): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
 
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, {
+    const body: any = {
       username,
       email,
       password,
       first_name: firstName,
       last_name: lastName,
       birthday: birthday || null
-    }).pipe(
+    };
+    if (parentEmail) {
+      body.parent_email = parentEmail;
+    }
+
+    return this.http.post<AuthResponse>(`${this.API_URL}/register`, body).pipe(
       tap(response => {
         this.setToken(response.access_token);
         this.loadCurrentUser();

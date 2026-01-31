@@ -69,7 +69,11 @@
     "currentVisibility": "Jelenlegi láthatóság:",
     "disputePrompt": "Kérjük, fejtsd ki a kifogásodat:",
     "disputeSuccess": "Kifogásodat továbbítottuk a moderátoroknak. 48 órán belül választ kapsz.",
-    "sendComment": "Hozzászólás küldése"
+    "sendComment": "Hozzászólás küldése",
+    "share": "Megosztás",
+    "shareWith": "Megosztás...",
+    "noFriendsToShare": "Nincs barát akivel megoszthatod",
+    "shareSuccess": "Poszt megosztva {{username}}-vel!"
   },
   "visibility": {
     "public": "Nyilvános",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Hiba a kifogás beküldésekor.",
     "disputeSuccess": "Kifogásodat továbbítottuk egy moderátorhoz felülvizsgálatra.",
     "sendComment": "Hiba a hozzászólás küldésekor",
-    "dataExport": "Hiba az adatok exportálásakor"
+    "dataExport": "Hiba az adatok exportálásakor",
+    "sharePost": "Nem sikerült megosztani a posztot"
   },
   "myPosts": {
     "title": "Bejegyzéseim",
@@ -226,7 +231,18 @@
     "roleUser": "Felhasználó",
     "roleModerator": "Moderátor",
     "roleAdmin": "Adminisztrátor",
-    "birthday": "Születésnap"
+    "birthday": "Születésnap",
+    "friends": "Barátok",
+    "loadingFriends": "Barátok betöltése...",
+    "noFriends": "Még nincsenek barátok",
+    "friendsCount": "Barát",
+    "showAllFriends": "Összes barát megjelenítése"
+  },
+  "friendsList": {
+    "back": "Vissza",
+    "title": "Barátok",
+    "accessDenied": "Hozzáférés megtagadva",
+    "accessDeniedHint": "Csak a saját barátaid barátlistáját tekintheted meg."
   },
   "login": {
     "title": "Bejelentkezés",
@@ -239,7 +255,8 @@
     "register": "Regisztrálj most",
     "errors": {
       "invalidCredentials": "Érvénytelen hitelesítő adatok",
-      "loginFailed": "A bejelentkezés sikertelen. Kérjük, próbáld újra."
+      "loginFailed": "A bejelentkezés sikertelen. Kérjük, próbáld újra.",
+      "emailNotVerified": "Az e-mail címed még nincs megerősítve. Kérjük, ellenőrizd a postaládádat."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Jelszó",
     "confirmPassword": "Jelszó megerősítése",
     "birthday": "Születésnap",
-    "optional": "opcionális",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Kérjük, erősítsd meg az e-mail címedet",
+    "verificationPendingHint": "Küldtünk neked egy e-mailt egy megerősítő linkkel. Kérjük, kattints a linkre a fiókod aktiválásához.",
+    "resendVerification": "Megerősítő e-mail újraküldése",
+    "resendIn": "Újraküldés",
     "registerButton": "Regisztráció",
     "hasAccount": "Már van fiókod?",
     "login": "Jelentkezz be itt",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Ez a felhasználónév már foglalt. Kérjük, válassz másikat.",
       "emailAlreadyRegistered": "Ez az e-mail cím már regisztrálva van. Kérjük, használj másikat vagy jelentkezz be.",
       "passwordMismatch": "A jelszavak nem egyeznek",
-      "registrationFailed": "A regisztráció sikertelen. Kérjük, próbáld újra."
+      "registrationFailed": "A regisztráció sikertelen. Kérjük, próbáld újra.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Sikeres regisztráció! Átirányítás...",
     "agbAccept": "Elfogadom az",
     "agbLink": "Általános Szerződési Feltételeket",
     "agbAnd": "és az",
     "privacyLink": "Adatvédelmi szabályzatot"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-mail megerősítése...",
+    "confirmedTitle": "E-mail megerősítve",
+    "confirmedMessage": "Az e-mail címed sikeresen megerősítve. Most már bejelentkezhetsz.",
+    "alreadyConfirmedTitle": "Már megerősítve",
+    "alreadyConfirmedMessage": "Az e-mail címed már megerősítve van.",
+    "errorTitle": "Érvénytelen link",
+    "errorMessage": "Ez a megerősítő link érvénytelen vagy lejárt.",
+    "backToLogin": "Vissza a bejelentkezéshez"
   },
   "passwordReset": {
     "title": "Jelszó visszaállítása",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Hozzászólás kedvelve",
     "notifBirthday": "Születésnapok",
     "notifGroupPost": "Csoportos bejegyzések",
+    "notifFriendRequest": "Barátkérelmek",
+    "notifFriendRequestAccepted": "Elfogadott barátkérelmek",
     "passwordSection": "Jelszó megváltoztatása",
     "currentPassword": "Jelenlegi jelszó",
     "currentPasswordPlaceholder": "Csak akkor töltsd ki, ha meg szeretnéd változtatni a jelszavadat",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Nem elérhető",
     "deepseekLowBalance": "Figyelmeztetés: A DeepSeek egyenleg nagyon alacsony! Kérjük, töltse fel a moderálási szolgáltatás fenntartásához.",
     "deepseekLoading": "DeepSeek egyenleg betöltése...",
-    "deepseekError": "Hiba a DeepSeek egyenleg betöltésekor"
+    "deepseekError": "Hiba a DeepSeek egyenleg betöltésekor",
+    "emailSettings": "E-mail beállítások",
+    "emailSettingsDesc": "Jelenlegi SMTP-konfiguráció és teszt e-mail küldése.",
+    "emailEnabled": "Engedélyezve",
+    "emailDisabled": "Letiltva",
+    "emailUser": "Felhasználó",
+    "emailFrom": "Feladó címe",
+    "emailSender": "Feladó neve",
+    "testEmailLabel": "Teszt e-mail küldése",
+    "testEmailPlaceholder": "Adja meg az e-mail címet...",
+    "testEmailSend": "Teszt küldése",
+    "testEmailSent": "A teszt e-mail sikeresen elküldve.",
+    "testEmailFailed": "A teszt e-mailt nem sikerült elküldeni.",
+    "testEmailRequired": "Kérjük, adjon meg egy e-mail címet.",
+    "emailDisabledHint": "Az e-mail le van tiltva. Állítsa be a SAFESPACE_EMAIL_ENABLED=true értéket az e-mailek engedélyezéséhez.",
+    "loading": "Betöltés"
   },
   "welcome": {
     "understood": "Megértettem"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} bejegyzést írt a(z) {{group}} csoportba",
     "birthday": "🎂 {{username}} ma ünnepli a születésnapját, {{age}} éves lett!",
     "groupJoinRequest": "👥 {{username}} csatlakozni szeretne a(z) \"{{groupName}}\" csoporthoz",
-    "welcome": "Üdvözlünk a SafeSpace-en! Örülünk, hogy itt vagy."
+    "welcome": "Üdvözlünk a SafeSpace-en! Örülünk, hogy itt vagy.",
+    "friendRequest": "👋 {{username}} barátkérést küldött neked",
+    "friendRequestAccepted": "🎉 {{username}} elfogadta a barátkérésedet",
+    "postShared": "📨 {{username}} megosztott veled egy posztot"
   },
   "screenTime": {
     "breakTitle": "Ideje szünetet tartani!",

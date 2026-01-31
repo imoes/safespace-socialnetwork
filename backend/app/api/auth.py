@@ -1,6 +1,7 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
+import secrets
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.models.schemas import UserCreate, UserLogin, Token, UserProfile
@@ -18,9 +19,38 @@ from app.db.notifications import create_notification
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=Token)
-async def register(user_data: UserCreate):
-    """Registriert einen neuen User und gibt einen JWT Token zurück"""
+def calculate_age(birthday: date) -> int:
+    today = date.today()
+    age = today.year - birthday.year
+    if (today.month, today.day) < (birthday.month, birthday.day):
+        age -= 1
+    return age
+
+
+@router.post("/register")
+async def register(user_data: UserCreate, request: Request):
+    """Registriert einen neuen User. E-Mail muss erst verifiziert werden."""
+
+    # Altersprüfung
+    age = calculate_age(user_data.birthday)
+
+    if age < 13:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Minimum age is 13"
+        )
+
+    if age < 16 and not user_data.parent_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Parental consent required"
+        )
+
+    if user_data.parent_email and user_data.parent_email == user_data.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Parent email must be different from your own email"
+        )
 
     # Prüfen ob Username bereits existiert
     existing = await get_user_by_username(user_data.username)
@@ -38,22 +68,75 @@ async def register(user_data: UserCreate):
             detail="Email already registered"
         )
 
+    is_minor = age < 18
+
     user = await register_user(
         username=user_data.username,
         email=user_data.email,
         password=user_data.password,
         first_name=user_data.first_name,
         last_name=user_data.last_name,
-        birthday=str(user_data.birthday) if user_data.birthday else None
+        birthday=str(user_data.birthday)
     )
 
-    # Set initial last_login timestamp
+    # is_minor Flag setzen + E-Mail-Verifizierungstoken generieren
+    email_verification_token = secrets.token_urlsafe(48)
     async with PostgresDB.connection() as conn:
         await conn.execute(
-            "UPDATE users SET last_login = %s WHERE uid = %s",
-            (datetime.utcnow(), user["uid"])
+            "UPDATE users SET last_login = %s, is_minor = %s, email_verified = FALSE, email_verification_token = %s WHERE uid = %s",
+            (datetime.utcnow(), is_minor, email_verification_token, user["uid"])
         )
         await conn.commit()
+
+    # Base-URL ermitteln: Origin-Header bevorzugen, site_url als Fallback
+    from app.db.site_settings import get_site_url
+    origin = request.headers.get("origin") or request.headers.get("referer", "").rstrip("/")
+    if origin:
+        base_url = origin.split("/api")[0].rstrip("/")
+    else:
+        base_url = await get_site_url()
+
+    # Verifizierungs-E-Mail senden
+    try:
+        from app.services.email_service import EmailService
+        verify_link = f"{base_url}/verify-email/{email_verification_token}"
+
+        await EmailService.send_email_verification(
+            to_email=user_data.email,
+            username=user_data.username,
+            verify_link=verify_link
+        )
+    except Exception as e:
+        print(f"Error sending verification email: {e}")
+
+    # Bei 13-15: Eltern-Einwilligung anfordern, Account ist bis dahin gesperrt
+    if age < 16 and user_data.parent_email:
+        consent_token = secrets.token_urlsafe(48)
+        async with PostgresDB.connection() as conn:
+            await conn.execute(
+                """INSERT INTO parental_consents (user_uid, parent_email, consent_token)
+                   VALUES (%s, %s, %s)""",
+                (user["uid"], user_data.parent_email, consent_token)
+            )
+            # Account als wartend auf Einwilligung markieren
+            await conn.execute(
+                "UPDATE users SET parental_consent_pending = TRUE WHERE uid = %s",
+                (user["uid"],)
+            )
+            await conn.commit()
+
+        # E-Mail an Eltern senden
+        try:
+            from app.services.email_service import EmailService
+            consent_link = f"{base_url}/parental-consent/{consent_token}"
+
+            await EmailService.send_parental_consent_email(
+                parent_email=user_data.parent_email,
+                child_username=user_data.username,
+                consent_link=consent_link
+            )
+        except Exception as e:
+            print(f"Error sending parental consent email: {e}")
 
     # Willkommens-Benachrichtigung erstellen
     await create_notification(
@@ -62,14 +145,115 @@ async def register(user_data: UserCreate):
         notification_type="welcome"
     )
 
-    # JWT Token erstellen (wie beim Login)
-    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
-    access_token = create_access_token(
-        data={"sub": str(user["uid"])},  # JWT standard requires sub to be a string
-        expires_delta=access_token_expires
-    )
+    # Kein JWT-Token zurückgeben - User muss erst E-Mail verifizieren
+    return {"message": "Registration successful. Please verify your email."}
 
-    return Token(access_token=access_token)
+
+@router.get("/parental-consent/{token}")
+async def verify_parental_consent(token: str):
+    """Bestätigt die elterliche Einwilligung über den E-Mail-Link"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """SELECT pc.id, pc.user_uid, pc.confirmed
+               FROM parental_consents pc
+               WHERE pc.consent_token = %s""",
+            (token,)
+        )
+        row = await result.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="Invalid consent token")
+
+        if row["confirmed"]:
+            return {"message": "Consent already confirmed", "already_confirmed": True}
+
+        await conn.execute(
+            "UPDATE parental_consents SET confirmed = TRUE, confirmed_at = %s WHERE id = %s",
+            (datetime.utcnow(), row["id"])
+        )
+        await conn.execute(
+            "UPDATE users SET parental_consent_pending = FALSE WHERE uid = %s",
+            (row["user_uid"],)
+        )
+        await conn.commit()
+
+    return {"message": "Parental consent confirmed", "confirmed": True}
+
+
+@router.get("/verify-email/{token}")
+async def verify_email(token: str):
+    """Bestätigt die E-Mail-Adresse über den Verifizierungslink"""
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT uid, email_verified FROM users WHERE email_verification_token = %s",
+            (token,)
+        )
+        row = await result.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="Invalid verification token")
+
+        if row["email_verified"]:
+            return {"message": "Email already verified", "already_verified": True}
+
+        await conn.execute(
+            "UPDATE users SET email_verified = TRUE, email_verification_token = NULL WHERE uid = %s",
+            (row["uid"],)
+        )
+        await conn.commit()
+
+    return {"message": "Email verified successfully", "verified": True}
+
+
+@router.post("/resend-verification")
+async def resend_verification_email(data: dict, request: Request):
+    """Sendet die Verifizierungs-E-Mail erneut"""
+    email = data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            "SELECT uid, username, email_verified, email_verification_token FROM users WHERE email = %s",
+            (email,)
+        )
+        row = await result.fetchone()
+
+        if not row:
+            # Nicht verraten ob E-Mail existiert
+            return {"message": "If the email exists, a verification link has been sent"}
+
+        if row["email_verified"]:
+            return {"message": "Email already verified", "already_verified": True}
+
+        # Neuen Token generieren
+        new_token = secrets.token_urlsafe(48)
+        await conn.execute(
+            "UPDATE users SET email_verification_token = %s WHERE uid = %s",
+            (new_token, row["uid"])
+        )
+        await conn.commit()
+
+    # Verifizierungs-E-Mail senden
+    try:
+        from app.services.email_service import EmailService
+        from app.db.site_settings import get_site_url
+        origin = request.headers.get("origin") or request.headers.get("referer", "").rstrip("/")
+        if origin:
+            base_url = origin.split("/api")[0].rstrip("/")
+        else:
+            base_url = await get_site_url()
+        verify_link = f"{base_url}/verify-email/{new_token}"
+
+        await EmailService.send_email_verification(
+            to_email=email,
+            username=row["username"],
+            verify_link=verify_link
+        )
+    except Exception as e:
+        print(f"Error sending verification email: {e}")
+
+    return {"message": "If the email exists, a verification link has been sent"}
 
 
 @router.post("/login", response_model=Token)
@@ -85,6 +269,20 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Prüfen ob E-Mail verifiziert ist
+    if not user.get("email_verified"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified"
+        )
+
+    # Prüfen ob elterliche Einwilligung aussteht
+    if user.get("parental_consent_pending"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Parental consent pending"
         )
 
     # Update last_login timestamp

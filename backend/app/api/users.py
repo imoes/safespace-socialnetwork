@@ -34,6 +34,8 @@ class NotificationPreferencesRequest(BaseModel):
     comment_liked: bool = True
     birthday: bool = True
     group_post: bool = True
+    friend_request: bool = True
+    friend_request_accepted: bool = True
 
 
 class ScreenTimeSettingsRequest(BaseModel):
@@ -148,7 +150,9 @@ async def get_notification_preferences(current_user: dict = Depends(get_current_
         "post_commented": True,
         "comment_liked": True,
         "birthday": True,
-        "group_post": True
+        "group_post": True,
+        "friend_request": True,
+        "friend_request_accepted": True
     }
 
     # Merge defaults mit gespeicherten Preferences
@@ -470,11 +474,57 @@ async def get_user_profile(
             role=row["role"],
             created_at=row["created_at"].isoformat() if row["created_at"] else "",
             profile_picture=row["profile_picture"] if "profile_picture" in row.keys() else None,
-            first_name=row.get("first_name"),
-            last_name=row.get("last_name"),
-            birthday=row.get("birthday"),
+            first_name=row.get("first_name") if is_friend else None,
+            last_name=row.get("last_name") if is_friend else None,
+            birthday=row.get("birthday") if is_friend else None,
             is_friend=is_friend
         )
+
+
+@router.get("/{user_uid}/friends")
+async def get_user_friends(
+    user_uid: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Gibt die Freundesliste eines Benutzers zurück (nur für Freunde und eigenes Profil sichtbar)"""
+    # Nur eigene Freundesliste oder die von Freunden anzeigen
+    if user_uid != current_user["uid"]:
+        from app.db.postgres import get_relation_type
+        relation = await get_relation_type(current_user["uid"], user_uid)
+        if not relation:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can only view friends lists of your own friends"
+            )
+
+    async with PostgresDB.connection() as conn:
+        result = await conn.execute(
+            """
+            SELECT u.uid, u.username, u.profile_picture
+            FROM users u
+            INNER JOIN (
+                SELECT friend_id as uid FROM friendships
+                WHERE user_id = %s AND status = 'accepted'
+                UNION
+                SELECT user_id as uid FROM friendships
+                WHERE friend_id = %s AND status = 'accepted'
+            ) f ON u.uid = f.uid
+            ORDER BY u.username
+            """,
+            (user_uid, user_uid)
+        )
+        rows = await result.fetchall()
+
+        return {
+            "friends": [
+                {
+                    "uid": row["uid"],
+                    "username": row["username"],
+                    "profile_picture": row["profile_picture"]
+                }
+                for row in rows
+            ]
+        }
 
 
 @router.get("/me/commented-posts")
@@ -680,24 +730,25 @@ async def get_user_posts(
     if is_own_profile:
         allowed_visibility = None  # Alle Posts
     else:
-        # Freundschaftsstatus prüfen
-        relation_type = await get_relation_type(current_user["uid"], user_uid)
+        # Freundschaftsstatus prüfen — aus Sicht des Profil-Besitzers (Post-Autors),
+        # denn dieser bestimmt wer seine Posts sehen darf
+        relation_type = await get_relation_type(user_uid, current_user["uid"])
 
         if not relation_type:
             # Keine Freundschaft: nur öffentliche Posts
             allowed_visibility = ["public"]
         elif relation_type == "family":
-            # Familie sieht: public, friends, close_friends, family
-            allowed_visibility = ["public", "friends", "close_friends", "family"]
+            # Familie sieht: public, acquaintance, friends, close_friends, family
+            allowed_visibility = ["public", "acquaintance", "friends", "close_friends", "family"]
         elif relation_type == "close_friend":
-            # Enge Freunde sehen: public, friends, close_friends
-            allowed_visibility = ["public", "friends", "close_friends"]
+            # Enge Freunde sehen: public, acquaintance, friends, close_friends
+            allowed_visibility = ["public", "acquaintance", "friends", "close_friends"]
         elif relation_type == "friend":
-            # Normale Freunde sehen: public, friends
-            allowed_visibility = ["public", "friends"]
+            # Normale Freunde sehen: public, acquaintance, friends
+            allowed_visibility = ["public", "acquaintance", "friends"]
         elif relation_type == "acquaintance":
-            # Bekannte sehen: public, friends
-            allowed_visibility = ["public", "friends"]
+            # Bekannte sehen: public, acquaintance
+            allowed_visibility = ["public", "acquaintance"]
         else:
             # Default: nur öffentliche Posts
             allowed_visibility = ["public"]

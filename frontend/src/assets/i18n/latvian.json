@@ -69,7 +69,11 @@
     "currentVisibility": "Pašreizējā redzamība:",
     "disputePrompt": "Lūdzu, paskaidrojiet savu iebildumu:",
     "disputeSuccess": "Jūsu iebildums ir nosūtīts moderatoriem. Jūs saņemsiet atbildi 48 stundu laikā.",
-    "sendComment": "Nosūtīt komentāru"
+    "sendComment": "Nosūtīt komentāru",
+    "share": "Dalīties",
+    "shareWith": "Dalīties ar...",
+    "noFriendsToShare": "Nav draugu ar ko dalīties",
+    "shareSuccess": "Ieraksts kopīgots ar {{username}}!"
   },
   "visibility": {
     "public": "Publisks",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Kļūda iesniedzot iebildumu.",
     "disputeSuccess": "Jūsu iebildums ir nosūtīts moderatora izskatīšanai.",
     "sendComment": "Kļūda nosūtot komentāru",
-    "dataExport": "Kļūda eksportējot datus"
+    "dataExport": "Kļūda eksportējot datus",
+    "sharePost": "Neizdevās kopīgot ierakstu"
   },
   "myPosts": {
     "title": "Manas ziņas",
@@ -226,7 +231,18 @@
     "roleUser": "Lietotājs",
     "roleModerator": "Moderators",
     "roleAdmin": "Administrators",
-    "birthday": "Dzimšanas diena"
+    "birthday": "Dzimšanas diena",
+    "friends": "Draugi",
+    "loadingFriends": "Ielādē draugus...",
+    "noFriends": "Vēl nav draugu",
+    "friendsCount": "Draugi",
+    "showAllFriends": "Rādīt visus draugus"
+  },
+  "friendsList": {
+    "back": "Atpakaļ",
+    "title": "Draugi",
+    "accessDenied": "Piekļuve liegta",
+    "accessDeniedHint": "Jūs varat apskatīt tikai savu draugu draugu sarakstu."
   },
   "login": {
     "title": "Pieteikšanās",
@@ -239,7 +255,8 @@
     "register": "Reģistrēties tagad",
     "errors": {
       "invalidCredentials": "Nepareizi pieteikšanās dati",
-      "loginFailed": "Pieteikšanās neizdevās. Lūdzu, mēģiniet vēlreiz."
+      "loginFailed": "Pieteikšanās neizdevās. Lūdzu, mēģiniet vēlreiz.",
+      "emailNotVerified": "Jūsu e-pasta adrese vēl nav verificēta. Lūdzu, pārbaudiet savu iesūtni."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Parole",
     "confirmPassword": "Apstiprināt paroli",
     "birthday": "Dzimšanas diena",
-    "optional": "neobligāts",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Lūdzu, verificējiet savu e-pasta adresi",
+    "verificationPendingHint": "Mēs jums nosūtījām e-pastu ar verifikācijas saiti. Lūdzu, noklikšķiniet uz saites, lai aktivizētu savu kontu.",
+    "resendVerification": "Atkārtoti nosūtīt verifikācijas e-pastu",
+    "resendIn": "Atkārtoti nosūtīt pēc",
     "registerButton": "Reģistrēties",
     "hasAccount": "Jau ir konts?",
     "login": "Pieteikties šeit",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Šis lietotājvārds jau ir aizņemts. Lūdzu, izvēlieties citu.",
       "emailAlreadyRegistered": "Šī e-pasta adrese jau ir reģistrēta. Lūdzu, izmantojiet citu vai piesakieties.",
       "passwordMismatch": "Paroles nesakrīt",
-      "registrationFailed": "Reģistrācija neizdevās. Lūdzu, mēģiniet vēlreiz."
+      "registrationFailed": "Reģistrācija neizdevās. Lūdzu, mēģiniet vēlreiz.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Reģistrācija veiksmīga! Pāradresē...",
     "agbAccept": "Es piekrītu",
     "agbLink": "Lietošanas noteikumiem",
     "agbAnd": "un",
     "privacyLink": "Privātuma politikai"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "E-pasts tiek verificēts...",
+    "confirmedTitle": "E-pasts verificēts",
+    "confirmedMessage": "Jūsu e-pasta adrese ir veiksmīgi verificēta. Tagad varat pieslēgties.",
+    "alreadyConfirmedTitle": "Jau verificēts",
+    "alreadyConfirmedMessage": "Jūsu e-pasta adrese jau ir verificēta.",
+    "errorTitle": "Nederīga saite",
+    "errorMessage": "Šī verifikācijas saite ir nederīga vai ir beigusies tās derīguma termiņš.",
+    "backToLogin": "Atpakaļ uz pieslēgšanos"
   },
   "passwordReset": {
     "title": "Atjaunot paroli",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Komentāram atzīmēts patīk",
     "notifBirthday": "Dzimšanas dienas",
     "notifGroupPost": "Grupu ieraksti",
+    "notifFriendRequest": "Draugu pieprasījumi",
+    "notifFriendRequestAccepted": "Pieņemtie draugu pieprasījumi",
     "passwordSection": "Mainīt paroli",
     "currentPassword": "Pašreizējā parole",
     "currentPasswordPlaceholder": "Aizpildiet tikai tad, ja vēlaties mainīt paroli",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Nav pieejams",
     "deepseekLowBalance": "Brīdinājums: DeepSeek atlikums ir ļoti zems! Lūdzu, papildiniet, lai uzturētu moderēšanas pakalpojumu.",
     "deepseekLoading": "Ielādē DeepSeek atlikumu...",
-    "deepseekError": "Kļūda ielādējot DeepSeek atlikumu"
+    "deepseekError": "Kļūda ielādējot DeepSeek atlikumu",
+    "emailSettings": "E-pasta iestatījumi",
+    "emailSettingsDesc": "Pašreizējā SMTP konfigurācija un testa e-pasta sūtīšana.",
+    "emailEnabled": "Iespējots",
+    "emailDisabled": "Atspējots",
+    "emailUser": "Lietotājs",
+    "emailFrom": "Sūtītāja adrese",
+    "emailSender": "Sūtītāja vārds",
+    "testEmailLabel": "Sūtīt testa e-pastu",
+    "testEmailPlaceholder": "Ievadiet e-pasta adresi...",
+    "testEmailSend": "Sūtīt testu",
+    "testEmailSent": "Testa e-pasts tika veiksmīgi nosūtīts.",
+    "testEmailFailed": "Testa e-pastu neizdevās nosūtīt.",
+    "testEmailRequired": "Lūdzu, ievadiet e-pasta adresi.",
+    "emailDisabledHint": "E-pasts ir atspējots. Iestatiet SAFESPACE_EMAIL_ENABLED=true, lai iespējotu e-pastu.",
+    "loading": "Ielādē"
   },
   "welcome": {
     "understood": "Sapratu"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} publicēja grupā {{group}}",
     "birthday": "🎂 {{username}} šodien svin dzimšanas dienu un tagad ir {{age}} gadus vecs(-a)!",
     "groupJoinRequest": "👥 {{username}} vēlas pievienoties grupai \"{{groupName}}\"",
-    "welcome": "Laipni lūdzam SafeSpace! Priecājamies, ka esat šeit."
+    "welcome": "Laipni lūdzam SafeSpace! Priecājamies, ka esat šeit.",
+    "friendRequest": "👋 {{username}} nosūtīja tev draugu pieprasījumu",
+    "friendRequestAccepted": "🎉 {{username}} pieņēma tavu draugu pieprasījumu",
+    "postShared": "📨 {{username}} kopīgoja ar tevi ierakstu"
   },
   "screenTime": {
     "breakTitle": "Laiks pārtraukumam!",

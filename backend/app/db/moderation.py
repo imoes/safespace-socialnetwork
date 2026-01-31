@@ -236,11 +236,20 @@ async def get_moderator_actions(moderator_uid: int = None, limit: int = 100) -> 
 
 async def set_relationship_type(user_uid: int, friend_uid: int, relationship: str) -> bool:
     async with PostgresDB.connection() as conn:
-        await conn.execute(
+        # Nur die Seite des aufrufenden Users aktualisieren
+        result = await conn.execute(
             """UPDATE friendships SET relation_type = %s
-               WHERE (user_id = %s AND friend_id = %s) OR (user_id = %s AND friend_id = %s)""",
-            (relationship, user_uid, friend_uid, friend_uid, user_uid)
+               WHERE user_id = %s AND friend_id = %s AND status = 'accepted'
+               RETURNING id""",
+            (relationship, user_uid, friend_uid)
         )
+        row = await result.fetchone()
+        if not row:
+            await conn.execute(
+                """UPDATE friendships SET relation_type_friend = %s
+                   WHERE user_id = %s AND friend_id = %s AND status = 'accepted'""",
+                (relationship, friend_uid, user_uid)
+            )
         await conn.commit()
         return True
 
@@ -248,10 +257,15 @@ async def set_relationship_type(user_uid: int, friend_uid: int, relationship: st
 async def get_relationship_type(user_uid: int, friend_uid: int) -> str | None:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
-            """SELECT relation_type FROM friendships 
+            """SELECT
+                   CASE
+                       WHEN user_id = %s THEN relation_type
+                       ELSE relation_type_friend
+                   END as relation_type
+               FROM friendships
                WHERE ((user_id = %s AND friend_id = %s) OR (user_id = %s AND friend_id = %s))
                AND status = 'accepted'""",
-            (user_uid, friend_uid, friend_uid, user_uid)
+            (user_uid, user_uid, friend_uid, friend_uid, user_uid)
         )
         row = await result.fetchone()
         return row["relation_type"] if row else None
@@ -261,24 +275,24 @@ async def get_friends_by_relationship(uid: int, relationship: str = None) -> lis
     async with PostgresDB.connection() as conn:
         if relationship:
             result = await conn.execute(
-                """SELECT u.uid, u.username, f.relation_type as relationship, f.created_at FROM users u
+                """SELECT u.uid, u.username, u.profile_picture, f.relation_type as relationship, f.created_at FROM users u
                    INNER JOIN (
-                       SELECT friend_id as uid, relation_type, created_at FROM friendships 
+                       SELECT friend_id as uid, relation_type, created_at FROM friendships
                        WHERE user_id = %s AND status = 'accepted' AND relation_type = %s
                        UNION
-                       SELECT user_id as uid, relation_type, created_at FROM friendships 
-                       WHERE friend_id = %s AND status = 'accepted' AND relation_type = %s
+                       SELECT user_id as uid, relation_type_friend as relation_type, created_at FROM friendships
+                       WHERE friend_id = %s AND status = 'accepted' AND relation_type_friend = %s
                    ) f ON u.uid = f.uid ORDER BY u.username""",
                 (uid, relationship, uid, relationship)
             )
         else:
             result = await conn.execute(
-                """SELECT u.uid, u.username, f.relation_type as relationship, f.created_at FROM users u
+                """SELECT u.uid, u.username, u.profile_picture, f.relation_type as relationship, f.created_at FROM users u
                    INNER JOIN (
-                       SELECT friend_id as uid, relation_type, created_at FROM friendships 
+                       SELECT friend_id as uid, relation_type, created_at FROM friendships
                        WHERE user_id = %s AND status = 'accepted'
                        UNION
-                       SELECT user_id as uid, relation_type, created_at FROM friendships 
+                       SELECT user_id as uid, relation_type_friend as relation_type, created_at FROM friendships
                        WHERE friend_id = %s AND status = 'accepted'
                    ) f ON u.uid = f.uid ORDER BY f.relation_type, u.username""",
                 (uid, uid)

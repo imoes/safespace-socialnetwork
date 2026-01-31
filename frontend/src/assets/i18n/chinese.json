@@ -69,7 +69,11 @@
     "currentVisibility": "当前可见范围：",
     "disputePrompt": "请说明你的异议：",
     "disputeSuccess": "你的异议已转交给审核员。你将在48小时内收到回复。",
-    "sendComment": "发送评论"
+    "sendComment": "发送评论",
+    "share": "分享",
+    "shareWith": "分享给...",
+    "noFriendsToShare": "没有可分享的好友",
+    "shareSuccess": "已分享给 {{username}}！"
   },
   "visibility": {
     "public": "公开",
@@ -141,7 +145,8 @@
     "disputeSubmit": "提交异议时出错。",
     "disputeSuccess": "你的异议已转交审核员审核。",
     "sendComment": "发送评论时出错",
-    "dataExport": "导出数据时出错"
+    "dataExport": "导出数据时出错",
+    "sharePost": "分享帖子失败"
   },
   "myPosts": {
     "title": "我的帖子",
@@ -226,7 +231,18 @@
     "roleUser": "用户",
     "roleModerator": "审核员",
     "roleAdmin": "管理员",
-    "birthday": "生日"
+    "birthday": "生日",
+    "friends": "好友",
+    "loadingFriends": "正在加载好友...",
+    "noFriends": "暂无好友",
+    "friendsCount": "位好友",
+    "showAllFriends": "显示所有好友"
+  },
+  "friendsList": {
+    "back": "返回",
+    "title": "好友",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedHint": "你只能查看自己好友的好友列表。"
   },
   "login": {
     "title": "登录",
@@ -239,7 +255,8 @@
     "register": "立即注册",
     "errors": {
       "invalidCredentials": "用户名或密码错误",
-      "loginFailed": "登录失败，请重试。"
+      "loginFailed": "登录失败，请重试。",
+      "emailNotVerified": "您的电子邮件地址尚未验证。请检查您的收件箱。"
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "密码",
     "confirmPassword": "确认密码",
     "birthday": "生日",
-    "optional": "选填",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "请验证您的电子邮件地址",
+    "verificationPendingHint": "我们已向您发送了一封包含验证链接的电子邮件。请点击链接以激活您的账户。",
+    "resendVerification": "重新发送验证邮件",
+    "resendIn": "重新发送倒计时",
     "registerButton": "注册",
     "hasAccount": "已有账号？",
     "login": "点此登录",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "该用户名已被使用，请选择其他用户名。",
       "emailAlreadyRegistered": "该邮箱地址已注册，请使用其他邮箱或直接登录。",
       "passwordMismatch": "两次输入的密码不一致",
-      "registrationFailed": "注册失败，请重试。"
+      "registrationFailed": "注册失败，请重试。",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "注册成功！正在跳转...",
     "agbAccept": "我接受",
     "agbLink": "服务条款",
     "agbAnd": "和",
     "privacyLink": "隐私政策"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "正在验证电子邮件...",
+    "confirmedTitle": "电子邮件已验证",
+    "confirmedMessage": "您的电子邮件地址已成功验证。您现在可以登录了。",
+    "alreadyConfirmedTitle": "已验证",
+    "alreadyConfirmedMessage": "您的电子邮件地址已经验证过了。",
+    "errorTitle": "无效链接",
+    "errorMessage": "此验证链接无效或已过期。",
+    "backToLogin": "返回登录"
   },
   "passwordReset": {
     "title": "重置密码",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "评论被点赞",
     "notifBirthday": "生日提醒",
     "notifGroupPost": "群组帖子",
+    "notifFriendRequest": "好友请求",
+    "notifFriendRequestAccepted": "已接受的好友请求",
     "passwordSection": "修改密码",
     "currentPassword": "当前密码",
     "currentPasswordPlaceholder": "仅在需要修改密码时填写",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "不可用",
     "deepseekLowBalance": "警告：DeepSeek余额非常低！请充值以维持审核服务。",
     "deepseekLoading": "正在加载DeepSeek余额...",
-    "deepseekError": "加载DeepSeek余额时出错"
+    "deepseekError": "加载DeepSeek余额时出错",
+    "emailSettings": "邮件设置",
+    "emailSettingsDesc": "当前SMTP配置和发送测试邮件。",
+    "emailEnabled": "已启用",
+    "emailDisabled": "已禁用",
+    "emailUser": "用户",
+    "emailFrom": "发件人地址",
+    "emailSender": "发件人名称",
+    "testEmailLabel": "发送测试邮件",
+    "testEmailPlaceholder": "输入邮箱地址...",
+    "testEmailSend": "发送测试",
+    "testEmailSent": "测试邮件发送成功。",
+    "testEmailFailed": "测试邮件发送失败。",
+    "testEmailRequired": "请输入邮箱地址。",
+    "emailDisabledHint": "邮件已禁用。设置 SAFESPACE_EMAIL_ENABLED=true 以启用邮件。",
+    "loading": "加载中"
   },
   "welcome": {
     "understood": "我知道了"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} 在群组 {{group}} 中发布了帖子",
     "birthday": "🎂 {{username}} 今天过生日，{{age}} 岁了！",
     "groupJoinRequest": "👥 {{username}} 申请加入群组「{{groupName}}」",
-    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。"
+    "welcome": "欢迎来到 SafeSpace！很高兴你的加入。",
+    "friendRequest": "👋 {{username}} 向你发送了好友请求",
+    "friendRequestAccepted": "🎉 {{username}} 接受了你的好友请求",
+    "postShared": "📨 {{username}} 与你分享了一篇帖子"
   },
   "screenTime": {
     "breakTitle": "该休息一下了！",

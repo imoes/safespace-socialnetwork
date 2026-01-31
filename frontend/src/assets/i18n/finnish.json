@@ -69,7 +69,11 @@
     "currentVisibility": "Nykyinen näkyvyys:",
     "disputePrompt": "Kerro vastalauseesi:",
     "disputeSuccess": "Vastalauseesi on välitetty moderaattoreille. Saat vastauksen 48 tunnin kuluessa.",
-    "sendComment": "Lähetä kommentti"
+    "sendComment": "Lähetä kommentti",
+    "share": "Jaa",
+    "shareWith": "Jaa...",
+    "noFriendsToShare": "Ei kavereita joille jakaa",
+    "shareSuccess": "Julkaisu jaettu {{username}} kanssa!"
   },
   "visibility": {
     "public": "Julkinen",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Virhe vastalauseen lähettämisessä.",
     "disputeSuccess": "Vastalauseesi on välitetty moderaattorin tarkastettavaksi.",
     "sendComment": "Virhe kommentin lähettämisessä",
-    "dataExport": "Virhe tietojen viennissä"
+    "dataExport": "Virhe tietojen viennissä",
+    "sharePost": "Julkaisun jakaminen epäonnistui"
   },
   "myPosts": {
     "title": "Omat julkaisut",
@@ -226,7 +231,18 @@
     "roleUser": "Käyttäjä",
     "roleModerator": "Moderaattori",
     "roleAdmin": "Ylläpitäjä",
-    "birthday": "Syntymäpäivä"
+    "birthday": "Syntymäpäivä",
+    "friends": "Kaverit",
+    "loadingFriends": "Ladataan kavereita...",
+    "noFriends": "Ei vielä kavereita",
+    "friendsCount": "Kaveria",
+    "showAllFriends": "Näytä kaikki ystävät"
+  },
+  "friendsList": {
+    "back": "Takaisin",
+    "title": "Ystävät",
+    "accessDenied": "Pääsy estetty",
+    "accessDeniedHint": "Voit tarkastella vain omien ystäviesi ystävälistaa."
   },
   "login": {
     "title": "Kirjaudu sisään",
@@ -239,7 +255,8 @@
     "register": "Rekisteröidy nyt",
     "errors": {
       "invalidCredentials": "Virheelliset kirjautumistiedot",
-      "loginFailed": "Kirjautuminen epäonnistui. Yritä uudelleen."
+      "loginFailed": "Kirjautuminen epäonnistui. Yritä uudelleen.",
+      "emailNotVerified": "Sähköpostiosoitettasi ei ole vielä vahvistettu. Tarkista postilaatikkosi."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Salasana",
     "confirmPassword": "Vahvista salasana",
     "birthday": "Syntymäpäivä",
-    "optional": "valinnainen",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Vahvista sähköpostiosoitteesi",
+    "verificationPendingHint": "Olemme lähettäneet sinulle sähköpostin vahvistuslinkin kanssa. Klikkaa linkkiä aktivoidaksesi tilisi.",
+    "resendVerification": "Lähetä vahvistussähköposti uudelleen",
+    "resendIn": "Lähetä uudelleen",
     "registerButton": "Rekisteröidy",
     "hasAccount": "Onko sinulla jo tili?",
     "login": "Kirjaudu täällä",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Tämä käyttäjänimi on jo varattu. Valitse toinen.",
       "emailAlreadyRegistered": "Tämä sähköpostiosoite on jo rekisteröity. Käytä toista tai kirjaudu sisään.",
       "passwordMismatch": "Salasanat eivät täsmää",
-      "registrationFailed": "Rekisteröinti epäonnistui. Yritä uudelleen."
+      "registrationFailed": "Rekisteröinti epäonnistui. Yritä uudelleen.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Rekisteröinti onnistui! Uudelleenohjataan...",
     "agbAccept": "Hyväksyn",
     "agbLink": "Käyttöehdot",
     "agbAnd": "ja",
     "privacyLink": "Tietosuojakäytännön"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Sähköpostia vahvistetaan...",
+    "confirmedTitle": "Sähköposti vahvistettu",
+    "confirmedMessage": "Sähköpostiosoitteesi on vahvistettu onnistuneesti. Voit nyt kirjautua sisään.",
+    "alreadyConfirmedTitle": "Jo vahvistettu",
+    "alreadyConfirmedMessage": "Sähköpostiosoitteesi on jo vahvistettu.",
+    "errorTitle": "Virheellinen linkki",
+    "errorMessage": "Tämä vahvistuslinkki on virheellinen tai vanhentunut.",
+    "backToLogin": "Takaisin kirjautumiseen"
   },
   "passwordReset": {
     "title": "Nollaa salasana",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Kommentista tykätty",
     "notifBirthday": "Syntymäpäivät",
     "notifGroupPost": "Ryhmäjulkaisut",
+    "notifFriendRequest": "Ystäväpyynnöt",
+    "notifFriendRequestAccepted": "Hyväksytyt ystäväpyynnöt",
     "passwordSection": "Vaihda salasana",
     "currentPassword": "Nykyinen salasana",
     "currentPasswordPlaceholder": "Täytä vain jos haluat vaihtaa salasanan",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Ei saatavilla",
     "deepseekLowBalance": "Varoitus: DeepSeek-saldo on erittäin alhainen! Lataa lisää ylläpitääksesi moderointipalvelun.",
     "deepseekLoading": "Ladataan DeepSeek-saldoa...",
-    "deepseekError": "Virhe DeepSeek-saldon lataamisessa"
+    "deepseekError": "Virhe DeepSeek-saldon lataamisessa",
+    "emailSettings": "Sähköpostiasetukset",
+    "emailSettingsDesc": "Nykyinen SMTP-määritys ja testisähköpostin lähetys.",
+    "emailEnabled": "Käytössä",
+    "emailDisabled": "Pois käytöstä",
+    "emailUser": "Käyttäjä",
+    "emailFrom": "Lähettäjän osoite",
+    "emailSender": "Lähettäjän nimi",
+    "testEmailLabel": "Lähetä testisähköposti",
+    "testEmailPlaceholder": "Syötä sähköpostiosoite...",
+    "testEmailSend": "Lähetä testi",
+    "testEmailSent": "Testisähköposti lähetettiin onnistuneesti.",
+    "testEmailFailed": "Testisähköpostia ei voitu lähettää.",
+    "testEmailRequired": "Syötä sähköpostiosoite.",
+    "emailDisabledHint": "Sähköposti on pois käytöstä. Aseta SAFESPACE_EMAIL_ENABLED=true ottaaksesi sähköpostit käyttöön.",
+    "loading": "Ladataan"
   },
   "welcome": {
     "understood": "Selvä"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} julkaisi ryhmässä {{group}}",
     "birthday": "🎂 {{username}} viettää tänään syntymäpäivää ja täyttää {{age}} vuotta!",
     "groupJoinRequest": "👥 {{username}} haluaa liittyä ryhmään \"{{groupName}}\"",
-    "welcome": "Tervetuloa SafeSpaceen! Mukavaa, että olet täällä."
+    "welcome": "Tervetuloa SafeSpaceen! Mukavaa, että olet täällä.",
+    "friendRequest": "👋 {{username}} lähetti sinulle kaveripyynnön",
+    "friendRequestAccepted": "🎉 {{username}} hyväksyi kaveripyyntösi",
+    "postShared": "📨 {{username}} jakoi julkaisun kanssasi"
   },
   "screenTime": {
     "breakTitle": "Aika pitää tauko!",

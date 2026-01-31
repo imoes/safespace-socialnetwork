@@ -105,17 +105,63 @@ class PostgresDB:
                 ADD COLUMN IF NOT EXISTS screen_time_settings JSONB DEFAULT '{}'::jsonb
             """)
 
-            # Friendships mit Beziehungstyp
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS is_minor BOOLEAN DEFAULT FALSE
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS parental_consent_pending BOOLEAN DEFAULT FALSE
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE
+            """)
+
+            # Bestehende Benutzer ohne email_verification_token als verifiziert markieren
+            await conn.execute("""
+                UPDATE users SET email_verified = TRUE
+                WHERE email_verification_token IS NULL AND email_verified = FALSE
+            """)
+
+            await conn.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(255)
+            """)
+
+            # Elterliche Einwilligung
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS parental_consents (
+                    id SERIAL PRIMARY KEY,
+                    user_uid INTEGER REFERENCES users(uid) ON DELETE CASCADE,
+                    parent_email VARCHAR(255) NOT NULL,
+                    consent_token VARCHAR(255) UNIQUE NOT NULL,
+                    confirmed BOOLEAN DEFAULT FALSE,
+                    confirmed_at TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # Friendships mit Beziehungstyp (pro Seite unabhängig)
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS friendships (
                     id SERIAL PRIMARY KEY,
                     user_id INTEGER REFERENCES users(uid) ON DELETE CASCADE,
                     friend_id INTEGER REFERENCES users(uid) ON DELETE CASCADE,
                     relation_type VARCHAR(20) DEFAULT 'friend',
+                    relation_type_friend VARCHAR(20) DEFAULT 'friend',
                     status VARCHAR(20) DEFAULT 'pending',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE(user_id, friend_id)
                 )
+            """)
+
+            # Migration: Spalte relation_type_friend hinzufügen falls noch nicht vorhanden
+            await conn.execute("""
+                ALTER TABLE friendships
+                ADD COLUMN IF NOT EXISTS relation_type_friend VARCHAR(20) DEFAULT 'friend'
             """)
             
             # User Reports (Meldungen)
@@ -436,10 +482,10 @@ async def get_friends(uid: int) -> list[int]:
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            SELECT friend_id as uid, relation_type FROM friendships 
+            SELECT friend_id as uid, relation_type FROM friendships
             WHERE user_id = %s AND status = 'accepted'
             UNION
-            SELECT user_id as uid, relation_type FROM friendships 
+            SELECT user_id as uid, relation_type_friend as relation_type FROM friendships
             WHERE friend_id = %s AND status = 'accepted'
             """,
             (uid, uid)
@@ -449,16 +495,16 @@ async def get_friends(uid: int) -> list[int]:
 
 
 async def get_friends_by_relation(uid: int, relation_types: list[str]) -> list[int]:
-    """Gibt Freunde nach Beziehungstyp zurück"""
+    """Gibt Freunde nach Beziehungstyp zurück (aus Sicht des Users)"""
     async with PostgresDB.connection() as conn:
         placeholders = ", ".join(["%s"] * len(relation_types))
         result = await conn.execute(
             f"""
-            SELECT friend_id as uid FROM friendships 
+            SELECT friend_id as uid FROM friendships
             WHERE user_id = %s AND status = 'accepted' AND relation_type IN ({placeholders})
             UNION
-            SELECT user_id as uid FROM friendships 
-            WHERE friend_id = %s AND status = 'accepted' AND relation_type IN ({placeholders})
+            SELECT user_id as uid FROM friendships
+            WHERE friend_id = %s AND status = 'accepted' AND relation_type_friend IN ({placeholders})
             """,
             (uid, *relation_types, uid, *relation_types)
         )
@@ -467,17 +513,17 @@ async def get_friends_by_relation(uid: int, relation_types: list[str]) -> list[i
 
 
 async def get_friends_with_info(uid: int) -> list[dict]:
-    """Gibt Freunde mit Userinfo und Beziehungstyp zurück"""
+    """Gibt Freunde mit Userinfo und Beziehungstyp zurück (aus Sicht des Users)"""
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
             SELECT u.uid, u.username, u.created_at, f.relation_type
             FROM users u
             INNER JOIN (
-                SELECT friend_id as uid, relation_type FROM friendships 
+                SELECT friend_id as uid, relation_type FROM friendships
                 WHERE user_id = %s AND status = 'accepted'
                 UNION
-                SELECT user_id as uid, relation_type FROM friendships 
+                SELECT user_id as uid, relation_type_friend as relation_type FROM friendships
                 WHERE friend_id = %s AND status = 'accepted'
             ) f ON u.uid = f.uid
             """,
@@ -487,15 +533,20 @@ async def get_friends_with_info(uid: int) -> list[dict]:
 
 
 async def get_relation_type(uid: int, friend_uid: int) -> str | None:
-    """Gibt den Beziehungstyp zwischen zwei Usern zurück"""
+    """Gibt den Beziehungstyp aus Sicht von uid zurück"""
     async with PostgresDB.connection() as conn:
         result = await conn.execute(
             """
-            SELECT relation_type FROM friendships 
+            SELECT
+                CASE
+                    WHEN user_id = %s THEN relation_type
+                    ELSE relation_type_friend
+                END as relation_type
+            FROM friendships
             WHERE ((user_id = %s AND friend_id = %s) OR (user_id = %s AND friend_id = %s))
             AND status = 'accepted'
             """,
-            (uid, friend_uid, friend_uid, uid)
+            (uid, uid, friend_uid, friend_uid, uid)
         )
         row = await result.fetchone()
         return row["relation_type"] if row else None
@@ -533,20 +584,33 @@ async def accept_friend_request(user_uid: int, requester_uid: int) -> bool:
 
 
 async def update_relation_type(uid: int, friend_uid: int, relation_type: str) -> bool:
-    """Aktualisiert den Beziehungstyp"""
+    """Aktualisiert den Beziehungstyp nur für die Seite des aufrufenden Users"""
     async with PostgresDB.connection() as conn:
+        # Wenn uid = user_id: relation_type aktualisieren
         result = await conn.execute(
             """
-            UPDATE friendships 
+            UPDATE friendships
             SET relation_type = %s
-            WHERE ((user_id = %s AND friend_id = %s) OR (user_id = %s AND friend_id = %s))
-            AND status = 'accepted'
+            WHERE user_id = %s AND friend_id = %s AND status = 'accepted'
             RETURNING id
             """,
-            (relation_type, uid, friend_uid, friend_uid, uid)
+            (relation_type, uid, friend_uid)
         )
+        row = await result.fetchone()
+        if not row:
+            # Wenn uid = friend_id: relation_type_friend aktualisieren
+            result = await conn.execute(
+                """
+                UPDATE friendships
+                SET relation_type_friend = %s
+                WHERE user_id = %s AND friend_id = %s AND status = 'accepted'
+                RETURNING id
+                """,
+                (relation_type, friend_uid, uid)
+            )
+            row = await result.fetchone()
         await conn.commit()
-        return await result.fetchone() is not None
+        return row is not None
 
 
 async def remove_friend(uid: int, friend_uid: int) -> bool:

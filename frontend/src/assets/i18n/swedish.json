@@ -69,7 +69,11 @@
     "currentVisibility": "Nuvarande synlighet:",
     "disputePrompt": "Vänligen förklara din invändning:",
     "disputeSuccess": "Din invändning har vidarebefordrats till moderatorerna. Du kommer att få svar inom 48 timmar.",
-    "sendComment": "Skicka kommentar"
+    "sendComment": "Skicka kommentar",
+    "share": "Dela",
+    "shareWith": "Dela med...",
+    "noFriendsToShare": "Inga vänner att dela med",
+    "shareSuccess": "Inlägg delat med {{username}}!"
   },
   "visibility": {
     "public": "Offentligt",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Fel vid inlämning av invändning.",
     "disputeSuccess": "Din invändning har vidarebefordrats för granskning av en moderator.",
     "sendComment": "Fel vid skickande av kommentar",
-    "dataExport": "Fel vid export av data"
+    "dataExport": "Fel vid export av data",
+    "sharePost": "Kunde inte dela inlägget"
   },
   "myPosts": {
     "title": "Mina inlägg",
@@ -226,7 +231,18 @@
     "roleUser": "Användare",
     "roleModerator": "Moderator",
     "roleAdmin": "Administratör",
-    "birthday": "Födelsedag"
+    "birthday": "Födelsedag",
+    "friends": "Vänner",
+    "loadingFriends": "Laddar vänner...",
+    "noFriends": "Inga vänner ännu",
+    "friendsCount": "Vänner",
+    "showAllFriends": "Visa alla vänner"
+  },
+  "friendsList": {
+    "back": "Tillbaka",
+    "title": "Vänner",
+    "accessDenied": "Åtkomst nekad",
+    "accessDeniedHint": "Du kan bara se vänlistan för dina egna vänner."
   },
   "login": {
     "title": "Logga in",
@@ -239,7 +255,8 @@
     "register": "Registrera dig nu",
     "errors": {
       "invalidCredentials": "Ogiltiga inloggningsuppgifter",
-      "loginFailed": "Inloggningen misslyckades. Vänligen försök igen."
+      "loginFailed": "Inloggningen misslyckades. Vänligen försök igen.",
+      "emailNotVerified": "Din e-postadress har inte verifierats ännu. Vänligen kontrollera din inkorg."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Lösenord",
     "confirmPassword": "Bekräfta lösenord",
     "birthday": "Födelsedag",
-    "optional": "valfritt",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Vänligen verifiera din e-postadress",
+    "verificationPendingHint": "Vi har skickat ett e-postmeddelande med en verifieringslänk. Klicka på länken för att aktivera ditt konto.",
+    "resendVerification": "Skicka verifieringsmail igen",
+    "resendIn": "Skicka igen om",
     "registerButton": "Registrera",
     "hasAccount": "Har du redan ett konto?",
     "login": "Logga in här",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Detta användarnamn är redan taget. Vänligen välj ett annat.",
       "emailAlreadyRegistered": "Denna e-postadress är redan registrerad. Vänligen använd en annan eller logga in.",
       "passwordMismatch": "Lösenorden stämmer inte överens",
-      "registrationFailed": "Registreringen misslyckades. Vänligen försök igen."
+      "registrationFailed": "Registreringen misslyckades. Vänligen försök igen.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registreringen lyckades! Omdirigerar...",
     "agbAccept": "Jag godkänner",
     "agbLink": "Användarvillkoren",
     "agbAnd": "och",
     "privacyLink": "Integritetspolicyn"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verifierar e-post...",
+    "confirmedTitle": "E-post verifierad",
+    "confirmedMessage": "Din e-postadress har verifierats framgångsrikt. Du kan nu logga in.",
+    "alreadyConfirmedTitle": "Redan verifierad",
+    "alreadyConfirmedMessage": "Din e-postadress har redan verifierats.",
+    "errorTitle": "Ogiltig länk",
+    "errorMessage": "Denna verifieringslänk är ogiltig eller har löpt ut.",
+    "backToLogin": "Tillbaka till inloggning"
   },
   "passwordReset": {
     "title": "Återställ lösenord",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Kommentar gillad",
     "notifBirthday": "Födelsedagar",
     "notifGroupPost": "Gruppinlägg",
+    "notifFriendRequest": "Vänförfrågningar",
+    "notifFriendRequestAccepted": "Accepterade vänförfrågningar",
     "passwordSection": "Ändra lösenord",
     "currentPassword": "Nuvarande lösenord",
     "currentPasswordPlaceholder": "Fyll bara i om du vill ändra ditt lösenord",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Inte tillgänglig",
     "deepseekLowBalance": "Varning: DeepSeek-saldot är mycket lågt! Fyll på för att upprätthålla modereringstjänsten.",
     "deepseekLoading": "Laddar DeepSeek-saldo...",
-    "deepseekError": "Fel vid laddning av DeepSeek-saldo"
+    "deepseekError": "Fel vid laddning av DeepSeek-saldo",
+    "emailSettings": "E-postinställningar",
+    "emailSettingsDesc": "Aktuell SMTP-konfiguration och skicka testmejl.",
+    "emailEnabled": "Aktiverad",
+    "emailDisabled": "Inaktiverad",
+    "emailUser": "Användare",
+    "emailFrom": "Avsändaradress",
+    "emailSender": "Avsändarnamn",
+    "testEmailLabel": "Skicka testmejl",
+    "testEmailPlaceholder": "Ange e-postadress...",
+    "testEmailSend": "Skicka test",
+    "testEmailSent": "Testmejlet skickades.",
+    "testEmailFailed": "Testmejlet kunde inte skickas.",
+    "testEmailRequired": "Ange en e-postadress.",
+    "emailDisabledHint": "E-post är inaktiverad. Ställ in SAFESPACE_EMAIL_ENABLED=true för att aktivera e-post.",
+    "loading": "Laddar"
   },
   "welcome": {
     "understood": "Uppfattat"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} publicerade i gruppen {{group}}",
     "birthday": "🎂 {{username}} fyller år idag och är nu {{age}} år gammal!",
     "groupJoinRequest": "👥 {{username}} vill gå med i gruppen \"{{groupName}}\"",
-    "welcome": "Välkommen till SafeSpace! Vi är glada att du är här."
+    "welcome": "Välkommen till SafeSpace! Vi är glada att du är här.",
+    "friendRequest": "👋 {{username}} har skickat en vänförfrågan till dig",
+    "friendRequestAccepted": "🎉 {{username}} har accepterat din vänförfrågan",
+    "postShared": "📨 {{username}} delade ett inlägg med dig"
   },
   "screenTime": {
     "breakTitle": "Dags för en paus!",

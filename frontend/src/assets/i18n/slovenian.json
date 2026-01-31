@@ -69,7 +69,11 @@
     "currentVisibility": "Trenutna vidnost:",
     "disputePrompt": "Prosimo, pojasnite svoj ugovor:",
     "disputeSuccess": "Vaš ugovor je bil posredovan moderatorjem. Odgovor boste prejeli v 48 urah.",
-    "sendComment": "Pošlji komentar"
+    "sendComment": "Pošlji komentar",
+    "share": "Deli",
+    "shareWith": "Deli z...",
+    "noFriendsToShare": "Ni prijateljev za deljenje",
+    "shareSuccess": "Objava deljena z {{username}}!"
   },
   "visibility": {
     "public": "Javno",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Napaka pri oddaji ugovora.",
     "disputeSuccess": "Vaš ugovor je bil posredovan v pregled moderatorju.",
     "sendComment": "Napaka pri pošiljanju komentarja",
-    "dataExport": "Napaka pri izvozu podatkov"
+    "dataExport": "Napaka pri izvozu podatkov",
+    "sharePost": "Napaka pri deljenju objave"
   },
   "myPosts": {
     "title": "Moje objave",
@@ -226,7 +231,18 @@
     "roleUser": "Uporabnik",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Rojstni dan"
+    "birthday": "Rojstni dan",
+    "friends": "Prijatelji",
+    "loadingFriends": "Nalaganje prijateljev...",
+    "noFriends": "Še ni prijateljev",
+    "friendsCount": "Prijateljev",
+    "showAllFriends": "Prikaži vse prijatelje"
+  },
+  "friendsList": {
+    "back": "Nazaj",
+    "title": "Prijatelji",
+    "accessDenied": "Dostop zavrnjen",
+    "accessDeniedHint": "Ogledate si lahko samo seznam prijateljev svojih prijateljev."
   },
   "login": {
     "title": "Prijava",
@@ -239,7 +255,8 @@
     "register": "Registrirajte se zdaj",
     "errors": {
       "invalidCredentials": "Neveljavni podatki za prijavo",
-      "loginFailed": "Prijava ni uspela. Prosimo, poskusite znova."
+      "loginFailed": "Prijava ni uspela. Prosimo, poskusite znova.",
+      "emailNotVerified": "Vaš e-poštni naslov še ni potrjen. Preverite svojo mapo »Prejeto«."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Geslo",
     "confirmPassword": "Potrdite geslo",
     "birthday": "Rojstni dan",
-    "optional": "neobvezno",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Prosimo, potrdite svoj e-poštni naslov",
+    "verificationPendingHint": "Poslali smo vam e-pošto s potrditveno povezavo. Kliknite na povezavo, da aktivirate svoj račun.",
+    "resendVerification": "Ponovno pošlji potrditveno e-pošto",
+    "resendIn": "Ponovno pošlji čez",
     "registerButton": "Registracija",
     "hasAccount": "Že imate račun?",
     "login": "Prijavite se tukaj",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "To uporabniško ime je že zasedeno. Prosimo, izberite drugo.",
       "emailAlreadyRegistered": "Ta e-poštni naslov je že registriran. Prosimo, uporabite drugega ali se prijavite.",
       "passwordMismatch": "Gesli se ne ujemata",
-      "registrationFailed": "Registracija ni uspela. Prosimo, poskusite znova."
+      "registrationFailed": "Registracija ni uspela. Prosimo, poskusite znova.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registracija uspešna! Preusmerjanje...",
     "agbAccept": "Sprejemam",
     "agbLink": "Pogoje uporabe",
     "agbAnd": "in",
     "privacyLink": "Politiko zasebnosti"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Preverjanje e-pošte...",
+    "confirmedTitle": "E-pošta potrjena",
+    "confirmedMessage": "Vaš e-poštni naslov je bil uspešno potrjen. Zdaj se lahko prijavite.",
+    "alreadyConfirmedTitle": "Že potrjeno",
+    "alreadyConfirmedMessage": "Vaš e-poštni naslov je že potrjen.",
+    "errorTitle": "Neveljavna povezava",
+    "errorMessage": "Ta potrditvena povezava je neveljavna ali je potekla.",
+    "backToLogin": "Nazaj na prijavo"
   },
   "passwordReset": {
     "title": "Ponastavitev gesla",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Komentar všečkan",
     "notifBirthday": "Rojstni dnevi",
     "notifGroupPost": "Objave v skupinah",
+    "notifFriendRequest": "Prošnje za prijateljstvo",
+    "notifFriendRequestAccepted": "Sprejete prošnje za prijateljstvo",
     "passwordSection": "Sprememba gesla",
     "currentPassword": "Trenutno geslo",
     "currentPasswordPlaceholder": "Izpolnite samo, če želite spremeniti geslo",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Ni na voljo",
     "deepseekLowBalance": "Opozorilo: Stanje DeepSeek je zelo nizko! Prosimo, dopolnite za vzdrževanje storitve moderiranja.",
     "deepseekLoading": "Nalaganje stanja DeepSeek...",
-    "deepseekError": "Napaka pri nalaganju stanja DeepSeek"
+    "deepseekError": "Napaka pri nalaganju stanja DeepSeek",
+    "emailSettings": "Nastavitve e-pošte",
+    "emailSettingsDesc": "Trenutna SMTP konfiguracija in pošiljanje testne e-pošte.",
+    "emailEnabled": "Omogočeno",
+    "emailDisabled": "Onemogočeno",
+    "emailUser": "Uporabnik",
+    "emailFrom": "Naslov pošiljatelja",
+    "emailSender": "Ime pošiljatelja",
+    "testEmailLabel": "Pošlji testno e-pošto",
+    "testEmailPlaceholder": "Vnesite e-poštni naslov...",
+    "testEmailSend": "Pošlji test",
+    "testEmailSent": "Testna e-pošta je bila uspešno poslana.",
+    "testEmailFailed": "Testne e-pošte ni bilo mogoče poslati.",
+    "testEmailRequired": "Prosimo, vnesite e-poštni naslov.",
+    "emailDisabledHint": "E-pošta je onemogočena. Nastavite SAFESPACE_EMAIL_ENABLED=true za omogočanje e-pošte.",
+    "loading": "Nalaganje"
   },
   "welcome": {
     "understood": "Razumem"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} je objavil/-a v skupini {{group}}",
     "birthday": "🎂 {{username}} ima danes rojstni dan in je zdaj star/-a {{age}} let!",
     "groupJoinRequest": "👥 {{username}} želi pridružiti skupini \"{{groupName}}\"",
-    "welcome": "Dobrodošli v SafeSpace! Veseli smo, da ste tukaj."
+    "welcome": "Dobrodošli v SafeSpace! Veseli smo, da ste tukaj.",
+    "friendRequest": "👋 {{username}} ti je poslal/a prošnjo za prijateljstvo",
+    "friendRequestAccepted": "🎉 {{username}} je sprejel/a tvojo prošnjo za prijateljstvo",
+    "postShared": "📨 {{username}} je delil/a objavo s tabo"
   },
   "screenTime": {
     "breakTitle": "Čas za odmor!",

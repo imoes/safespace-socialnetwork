@@ -68,7 +68,11 @@
     "currentVisibility": "Visibilidad actual:",
     "disputePrompt": "Por favor explica tu objeción:",
     "disputeSuccess": "Tu objeción ha sido enviada a los moderadores. Recibirás una respuesta en un plazo de 48 horas.",
-    "sendComment": "Enviar comentario"
+    "sendComment": "Enviar comentario",
+    "share": "Compartir",
+    "shareWith": "Compartir con...",
+    "noFriendsToShare": "No hay amigos para compartir",
+    "shareSuccess": "¡Post compartido con {{username}}!"
   },
   "visibility": {
     "public": "Público",
@@ -140,7 +144,8 @@
     "disputeSubmit": "Error al enviar la objeción.",
     "disputeSuccess": "Tu objeción ha sido enviada para revisión por un moderador.",
     "sendComment": "Error al enviar el comentario",
-    "dataExport": "Error al exportar los datos"
+    "dataExport": "Error al exportar los datos",
+    "sharePost": "Error al compartir el post"
   },
   "myPosts": {
     "title": "Mis Posts",
@@ -225,7 +230,18 @@
     "roleUser": "Usuario",
     "roleModerator": "Moderador",
     "roleAdmin": "Administrador",
-    "birthday": "Cumpleaños"
+    "birthday": "Cumpleaños",
+    "friends": "Amigos",
+    "loadingFriends": "Cargando amigos...",
+    "noFriends": "Aún no hay amigos",
+    "friendsCount": "Amigos",
+    "showAllFriends": "Ver todos los amigos"
+  },
+  "friendsList": {
+    "back": "Volver",
+    "title": "Amigos",
+    "accessDenied": "Acceso denegado",
+    "accessDeniedHint": "Solo puedes ver la lista de amigos de tus propios amigos."
   },
   "friends": {
     "title": "Amigos",
@@ -263,6 +279,8 @@
     "notifCommentLiked": "Comentario gustado",
     "notifBirthday": "Cumpleaños",
     "notifGroupPost": "Posts de grupo",
+    "notifFriendRequest": "Solicitudes de amistad",
+    "notifFriendRequestAccepted": "Solicitudes de amistad aceptadas",
     "passwordSection": "Cambiar contraseña",
     "currentPassword": "Contraseña actual",
     "currentPasswordPlaceholder": "Solo completar si deseas cambiar tu contraseña",
@@ -345,7 +363,8 @@
     "register": "Regístrate ahora",
     "errors": {
       "invalidCredentials": "Credenciales inválidas",
-      "loginFailed": "Inicio de sesión fallido. Por favor, inténtalo de nuevo."
+      "loginFailed": "Inicio de sesión fallido. Por favor, inténtalo de nuevo.",
+      "emailNotVerified": "Tu dirección de correo electrónico aún no ha sido verificada. Por favor, revisa tu bandeja de entrada."
     }
   },
   "register": {
@@ -354,6 +373,16 @@
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
+    "birthday": "Birthday",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Por favor, verifica tu dirección de correo electrónico",
+    "verificationPendingHint": "Te hemos enviado un correo electrónico con un enlace de verificación. Haz clic en el enlace para activar tu cuenta.",
+    "resendVerification": "Reenviar correo de verificación",
+    "resendIn": "Reenviar en",
     "registerButton": "Registrarse",
     "hasAccount": "¿Ya tienes una cuenta?",
     "login": "Inicia sesión aquí",
@@ -361,13 +390,37 @@
       "usernameAlreadyRegistered": "Este nombre de usuario ya está en uso. Por favor elige otro.",
       "emailAlreadyRegistered": "Este correo electrónico ya está registrado. Por favor usa otro o inicia sesión.",
       "passwordMismatch": "Las contraseñas no coinciden",
-      "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo."
+      "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "¡Registro exitoso! Redirigiendo...",
     "agbAccept": "Acepto las",
     "agbLink": "condiciones de uso",
     "agbAnd": "y la",
     "privacyLink": "política de privacidad"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Verificando correo electrónico...",
+    "confirmedTitle": "Correo verificado",
+    "confirmedMessage": "Tu dirección de correo electrónico ha sido verificada con éxito. Ya puedes iniciar sesión.",
+    "alreadyConfirmedTitle": "Ya verificado",
+    "alreadyConfirmedMessage": "Tu dirección de correo electrónico ya ha sido verificada.",
+    "errorTitle": "Enlace no válido",
+    "errorMessage": "Este enlace de verificación no es válido o ha caducado.",
+    "backToLogin": "Volver al inicio de sesión"
   },
   "common": {
     "loading": "Cargando...",
@@ -399,7 +452,10 @@
     "groupPost": "{{username}} publicó en el grupo {{group}}",
     "birthday": "🎂 ¡{{username}} cumple años hoy y ahora tiene {{age}} años!",
     "groupJoinRequest": "👥 {{username}} quiere unirse al grupo \"{{groupName}}\"",
-    "welcome": "¡Bienvenido/a a SafeSpace! Nos alegra que estés aquí."
+    "welcome": "¡Bienvenido/a a SafeSpace! Nos alegra que estés aquí.",
+    "friendRequest": "👋 {{username}} te ha enviado una solicitud de amistad",
+    "friendRequestAccepted": "🎉 {{username}} ha aceptado tu solicitud de amistad",
+    "postShared": "📨 {{username}} compartió un post contigo"
   },
   "groups": {
     "title": "Grupos",
@@ -496,7 +552,22 @@
     "deepseekUnavailable": "No disponible",
     "deepseekLowBalance": "Advertencia: ¡El saldo de DeepSeek es muy bajo! Por favor, recargue para mantener el servicio de moderación.",
     "deepseekLoading": "Cargando saldo de DeepSeek...",
-    "deepseekError": "Error al cargar el saldo de DeepSeek"
+    "deepseekError": "Error al cargar el saldo de DeepSeek",
+    "emailSettings": "Configuración de correo electrónico",
+    "emailSettingsDesc": "Configuración SMTP actual y envío de correo de prueba.",
+    "emailEnabled": "Activado",
+    "emailDisabled": "Desactivado",
+    "emailUser": "Usuario",
+    "emailFrom": "Dirección del remitente",
+    "emailSender": "Nombre del remitente",
+    "testEmailLabel": "Enviar correo de prueba",
+    "testEmailPlaceholder": "Introducir dirección de correo...",
+    "testEmailSend": "Enviar prueba",
+    "testEmailSent": "El correo de prueba se envió correctamente.",
+    "testEmailFailed": "No se pudo enviar el correo de prueba.",
+    "testEmailRequired": "Por favor, introduzca una dirección de correo electrónico.",
+    "emailDisabledHint": "El correo electrónico está desactivado. Establezca SAFESPACE_EMAIL_ENABLED=true para activar los correos.",
+    "loading": "Cargando"
   },
   "welcome": {
     "understood": "Entendido"

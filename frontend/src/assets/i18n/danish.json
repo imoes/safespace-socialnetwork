@@ -69,7 +69,11 @@
     "currentVisibility": "Nuværende synlighed:",
     "disputePrompt": "Forklar venligst din indsigelse:",
     "disputeSuccess": "Din indsigelse er blevet videresendt til moderatorerne. Du vil modtage et svar inden for 48 timer.",
-    "sendComment": "Send kommentar"
+    "sendComment": "Send kommentar",
+    "share": "Del",
+    "shareWith": "Del med...",
+    "noFriendsToShare": "Ingen venner at dele med",
+    "shareSuccess": "Opslag delt med {{username}}!"
   },
   "visibility": {
     "public": "Offentlig",
@@ -141,7 +145,8 @@
     "disputeSubmit": "Fejl ved indsendelse af indsigelse.",
     "disputeSuccess": "Din indsigelse er blevet videresendt til gennemgang af en moderator.",
     "sendComment": "Fejl ved afsendelse af kommentar",
-    "dataExport": "Fejl ved eksport af data"
+    "dataExport": "Fejl ved eksport af data",
+    "sharePost": "Kunne ikke dele opslaget"
   },
   "myPosts": {
     "title": "Mine opslag",
@@ -226,7 +231,18 @@
     "roleUser": "Bruger",
     "roleModerator": "Moderator",
     "roleAdmin": "Administrator",
-    "birthday": "Fødselsdag"
+    "birthday": "Fødselsdag",
+    "friends": "Venner",
+    "loadingFriends": "Indlæser venner...",
+    "noFriends": "Ingen venner endnu",
+    "friendsCount": "Venner",
+    "showAllFriends": "Vis alle venner"
+  },
+  "friendsList": {
+    "back": "Tilbage",
+    "title": "Venner",
+    "accessDenied": "Adgang nægtet",
+    "accessDeniedHint": "Du kan kun se vennelisten for dine egne venner."
   },
   "login": {
     "title": "Log ind",
@@ -239,7 +255,8 @@
     "register": "Registrer dig nu",
     "errors": {
       "invalidCredentials": "Ugyldige loginoplysninger",
-      "loginFailed": "Login mislykkedes. Prøv venligst igen."
+      "loginFailed": "Login mislykkedes. Prøv venligst igen.",
+      "emailNotVerified": "Din e-mailadresse er endnu ikke bekræftet. Tjek venligst din indbakke."
     }
   },
   "register": {
@@ -249,7 +266,15 @@
     "password": "Adgangskode",
     "confirmPassword": "Bekræft adgangskode",
     "birthday": "Fødselsdag",
-    "optional": "valgfri",
+    "parentalRequired": "You are under 16 years old. According to GDPR, you need parental consent.",
+    "parentEmail": "Parent or guardian email address",
+    "tooYoung": "You must be at least 13 years old to register.",
+    "consentPending": "Consent pending",
+    "consentPendingHint": "We have sent an email to your parent. Your account will be activated once consent is confirmed.",
+    "verificationPending": "Bekræft venligst din e-mailadresse",
+    "verificationPendingHint": "Vi har sendt dig en e-mail med et bekræftelseslink. Klik venligst på linket for at aktivere din konto.",
+    "resendVerification": "Send bekræftelses-e-mail igen",
+    "resendIn": "Send igen om",
     "registerButton": "Registrer",
     "hasAccount": "Har du allerede en konto?",
     "login": "Log ind her",
@@ -257,13 +282,37 @@
       "usernameAlreadyRegistered": "Dette brugernavn er allerede taget. Vælg venligst et andet.",
       "emailAlreadyRegistered": "Denne e-mailadresse er allerede registreret. Brug venligst en anden eller log ind.",
       "passwordMismatch": "Adgangskoderne stemmer ikke overens",
-      "registrationFailed": "Registrering mislykkedes. Prøv venligst igen."
+      "registrationFailed": "Registrering mislykkedes. Prøv venligst igen.",
+      "birthdayRequired": "Please enter your date of birth.",
+      "parentEmailRequired": "Please enter a parent or guardian email address.",
+      "parentEmailSame": "The parent email must be different from your own email.",
+      "consentPending": "Your account is awaiting parental consent."
     },
     "success": "Registrering gennemført! Omdirigerer...",
     "agbAccept": "Jeg accepterer",
     "agbLink": "Servicevilkårene",
     "agbAnd": "og",
     "privacyLink": "Privatlivspolitikken"
+  },
+  "parentalConsent": {
+    "verifying": "Verifying consent...",
+    "confirmedTitle": "Consent confirmed",
+    "confirmedMessage": "Parental consent has been successfully granted. The account is now active.",
+    "alreadyConfirmedTitle": "Already confirmed",
+    "alreadyConfirmedMessage": "Parental consent has already been granted.",
+    "errorTitle": "Invalid link",
+    "errorMessage": "This consent link is invalid or expired.",
+    "backToLogin": "Back to login"
+  },
+  "emailVerification": {
+    "verifying": "Bekræfter e-mail...",
+    "confirmedTitle": "E-mail bekræftet",
+    "confirmedMessage": "Din e-mailadresse er blevet bekræftet. Du kan nu logge ind.",
+    "alreadyConfirmedTitle": "Allerede bekræftet",
+    "alreadyConfirmedMessage": "Din e-mailadresse er allerede bekræftet.",
+    "errorTitle": "Ugyldigt link",
+    "errorMessage": "Dette bekræftelseslink er ugyldigt eller udløbet.",
+    "backToLogin": "Tilbage til login"
   },
   "passwordReset": {
     "title": "Nulstil adgangskode",
@@ -320,6 +369,8 @@
     "notifCommentLiked": "Kommentar liked",
     "notifBirthday": "Fødselsdage",
     "notifGroupPost": "Gruppeopslag",
+    "notifFriendRequest": "Venneanmodninger",
+    "notifFriendRequestAccepted": "Accepterede venneanmodninger",
     "passwordSection": "Skift adgangskode",
     "currentPassword": "Nuværende adgangskode",
     "currentPasswordPlaceholder": "Udfyld kun hvis du vil ændre din adgangskode",
@@ -415,7 +466,22 @@
     "deepseekUnavailable": "Ikke tilgængelig",
     "deepseekLowBalance": "Advarsel: DeepSeek-saldoen er meget lav! Oplad venligst for at opretholde moderationstjenesten.",
     "deepseekLoading": "Indlæser DeepSeek-saldo...",
-    "deepseekError": "Fejl ved indlæsning af DeepSeek-saldo"
+    "deepseekError": "Fejl ved indlæsning af DeepSeek-saldo",
+    "emailSettings": "E-mail-indstillinger",
+    "emailSettingsDesc": "Aktuel SMTP-konfiguration og afsendelse af test-e-mail.",
+    "emailEnabled": "Aktiveret",
+    "emailDisabled": "Deaktiveret",
+    "emailUser": "Bruger",
+    "emailFrom": "Afsenderadresse",
+    "emailSender": "Afsendernavn",
+    "testEmailLabel": "Send test-e-mail",
+    "testEmailPlaceholder": "Indtast e-mailadresse...",
+    "testEmailSend": "Send test",
+    "testEmailSent": "Test-e-mailen blev sendt.",
+    "testEmailFailed": "Test-e-mailen kunne ikke sendes.",
+    "testEmailRequired": "Indtast venligst en e-mailadresse.",
+    "emailDisabledHint": "E-mail er deaktiveret. Indstil SAFESPACE_EMAIL_ENABLED=true for at aktivere e-mails.",
+    "loading": "Indlæser"
   },
   "welcome": {
     "understood": "Forstået"
@@ -464,7 +530,10 @@
     "groupPost": "{{username}} slog op i gruppen {{group}}",
     "birthday": "🎂 {{username}} har fødselsdag i dag og er nu {{age}} år!",
     "groupJoinRequest": "👥 {{username}} vil gerne deltage i gruppen \"{{groupName}}\"",
-    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her."
+    "welcome": "Velkommen til SafeSpace! Vi er glade for, at du er her.",
+    "friendRequest": "👋 {{username}} har sendt dig en venneanmodning",
+    "friendRequestAccepted": "🎉 {{username}} har accepteret din venneanmodning",
+    "postShared": "📨 {{username}} delte et opslag med dig"
   },
   "screenTime": {
     "breakTitle": "Tid til en pause!",

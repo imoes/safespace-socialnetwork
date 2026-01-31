@@ -94,10 +94,11 @@ class FeedService:
         profile_data_map = await get_user_profile_data_map(all_uids)
         username_map = {uid: data["username"] for uid, data in profile_data_map.items()}
         
-        # Friendship Tiers laden
+        # Friendship Tiers laden — aus Sicht des jeweiligen Autors,
+        # denn der Autor bestimmt wer seine Posts sehen darf
         tier_map = {}
         for friend_uid in friend_uids:
-            tier = await get_relation_type(uid, friend_uid)
+            tier = await get_relation_type(friend_uid, uid)
             tier_map[friend_uid] = tier or "friend"  # Default: friend
         
         # Posts parallel laden
@@ -159,10 +160,10 @@ class FeedService:
         """
         # Mapping: Mein Tier → Welche Post-Visibilities kann ich sehen
         tier_to_visibility = {
-            "family": ["family", "close_friends", "friends", "public"],
-            "close_friend": ["close_friends", "friends", "public"],
-            "friend": ["friends", "public"],
-            "acquaintance": ["public"],
+            "family": ["family", "close_friends", "friends", "acquaintance", "public"],
+            "close_friend": ["close_friends", "friends", "acquaintance", "public"],
+            "friend": ["friends", "acquaintance", "public"],
+            "acquaintance": ["acquaintance", "public"],
         }
         return tier_to_visibility.get(viewer_tier, ["public"])
     
