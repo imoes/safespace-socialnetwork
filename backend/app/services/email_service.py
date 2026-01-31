@@ -514,7 +514,8 @@ class EmailService:
         to_email: str,
         subject: str,
         html_content: str,
-        text_content: Optional[str] = None
+        text_content: Optional[str] = None,
+        force: bool = False
     ) -> bool:
         """
         Sendet eine E-Mail.
@@ -524,12 +525,13 @@ class EmailService:
             subject: Betreff
             html_content: HTML Inhalt
             text_content: Plain-Text Alternative (optional)
+            force: Wenn True, wird auch bei deaktiviertem E-Mail-Versand gesendet
 
         Returns:
             bool: True wenn erfolgreich, False bei Fehler
         """
-        # Wenn Email disabled ist, skip
-        if not settings.email_enabled:
+        # Wenn Email disabled ist, skip (außer bei force)
+        if not settings.email_enabled and not force:
             print(f"📧 Email disabled - Would send to {to_email}: {subject}")
             return False
 
@@ -1026,7 +1028,7 @@ class EmailService:
 </body>
 </html>"""
 
-        return await cls.send_email(parent_email, subject, html_content)
+        return await cls.send_email(parent_email, subject, html_content, force=True)
 
     @classmethod
     async def send_email_verification(
@@ -1079,4 +1081,4 @@ class EmailService:
 </body>
 </html>"""
 
-        return await cls.send_email(to_email, subject, html_content)
+        return await cls.send_email(to_email, subject, html_content, force=True)
